@@ -21,6 +21,7 @@ namespace OrderApi.Controllers
         /// Initializes a new instance of the <see cref="OrdersController"/> class.
         /// </summary>
         /// <param name="orderService">Service for order operations.</param>
+        /// <param name="logger">Logger for tracking operations.</param>
         public OrdersController(IOrderService orderService, ILogger<OrdersController> logger)
         {
             _orderService = orderService;

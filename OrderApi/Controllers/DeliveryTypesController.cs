@@ -19,7 +19,8 @@ namespace OrderApi.Controllers
         /// <summary>
         /// Initializes a new instance of the <see cref="DeliveryTypesController"/> class.
         /// </summary>
-        /// <param name="deliveryTypeService">Service for order operations.</param>
+        /// <param name="deliveryTypeService">Service for delivery type operations.</param>
+        /// <param name="logger">Logger for tracking operations.</param>
         public DeliveryTypesController(IDeliveryTypeService deliveryTypeService, ILogger<DeliveryTypesController> logger)
         {
             _deliveryTypeService = deliveryTypeService;
