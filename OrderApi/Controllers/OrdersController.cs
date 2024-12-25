@@ -45,9 +45,11 @@ namespace OrderApi.Controllers
             try
             {
                 var orders = await _orderService.GetOrdersAsync(pageNumber, pageSize, searchTerm!, filter);
+                _logger.LogInformation("Orders successfully fetched.");
                 return Ok(orders);
             }
             catch (Exception ex) {
+                _logger.LogError(ex.Message);
                 return StatusCode(StatusCodes.Status500InternalServerError, new { message = ex.Message });
             }
 
@@ -60,9 +62,10 @@ namespace OrderApi.Controllers
         /// <returns>Order which id matches with given one</returns>
         /// <response code="200">Retrieval successful, return the order</response>
         /// <response code="404">Could not find the order</response>
+        /// <response code="500">an unexpected error occured.</response>
         [HttpGet("{id}")]
 
-        public async Task<ActionResult<OrderDto>> GetOrderById(Guid id)
+        public async Task<IActionResult> GetOrderById(Guid id)
         {
             try
             {
@@ -95,7 +98,7 @@ namespace OrderApi.Controllers
         /// <returns>Created order</returns>
         /// <response code="201">Order created successfully.</response>
         /// <response code="400">Invalid input data.</response>
-        /// <response code="500">Object with the given Id already exists.</response>
+        /// <response code="500"> an unexpected error occured.</response>
         [HttpPost]
         public async Task<ActionResult<OrderDto>> CreateOrder([FromBody]OrderDto orderDto)
         {
