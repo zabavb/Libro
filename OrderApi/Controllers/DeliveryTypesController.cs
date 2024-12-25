@@ -66,7 +66,7 @@ namespace OrderApi.Controllers
                 var deliveryType = await _deliveryTypeService.GetByIdAsync(id);
                 if (id.Equals(Guid.Empty))
                 {
-                    _message = $"Order ID {id} was not provided.";
+                    _message = $"Delivery type ID {id} was not provided.";
                     _logger.LogError(_message);
                     return NotFound(new { message = _message });
                 }
