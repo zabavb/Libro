@@ -141,7 +141,7 @@ namespace OrderApi.Controllers
             try
             {
                 await _orderService.UpdateAsync(orderDto);
-                _logger.LogInformation($"Delivery type with Id [{orderDto.Id}] successfully updated.");
+                _logger.LogInformation($"Order with Id [{orderDto.Id}] successfully updated.");
                 return NoContent();
             }
             catch (ArgumentNullException ex)
