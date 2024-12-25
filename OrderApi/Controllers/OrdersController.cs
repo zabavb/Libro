@@ -30,11 +30,15 @@ namespace OrderApi.Controllers
         }
 
         /// <summary>
-        /// Retrieves list of orders
+        /// Retrieves a paginated list of orders with optional search and filtering.
         /// </summary>
-        /// <returns>List of orders</returns>
-        /// <response code="200">Retrieval successful, returns the list</response>
-        /// <response code="404">Could not find the orders</response>
+        /// <param name="pageNumber">The page number to retrieve (default is 1).</param>
+        /// <param name="pageSize">The number of items per page (default is 10).</param>
+        /// <param name="searchTerm">Optional search term to filter orders.</param>
+        /// <param name="filter">Optional filter criteria for orders.</param>
+        /// <returns>A paginated list of orders.</returns>
+        /// <response code="200">Returns the paginated list of orders.</response>
+        /// <response code="500">an unexpected error occured.</response>
         [HttpGet]
         public async Task<IActionResult> GetOrders([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10, [FromQuery] string? searchTerm = null, [FromQuery] Filter? filter = null)
         {
