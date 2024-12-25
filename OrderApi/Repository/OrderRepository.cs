@@ -87,7 +87,9 @@ namespace OrderApi.Repository
 
         public async Task<Order?> GetByIdAsync(Guid id)
         {
-            var order = await _context.Orders.FirstOrDefaultAsync(o => o.OrderId == id);
+            var order = await _context.Orders
+                .AsNoTracking()
+                .FirstOrDefaultAsync(o => o.OrderId == id);
             if (order == null)
             {
                 _message = $"Order with Id [{id}] not found.";
