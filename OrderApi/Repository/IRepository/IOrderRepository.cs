@@ -1,11 +1,8 @@
 ﻿using Library.Extensions;
+using Library.Interfaces;
 using OrderApi.Models;
 
-public interface IOrderRepository
+public interface IOrderRepository : IManagable<Order>
 {
     Task<PaginatedResult<Order>> GetAllPaginatedAsync(int pageNumber, int pageSize, string searchTerm, Filter? filter);
-    Task<Order?> GetByIdAsync(Guid id);
-    Task AddAsync(Order order);
-    Task DeleteAsync(Order order);
-    Task UpdateAsync(Order order);
 }

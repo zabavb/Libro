@@ -148,21 +148,15 @@ namespace OrderApi.Repository
             _logger.LogInformation($"Order with Id[{order.OrderId}] updated succesfully.");
         }
 
-        public async Task DeleteAsync(Order order)
+        public async Task DeleteAsync(Guid id)
         {
-            try
-            {
-                _context.Orders.Remove(order);
-                await _context.SaveChangesAsync();
-            }
-            catch (Exception ex)
-            {
-                _message = $"Deletion of Order with id [{order.OrderId}] has failed.";
-                _logger.LogError(_message);
-                throw new ArgumentException(_message, ex);
-            }
+            var order = await _context.Orders.FindAsync(id);
 
-            _logger.LogInformation($"Order with Id [{order.OrderId}] deleted succesfully.");
+            if (order == null)
+                throw new KeyNotFoundException();
+
+            _context.Orders.Remove(order);
+            await _context.SaveChangesAsync();
         }
     }
 
