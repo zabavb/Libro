@@ -1,5 +1,4 @@
-﻿using OrderApi.Models;
-using OrderApi.Models.Extensions;
+﻿using Library.Extensions;
 
 namespace OrderApi.Services
 {

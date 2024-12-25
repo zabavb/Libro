@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
+using Library.Extensions;
 using OrderApi.Models;
-using OrderApi.Models.Extensions;
 
 namespace OrderApi.Services
 {

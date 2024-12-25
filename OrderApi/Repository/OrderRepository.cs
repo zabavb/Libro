@@ -1,7 +1,7 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Library.Extensions;
+using Microsoft.EntityFrameworkCore;
 using OrderApi.Data;
 using OrderApi.Models;
-using OrderApi.Models.Extensions;
 
 namespace OrderApi.Repository
 {

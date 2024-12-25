@@ -1,5 +1,5 @@
-﻿using OrderApi.Models;
-using OrderApi.Models.Extensions;
+﻿using Library.Extensions;
+using OrderApi.Models;
 
 public interface IOrderRepository
 {
