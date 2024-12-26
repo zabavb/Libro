@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
+using Library.Extensions;
 using OrderApi.Models;
-using OrderApi.Models.Extensions;
 
 namespace OrderApi.Services
 {
@@ -41,7 +41,7 @@ namespace OrderApi.Services
             };
         }
 
-        public async Task<OrderDto?> GetOrderByIdAsync(Guid orderId)
+        public async Task<OrderDto?> GetByIdAsync(Guid orderId)
         {
             var order = await _repository.GetByIdAsync(orderId);
 
@@ -57,15 +57,15 @@ namespace OrderApi.Services
             return order == null ? null : _mapper.Map<OrderDto>(order);
         }
 
-        public async Task<OrderDto> CreateOrderAsync(OrderDto orderDto)
+        public async Task AddAsync(OrderDto entity)
         {
-            if(orderDto == null)
+            if(entity == null)
             {
                 _message = "Order wasn't provided.";
                 _logger.LogError(_message);
-                throw new ArgumentNullException(_message,nameof(orderDto));
+                throw new ArgumentNullException(_message,nameof(entity));
             }
-            var order = _mapper.Map<Order>(orderDto);
+            var order = _mapper.Map<Order>(entity);
 
             try
             {
@@ -79,19 +79,18 @@ namespace OrderApi.Services
                 throw new InvalidOperationException(_message, ex);
             }
 
-            return _mapper.Map<OrderDto>(order);
         }
 
-        public async Task<OrderDto?> UpdateOrderAsync(OrderDto orderDto)
+        public async Task UpdateAsync(OrderDto entity)
         {
-            if (orderDto == null)
+            if (entity == null)
             {
                 _message = "Order was not provided for the update";
                 _logger.LogError(_message);
-                throw new ArgumentNullException(_message,nameof(orderDto));
+                throw new ArgumentNullException(_message,nameof(entity));
             }
 
-            var order = _mapper.Map<Order>(orderDto);
+            var order = _mapper.Map<Order>(entity);
             try
             {
                 await _repository.UpdateAsync(order);
@@ -99,21 +98,20 @@ namespace OrderApi.Services
             }
             catch (InvalidOperationException)
             {
-                _message = $"Order with Id {orderDto.Id} not found for update.";
+                _message = $"Order with Id {entity.Id} not found for update.";
                 _logger.LogError(_message);
                 throw new KeyNotFoundException(_message);
             }
             catch(Exception ex)
             {
-                _message = $"Error occured while updating the order with Id [{orderDto.Id}]";
+                _message = $"Error occured while updating the order with Id [{entity.Id}]";
                 _logger.LogError(_message);
                 throw new InvalidOperationException(_message, ex);
             }
 
-            return _mapper.Map<OrderDto>(order);
         }
 
-        public async Task<bool> DeleteOrderAsync(Guid id)
+        public async Task DeleteAsync(Guid id)
         {
             var order = await _repository.GetByIdAsync(id);
 
@@ -126,7 +124,7 @@ namespace OrderApi.Services
 
             try
             {
-                await _repository.DeleteAsync(order);
+                await _repository.DeleteAsync(id);
                 _logger.LogInformation($"Order with Id [{id}] deleted succesfully");
             }
             catch (InvalidOperationException)
@@ -141,7 +139,6 @@ namespace OrderApi.Services
                 _logger.LogError(_message);
                 throw new InvalidOperationException(_message, ex);
             }
-            return true;
         }
     }
 }
