@@ -29,19 +29,21 @@ namespace BookApi.Controllers
         /// </summary>
         /// <param name="pageNumber">Page number (default: 1).</param>
         /// <param name="pageSize">Number of books per page (default: 10).</param>
+        /// <param name="searchQuery"></param>
+        /// <param name="sortBy"></param>
         /// <returns>A paginated list of books.</returns>
         /// <response code="200">Returns the list of books.</response>
         /// <response code="400">Invalid pagination parameters.</response>
         /// <response code="404">No books found.</response>
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<BookDto>>> GetBooks(int pageNumber = DefaultPageNumber, int pageSize = DefaultPageSize)
+        public async Task<ActionResult<IEnumerable<BookDto>>> GetBooks(int pageNumber = DefaultPageNumber, int pageSize = DefaultPageSize, string? searchQuery = null, string? sortBy = null)
         {
             if (pageNumber < 1 || pageSize < 1)
             {
                 return BadRequest("Page number and page size must be greater than 0.");
             }
 
-            var books = await _bookService.GetBooksAsync();
+            var books = await _bookService.GetBooksAsync(searchQuery, sortBy);
 
             if (books == null || !books.Any())
             {

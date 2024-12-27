@@ -33,6 +33,38 @@ namespace BookApi.Services
             return _mapper.Map<List<BookDto>>(books);
         }
 
+        public async Task<IEnumerable<BookDto>> GetBooksAsync(string? searchQuery = null, string? sortBy = null)
+        {
+            var query = _context.Books
+                .Include(b => b.Category)
+                .Include(b => b.Publisher)
+                .Include(b => b.Feedbacks)
+                .Include(b => b.Author)
+                .AsQueryable();
+
+            if (!string.IsNullOrEmpty(searchQuery))
+            {
+                searchQuery = searchQuery.ToLower();
+                query = query.Where(b =>
+                    b.Title.ToLower().Contains(searchQuery) ||
+                    b.Description.ToLower().Contains(searchQuery) ||
+                    b.Author.Name.ToLower().Contains(searchQuery));
+            }
+
+            query = sortBy switch
+            {
+                "popularity" => query.OrderByDescending(b => b.Feedbacks.Count),
+                "newest" => query.OrderByDescending(b => b.Year),
+                "cheapest" => query.OrderBy(b => b.Price),
+                "expensive" => query.OrderByDescending(b => b.Price),
+                _ => query.OrderBy(b => b.Title)
+            };
+
+            var books = await query.ToListAsync();
+
+            return _mapper.Map<List<BookDto>>(books);
+        }
+
 
         public async Task<BookDto> GetBookByIdAsync(Guid id) 
         {
