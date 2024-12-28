@@ -1,14 +1,10 @@
-﻿using OrderApi.Models;
-using OrderApi.Models.Extensions;
+﻿using Library.Extensions;
+using Library.Interfaces;
 
 namespace OrderApi.Services
 {
-    public interface IDeliveryTypeService
+    public interface IDeliveryTypeService : IManagable<DeliveryTypeDto>
     {
-        Task<PaginatedResult<DeliveryTypeDto>> GetDeliveryTypesAsync(int pageNumber, int pageSize);
-        Task<DeliveryTypeDto> GetDeliveryTypeByIdAsync(Guid id);
-        Task<DeliveryTypeDto> CreateDeliveryTypeAsync(DeliveryTypeDto deliveryTypeDto);
-        Task<DeliveryTypeDto> UpdateDeliveryTypeAsync(DeliveryTypeDto deliveryTypeDto);
-        Task<bool> DeleteDeliveryTypeAsync(Guid id);
+        Task<PaginatedResult<DeliveryTypeDto>> GetAllAsync(int pageNumber, int pageSize);
     }
 }

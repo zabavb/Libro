@@ -1,0 +1,29 @@
+@model List<UserAPI.Models.SubscriptionViewModel>
+
+<h1>Subscriptions</h1>
+<a asp-action="Create" class="btn btn-primary">Create New Subscription</a>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Description</th>
+            <th>Created Date</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var subscription in Model)
+        {
+            <tr>
+                <td>@subscription.Name</td>
+                <td>@subscription.Description</td>
+                <td>@subscription.CreatedDate.ToShortDateString()</td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@subscription.Id" class="btn btn-warning">Edit</a>
+                    <a asp-action="Delete" asp-route-id="@subscription.Id" class="btn btn-danger">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
