@@ -8,6 +8,6 @@ namespace UserAPI.Repositories
     {
         Task<PaginatedResult<User>> GetAllAsync(int pageNumber, int pageSize, string searchTerm, Filter? filter);
         Task<IEnumerable<User>> FilterAsync(IEnumerable<User> entities, Filter filter);
-        Task<IEnumerable<User>> SearchAsync(string searchTerm);
+        Task<IEnumerable<User>> SearchAsync(string searchTerm, IEnumerable<User> data);
     }
 }
