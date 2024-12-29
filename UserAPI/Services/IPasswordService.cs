@@ -2,9 +2,9 @@
 {
     public interface IPasswordService
     {
-        Task<PasswordDto?> GetEntityByIdAsync(Guid id);
-        Task<bool> UpdateEntityAsync(UserDto user, string newPassword);
-        Task<bool> DeleteEntityAsync(Guid id);
-        Task<bool> AddEntityAsync(string password, UserDto userDto);
+        Task<PasswordDto?> GetByIdAsync(Guid id);
+        Task<bool> UpdateAsync(UserDto user, string newPassword);
+        Task<bool> DeleteAsync(Guid id);
+        Task<bool> AddAsync(string password, UserDto userDto);
     }
 }

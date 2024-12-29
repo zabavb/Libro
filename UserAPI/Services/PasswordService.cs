@@ -8,19 +8,19 @@ namespace UserAPI.Services
 {
     public class PasswordService : IPasswordService
     {
-        private readonly IPasswordRepository _repository;
+        private readonly IPasswordRepository _repositoryPassword;
         private readonly IMapper _mapper;
         public PasswordService(IPasswordRepository repository, IMapper mapper)
         {
-            _repository = repository;
+            _repositoryPassword = repository;
             _mapper = mapper;
         }
 
-        public async Task<bool> AddEntityAsync(string password, UserDto userDto)
+        public async Task<bool> AddAsync(string password, UserDto userDto)
         {
             try {
                 User user = _mapper.Map<User>(userDto);
-                await _repository.AddPasswordAsync(password, user);
+                await _repositoryPassword.AddAsync(password, user);
                 return true;
             }
             catch (Exception ex)
@@ -31,11 +31,12 @@ namespace UserAPI.Services
             
         }
 
-        public async Task<bool> DeleteEntityAsync(Guid id)
+
+        public async Task<bool> DeleteAsync(Guid id)
         {
             try
             {
-                await _repository.DeletePasswordAsync(id);
+                await _repositoryPassword.DeleteAsync(id);
                 return true;
             }
             catch (Exception ex)
@@ -45,13 +46,11 @@ namespace UserAPI.Services
             }
         }
 
-        public async Task<PasswordDto?> GetEntityByIdAsync(Guid id)
+        public async Task<PasswordDto?> GetByIdAsync(Guid id)
         {
             try
             {
-                var password = await _repository.GetEntityByPasswordIdAsync(id);
-
-
+                var password = await _repositoryPassword.GetByIdAsync(id);
                 return _mapper.Map<PasswordDto>(password);
             }
             catch (Exception ex)
@@ -60,11 +59,11 @@ namespace UserAPI.Services
             }
         }
 
-        public async Task<bool> UpdateEntityAsync(UserDto user, string newPassword)
+        public async Task<bool> UpdateAsync(UserDto user, string newPassword)
         {
             try
             {
-                _repository.UpdatePasswordAsync(user.Id, newPassword);
+                _repositoryPassword.UpdateAsync(user.Id, newPassword);
                 return true;
             }
             catch

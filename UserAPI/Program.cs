@@ -34,6 +34,10 @@ builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<ISubscriptionRepository, SubscriptionRepository>();
 builder.Services.AddScoped<ISubscriptionService, SubscriptionService>();
 
+builder.Services.AddScoped<IPasswordRepository, PasswordRepository>();
+builder.Services.AddScoped<IPasswordService, PasswordService>();
+
+
 builder.Services.AddControllers();
 
 builder.Services.AddEndpointsApiExplorer();
