@@ -31,6 +31,7 @@ namespace UserAPI.Services
             
         }
 
+
         public async Task<bool> DeleteAsync(Guid id)
         {
             try
@@ -50,8 +51,6 @@ namespace UserAPI.Services
             try
             {
                 var password = await _repositoryPassword.GetByIdAsync(id);
-
-
                 return _mapper.Map<PasswordDto>(password);
             }
             catch (Exception ex)
