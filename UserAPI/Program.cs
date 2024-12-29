@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using Serilog;
+using StackExchange.Redis;
 using System.Reflection;
 using UserAPI.Data;
 using UserAPI.Profiles;
@@ -18,6 +19,11 @@ builder.Services.AddStackExchangeRedisCache(options =>
     options.InstanceName = "UserAPI_";
 });
 
+builder.Services.AddSingleton<IConnectionMultiplexer>(sp =>
+{
+    var configuration = ConfigurationOptions.Parse("localhost:6379", true);
+    return ConnectionMultiplexer.Connect(configuration);
+});
 
 builder.Services.AddAutoMapper(typeof(UserProfile));
 builder.Services.AddAutoMapper(typeof(SubscriptionProfile));
