@@ -15,7 +15,7 @@ namespace Client.Controllers
         public DeliveryController(HttpClient httpClient, IMapper mapper)
         {
             _httpClient = httpClient;
-            _baseAddress = "https://localhost:7007/gateway/DeliveryTypes";
+            _baseAddress = "https://localhost:7051/gateway/DeliveryTypes";
             _mapper = mapper;
         }
         //=========================== Actions ===========================

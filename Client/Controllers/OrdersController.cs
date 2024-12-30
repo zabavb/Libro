@@ -20,7 +20,7 @@ namespace Client.Controllers
         public OrdersController(HttpClient httpClient, IMapper mapper)
         {
             _httpClient = httpClient;
-            _baseAddress = "https://localhost:7007/gateway/orders";
+            _baseAddress = "https://localhost:7051/gateway/orders";
             _mapper = mapper;
         }
 
