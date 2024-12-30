@@ -59,7 +59,44 @@
       ],
       "UpstreamPathTemplate": "/gateway/orders/{id}",
       "UpstreamHttpMethod": [ "GET", "DELETE" ]
-    }
+    },
     //======================= Delivery type entity =======================
+    {
+      "DownstreamPathTemplate": "/api/deliverytypes",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7051
+        }
+      ],
+      "UpstreamPathTemplate": "/gateway/deliverytypes",
+      "UpstreamHttpMethod": [ "GET", "POST", "PUT" ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/deliverytypes/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7051
+        }
+      ],
+      "UpstreamPathTemplate": "/gateway/deliverytypes/{id}",
+      "UpstreamHttpMethod": [ "GET", "DELETE" ]
+    },
+    //======================= Status update =======================
+    {
+      "DownstreamPathTemplate": "/api/status/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7051
+        }
+      ],
+      "UpstreamPathTemplate": "/gateway/status/{id}",
+      "UpstreamHttpMethod": [ "PUT" ]
+    }
   ]
 }
