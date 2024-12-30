@@ -2,11 +2,12 @@
 using Client.Models;
 using Client.Models.OrderEntities.DeliveryType;
 using Library.OrderEntities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Net.Http;
 
 namespace Client.Controllers
 {
+    [Authorize(Roles = "admin")]
     public class DeliveryController : Controller
     {
         private readonly HttpClient _httpClient;
