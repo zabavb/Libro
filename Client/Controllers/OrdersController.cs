@@ -66,7 +66,7 @@ namespace Client.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateUser(ManageOrderViewModel model)
+        public async Task<IActionResult> CreateOrder(ManageOrderViewModel model)
         {
             if (!ModelState.IsValid)
                 return View(model);
