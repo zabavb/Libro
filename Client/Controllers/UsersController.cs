@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using Client.Models;
 using Client.Models.User;
-using Library.UserEntities;
+using Library.DTOs.User;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using static System.Net.WebRequestMethods;
@@ -24,11 +24,11 @@ namespace Client.Controllers
 
         //=========================== Actions ===========================
 
-        public async Task<IActionResult> GetAllUsers(int pageNumber = 1, int pageSize = 10, string? searchTerm = null, string? filter = null, string? sort = null)
+        public async Task<IActionResult> GetAllUsers(int pageNumber = 1, int pageSize = 10, string? searchTerm = null, string? filter = null)
         {
             try
             {
-                var queryString = BuildQueryString(pageNumber, pageSize, searchTerm, filter, sort);
+                var queryString = BuildQueryString(pageNumber, pageSize, searchTerm, filter);
                 var response = await _httpClient.GetAsync(_baseAddress + queryString);
 
                 if (response.IsSuccessStatusCode)
@@ -161,7 +161,7 @@ namespace Client.Controllers
             }
         }
 
-        private string BuildQueryString(int pageNumber, int pageSize, string? searchTerm, string? filter, string? sort)
+        private string BuildQueryString(int pageNumber, int pageSize, string? searchTerm, string? filter)
         {
             var queryParams = new List<string> { $"pageNumber={pageNumber}", $"pageSize={pageSize}" };
             
@@ -169,8 +169,6 @@ namespace Client.Controllers
                 queryParams.Add($"searchTerm={searchTerm}");
             if (!string.IsNullOrEmpty(filter))
                 queryParams.Add($"filter={filter}");
-            if (!string.IsNullOrEmpty(sort))
-                queryParams.Add($"sort={sort}");
 
             return "?" + string.Join("&", queryParams);
         }

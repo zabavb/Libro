@@ -1,4 +1,4 @@
-﻿using Library.OrderEntities;
+﻿using Library.DTOs.Order;
 using Library.Validators;
 using System.ComponentModel.DataAnnotations;
 using System.Net;

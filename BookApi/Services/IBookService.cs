@@ -1,5 +1,4 @@
-﻿
-namespace BookApi.Services
+﻿namespace BookApi.Services
 {
     public interface IBookService
     {

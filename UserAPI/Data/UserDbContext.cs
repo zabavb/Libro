@@ -23,7 +23,7 @@ namespace UserAPI.Data
 
             modelBuilder.Entity<User>()
                 .HasOne(u => u.Subscription) 
-                .WithOne(s => s.User)     
+                .WithOne(s => s.User)
                 .HasForeignKey<Subscription>(s => s.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
 

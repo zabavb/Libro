@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using BookApi.Models;
+using Library.DTOs.Book;
 
 
 namespace BookApi.Profiles

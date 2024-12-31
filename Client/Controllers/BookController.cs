@@ -1,9 +1,9 @@
 ﻿using AutoMapper;
 using Client.Models.BookEntities.Book;
 using Client.Models;
-using Library.BookEntities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Library.DTOs.Book;
 
 namespace Client.Controllers
 {

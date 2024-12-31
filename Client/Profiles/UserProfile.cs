@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using Client.Models.User;
-using Library.UserEntities;
-using static System.Runtime.InteropServices.JavaScript.JSType;
+using Library.DTOs.User;
 
 namespace Client.Profiles
 {

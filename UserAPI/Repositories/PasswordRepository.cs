@@ -22,7 +22,6 @@ namespace UserAPI.Repositories
 
         }
 
-
         public string HashPassword(string password, string salt)
         {
             using var sha256 = SHA256.Create();

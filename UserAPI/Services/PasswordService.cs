@@ -1,6 +1,4 @@
-﻿
-using AutoMapper;
-using NuGet.Protocol.Core.Types;
+﻿using AutoMapper;
 using UserAPI.Models;
 using UserAPI.Repositories;
 
@@ -27,10 +25,8 @@ namespace UserAPI.Services
             {
                 return false;
                 // log exception
-            }
-            
+            }   
         }
-
 
         public async Task<bool> DeleteAsync(Guid id)
         {

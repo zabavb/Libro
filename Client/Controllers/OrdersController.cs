@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using Client.Models;
 using Client.Models.OrderEntities.Order;
-using Library.OrderEntities;
+using Library.DTOs.Order;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -20,7 +20,7 @@ namespace Client.Controllers
         public OrdersController(HttpClient httpClient, IMapper mapper)
         {
             _httpClient = httpClient;
-            _baseAddress = "https://localhost:7051/gateway/orders";
+            _baseAddress = "https://localhost:7007/gateway/orders";
             _mapper = mapper;
         }
 
@@ -66,7 +66,7 @@ namespace Client.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateOrder(ManageOrderViewModel model)
+        public async Task<IActionResult> CreateUser(ManageOrderViewModel model)
         {
             if (!ModelState.IsValid)
                 return View(model);
