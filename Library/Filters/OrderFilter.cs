@@ -1,4 +1,4 @@
-﻿using Library.OrderEntities;
+﻿using Library.DTOs.Order;
 
 namespace Library.Filters
 {

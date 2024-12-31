@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
 
-namespace Library.OrderEntities
+namespace Library.DTOs.Order
 {
     public enum OrderStatus
     {

@@ -1,4 +1,4 @@
-﻿using Library.UserEntities;
+﻿using Library.DTOs.User;
 
 namespace Library.Filters
 {
