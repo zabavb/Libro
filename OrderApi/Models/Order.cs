@@ -1,7 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using OrderStatus = Library.OrderEntities.OrderStatus;
+using OrderStatus = Library.DTOs.Order.OrderStatus;
 
 namespace OrderApi.Models
 {

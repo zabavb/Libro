@@ -1,4 +1,4 @@
-﻿using Library.OrderEntities;
+﻿using Library.DTOs.Order;
 using Microsoft.AspNetCore.Mvc;
 using OrderApi.Services;
 

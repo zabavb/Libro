@@ -1,4 +1,4 @@
-﻿using Library.UserEntities;
+﻿using Library.DTOs.User;
 using System.ComponentModel.DataAnnotations;
 
 namespace Client.Models.User

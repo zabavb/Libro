@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using Client.Models.OrderEntities.Order;
-using Library.OrderEntities;
+using Library.DTOs.Order;
 
 namespace Client.Profiles
 {

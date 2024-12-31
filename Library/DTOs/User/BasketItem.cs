@@ -1,4 +1,4 @@
-﻿namespace Library.UserEntities
+﻿namespace Library.DTOs.User
 {
     public class BasketItem
     {

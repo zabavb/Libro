@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using Client.Models;
 using Client.Models.OrderEntities.DeliveryType;
-using Library.OrderEntities;
+using Library.DTOs.Order;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 

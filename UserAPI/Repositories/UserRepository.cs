@@ -2,11 +2,9 @@
 using Library.Sortings;
 using Microsoft.EntityFrameworkCore;
 using StackExchange.Redis;
-using System.Reflection.Metadata;
 using System.Text.Json;
 using UserAPI.Data;
 using UserAPI.Models;
-using UserAPI.Services;
 
 namespace UserAPI.Repositories
 {

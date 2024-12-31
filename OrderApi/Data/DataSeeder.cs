@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using OrderApi.Models;
-using OrderStatus = Library.OrderEntities.OrderStatus;
+using OrderStatus = Library.DTOs.Order.OrderStatus;
 namespace OrderApi.Data
 {
     public static class DataSeeder

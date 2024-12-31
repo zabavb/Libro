@@ -1,7 +1,4 @@
-﻿
-using OrderApi.Models.Extensions;
-using UserAPI.Models;
-
+﻿using UserAPI.Models;
 
 namespace UserAPI.Repositories
 {

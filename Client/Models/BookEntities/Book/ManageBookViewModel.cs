@@ -1,4 +1,4 @@
-﻿using Library.BookEntities;
+﻿using Library.DTOs.Book;
 using System.ComponentModel.DataAnnotations;
 
 namespace Client.Models.BookEntities.Book
