@@ -1,0 +1,422 @@
+﻿using Moq;
+using UserAPI.Services;
+using Microsoft.Extensions.Logging;
+using UserAPI.Controllers;
+using Microsoft.AspNetCore.Mvc;
+using Library.Extensions;
+using Library.DTOs.User;
+using Library.Filters;
+using Library.Sortings;
+
+namespace UserAPI.Tests.UnitTests.Controllers
+{
+    public class UsersControllerTests
+    {
+        private readonly Mock<IUserService> _userServiceMock;
+        private readonly Mock<ILogger<UsersController>> _loggerMock;
+        private readonly UsersController _controller;
+
+        public UsersControllerTests()
+        {
+            _userServiceMock = new Mock<IUserService>();
+            _loggerMock = new Mock<ILogger<UsersController>>();
+            _controller = new UsersController(_userServiceMock.Object, _loggerMock.Object);
+        }
+
+        //========================= Get all =========================
+
+        [Fact]
+        public async Task GetAll_ReturnOk_WhenUsersFetched()
+        {
+            // Arrange
+            _userServiceMock
+                .Setup(s => s.GetAllAsync(1, 10, string.Empty, null, null))
+                .ReturnsAsync(new PaginatedResult<User>());
+
+            // Act
+            var result = await _controller.GetAll(1, 10, string.Empty, null, null);
+
+            // Assert
+            var statusResult = Assert.IsType<OkObjectResult>(result);
+            var returnedUsers = Assert.IsType<PaginatedResult<User>>(statusResult.Value);
+            _userServiceMock.Verify(s => s.GetAllAsync(1, 10, string.Empty, null, null), Times.Once);
+        }
+
+        [Fact]
+        public async Task GetAll_ReturnsOk_WhenUsersFetched_WithAllOptionalParameters()
+        {
+            // Arrange
+            var filter = new UserFilter()
+            {
+                DateOfBirthStart = DateTime.MinValue,
+                DateOfBirthEnd = DateTime.MaxValue,
+                HasSubscription = true,
+                Role = RoleType.USER
+            };
+            var sort = new UserSort() { DateOfBirth = Bool.DESCENDING };
+
+            _userServiceMock
+                .Setup(s => s.GetAllAsync(1, 10, "Love", filter, sort))
+                .ReturnsAsync(new PaginatedResult<User>());
+
+            // Act
+            var result = await _controller.GetAll(1, 10, "Love", filter, sort);
+
+            // Assert
+            var statusResult = Assert.IsType<OkObjectResult>(result);
+            var returnedUsers = Assert.IsType<PaginatedResult<User>>(statusResult.Value);
+            _userServiceMock.Verify(s => s.GetAllAsync(1, 10, "Love", filter, sort), Times.Once);
+        }
+
+        [Fact]
+        public async Task GetAll_ReturnsInternalServerError_WhenExceptionOccurs()
+        {
+            // Arrange
+            _userServiceMock
+                .Setup(s => s.GetAllAsync(1, 10, string.Empty, null, null))
+                .ThrowsAsync(new Exception("Failed to fetch paginated users."));
+
+            // Act
+            var result = await _controller.GetAll(1, 10, string.Empty, null, null);
+
+            // Assert
+            var statusResult = Assert.IsType<ObjectResult>(result);
+            Assert.Equal("Failed to fetch paginated users.", statusResult.Value);
+            _userServiceMock.Verify(s => s.GetByIdAsync(It.IsAny<Guid>()), Times.Never);
+        }
+
+        [Fact]
+        public async Task GetAll_WithAllOptionalParameters_ReturnsInternalServerError_WhenExceptionOccurs()
+        {
+            // Arrange
+            var filter = new UserFilter()
+            {
+                DateOfBirthStart = DateTime.MinValue,
+                DateOfBirthEnd = DateTime.MaxValue,
+                HasSubscription = true,
+                Role = RoleType.USER
+            };
+            var sort = new UserSort() { DateOfBirth = Bool.DESCENDING };
+            _userServiceMock
+                .Setup(s => s.GetAllAsync(1, 10, string.Empty, filter, sort))
+                .ThrowsAsync(new Exception("Failed to fetch paginated users."));
+
+            // Act
+            var result = await _controller.GetAll(1, 10, string.Empty, filter, sort);
+
+            // Assert
+            var statusResult = Assert.IsType<ObjectResult>(result);
+            Assert.Equal("Failed to fetch paginated users.", statusResult.Value);
+            _userServiceMock.Verify(s => s.GetByIdAsync(It.IsAny<Guid>()), Times.Never);
+        }
+
+        //========================= Get by ID =========================
+
+        [Fact]
+        public async Task GetById_ReturnsOk_WhenUserExists()
+        {
+            // Arrange
+            var userId = Guid.NewGuid();
+            var user = CreateTestUser(userId);
+
+            _userServiceMock
+                .Setup(s => s.GetByIdAsync(userId))
+                .ReturnsAsync(user);
+
+            // Act
+            var result = await _controller.GetById(userId);
+
+            // Assert
+            var statusResult = Assert.IsType<OkObjectResult>(result);
+            var returnedUser = Assert.IsType<User>(statusResult.Value);
+            Assert.Equal(userId, returnedUser.Id);
+            _userServiceMock.Verify(s => s.GetByIdAsync(userId), Times.Once);
+        }
+
+        [Fact]
+        public async Task GetById_ReturnsNotFound_WhenUserDoesNotExist()
+        {
+            // Arrange
+            var id = Guid.NewGuid();
+
+            _userServiceMock
+                .Setup(s => s.GetByIdAsync(id))
+                .ThrowsAsync(new KeyNotFoundException($"User with ID [{id}] not found."));
+
+            // Act
+            var result = await _controller.GetById(id);
+
+            // Assert
+            var statusResult = Assert.IsType<NotFoundObjectResult>(result);
+            Assert.Equal($"User with ID [{id}] not found.", statusResult.Value);
+            _userServiceMock.Verify(s => s.GetByIdAsync(id), Times.Once);
+        }
+
+        [Fact]
+        public async Task GetById_ReturnsNotFound_WhenUserIdWasNotProvided()
+        {
+            // Arrange
+            var id = Guid.NewGuid();
+
+            _userServiceMock
+                .Setup(s => s.GetByIdAsync(id))
+                .ThrowsAsync(new KeyNotFoundException($"User ID [{id}] was not provided."));
+
+            // Act
+            var result = await _controller.GetById(id);
+
+            // Assert
+            var statusResult = Assert.IsType<NotFoundObjectResult>(result);
+            Assert.Equal($"User ID [{id}] was not provided.", statusResult.Value);
+            _userServiceMock.Verify(s => s.GetByIdAsync(id), Times.Once);
+        }
+
+        [Fact]
+        public async Task GetById_ReturnsInternalServerError_WhenExceptionOccurs()
+        {
+            // Arrange
+            var userId = Guid.NewGuid();
+
+            _userServiceMock
+                .Setup(s => s.GetByIdAsync(userId))
+                .ThrowsAsync(new Exception("Something went wrong."));
+
+            // Act
+            var result = await _controller.GetById(userId);
+
+            // Assert
+            var statusResult = Assert.IsType<ObjectResult>(result);
+            Assert.Equal("Something went wrong.", statusResult.Value);
+            _userServiceMock.Verify(s => s.GetByIdAsync(userId), Times.Once);
+        }
+
+        //========================= Create =========================
+
+        [Fact]
+        public async Task Create_ReturnsOk_WhenUserCreated()
+        {
+            // Arrange
+            var user = CreateTestUser(Guid.NewGuid());
+            _userServiceMock
+                .Setup(s => s.CreateAsync(user))
+                .Returns(Task.CompletedTask);
+
+            // Act
+            var result = await _controller.Create(user);
+
+            // Assert
+            var statusResult = Assert.IsType<CreatedAtActionResult>(result);
+            Assert.Equal(user.Id, ((User)statusResult.Value!).Id);
+            Assert.Equal(nameof(_controller.GetById), statusResult.ActionName);
+            _userServiceMock.Verify(s => s.CreateAsync(user), Times.Once);
+        }
+
+        [Fact]
+        public async Task Create_ReturnsBadRequest_WhenUserWasNotProvided()
+        {
+            // Arrange
+            _userServiceMock
+                .Setup(s => s.CreateAsync(null!))
+                .ThrowsAsync(new ArgumentNullException("User was not provided for creation."));
+
+            // Act
+            var result = await _controller.Create(null!);
+
+            // Assert
+            var statusResult = Assert.IsType<BadRequestObjectResult>(result);
+            _userServiceMock.Verify(s => s.CreateAsync(null!), Times.Once);
+        }
+
+        [Fact]
+        public async Task Create_ReturnsInternalServerError_WhenExceptionOccurs()
+        {
+            // Arrange
+            var user = CreateTestUser(Guid.NewGuid());
+            _userServiceMock
+                .Setup(s => s.CreateAsync(user))
+                .ThrowsAsync(new Exception($"Error occurred while adding the user with ID [{user.Id}]."));
+
+            // Act
+            var result = await _controller.Create(user);
+
+            // Assert
+            var statusResult = Assert.IsType<ObjectResult>(result);
+            Assert.Equal($"Error occurred while adding the user with ID [{user.Id}].", statusResult.Value);
+            _userServiceMock.Verify(s => s.CreateAsync(user), Times.Once);
+        }
+
+        //========================= Update =========================
+
+        [Fact]
+        public async Task Update_ReturnsNoContent_WhenUserUpdated()
+        {
+            // Arrange
+            var user = CreateTestUser(Guid.NewGuid());
+            await _controller.Create(user);
+            var changedUser = CreateChangedTestUser(user.Id);
+            _userServiceMock
+                .Setup(s => s.UpdateAsync(changedUser))
+                .Returns(Task.CompletedTask);
+
+            // Act
+            var result = await _controller.Update(user.Id, changedUser);
+
+            // Assert
+            var statusResult = Assert.IsType<NoContentResult>(result);
+            _userServiceMock.Verify(s => s.UpdateAsync(changedUser), Times.Once);
+        }
+
+        [Fact]
+        public async Task Update_ReturnsBadRequest_WhenIdsDoesNotMuch()
+        {
+            // Arrange
+            var user = CreateTestUser(Guid.NewGuid());
+            await _controller.Create(user);
+            var changedUser = CreateChangedTestUser(Guid.NewGuid());
+            _userServiceMock.Setup(s => s.UpdateAsync(changedUser));
+
+            // Act
+            var result = await _controller.Update(user.Id, changedUser);
+
+            // Assert
+            var statusResult = Assert.IsType<BadRequestObjectResult>(result);
+            Assert.Equal("User ID in the URL does not match the ID in the body.", statusResult.Value);
+            _userServiceMock.Verify(s => s.UpdateAsync(It.IsAny<User>()), Times.Never);
+        }
+
+        [Fact]
+        public async Task Update_ReturnsBadRequest_WhenUserNotProvided()
+        {
+            // Arrange
+            _userServiceMock
+                .Setup(s => s.UpdateAsync(null!))
+                .ThrowsAsync(new ArgumentNullException(null, "User was not provided for update."));
+
+            // Act
+            var result = await _controller.Update(Guid.Empty, null!);
+
+            // Assert
+            var statusResult = Assert.IsType<BadRequestObjectResult>(result);
+            Assert.Equal("User was not provided for update.", statusResult.Value);
+            _userServiceMock.Verify(s => s.UpdateAsync(null!), Times.Once);
+        }
+
+        [Fact]
+        public async Task Update_ReturnsNotFound_WhenUserDoesNotExist()
+        {
+            // Arrange
+            var user = new User() { Id = Guid.NewGuid() };
+            _userServiceMock
+                .Setup(s => s.UpdateAsync(user))
+                .ThrowsAsync(new KeyNotFoundException($"User with ID [{user.Id}] not found for update."));
+
+            // Act
+            var result = await _controller.Update(user.Id, user);
+
+            // Assert
+            var statusResult = Assert.IsType<NotFoundObjectResult>(result);
+            Assert.Equal($"User with ID [{user.Id}] not found for update.", statusResult.Value);
+            _userServiceMock.Verify(s => s.UpdateAsync(user), Times.Once);
+        }
+
+        [Fact]
+        public async Task Update_ReturnsInternalServerError_WhenExceptionOccurs()
+        {
+            // Arrange
+            var user = new User();
+            _userServiceMock
+                .Setup(s => s.UpdateAsync(user))
+                .ThrowsAsync(new Exception($"Error occurred while updating the user with ID [{user.Id}]."));
+
+            // Act
+            var result = await _controller.Update(user.Id, user);
+
+            // Assert
+            var statusResult = Assert.IsType<ObjectResult>(result);
+            Assert.Equal($"Error occurred while updating the user with ID [{user.Id}].", statusResult.Value);
+            _userServiceMock.Verify(s => s.UpdateAsync(user), Times.Once);
+        }
+
+        //========================= Delete =========================
+
+        [Fact]
+        public async Task Delete_ReturnsNoContent_WhenUserDeleted()
+        {
+            // Arrange
+            var user = CreateTestUser(Guid.NewGuid());
+            await _controller.Create(user);
+            _userServiceMock
+                .Setup(s => s.DeleteAsync(user.Id))
+                .Returns(Task.CompletedTask);
+
+            // Act
+            var result = await _controller.Delete(user.Id);
+
+            // Assert
+            var statusResult = Assert.IsType<NoContentResult>(result);
+            _userServiceMock.Verify(s => s.DeleteAsync(user.Id), Times.Once);
+        }
+
+        [Fact]
+        public async Task Delete_ReturnsNotFound_WhenUserDoesNotExist()
+        {
+            // Arrange
+            var user = CreateTestUser(Guid.NewGuid());
+            await _controller.Create(user);
+            _userServiceMock
+                .Setup(s => s.DeleteAsync(user.Id))
+                .ThrowsAsync(new KeyNotFoundException($"User with ID [{user.Id}] not found for deletion."));
+
+            // Act
+            var result = await _controller.Delete(user.Id);
+
+            // Assert
+            var statusResult = Assert.IsType<NotFoundObjectResult>(result);
+            Assert.Equal($"User with ID [{user.Id}] not found for deletion.", statusResult.Value);
+            _userServiceMock.Verify(s => s.UpdateAsync(It.IsAny<User>()), Times.Never);
+        }
+
+        [Fact]
+        public async Task Delete_ReturnsInternalServerError_WhenExceptionOccurs()
+        {
+            // Arrange
+            var user = CreateTestUser(Guid.NewGuid());
+            await _controller.Create(user);
+            _userServiceMock
+                .Setup(s => s.DeleteAsync(user.Id))
+                .ThrowsAsync(new Exception($"Error occurred while deleting the user with ID [{user.Id}]."));
+
+            // Act
+            var result = await _controller.Delete(user.Id);
+
+            // Assert
+            var statusResult = Assert.IsType<ObjectResult>(result);
+            Assert.Equal($"Error occurred while deleting the user with ID [{user.Id}].", statusResult.Value);
+            _userServiceMock.Verify(s => s.UpdateAsync(It.IsAny<User>()), Times.Never);
+        }
+
+        //========================= Private functions =========================
+
+        private static User CreateTestUser(Guid id) => new()
+        {
+            Id = id,
+            FirstName = "Test User Name",
+            LastName = "Test User Surname",
+            Email = "testuseremail@gmail.com",
+            PhoneNumber = "000000000",
+            DateOfBirth = DateTime.Now,
+            Role = RoleType.USER
+        };
+
+        private static User CreateChangedTestUser(Guid id) => new()
+        {
+            Id = id,
+            FirstName = "Chanaged Test User Name",
+            LastName = "Changed Test User Last Name",
+            DateOfBirth = DateTime.MaxValue,
+            Email = "changedtestuseremail@gmail.com",
+            PhoneNumber = "1234567890",
+            Role = RoleType.GUEST
+        };
+    }
+}
