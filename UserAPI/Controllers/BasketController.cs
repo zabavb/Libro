@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿/*using Microsoft.AspNetCore.Mvc;
 using UserAPI.Services;
 
 namespace UserAPI.Controllers
@@ -55,3 +55,4 @@ namespace UserAPI.Controllers
         }
     }
 }
+*/

@@ -7,11 +7,19 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Remove="Views\Orders\UserOrder.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Library\Library.csproj" />
   </ItemGroup>
 
   <ItemGroup>
     <Folder Include="Views\Users\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="Views\Orders\UserOrder.cshtml" />
   </ItemGroup>
 
   <ItemGroup>
