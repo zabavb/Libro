@@ -56,7 +56,7 @@ namespace UserAPI.Services
             return user == null ? null : _mapper.Map<UserDto>(user);
         }
 
-        public async Task AddAsync(UserDto entity)
+        public async Task CreateAsync(UserDto entity)
         {
             if (entity == null)
             {
@@ -68,7 +68,7 @@ namespace UserAPI.Services
             var user = _mapper.Map<User>(entity);
             try
             {
-                await _repository.AddAsync(user);
+                await _repository.CreateAsync(user);
                 _logger.LogInformation("User successfully created.");
             }
             catch (Exception ex)
@@ -85,7 +85,7 @@ namespace UserAPI.Services
             {
                 _message = "User was not provided for update.";
                 _logger.LogError(_message);
-                throw new ArgumentNullException(_message, nameof(entity));
+                throw new ArgumentNullException(null, _message);
             }
 
             var user = _mapper.Map<User>(entity);
@@ -96,7 +96,7 @@ namespace UserAPI.Services
             }
             catch (InvalidOperationException)
             {
-                _message = $"User with ID {entity.Id} not found for update.";
+                _message = $"User with ID [{entity.Id}] not found for update.";
                 _logger.LogError(_message);
                 throw new KeyNotFoundException(_message);
             }

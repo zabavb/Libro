@@ -39,22 +39,23 @@ namespace UserAPI.Controllers
         /// <param name="pageSize">The number of items per page (default is 10).</param>
         /// <param name="searchTerm">Optional search term to filter users.</param>
         /// <param name="filter">Optional filter criteria for users.</param>
+        /// <param name="sort">Optional sort criteria for users.</param>
         /// <returns>A paginated list of users.</returns>
         /// <response code="200">Returns the paginated list of users.</response>
         /// <response code="500">If an unexpected error occurs.</response>
         [HttpGet]
-        public async Task<IActionResult> GetAll([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10, [FromQuery] string? searchTerm = null, [FromQuery] Filter? filter = null)
+        public async Task<IActionResult> GetAll([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10, [FromQuery] string? searchTerm = null, [FromQuery] Filter? filter = null, [FromQuery] Sort? sort = null)
         {
             try
             {
-                var users = await _userService.GetAllAsync(pageNumber, pageSize, searchTerm!, filter);
+                var users = await _userService.GetAllAsync(pageNumber, pageSize, searchTerm, filter, sort);
                 _logger.LogInformation("Users successfully fetched.");
                 return Ok(users);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex.Message);
-                return StatusCode(StatusCodes.Status500InternalServerError, new { message = ex.Message });
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
             }
         }
 
@@ -74,9 +75,9 @@ namespace UserAPI.Controllers
                 var user = await _userService.GetByIdAsync(id);
                 if (id.Equals(Guid.Empty))
                 {
-                    _message = $"User ID {id} was not provided.";
+                    _message = $"User ID [{id}] was not provided.";
                     _logger.LogError(_message);
-                    return NotFound(new { message = _message });
+                    return NotFound(_message);
                 }
 
                 _logger.LogInformation($"User with ID [{id}] successfully fetched.");
@@ -85,12 +86,12 @@ namespace UserAPI.Controllers
             catch (KeyNotFoundException ex)
             {
                 _logger.LogError(ex.Message);
-                return StatusCode(StatusCodes.Status404NotFound, new { message = ex.Message });
+                return NotFound(ex.Message);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex.Message);
-                return StatusCode(StatusCodes.Status500InternalServerError, new { message = ex.Message });
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
             }
         }
 
@@ -105,24 +106,21 @@ namespace UserAPI.Controllers
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] UserDto user)
         {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-
             try
             {
-                await _userService.AddAsync(user);
+                await _userService.CreateAsync(user);
                 _logger.LogInformation($"User with ID [{user.Id}] successfully created.");
                 return CreatedAtAction(nameof(GetById), new { id = user.Id }, user);
             }
             catch (ArgumentNullException ex)
             {
                 _logger.LogError(ex.Message);
-                return BadRequest(ModelState);
+                return BadRequest(ex.Message);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex.Message);
-                return StatusCode(StatusCodes.Status500InternalServerError, new { message = ex.Message });
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
             }
         }
 
@@ -139,36 +137,33 @@ namespace UserAPI.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(Guid id, [FromBody] UserDto user)
         {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-
-            if (id != user.Id)
+            if (user != null && id != user.Id)
             {
                 _message = "User ID in the URL does not match the ID in the body.";
                 _logger.LogError(_message);
-                return BadRequest(new { message = _message });
+                return BadRequest(_message);
             }
 
             try
             {
-                await _userService.UpdateAsync(user);
-                _logger.LogInformation($"User with ID [{user.Id}] successfully updated.");
+                await _userService.UpdateAsync(user!);
+                _logger.LogInformation($"User with ID [{user!.Id}] successfully updated.");
                 return NoContent();
             }
             catch (ArgumentNullException ex)
             {
                 _logger.LogError(ex.Message);
-                return BadRequest(ModelState);
+                return BadRequest(ex.Message);
             }
             catch (KeyNotFoundException ex)
             {
                 _logger.LogError(ex.Message);
-                return NotFound(new { message = ex.Message });
+                return NotFound(ex.Message);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex.Message);
-                return StatusCode(StatusCodes.Status500InternalServerError, new { message = ex.Message });
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
             }
         }
 
@@ -192,12 +187,12 @@ namespace UserAPI.Controllers
             catch (KeyNotFoundException ex)
             {
                 _logger.LogError(ex.Message);
-                return NotFound(new { message = ex.Message });
+                return NotFound(ex.Message);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex.Message);
-                return StatusCode(StatusCodes.Status500InternalServerError, new { message = ex.Message });
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
             }
         }
     }

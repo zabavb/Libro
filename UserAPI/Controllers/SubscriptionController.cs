@@ -47,7 +47,7 @@ namespace UserAPI.Controllers
             {
                 return BadRequest(ModelState);
             }
-            await _subscriptionService.AddAsync(subscriptionDto);
+            await _subscriptionService.CreateAsync(subscriptionDto);
             return CreatedAtAction(nameof(GetSubscriptionById), new { id = subscriptionDto.Id }, subscriptionDto);
         }
 
