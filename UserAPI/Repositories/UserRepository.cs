@@ -166,7 +166,7 @@ namespace UserAPI.Repositories
             return user;
         }
 
-        public async Task AddAsync(User entity)
+        public async Task CreateAsync(User entity)
         {
             await _context.Users.AddAsync(entity);
             await _context.SaveChangesAsync();

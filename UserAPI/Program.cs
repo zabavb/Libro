@@ -26,7 +26,7 @@ builder.Services.AddSingleton<IConnectionMultiplexer>(sp =>
 });
 
 builder.Services.AddAutoMapper(typeof(UserProfile));
-builder.Services.AddAutoMapper(typeof(SubscriptionProfile));
+//builder.Services.AddAutoMapper(typeof(SubscriptionProfile));
 
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IUserService, UserService>();
@@ -36,7 +36,6 @@ builder.Services.AddScoped<ISubscriptionService, SubscriptionService>();
 
 builder.Services.AddScoped<IPasswordRepository, PasswordRepository>();
 builder.Services.AddScoped<IPasswordService, PasswordService>();
-
 
 builder.Services.AddControllers();
 

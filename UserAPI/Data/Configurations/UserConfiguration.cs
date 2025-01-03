@@ -46,10 +46,10 @@ namespace UserAPI.Data.Configurations
                 .HasForeignKey<User>(u => u.PasswordId)
                 .IsRequired();
 
-            builder.HasOne(u => u.Subscription)
+            /*builder.HasOne(u => u.Subscription)
                 .WithMany(s => s.Users)
                 .HasForeignKey(u => u.SubscriptionId)
-                .IsRequired(false);
+                .IsRequired(false);*/
         }
     }
 }

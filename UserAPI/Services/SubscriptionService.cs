@@ -56,7 +56,7 @@ namespace UserAPI.Services
             return subscription == null ? null : _mapper.Map<SubscriptionDto>(subscription);
         }
 
-        public async Task AddAsync(SubscriptionDto entity)
+        public async Task CreateAsync(SubscriptionDto entity)
         {
             if (entity == null)
             {
@@ -68,7 +68,7 @@ namespace UserAPI.Services
             var subscription = _mapper.Map<Subscription>(entity);
             try
             {
-                await _repository.AddAsync(subscription);
+                await _repository.CreateAsync(subscription);
                 _logger.LogInformation($"Subscription successfully created.");
             }
             catch (Exception ex)

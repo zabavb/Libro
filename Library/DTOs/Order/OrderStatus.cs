@@ -1,7 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-
-namespace Library.DTOs.Order
+﻿namespace Library.DTOs.Order
 {
     public enum OrderStatus
     {
