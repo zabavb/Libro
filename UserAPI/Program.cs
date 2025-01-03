@@ -13,16 +13,15 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<UserDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-builder.Services.AddStackExchangeRedisCache(options =>
-{
-    options.Configuration = "localhost:6379";
-    options.InstanceName = "UserAPI_";
-});
-
 builder.Services.AddSingleton<IConnectionMultiplexer>(sp =>
 {
-    var configuration = ConfigurationOptions.Parse("localhost:6379", true);
-    return ConnectionMultiplexer.Connect(configuration);
+    var options = new ConfigurationOptions
+    {
+        EndPoints = { "your_redis_endpoint", "your_port" },
+        User = "your_username",
+        Password = "your_password"
+    };
+    return ConnectionMultiplexer.Connect(options);
 });
 
 builder.Services.AddAutoMapper(typeof(UserProfile));
