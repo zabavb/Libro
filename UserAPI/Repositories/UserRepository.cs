@@ -32,10 +32,10 @@ namespace UserAPI.Repositories
             IEnumerable<User> users;
 
             string cacheKey = $"{_cacheKeyPrefix}All";
-            var cachedUsers = await _redisDatabase.StringGetAsync(cacheKey);
-            if (!cachedUsers.IsNullOrEmpty)
+            var cachedUsers = await _redisDatabase.HashGetAllAsync(cacheKey);
+            if (cachedUsers.Length > 0)
             {
-                users = JsonSerializer.Deserialize<ICollection<User>>(cachedUsers!)!;
+                users = cachedUsers.Select(entry => JsonSerializer.Deserialize<User>(entry.Value!)!);
                 _logger.LogInformation("Fetched from CACHE.");
             }
             else
@@ -43,13 +43,18 @@ namespace UserAPI.Repositories
                 users = _context.Users.AsNoTracking();
                 _logger.LogInformation("Fetched from DB.");
 
-                await _redisDatabase.StringSetAsync(
-                    cacheKey,
-                    JsonSerializer.Serialize(users),
-                    _cacheExpiration
+                var hashEntries = users.ToDictionary(
+                    user => user.UserId.ToString(),
+                    user => JsonSerializer.Serialize(user)
                 );
+                await _redisDatabase.HashSetAsync(
+                    cacheKey,
+                    hashEntries.Select(kvp => new HashEntry(kvp.Key, kvp.Value)).ToArray()
+                );
+                await _redisDatabase.KeyExpireAsync(cacheKey, _cacheExpiration);
                 _logger.LogInformation("Set to CACHE.");
             }
+
             if (users.Any() && !string.IsNullOrWhiteSpace(searchTerm))
                 users = await SearchAsync(users, searchTerm);
             if (users.Any() && filter != null)
@@ -81,7 +86,7 @@ namespace UserAPI.Repositories
                                 || u.LastName!.ToLower().Contains(searchTerm)
                                 || u.Email.Contains(searchTerm))
                     .ToListAsync();
-            
+
             return await Task.FromResult(
                 users.Where(u => u.FirstName.ToLower().Contains(searchTerm)
                             || u.LastName!.ToLower().Contains(searchTerm)
@@ -92,9 +97,10 @@ namespace UserAPI.Repositories
         public async Task<IEnumerable<User>> FilterAsync(IEnumerable<User> users, Filter filter)
         {
             var query = users.AsQueryable();
-            
+
             if (filter.Role.HasValue)
                 query = query.Where(u => u.Role.Equals(filter.Role));
+
 
             if (filter.DateOfBirthStart.HasValue)
                 query = query.Where(u => u.DateOfBirth >= filter.DateOfBirthStart.Value);
@@ -143,24 +149,28 @@ namespace UserAPI.Repositories
         public async Task<User?> GetByIdAsync(Guid id)
         {
             string cacheKey = $"{_cacheKeyPrefix}{id}";
-            var cachedProduct = await _redisDatabase.StringGetAsync(cacheKey);
+            string fieldKey = id.ToString();
 
-            if (!cachedProduct.IsNullOrEmpty)
+            var cachedUser = await _redisDatabase.HashGetAsync(cacheKey, fieldKey);
+
+            if (!cachedUser.IsNullOrEmpty)
             {
                 _logger.LogInformation("Fetched from CACHE.");
-                return JsonSerializer.Deserialize<User>(cachedProduct!);
+                return JsonSerializer.Deserialize<User>(cachedUser!);
             }
 
-            _logger.LogInformation($"Fetched from DB.");
+            _logger.LogInformation("Fetched from DB.");
             var user = await _context.Users.FindAsync(id);
             if (user != null)
             {
                 _logger.LogInformation("Set to CACHE.");
-                await _redisDatabase.StringSetAsync(
+                await _redisDatabase.HashSetAsync(
                     cacheKey,
-                    JsonSerializer.Serialize(user),
-                    _cacheExpiration
+                    fieldKey,
+                    JsonSerializer.Serialize(user)
                 );
+
+                await _redisDatabase.KeyExpireAsync(cacheKey, _cacheExpiration);
             }
 
             return user;
