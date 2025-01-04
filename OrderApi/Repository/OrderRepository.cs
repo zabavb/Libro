@@ -49,8 +49,6 @@ namespace OrderApi.Repository
 
             if (!string.IsNullOrWhiteSpace(searchTerm))
                 orders = await SearchEntitiesAsync(searchTerm, orders);
-            /*            else
-                            orders = await _context.Orders.AsNoTracking().ToListAsync();*/
 
             if (orders.Any() && filter != null)
                 orders = await FilterEntitiesAsync(orders, filter);
@@ -123,9 +121,6 @@ namespace OrderApi.Repository
             }
 
             _logger.LogInformation("Fetched from DB.");
-            /*            var order = await _context.Orders
-                            .AsNoTracking()
-                            .FirstOrDefaultAsync(o => o.OrderId == id);*/
 
             var order = await _context.Orders.FindAsync(id);
             if (order != null)

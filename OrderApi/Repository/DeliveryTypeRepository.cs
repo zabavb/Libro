@@ -76,7 +76,6 @@ namespace OrderApi.Repository
 
             _logger.LogInformation("Fetched from DB.");
 
-            //var deliveryType = await _context.DeliveryTypes.FirstOrDefaultAsync(d => d.DeliveryId == id);
             var deliveryType = await _context.DeliveryTypes.FindAsync(id);
             if(deliveryType != null)
             {
