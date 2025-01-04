@@ -57,7 +57,7 @@ namespace OrderApi.Services
             return order == null ? null : _mapper.Map<OrderDto>(order);
         }
 
-        public async Task AddAsync(OrderDto entity)
+        public async Task CreateAsync(OrderDto entity)
         {
             if(entity == null)
             {
@@ -69,7 +69,7 @@ namespace OrderApi.Services
 
             try
             {
-                await _repository.AddAsync(order);
+                await _repository.CreateAsync(order);
                 _logger.LogInformation("Order created successfully.");
             }
             catch(Exception ex)
