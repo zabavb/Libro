@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using BookApi.Data;
 using BookApi.Models;
-using Library.DTOs.Book;
 using Microsoft.EntityFrameworkCore;
 
 namespace BookApi.Services
