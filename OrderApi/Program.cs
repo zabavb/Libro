@@ -6,8 +6,8 @@ using Microsoft.OpenApi.Models;
 using System.Reflection;
 using OrderApi.Repository;
 using OrderApi.Profiles;
-using OrderApi.Repository.IRepository;
 using StackExchange.Redis;
+using OrderAPI.Repository;
 
 var builder = WebApplication.CreateBuilder(args);
 

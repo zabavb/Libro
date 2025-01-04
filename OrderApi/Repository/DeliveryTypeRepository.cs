@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using OrderApi.Data;
 using OrderApi.Models;
-using OrderApi.Repository.IRepository;
+using OrderAPI.Repository;
 
 namespace OrderApi.Repository
 {

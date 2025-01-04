@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using Library.Extensions;
 using OrderApi.Models;
-using OrderApi.Repository.IRepository;
+using OrderAPI.Repository;
 
 namespace OrderApi.Services
 {
