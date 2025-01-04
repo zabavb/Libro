@@ -58,7 +58,7 @@ namespace OrderApi.Repository
             return deliveryType == null ? null : deliveryType;
         }
 
-        public async Task AddAsync(DeliveryType deliveryType)
+        public async Task CreateAsync(DeliveryType deliveryType)
         {
             if (deliveryType == null)
             {

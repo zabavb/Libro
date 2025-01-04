@@ -101,7 +101,7 @@ namespace OrderApi.Repository
             return order == null ? null : order;
         }
 
-        public async Task AddAsync(Order order)
+        public async Task CreateAsync(Order order)
         {
             if (order == null)
             {
