@@ -107,7 +107,7 @@ namespace OrderApi.Controllers
 
             try
             {
-                await _orderService.AddAsync(orderDto);
+                await _orderService.CreateAsync(orderDto);
                 _logger.LogInformation($"Order with Id [{orderDto.Id}] successfully created.");
                 return CreatedAtAction(nameof(GetOrderById), new { id = orderDto.Id }, orderDto);
             }

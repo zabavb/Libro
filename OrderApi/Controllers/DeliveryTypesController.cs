@@ -101,7 +101,7 @@ namespace OrderApi.Controllers
 
             try
             {
-                await _deliveryTypeService.AddAsync(deliveryTypeDto);
+                await _deliveryTypeService.CreateAsync(deliveryTypeDto);
                 _logger.LogInformation($"Delivery types with Id [{deliveryTypeDto.Id}] successfully created.");
                 return CreatedAtAction(nameof(GetDeliveryTypeById), new { id = deliveryTypeDto.Id }, deliveryTypeDto);
             }
