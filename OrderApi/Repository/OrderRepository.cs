@@ -149,7 +149,7 @@ namespace OrderApi.Repository
 
         public async Task UpdateAsync(Order order)
         {
-            if (!await _context.Orders.AnyAsync(u => u.UserId == order.UserId))
+            if (!await _context.Orders.AnyAsync(u => u.OrderId == order.OrderId))
                 throw new InvalidOperationException();
 
             _context.Orders.Update(order);
