@@ -20,7 +20,7 @@ namespace UserAPI.Services
             _message = string.Empty;
         }
 
-        public async Task<PaginatedResult<UserDto>> GetAllAsync(int pageNumber, int pageSize, string searchTerm, Filter? filter, Sort sort)
+        public async Task<PaginatedResult<UserDto>> GetAllAsync(int pageNumber, int pageSize, string searchTerm, Filter? filter, Sort? sort)
         {
             var paginatedUsers = await _repository.GetAllAsync(pageNumber, pageSize, searchTerm, filter, sort);
 
@@ -62,7 +62,7 @@ namespace UserAPI.Services
             {
                 _message = "User was not provided for creation.";
                 _logger.LogError(_message);
-                throw new ArgumentNullException(_message, nameof(entity));
+                throw new ArgumentNullException(null, _message);
             }
 
             var user = _mapper.Map<User>(entity);
@@ -113,7 +113,7 @@ namespace UserAPI.Services
             try
             {
                 await _repository.DeleteAsync(id);
-                _logger.LogError($"User with ID [{id}] successfully deleted."); 
+                _logger.LogInformation($"User with ID [{id}] successfully deleted.");
             }
             catch (KeyNotFoundException)
             {

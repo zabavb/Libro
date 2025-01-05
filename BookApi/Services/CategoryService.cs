@@ -1,5 +1,4 @@
-﻿
-using AutoMapper;
+﻿using AutoMapper;
 using BookApi.Data;
 using BookApi.Models;
 using Microsoft.EntityFrameworkCore;
