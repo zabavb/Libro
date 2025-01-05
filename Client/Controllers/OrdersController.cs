@@ -163,7 +163,6 @@ namespace Client.Controllers
             }
         }
 
-        // In case those function are the same just move them into shared file?
         private string BuildQueryString(int pageNumber, int pageSize, string? searchTerm, string? filter)
         {
             var queryParams = new List<string> { $"pageNumber={pageNumber}", $"pageSize={pageSize}" };
