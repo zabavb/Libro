@@ -42,7 +42,7 @@ namespace BookAPI.Repositories
 
         public async Task UpdateAsync(Feedback entity)
         {
-            var feedbackToUpdate = await _context.Feedbacks.FirstOrDefaultAsync(a => a.Id == entity.Id) ?? throw new KeyNotFoundException("Author not found");
+            var feedbackToUpdate = await _context.Feedbacks.FirstOrDefaultAsync(a => a.Id == entity.Id) ?? throw new KeyNotFoundException("Feedback not found");
             _context.Entry(feedbackToUpdate).CurrentValues.SetValues(entity);
             await _context.SaveChangesAsync();
         }

@@ -75,7 +75,7 @@ namespace BookApi.Repositories
 
         public async Task UpdateAsync(Book entity)
         {
-            var existingBook = await _context.Books.FirstOrDefaultAsync(a => a.Id == entity.Id) ?? throw new KeyNotFoundException("Author not found");
+            var existingBook = await _context.Books.FirstOrDefaultAsync(a => a.Id == entity.Id) ?? throw new KeyNotFoundException("Book not found");
             _context.Entry(existingBook).CurrentValues.SetValues(entity);
             await _context.SaveChangesAsync();
         }
