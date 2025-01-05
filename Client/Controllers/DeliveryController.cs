@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Client.Extensions;
 using Client.Models;
 using Client.Models.OrderEntities.DeliveryType;
 using Library.DTOs.Order;
@@ -33,11 +34,11 @@ namespace Client.Controllers
                     var deliveryTypes = await response.Content.ReadFromJsonAsync<List<DeliveryType>>();
                     return View(deliveryTypes);
                 }
-                return HandleErrorResponse(response);
+                return ErrorHandlers.HandleErrorResponse(response);
             }
             catch (Exception ex)
             {
-                return HandleException(ex, "An error occurred while fetching delivery types.");
+                return ErrorHandlers.HandleException(ex, "An error occurred while fetching delivery types.");
             }
         }
 
@@ -73,11 +74,11 @@ namespace Client.Controllers
                 if (response.IsSuccessStatusCode)
                     return RedirectToAction(nameof(GetAllDeliveryTypes));
 
-                return HandleErrorResponse(response);
+                return ErrorHandlers.HandleErrorResponse(response);
             }
             catch (Exception ex)
             {
-                return HandleException(ex, "An error occurred while creating the delivery type.");
+                return ErrorHandlers.HandleException(ex, "An error occurred while creating the delivery type.");
             }
         }
 
@@ -108,11 +109,11 @@ namespace Client.Controllers
                 if (response.IsSuccessStatusCode)
                     return RedirectToAction(nameof(GetAllDeliveryTypes));
 
-                return HandleErrorResponse(response);
+                return ErrorHandlers.HandleErrorResponse(response);
             }
             catch (Exception ex)
             {
-                return HandleException(ex, "An error occured while updating the delivery type.");
+                return ErrorHandlers.HandleException(ex, "An error occured while updating the delivery type.");
             }
         }
 
@@ -128,11 +129,11 @@ namespace Client.Controllers
                 if (response.IsSuccessStatusCode)
                     return RedirectToAction($"{nameof(GetAllDeliveryTypes)}");
 
-                return HandleErrorResponse(response);
+                return ErrorHandlers.HandleErrorResponse(response);
             }
             catch (Exception ex)
             {
-                return HandleException(ex, "An error occured while deleting the delivery type.");
+                return ErrorHandlers.HandleException(ex, "An error occured while deleting the delivery type.");
             }
         }
 
@@ -164,26 +165,5 @@ namespace Client.Controllers
             return "?" + string.Join("&", queryParams);
         }
 
-        private IActionResult HandleErrorResponse(HttpResponseMessage response)
-        {
-            var errorMessage = response.StatusCode switch
-            {
-                System.Net.HttpStatusCode.BadRequest => "Invalid request.",
-                System.Net.HttpStatusCode.NotFound => "Resource not found.",
-                System.Net.HttpStatusCode.InternalServerError => "Server encountered an error.",
-                _ => "An unexpected error occurred."
-            };
-
-            return View("Error", new ErrorViewModel { Message = errorMessage });
-        }
-
-        private IActionResult HandleException(Exception ex, string defaultMessage)
-        {
-            return View("Error", new ErrorViewModel
-            {
-                Message = defaultMessage,
-                Details = ex.Message
-            });
-        }
     }
 }

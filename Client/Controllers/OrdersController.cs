@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Client.Extensions;
 using Client.Models;
 using Client.Models.OrderEntities.Order;
 using Library.DTOs.Order;
@@ -38,11 +39,11 @@ namespace Client.Controllers
                     var orders = await response.Content.ReadFromJsonAsync<List<Order>>();
                     return View(orders);
                 }
-                return HandleErrorResponse(response);
+                return ErrorHandlers.HandleErrorResponse(response);
             }
             catch (Exception ex)
             {
-                return HandleException(ex, "An error occurred while fetching orders.");
+                return ErrorHandlers.HandleException(ex, "An error occurred while fetching orders.");
             }
         }
 
@@ -78,11 +79,11 @@ namespace Client.Controllers
                 if (response.IsSuccessStatusCode)
                     return RedirectToAction(nameof(GetAllOrders));
 
-                return HandleErrorResponse(response);
+                return ErrorHandlers.HandleErrorResponse(response);
             }
             catch (Exception ex)
             {
-                return HandleException(ex, "An error occurred while creating the order.");
+                return ErrorHandlers.HandleException(ex, "An error occurred while creating the order.");
             }
         }
 
@@ -113,11 +114,11 @@ namespace Client.Controllers
                 if (response.IsSuccessStatusCode)
                     return RedirectToAction(nameof(GetAllOrders));
 
-                return HandleErrorResponse(response);
+                return ErrorHandlers.HandleErrorResponse(response);
             }
             catch(Exception ex)
             {
-                return HandleException(ex, "An error occured while updating the order.");
+                return ErrorHandlers.HandleException(ex, "An error occured while updating the order.");
             }
         }
 
@@ -133,11 +134,11 @@ namespace Client.Controllers
                 if(response.IsSuccessStatusCode)
                     return RedirectToAction($"{nameof(GetAllOrders)}");
 
-                return HandleErrorResponse(response);
+                return ErrorHandlers.HandleErrorResponse(response);
             }
             catch (Exception ex)
             {
-                return HandleException(ex, "An error occured while deleting the order.");
+                return ErrorHandlers.HandleException(ex, "An error occured while deleting the order.");
             }
         }
 
@@ -175,27 +176,6 @@ namespace Client.Controllers
             return "?" + string.Join("&", queryParams);
         }
 
-        private IActionResult HandleErrorResponse(HttpResponseMessage response)
-        {
-            var errorMessage = response.StatusCode switch
-            {
-                System.Net.HttpStatusCode.BadRequest => "Invalid request.",
-                System.Net.HttpStatusCode.NotFound => "Resource not found.",
-                System.Net.HttpStatusCode.InternalServerError => "Server encountered an error.",
-                _ => "An unexpected error occurred."
-            };
-
-            return View("Error", new ErrorViewModel { Message = errorMessage });
-        }
-
-        private IActionResult HandleException(Exception ex, string defaultMessage)
-        {
-            return View("Error", new ErrorViewModel
-            {
-                Message = defaultMessage,
-                Details = ex.Message
-            });
-        }
     }
 
 }
