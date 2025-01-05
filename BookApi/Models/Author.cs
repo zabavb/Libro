@@ -7,8 +7,14 @@
         public string? Biography { get; set; }
         public DateTime? DateOfBirth { get; set; }
 
+        internal List<Book> Books { get; set; } = new();
 
-        internal ICollection<Book> Books { get; set; } = new List<Book>();
+        public Author()
+        {
+            Name = string.Empty;
+            Biography = null;
+            DateOfBirth = null;
+            Books = new List<Book>();
+        }
     }
-
 }

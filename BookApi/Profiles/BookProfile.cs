@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using BookApi.Models;
 
 namespace BookApi.Profiles
