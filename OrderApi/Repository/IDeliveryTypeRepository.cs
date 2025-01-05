@@ -2,7 +2,7 @@
 using Library.Interfaces;
 using OrderApi.Models;
 
-namespace OrderApi.Repository.IRepository
+namespace OrderAPI.Repository
 {
     public interface IDeliveryTypeRepository : IManagable<DeliveryType>
     {

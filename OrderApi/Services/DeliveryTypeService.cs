@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using Library.Extensions;
 using OrderApi.Models;
-using OrderApi.Repository.IRepository;
+using OrderAPI.Repository;
 
 namespace OrderApi.Services
 {
@@ -58,7 +58,7 @@ namespace OrderApi.Services
             return deliveryType == null ? null : _mapper.Map<DeliveryTypeDto>(deliveryType);
         }
 
-        public async Task AddAsync(DeliveryTypeDto entity)
+        public async Task CreateAsync(DeliveryTypeDto entity)
         {
             if (entity == null)
             {
@@ -70,7 +70,7 @@ namespace OrderApi.Services
 
             try
             {
-                await _repository.AddAsync(deliveryType);
+                await _repository.CreateAsync(deliveryType);
                 _logger.LogInformation("Delivery type created successfully.");
             }
             catch (Exception ex)

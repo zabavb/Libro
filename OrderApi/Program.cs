@@ -6,7 +6,9 @@ using Microsoft.OpenApi.Models;
 using System.Reflection;
 using OrderApi.Repository;
 using OrderApi.Profiles;
-using OrderApi.Repository.IRepository;
+using StackExchange.Redis;
+using OrderAPI.Repository;
+
 var builder = WebApplication.CreateBuilder(args);
 
 
@@ -14,7 +16,16 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<OrderDbContext>(options => options
         .UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-
+builder.Services.AddSingleton<IConnectionMultiplexer>(sp =>
+{
+    var options = new ConfigurationOptions
+    {
+        EndPoints = { "your_redis_endpoint", "your_port" },
+        User = "your_username",
+        Password = "your_password"
+    };
+    return ConnectionMultiplexer.Connect(options);
+});
 
 builder.Services.AddScoped<IOrderRepository, OrderRepository>();
 builder.Services.AddScoped<IOrderService, OrderService>();
@@ -56,11 +67,8 @@ Log.Logger = new LoggerConfiguration()
 builder.Logging.ClearProviders();
 builder.Logging.AddSerilog(Log.Logger);
 
-
 var app = builder.Build();
 
-
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
