@@ -2,7 +2,7 @@
 
 namespace BookApi.Models
 {
-    internal enum CoverType
+    public enum CoverType
     {
         SOFT_COVER,
         HARDCOVER,
