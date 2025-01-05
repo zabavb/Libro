@@ -57,7 +57,7 @@ namespace BookApi.Services
                 return null;
             }
 
-            _mapper.Map(authorDto, existingAuthor); // Мапінг оновлених даних до існуючого об'єкта
+            _mapper.Map(authorDto, existingAuthor); 
             await _authorRepository.UpdateAsync(existingAuthor);
 
             return _mapper.Map<AuthorDto>(existingAuthor);
