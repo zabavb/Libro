@@ -50,9 +50,7 @@ namespace BookAPI.Repositories
                 throw new KeyNotFoundException("Author not found");
             }
 
-            existingAuthor.Name = entity.Name;
-            existingAuthor.Biography = entity.Biography;
-            existingAuthor.DateOfBirth = entity.DateOfBirth;
+            _context.Entry(existingAuthor).CurrentValues.SetValues(entity);
 
             await _context.SaveChangesAsync();
         }
