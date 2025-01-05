@@ -38,7 +38,7 @@ namespace BookAPI.Repositories
         public async Task UpdateAsync(Category entity)
         {
             var existingCategory = await _context.Categories.FirstOrDefaultAsync(a => a.Id == entity.Id) ?? throw new KeyNotFoundException("Category  not found");
-            existingCategory.Name = entity.Name;
+            _context.Entry(existingCategory).CurrentValues.SetValues(entity);
             await _context.SaveChangesAsync();
         }
     }

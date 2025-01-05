@@ -43,15 +43,8 @@ namespace BookAPI.Repositories
 
         public async Task UpdateAsync(Publisher entity)
         {
-            var existingPublisher = await _context.Publishers.FirstOrDefaultAsync(a => a.Id == entity.Id);
-            if (existingPublisher == null)
-            {
-                throw new KeyNotFoundException("publisher not found");
-            }
-
-            existingPublisher.Name = entity.Name;
-            existingPublisher.Description = entity.Description;
-
+            var existingPublisher = await _context.Publishers.FirstOrDefaultAsync(a => a.Id == entity.Id) ?? throw new KeyNotFoundException("Publisher not found");
+            _context.Entry(existingPublisher).CurrentValues.SetValues(entity);
             await _context.SaveChangesAsync();
         }
     }
