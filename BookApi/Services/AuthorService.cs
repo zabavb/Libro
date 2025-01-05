@@ -1,26 +1,23 @@
 ﻿using AutoMapper;
-using BookApi.Data;
 using BookApi.Models;
-using Microsoft.EntityFrameworkCore;
+using BookAPI.Repositories;
 
 namespace BookApi.Services
 {
     public class AuthorService : IAuthorService
     {
         private readonly IMapper _mapper;
-        private readonly BookDbContext _context;
+        private readonly IAuthorRepository _authorRepository;
 
-
-        public AuthorService(IMapper mapper, BookDbContext context)
+        public AuthorService(IMapper mapper, IAuthorRepository authorRepository)
         {
             _mapper = mapper;
-            _context = context;
-
+            _authorRepository = authorRepository;
         }
 
         public async Task<IEnumerable<AuthorDto>> GetAuthorsAsync()
         {
-            var authors = await _context.Authors.ToListAsync();
+            var authors = await _authorRepository.GetAllAsync();
 
             if (authors == null || !authors.Any())
             {
@@ -32,7 +29,7 @@ namespace BookApi.Services
 
         public async Task<AuthorDto> GetAuthorByIdAsync(Guid id)
         {
-            var author = await _context.Authors.FirstOrDefaultAsync(a => a.Id == id);
+            var author = await _authorRepository.GetByIdAsync(id);
 
             if (author == null)
             {
@@ -45,44 +42,37 @@ namespace BookApi.Services
         public async Task<AuthorDto> CreateAuthorAsync(AuthorDto authorDto)
         {
             var author = _mapper.Map<Author>(authorDto);
-            author.Id = Guid.NewGuid(); 
 
-            _context.Authors.Add(author);
-            await _context.SaveChangesAsync();
+            await _authorRepository.CreateAsync(author);
 
             return _mapper.Map<AuthorDto>(author);
         }
 
         public async Task<AuthorDto> UpdateAuthorAsync(Guid id, AuthorDto authorDto)
         {
-            var existingAuthor = await _context.Authors.FirstOrDefaultAsync(a => a.Id == id);
+            var existingAuthor = await _authorRepository.GetByIdAsync(id);
 
             if (existingAuthor == null)
             {
                 return null;
             }
 
-            existingAuthor.Name = authorDto.Name;
-            existingAuthor.Biography = authorDto.Biography;
-            existingAuthor.DateOfBirth = authorDto.DateOfBirth;
-
-            await _context.SaveChangesAsync();
+            _mapper.Map(authorDto, existingAuthor); // Мапінг оновлених даних до існуючого об'єкта
+            await _authorRepository.UpdateAsync(existingAuthor);
 
             return _mapper.Map<AuthorDto>(existingAuthor);
         }
 
         public async Task<bool> DeleteAuthorAsync(Guid id)
         {
-            var author = await _context.Authors.FirstOrDefaultAsync(a => a.Id == id);
+            var author = await _authorRepository.GetByIdAsync(id);
 
             if (author == null)
             {
                 return false;
             }
 
-            _context.Authors.Remove(author);
-            await _context.SaveChangesAsync();
-
+            await _authorRepository.DeleteAsync(id);
             return true;
         }
     }
