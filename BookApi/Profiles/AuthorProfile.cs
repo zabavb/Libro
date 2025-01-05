@@ -8,13 +8,9 @@ namespace BookApi.Profiles
         public AuthorProfile()
         {
             CreateMap<Author, AuthorDto>()
-                .ForMember(dest => dest.AuthorId, opt => opt.MapFrom(src => src.Id))
-                .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name))
-                .ForMember(dest => dest.DateOfBirth, opt => opt.MapFrom(src => src.DateOfBirth))
-                .ForMember(dest => dest.Biography, opt => opt.MapFrom(src => src.Biography));
-
-            CreateMap<AuthorDto, Author>()
-                .ForMember(dest => dest.Id, opt => opt.Ignore()); 
+            .ForMember(dest => dest.AuthorId, opt => opt.MapFrom(src => src.Id))
+            .ReverseMap()
+            .ForMember(dest => dest.Id, opt => opt.Ignore());
         }
     }
 }
