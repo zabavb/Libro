@@ -1,5 +1,7 @@
 using BookApi.Data;
+using BookApi.Repositories;
 using BookApi.Services;
+using BookAPI.Repositories;
 using BookAPI.Services;
 using FeedbackApi.Services;
 using Microsoft.EntityFrameworkCore;
@@ -13,6 +15,13 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container. 
 builder.Services.AddDbContext<BookDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddScoped<IBookService, BookService>();
+
+builder.Services.AddScoped<IAuthorRepository, AuthorRepository>();
+builder.Services.AddScoped<IBookRepository, BookRepository>();
+builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
+builder.Services.AddScoped<IFeedbackRepository, FeedbackRepository>();
+builder.Services.AddScoped<IPublisherRepository, PublisherRepository>();
+
 builder.Services.AddScoped<IAuthorService, AuthorService>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<IPublisherService, PublisherService>();

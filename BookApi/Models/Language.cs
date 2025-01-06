@@ -2,7 +2,7 @@
 
 namespace BookApi.Models
 {
-    internal enum Language
+    public enum Language
     {
         ENGLISH,
         UKRAINIAN,

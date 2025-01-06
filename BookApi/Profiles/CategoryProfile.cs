@@ -8,11 +8,10 @@ namespace BookApi.Profiles
         public CategoryProfile()
         {
             CreateMap<Category, CategoryDto>()
-                .ForMember(dest => dest.CategoryId, opt => opt.MapFrom(src => src.Id))
-                .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name));
+             .ForMember(dest => dest.CategoryId, opt => opt.MapFrom(src => src.Id))
+             .ReverseMap()
+             .ForMember(dest => dest.Id, opt => opt.Ignore());
 
-            CreateMap<CategoryDto, Category>()
-                .ForMember(dest => dest.Id, opt => opt.Ignore());
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using BookApi.Data;
 using BookApi.Models;
+using BookAPI.Repositories;
 using BookAPI.Services;
 using Microsoft.EntityFrameworkCore;
 
@@ -9,18 +10,18 @@ namespace FeedbackApi.Services
 {
     public class FeedbackService : IFeedbackService
     {
-        private readonly BookDbContext _context;
         private readonly IMapper _mapper;
+        private readonly IFeedbackRepository _feedbackRepository;
 
-        public FeedbackService(BookDbContext context, IMapper mapper)
+        public FeedbackService(IMapper mapper, IFeedbackRepository feedbackRepository)
         {
-            _context = context;
             _mapper = mapper;
+            _feedbackRepository = feedbackRepository;
         }
 
         public async Task<IEnumerable<FeedbackDto>> GetFeedbacksAsync()
         {
-            var feedbacks = await _context.Feedbacks.ToListAsync();
+            var feedbacks = await _feedbackRepository.GetAllAsync();
 
             if (feedbacks == null || feedbacks.Count == 0)
             {
@@ -33,7 +34,7 @@ namespace FeedbackApi.Services
 
         public async Task<FeedbackDto> GetFeedbackByIdAsync(Guid id)
         {
-            var feedback = await _context.Feedbacks.FirstOrDefaultAsync(b => b.Id == id);
+            var feedback = await _feedbackRepository.GetByIdAsync(id);
 
             if (feedback == null)
             {
@@ -46,43 +47,36 @@ namespace FeedbackApi.Services
         {
             var feedback = _mapper.Map<Feedback>(feedbackDto);
 
-            _context.Feedbacks.Add(feedback);
-            await _context.SaveChangesAsync();
+            await _feedbackRepository.CreateAsync(feedback);
+
 
             return _mapper.Map<FeedbackDto>(feedback);
         }
         public async Task<FeedbackDto> UpdateFeedbackAsync(Guid id, FeedbackDto feedbackDto)
         {
-            var existingFeedback = await _context.Feedbacks.FirstOrDefaultAsync(f => f.Id == id);
+            var existingfeedback = await _feedbackRepository.GetByIdAsync(id);
 
-            if (existingFeedback == null)
+            if (existingfeedback == null)
             {
                 return null;
             }
 
-            existingFeedback.ReviewerName = feedbackDto.ReviewerName;
-            existingFeedback.Comment = feedbackDto.Comment;
-            existingFeedback.Rating = feedbackDto.Rating;
-            existingFeedback.Date = feedbackDto.Date;
-            existingFeedback.IsPurchased = feedbackDto.IsPurchased;
+            _mapper.Map(feedbackDto, existingfeedback);
+            await _feedbackRepository.UpdateAsync(existingfeedback);
 
-            await _context.SaveChangesAsync();
-
-            return _mapper.Map<FeedbackDto>(existingFeedback);
+            return _mapper.Map<FeedbackDto>(existingfeedback);
         }
 
         public async Task<bool> DeleteFeedbackAsync(Guid id)
         {
-            var feedback = await _context.Feedbacks.FirstOrDefaultAsync(b => b.Id == id);
+            var feedback= await _feedbackRepository.GetByIdAsync(id);
 
             if (feedback == null)
             {
                 return false;
             }
 
-            _context.Feedbacks.Remove(feedback);
-            await _context.SaveChangesAsync();
-
+            await _feedbackRepository.DeleteAsync(id);
             return true;
         }
 
