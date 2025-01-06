@@ -8,26 +8,15 @@ using UserAPI.Models;
 
 namespace UserAPI.Repositories
 {
-    public class UserRepository : IUserRepository
+    public class UserRepository(UserDbContext context, IConnectionMultiplexer redis, ILogger<IUserRepository> logger) : IUserRepository
     {
-        private readonly UserDbContext _context;
-        private readonly IDatabase _redisDatabase;
-        private readonly string _cacheKeyPrefix;
-        private readonly TimeSpan _cacheExpiration;
-        private readonly ILogger<IUserRepository> _logger;
+        private readonly UserDbContext _context = context;
+        private readonly IDatabase _redisDatabase = redis.GetDatabase();
+        private readonly string _cacheKeyPrefix = "User_";
+        private readonly TimeSpan _cacheExpiration = TimeSpan.FromMinutes(10);
+        private readonly ILogger<IUserRepository> _logger = logger;
 
-        public UserRepository(UserDbContext context, IConnectionMultiplexer redis, ILogger<IUserRepository> logger)
-        {
-            _context = context;
-            _redisDatabase = redis.GetDatabase();
-
-            _cacheKeyPrefix = "User_";
-            _cacheExpiration = TimeSpan.FromMinutes(10);
-
-            _logger = logger;
-        }
-
-        public async Task<PaginatedResult<User>> GetAllAsync(int pageNumber, int pageSize, string searchTerm, Filter? filter, Sort sort)
+        public async Task<PaginatedResult<User>> GetAllAsync(int pageNumber, int pageSize, string? searchTerm, Filter? filter, Sort? sort)
         {
             IEnumerable<User> users;
 

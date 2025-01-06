@@ -12,25 +12,18 @@ namespace UserAPI.Controllers
     /// - Retrieving a specific user by ID.
     /// - CRUD (Creating, updating, and deleting) users.
     /// </remarks>
-    [ApiController]
-    [Route("api/[controller]")]
-    public class UsersController : ControllerBase
-    {
-        private readonly IUserService _userService;
-        private readonly ILogger<UsersController> _logger;
-        private string _message;
-
-        /// <summary>
+    /// <remarks>
         /// Initializes a new instance of the <see cref="UsersController"/> class.
-        /// </summary>
+    /// </remarks>
         /// <param name="userService">Service for user operations.</param>
         /// <param name="logger">Logger for tracking operations.</param>
-        public UsersController(IUserService userService, ILogger<UsersController> logger)
+    [ApiController]
+    [Route("api/[controller]")]
+    public class UsersController(IUserService userService, ILogger<UsersController> logger) : ControllerBase
         {
-            _userService = userService;
-            _logger = logger;
-            _message = string.Empty;
-        }
+        private readonly IUserService _userService = userService;
+        private readonly ILogger<UsersController> _logger = logger;
+        private string _message = string.Empty;
 
         /// <summary>
         /// Retrieves a paginated list of users with optional search and filtering.

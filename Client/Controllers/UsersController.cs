@@ -9,18 +9,11 @@ using static System.Net.WebRequestMethods;
 namespace Client.Controllers
 {
     [Authorize(Roles = "admin")]
-    public class UsersController : Controller
+    public class UsersController(HttpClient httpClient, IMapper mapper) : Controller
     {
-        private readonly HttpClient _httpClient;
-        private readonly string _baseAddress;
-        private readonly IMapper _mapper;
-
-        public UsersController(HttpClient httpClient, IMapper mapper)
-        {
-            _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
-            _baseAddress = "https://localhost:7007/gateway/users";
-            _mapper = mapper;
-        }
+        private readonly HttpClient _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
+        private readonly string _baseAddress = "https://localhost:7007/gateway/users";
+        private readonly IMapper _mapper = mapper;
 
         //=========================== Actions ===========================
 
