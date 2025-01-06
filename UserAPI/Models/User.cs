@@ -26,6 +26,7 @@ namespace UserAPI.Models
             Email = string.Empty;
             PhoneNumber = string.Empty;
             Role = RoleType.GUEST;
+            Password = null!;
         }
     }
 }

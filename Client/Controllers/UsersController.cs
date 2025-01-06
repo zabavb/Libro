@@ -153,7 +153,7 @@ namespace Client.Controllers
             }
         }
 
-        private string BuildQueryString(int pageNumber, int pageSize, string? searchTerm, string? filter)
+        private static string BuildQueryString(int pageNumber, int pageSize, string? searchTerm, string? filter)
         {
             var queryParams = new List<string> { $"pageNumber={pageNumber}", $"pageSize={pageSize}" };
             

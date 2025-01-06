@@ -13,14 +13,14 @@ namespace UserAPI.Controllers
     /// - CRUD (Creating, updating, and deleting) users.
     /// </remarks>
     /// <remarks>
-        /// Initializes a new instance of the <see cref="UsersController"/> class.
+    /// Initializes a new instance of the <see cref="UsersController"/> class.
     /// </remarks>
-        /// <param name="userService">Service for user operations.</param>
-        /// <param name="logger">Logger for tracking operations.</param>
+    /// <param name="userService">Service for user operations.</param>
+    /// <param name="logger">Logger for tracking operations.</param>
     [ApiController]
     [Route("api/[controller]")]
     public class UsersController(IUserService userService, ILogger<UsersController> logger) : ControllerBase
-        {
+    {
         private readonly IUserService _userService = userService;
         private readonly ILogger<UsersController> _logger = logger;
         private string _message = string.Empty;
