@@ -1,10 +1,9 @@
 ﻿using AutoMapper;
 using Client.Models;
-using Client.Models.User;
+using Client.Models.UserEntities.User;
 using Library.DTOs.User;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using static System.Net.WebRequestMethods;
 
 namespace Client.Controllers
 {

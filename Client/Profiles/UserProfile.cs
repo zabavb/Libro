@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using Client.Models.User;
+using Client.Models.UserEntities.User;
 using Library.DTOs.User;
 
 namespace Client.Profiles
