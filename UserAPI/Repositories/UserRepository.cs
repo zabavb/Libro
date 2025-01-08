@@ -12,8 +12,8 @@ namespace UserAPI.Repositories
     {
         private readonly UserDbContext _context = context;
         private readonly IDatabase _redisDatabase = redis.GetDatabase();
-        private readonly string _cacheKeyPrefix = "User_";
-        private readonly TimeSpan _cacheExpiration = TimeSpan.FromMinutes(10);
+        public readonly string _cacheKeyPrefix = "User_";
+        public readonly TimeSpan _cacheExpiration = TimeSpan.FromMinutes(10);
         private readonly ILogger<IUserRepository> _logger = logger;
 
         public async Task<PaginatedResult<User>> GetAllAsync(int pageNumber, int pageSize, string? searchTerm, Filter? filter, Sort? sort)
