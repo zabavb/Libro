@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using BookApi.Models;
 using BookAPI.Repositories;
+using Library.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,23 +20,23 @@ namespace BookApi.Services
             _mapper = mapper;
         }
 
-        public async Task<IEnumerable<BookDto>> GetBooksAsync()
-        {
-            var books = await _bookRepository.GetAsync();
 
-            if (books == null || !books.Any())
+        public async Task<PaginatedResult<BookDto>> GetBooksAsync(int pageNumber, int pageSize, string searchTerm, Filter? filter, Sort? sort)
+        {
+            var books = await _bookRepository.GetAllAsync(pageNumber, pageSize, searchTerm, filter, sort);
+
+            if (books == null || books.Items == null)
             {
-                return Enumerable.Empty<BookDto>(); 
+                throw new InvalidOperationException("Failed to fetch books.");
             }
 
-            return _mapper.Map<List<BookDto>>(books); 
-        }
-
-        public async Task<IEnumerable<BookDto>> GetBooksAsync(string? searchQuery = null, string? sortBy = null)
-        {
-            var books = await _bookRepository.GetAsync(searchQuery, sortBy);
-
-            return _mapper.Map<List<BookDto>>(books);
+            return new PaginatedResult<BookDto>
+            {
+                Items = _mapper.Map<ICollection<BookDto>>(books.Items),
+                TotalCount = books.TotalCount,
+                PageNumber = books.PageNumber,
+                PageSize = books.PageSize
+            };
         }
 
         public async Task<BookDto> GetBookByIdAsync(Guid id)
