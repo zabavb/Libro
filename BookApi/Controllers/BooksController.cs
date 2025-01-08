@@ -15,8 +15,6 @@ namespace BookApi.Controllers
     public class BooksController : ControllerBase
     {
         private readonly IBookService _bookService;
-        private const int DefaultPageNumber = 1;
-        private const int DefaultPageSize = 10;
 
 
         public BooksController(IBookService bookService)
@@ -25,38 +23,23 @@ namespace BookApi.Controllers
         }
 
         /// <summary>
-        /// Retrieves a paginated list of books.
+        /// Retrieves a paginated list of books based on the specified filters, search term, and sorting options.
         /// </summary>
-        /// <param name="pageNumber">Page number (default: 1).</param>
-        /// <param name="pageSize">Number of books per page (default: 10).</param>
-        /// <param name="searchQuery"></param>
-        /// <param name="sortBy"></param>
+        /// <param name="pageNumber">Page number (default: 1). The page number to retrieve.</param>
+        /// <param name="pageSize">Number of books per page (default: 10). The number of books to return per page.</param>
+        /// <param name="searchTerm">Search term (optional). A string to search in the book's title, author, or other properties.</param>
+        /// <param name="filter">Filter options (optional). Filters to apply on the books, such as author, price range, etc.</param>
+        /// <param name="sort">Sort options (optional). Specifies the sorting order, such as by title or price.</param>
         /// <returns>A paginated list of books.</returns>
-        /// <response code="200">Returns the list of books.</response>
-        /// <response code="400">Invalid pagination parameters.</response>
-        /// <response code="404">No books found.</response>
+        /// <response code="200">Returns a list of books according to the specified pagination, filter, and sort parameters.</response>
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<BookDto>>> GetBooks(int pageNumber = DefaultPageNumber, int pageSize = DefaultPageSize, string? searchQuery = null, string? sortBy = null)
+        public async Task<IActionResult> GetAll([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10, [FromQuery] string? searchTerm = null, [FromQuery] Filter? filter = null, [FromQuery] Sort? sort = null)
         {
-            if (pageNumber < 1 || pageSize < 1)
-            {
-                return BadRequest("Page number and page size must be greater than 0.");
-            }
-
-            var books = await _bookService.GetBooksAsync(searchQuery, sortBy);
-
-            if (books == null || !books.Any())
-            {
-                return NotFound("No books found.");
-            }
-
-            var paginatedBooks = books
-                .Skip((pageNumber - 1) * pageSize)
-                .Take(pageSize)
-                .ToList();
-
-            return Ok(paginatedBooks);
+            var books = await _bookService.GetBooksAsync(pageNumber, pageSize, searchTerm, filter, sort);
+            return Ok(books);
         }
+
+
 
         /// <summary>
         /// Retrieves a book by its ID.

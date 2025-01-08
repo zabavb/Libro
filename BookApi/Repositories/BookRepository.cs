@@ -1,6 +1,10 @@
 ﻿using BookApi.Data;
 using BookApi.Models;
+using BookAPI.Infrastructure.Extensions;
 using BookAPI.Repositories;
+using Library.Extensions;
+using Library.Filters;
+using Library.Sortings;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -18,44 +22,31 @@ namespace BookApi.Repositories
             _context = context;
         }
 
-        public async Task<IEnumerable<Book>> GetAsync()
+      
+        public async Task<PaginatedResult<Book>> GetAllAsync(int pageNumber, int pageSize, string searchTerm, Filter? filter, Sort? sort)
         {
-            return await _context.Books
-                .Include(b => b.Category)
-                .Include(b => b.Publisher)
-                .Include(b => b.Feedbacks)
-                .ToListAsync();
-        }
+            IQueryable<Book> books = _context.Books.AsQueryable();
 
-        public async Task<IEnumerable<Book>> GetAsync(string searchQuery, string sortBy)
-        {
-            var query = _context.Books
-                .Include(b => b.Category)
-                .Include(b => b.Publisher)
-                .Include(b => b.Feedbacks)
-                .Include(b => b.Author)
-                .AsQueryable();
+            if (books.Any() && !string.IsNullOrWhiteSpace(searchTerm))
+                books = books.Search(searchTerm);
+            if (books.Any() && filter != null)
+                books = books.Filter(filter);
+            if (books.Any() && sort != null)
+                books = books.Sort(sort);
 
-            if (!string.IsNullOrEmpty(searchQuery))
+            var totalBooks = await books.CountAsync();
+            var resultBooks = await books.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToListAsync();
+
+            return new PaginatedResult<Book>
             {
-                searchQuery = searchQuery.ToLower();
-                query = query.Where(b =>
-                    b.Title.ToLower().Contains(searchQuery) ||
-                    b.Description.ToLower().Contains(searchQuery) ||
-                    b.Author.Name.ToLower().Contains(searchQuery));
-            }
-
-            query = sortBy switch
-            {
-                "popularity" => query.OrderByDescending(b => b.Feedbacks.Count),
-                "newest" => query.OrderByDescending(b => b.Year),
-                "cheapest" => query.OrderBy(b => b.Price),
-                "expensive" => query.OrderByDescending(b => b.Price),
-                _ => query.OrderBy(b => b.Title)
+                Items = resultBooks,
+                TotalCount = totalBooks,
+                PageNumber = pageNumber,
+                PageSize = pageSize
             };
 
-            return await query.ToListAsync();
         }
+
 
         public async Task<Book> GetByIdAsync(Guid id)
         {
@@ -88,5 +79,7 @@ namespace BookApi.Repositories
             _context.Books.Remove(book);
             await _context.SaveChangesAsync();
         }
+
+       
     }
 }
