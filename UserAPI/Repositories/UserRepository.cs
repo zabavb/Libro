@@ -8,26 +8,15 @@ using UserAPI.Models;
 
 namespace UserAPI.Repositories
 {
-    public class UserRepository : IUserRepository
+    public class UserRepository(UserDbContext context, IConnectionMultiplexer redis, ILogger<IUserRepository> logger) : IUserRepository
     {
-        private readonly UserDbContext _context;
-        private readonly IDatabase _redisDatabase;
-        private readonly string _cacheKeyPrefix;
-        private readonly TimeSpan _cacheExpiration;
-        private readonly ILogger<IUserRepository> _logger;
+        private readonly UserDbContext _context = context;
+        private readonly IDatabase _redisDatabase = redis.GetDatabase();
+        private readonly string _cacheKeyPrefix = "User_";
+        private readonly TimeSpan _cacheExpiration = TimeSpan.FromMinutes(10);
+        private readonly ILogger<IUserRepository> _logger = logger;
 
-        public UserRepository(UserDbContext context, IConnectionMultiplexer redis, ILogger<IUserRepository> logger)
-        {
-            _context = context;
-            _redisDatabase = redis.GetDatabase();
-
-            _cacheKeyPrefix = "User_";
-            _cacheExpiration = TimeSpan.FromMinutes(10);
-
-            _logger = logger;
-        }
-
-        public async Task<PaginatedResult<User>> GetAllAsync(int pageNumber, int pageSize, string searchTerm, Filter? filter, Sort sort)
+        public async Task<PaginatedResult<User>> GetAllAsync(int pageNumber, int pageSize, string? searchTerm, Filter? filter, Sort? sort)
         {
             IEnumerable<User> users;
 
@@ -49,7 +38,7 @@ namespace UserAPI.Repositories
                 );
                 await _redisDatabase.HashSetAsync(
                     cacheKey,
-                    hashEntries.Select(kvp => new HashEntry(kvp.Key, kvp.Value)).ToArray()
+                    [.. hashEntries.Select(kvp => new HashEntry(kvp.Key, kvp.Value))]
                 );
                 await _redisDatabase.KeyExpireAsync(cacheKey, _cacheExpiration);
                 _logger.LogInformation("Set to CACHE.");
@@ -64,7 +53,7 @@ namespace UserAPI.Repositories
 
             var totalUsers = await Task.FromResult(users.Count());
             users = await Task.FromResult(users.Skip((pageNumber - 1) * pageSize).Take(pageSize));
-            ICollection<User> result = new List<User>(users);
+            ICollection<User> result = [.. users];
 
             return new PaginatedResult<User>
             {
@@ -77,19 +66,19 @@ namespace UserAPI.Repositories
 
         public async Task<IEnumerable<User>> SearchAsync(IEnumerable<User> users, string searchTerm)
         {
-            searchTerm.ToLower();
+            searchTerm = searchTerm.ToLower();
 
             if (users == null)
                 return await _context.Users
                     .AsNoTracking()
-                    .Where(u => u.FirstName.ToLower().Contains(searchTerm)
-                                || u.LastName!.ToLower().Contains(searchTerm)
+                    .Where(u => u.FirstName.Contains(searchTerm, StringComparison.CurrentCultureIgnoreCase)
+                                || u.LastName!.Contains(searchTerm, StringComparison.CurrentCultureIgnoreCase)
                                 || u.Email.Contains(searchTerm))
                     .ToListAsync();
 
             return await Task.FromResult(
-                users.Where(u => u.FirstName.ToLower().Contains(searchTerm)
-                            || u.LastName!.ToLower().Contains(searchTerm)
+                users.Where(u => u.FirstName.Contains(searchTerm, StringComparison.CurrentCultureIgnoreCase)
+                            || u.LastName!.Contains(searchTerm, StringComparison.CurrentCultureIgnoreCase)
                             || u.Email.Contains(searchTerm))
                 );
         }
@@ -193,11 +182,8 @@ namespace UserAPI.Repositories
 
         public async Task DeleteAsync(Guid id)
         {
-            var user = await _context.Users.FindAsync(id);
-
-            if (user == null)
-                throw new KeyNotFoundException();
-
+            var user = await _context.Users.FindAsync(id) ?? throw new KeyNotFoundException();
+            
             _context.Users.Remove(user);
             await _context.SaveChangesAsync();
         }

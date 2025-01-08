@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Client.Models.User
+namespace Client.Models.UserEntities.User
 {
     public class LoginViewModel : IValidatableObject
     {
@@ -28,7 +28,7 @@ namespace Client.Models.User
             {
                 yield return new ValidationResult(
                     "Either Email or Phone Number is required.",
-                    new[] { nameof(Email), nameof(PhoneNumber) });
+                    [nameof(Email), nameof(PhoneNumber)]);
             }
         }
     }

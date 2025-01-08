@@ -22,7 +22,7 @@ namespace UserAPI.Data
                 PhoneNumber = "123-456-7890",
                 Role = Library.DTOs.User.RoleType.GUEST,
                 Subscription = null,
-                Password = null,
+                Password = null!,
 
             };
 
@@ -63,7 +63,7 @@ namespace UserAPI.Data
                 PhoneNumber = "987-654-3210",
                 Role = Library.DTOs.User.RoleType.GUEST,
                 Subscription = null,
-                Password = null,
+                Password = null!,
             };
 
             var sub2 = new Subscription

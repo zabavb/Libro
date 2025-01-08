@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Client.Models.User
+namespace Client.Models.UserEntities.User
 {
     public class RegisterViewModel
     {

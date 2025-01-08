@@ -1,26 +1,18 @@
 ﻿using AutoMapper;
-using Client.Models;
-using Client.Models.User;
+using Client.Extensions;
+using Client.Models.UserEntities.User;
 using Library.DTOs.User;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using static System.Net.WebRequestMethods;
 
 namespace Client.Controllers
 {
     [Authorize(Roles = "admin")]
-    public class UsersController : Controller
+    public class UsersController(HttpClient httpClient, IMapper mapper) : Controller
     {
-        private readonly HttpClient _httpClient;
-        private readonly string _baseAddress;
-        private readonly IMapper _mapper;
-
-        public UsersController(HttpClient httpClient, IMapper mapper)
-        {
-            _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
-            _baseAddress = "https://localhost:7007/gateway/users";
-            _mapper = mapper;
-        }
+        private readonly HttpClient _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
+        private readonly string _baseAddress = "https://localhost:7007/gateway/users";
+        private readonly IMapper _mapper = mapper;
 
         //=========================== Actions ===========================
 
@@ -36,11 +28,11 @@ namespace Client.Controllers
                     var users = await response.Content.ReadFromJsonAsync<List<User>>();
                     return View(users);
                 }
-                return HandleErrorResponse(response);
+                return ErrorHandlers.HandleErrorResponse(response);
             }
             catch (Exception ex)
             {
-                return HandleException(ex, "An error occurred while fetching users.");
+                return ErrorHandlers.HandleException(ex, "An error occurred while fetching users.");
             }
         }
 
@@ -76,11 +68,11 @@ namespace Client.Controllers
                 if (response.IsSuccessStatusCode)
                     return RedirectToAction(nameof(GetAllUsers));
 
-                return HandleErrorResponse(response);
+                return ErrorHandlers.HandleErrorResponse(response);
             }
             catch (Exception ex)
             {
-                return HandleException(ex, "An error occurred while creating the user.");
+                return ErrorHandlers.HandleException(ex, "An error occurred while creating the user.");
             }
         }
 
@@ -111,11 +103,11 @@ namespace Client.Controllers
                 if (response.IsSuccessStatusCode)
                     return RedirectToAction(nameof(GetAllUsers));
 
-                return HandleErrorResponse(response);
+                return ErrorHandlers.HandleErrorResponse(response);
             }
             catch (Exception ex)
             {
-                return HandleException(ex, "An error occurred while updating the user.");
+                return ErrorHandlers.HandleException(ex, "An error occurred while updating the user.");
             }
         }
 
@@ -131,11 +123,11 @@ namespace Client.Controllers
                 if (response.IsSuccessStatusCode)
                     return RedirectToAction(nameof(GetAllUsers));
 
-                return HandleErrorResponse(response);
+                return ErrorHandlers.HandleErrorResponse(response);
             }
             catch (Exception ex)
             {
-                return HandleException(ex, "An error occurred while deleting the user.");
+                return ErrorHandlers.HandleException(ex, "An error occurred while deleting the user.");
             }
         }
 
@@ -161,7 +153,7 @@ namespace Client.Controllers
             }
         }
 
-        private string BuildQueryString(int pageNumber, int pageSize, string? searchTerm, string? filter)
+        private static string BuildQueryString(int pageNumber, int pageSize, string? searchTerm, string? filter)
         {
             var queryParams = new List<string> { $"pageNumber={pageNumber}", $"pageSize={pageSize}" };
             
@@ -171,28 +163,6 @@ namespace Client.Controllers
                 queryParams.Add($"filter={filter}");
 
             return "?" + string.Join("&", queryParams);
-        }
-
-        private IActionResult HandleErrorResponse(HttpResponseMessage response)
-        {
-            var errorMessage = response.StatusCode switch
-            {
-                System.Net.HttpStatusCode.BadRequest => "Invalid request.",
-                System.Net.HttpStatusCode.NotFound => "Resource not found.",
-                System.Net.HttpStatusCode.InternalServerError => "Server encountered an error.",
-                _ => "An unexpected error occurred."
-            };
-
-            return View("Error", new ErrorViewModel { Message = errorMessage });
-        }
-
-        private IActionResult HandleException(Exception ex, string defaultMessage)
-        {
-            return View("Error", new ErrorViewModel
-            {
-                Message = defaultMessage,
-                Details = ex.Message
-            });
         }
     }
 }

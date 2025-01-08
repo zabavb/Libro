@@ -6,7 +6,7 @@ namespace Client.Extensions
 {
     public static class ErrorHandlers
     {
-        public static IActionResult HandleErrorResponse(HttpResponseMessage response)
+        public static ViewResult HandleErrorResponse(HttpResponseMessage response)
         {
             var errorMessage = response.StatusCode switch
             {
@@ -28,7 +28,7 @@ namespace Client.Extensions
             };
         }
 
-        public static IActionResult HandleException(Exception ex, string defaultMessage)
+        public static ViewResult HandleException(Exception ex, string defaultMessage)
         {
             return new ViewResult
             {
