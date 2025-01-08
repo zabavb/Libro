@@ -7,8 +7,7 @@ namespace BookAPI.Repositories
 {
     public interface IBookRepository : IManagable<Book>
     {
-        Task<IEnumerable<Book>> GetAsync();
-        Task<IEnumerable<Book>> GetAsync(string searchQuery, string sortBy);
+        Task<PaginatedResult<Book>> GetAllAsync(int pageNumber, int pageSize, string searchTerm, Filter? filter, Sort? sort);
 
     }
 }
