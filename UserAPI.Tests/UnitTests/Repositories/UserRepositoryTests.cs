@@ -95,18 +95,13 @@ namespace UserAPI.Tests.UnitTests.Repositories
             // Arrange
             Guid id1 = Guid.NewGuid(), id2 = Guid.NewGuid();
 
-            var options = new DbContextOptionsBuilder<UserDbContext>()
-                .UseInMemoryDatabase(databaseName: "UserEntityLibro")
-                .Options;
-            var context = new UserDbContext(options);
-
             var usersFromDb = new List<User>
             {
                 new() { UserId = id1 },
                 new() { UserId = id2 }
-            }.AsQueryable();
-            await context.Users.AddRangeAsync(usersFromDb);
-            await context.SaveChangesAsync();
+            };
+            await _dbContext.Users.AddRangeAsync(usersFromDb);
+            await _dbContext.SaveChangesAsync();
 
             _redisDatabaseMock
                 .Setup(db => db.HashGetAllAsync(It.IsAny<RedisKey>(), It.IsAny<CommandFlags>()))
@@ -131,29 +126,11 @@ namespace UserAPI.Tests.UnitTests.Repositories
 
             // Assert
             Assert.NotNull(result);
-            Assert.Equal(2, result.Items.Count);
-            Assert.Equal(id1, result.Items.First().UserId);
-            Assert.Equal(id2, result.Items.Last().UserId);
-
-            _contextMock.Verify(db => db.Users.AsNoTracking(), Times.Once);
-
-            _loggerMock
-                .Setup(l => l.Log(
-                    It.Is<LogLevel>(level => level == LogLevel.Information),
-                    It.IsAny<EventId>(),
-                    It.Is<It.IsAnyType>((v, t) => true),
-                    It.IsAny<Exception>(),
-                    It.IsAny<Func<It.IsAnyType, Exception, string?>>()!
-                ))
-                .Callback<LogLevel, EventId, object, Exception, Delegate>((level, eventId, state, exception, formatter) =>
-                {
-                    capturedLogMessage = state.ToString();
-                });
-
-
-            capturedLogMessage.Should().Contain("Fetched from DB.");
             result.Items.Should().HaveCount(2);
             result.TotalCount.Should().Be(2);
+            Assert.Equal(id1, result.Items.First().UserId);
+            Assert.Equal(id2, result.Items.Last().UserId);
+            capturedLogMessage.Should().Contain("Set to CACHE.");
 
             _loggerMock.Verify(l => l.Log(
                 It.Is<LogLevel>(level => level == LogLevel.Information),
@@ -161,7 +138,7 @@ namespace UserAPI.Tests.UnitTests.Repositories
                 It.Is<It.IsAnyType>((v, t) => true),
                 It.IsAny<Exception>(),
                 It.IsAny<Func<It.IsAnyType, Exception, string>>()!
-            ), Times.Once);
+            ), Times.Exactly(2));
         }
 
         //========================= Get By Id =========================
