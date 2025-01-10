@@ -8,7 +8,7 @@ using Library.DTOs.User;
 using Library.Filters;
 using Library.Sortings;
 
-namespace UserAPI.Tests.UnitTests.Controllers
+namespace UserAPI.Tests.Controllers
 {
     public class UsersControllerTests
     {

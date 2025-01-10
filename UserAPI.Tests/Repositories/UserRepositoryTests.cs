@@ -8,7 +8,7 @@ using System.Text.Json;
 using UserAPI.Models;
 using FluentAssertions;
 
-namespace UserAPI.Tests.UnitTests.Repositories
+namespace UserAPI.Tests.Repositories
 {
     public class UserRepositoryTests
     {
