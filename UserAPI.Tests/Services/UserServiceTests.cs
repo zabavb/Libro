@@ -9,7 +9,7 @@ using Moq;
 using UserAPI.Repositories;
 using UserAPI.Services;
 
-namespace UserAPI.Tests.UnitTests.Services
+namespace UserAPI.Tests.Services
 {
     public class UserServiceTests
     {
@@ -33,7 +33,7 @@ namespace UserAPI.Tests.UnitTests.Services
         {
             // Arrange
             var user = new Models.User { UserId = Guid.NewGuid() };
-            var userDto = new User{ Id = user.UserId };
+            var userDto = new User { Id = user.UserId };
             var paginatedUsers = new PaginatedResult<Models.User>
             {
                 Items = [user],
@@ -113,7 +113,7 @@ namespace UserAPI.Tests.UnitTests.Services
                 .WithMessage("Failed to fetch paginated users.");
             capturedLogMessage.Should().NotBeNull();
             capturedLogMessage.Should().Contain("Failed to fetch paginated users.");
-            
+
             _loggerMock.Verify(l => l.Log(
                 It.Is<LogLevel>(level => level == LogLevel.Error),
                 It.IsAny<EventId>(),
@@ -318,7 +318,7 @@ namespace UserAPI.Tests.UnitTests.Services
                 .WithMessage("User was not provided for creation.");
             capturedLogMessage.Should().NotBeNull();
             capturedLogMessage.Should().Contain("User was not provided for creation.");
-            
+
             _loggerMock.Verify(l => l.Log(
                 It.Is<LogLevel>(level => level == LogLevel.Error),
                 It.IsAny<EventId>(),
@@ -476,7 +476,7 @@ namespace UserAPI.Tests.UnitTests.Services
             var userDto = new User { Id = userId };
 
             _repositoryMock
-                .Setup(r => r.UpdateAsync(It.IsAny<Models.User>()))                                     
+                .Setup(r => r.UpdateAsync(It.IsAny<Models.User>()))
                            .ThrowsAsync(new InvalidOperationException($"User with ID [{userDto.Id}] not found for update."));
 
             string capturedLogMessage = null!;
@@ -563,7 +563,7 @@ namespace UserAPI.Tests.UnitTests.Services
         {
             // Arrange
             var userId = Guid.NewGuid();
-            
+
             _repositoryMock
                 .Setup(r => r.DeleteAsync(userId))
                 .Returns(Task.CompletedTask);
