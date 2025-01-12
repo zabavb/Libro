@@ -1,4 +1,6 @@
-﻿namespace UserAPI.Models
+﻿using Library.DTOs.User;
+
+namespace UserAPI.Models
 {
     public class User
     {
@@ -24,8 +26,7 @@
             Email = string.Empty;
             PhoneNumber = string.Empty;
             Role = RoleType.GUEST;
-            Password = new();
-            Subscription = new();
+            Password = null!;
         }
     }
 }

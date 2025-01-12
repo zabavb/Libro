@@ -26,6 +26,7 @@ builder.Services.AddScoped<IFeedbackRepository, FeedbackRepository>();
 builder.Services.AddScoped<IPublisherRepository, PublisherRepository>();
 
 builder.Services.AddScoped<IAuthorService, AuthorService>();
+builder.Services.AddScoped<IAuthorService, AuthorService>();
 builder.Services.AddScoped<ICoverTypeService, CoverTypeService>();
 builder.Services.AddScoped<ILanguageService, LanguageService>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
@@ -68,6 +69,7 @@ builder.Logging.AddSerilog(Log.Logger);
 
 var app = builder.Build();
 
+// Configure the HTTP request pipeline. 
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();

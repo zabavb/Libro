@@ -1,95 +1,144 @@
 ﻿using AutoMapper;
-using Microsoft.EntityFrameworkCore;
-using OrderApi.Data;
+using Library.Extensions;
 using OrderApi.Models;
 
 namespace OrderApi.Services
 {
-    public class OrderService : IOrderService
+    internal class OrderService : IOrderService
     {
-        private readonly OrderDbContext _context;
+        private readonly IOrderRepository _repository;
         private readonly IMapper _mapper;
+        private readonly ILogger<IOrderService> _logger;
+        private string _message;
 
-        public OrderService(OrderDbContext context, IMapper mapper)
+        public OrderService(IOrderRepository repository, IMapper mapper, ILogger<IOrderService> logger)
         {
-            _context = context;
+            _repository = repository;
             _mapper = mapper;
+            _logger = logger;
+            _message = string.Empty;
         }
 
-        public async Task<IEnumerable<OrderDto>> GetOrdersAsync()
+        public async Task<PaginatedResult<OrderDto>> GetOrdersAsync(int pageNumber, int pageSize, string searchTerm, Filter? filter)
         {
-            var orders = await _context.Orders.ToListAsync();
+            var paginatedOrders = await _repository.GetAllPaginatedAsync(pageNumber, pageSize, searchTerm, filter);
 
-            if (orders == null || orders.Count == 0)
+            if (paginatedOrders == null || paginatedOrders.Items == null)
             {
-                return [];
+                _message = "Failed to fetch paginated delivery types.";
+                _logger.LogError(_message);
+                throw new InvalidOperationException(_message);
             }
 
-            return _mapper.Map<List<OrderDto>>(orders);
+            _logger.LogInformation("Delivery types successfully fetched.");
+
+            return new PaginatedResult<OrderDto>
+            {
+                Items = _mapper.Map<ICollection<OrderDto>>(paginatedOrders.Items),
+                TotalCount = paginatedOrders.TotalCount,
+                PageNumber = paginatedOrders.PageNumber,
+                PageSize = paginatedOrders.PageSize
+            };
         }
-        public async Task<OrderDto> GetOrderByIdAsync(Guid orderId)
+
+        public async Task<OrderDto?> GetByIdAsync(Guid orderId)
         {
-            var order = await _context.Orders
-                .FirstOrDefaultAsync(o => o.Id == orderId);
+            var order = await _repository.GetByIdAsync(orderId);
 
             if (order == null)
             {
-                return null;
+                _message = $"Order with Id [{orderId}] not found.";
+                _logger.LogError(_message);
+                throw new KeyNotFoundException(_message);
             }
 
-            return _mapper.Map<OrderDto>(order);
+            _logger.LogInformation($"Order with Id [{orderId}] fetched succesfully.");
+
+            return order == null ? null : _mapper.Map<OrderDto>(order);
         }
 
-        public async Task<OrderDto> CreateOrderAsync(OrderDto orderDto)
+        public async Task CreateAsync(OrderDto entity)
         {
-            var order = _mapper.Map<Order>(orderDto);
+            if(entity == null)
+            {
+                _message = "Order wasn't provided.";
+                _logger.LogError(_message);
+                throw new ArgumentNullException(_message,nameof(entity));
+            }
+            var order = _mapper.Map<Order>(entity);
 
-            _context.Orders.Add(order);
-            await _context.SaveChangesAsync();
+            try
+            {
+                await _repository.CreateAsync(order);
+                _logger.LogInformation("Order created successfully.");
+            }
+            catch(Exception ex)
+            {
+                _message = "Error occured while adding an order.";
+                _logger.LogError(_message);
+                throw new InvalidOperationException(_message, ex);
+            }
 
-            return _mapper.Map<OrderDto>(order);
         }
 
-        public async Task<bool> DeleteOrderAsync(Guid id)
+        public async Task UpdateAsync(OrderDto entity)
         {
-            var order = await _context.Orders
-                .FirstOrDefaultAsync(o => o.Id == id);
+            if (entity == null)
+            {
+                _message = "Order was not provided for the update";
+                _logger.LogError(_message);
+                throw new ArgumentNullException(_message,nameof(entity));
+            }
 
-            if(order == null) { return false; }
+            var order = _mapper.Map<Order>(entity);
+            try
+            {
+                await _repository.UpdateAsync(order);
+                _logger.LogInformation("Order updated succesfully.");
+            }
+            catch (InvalidOperationException)
+            {
+                _message = $"Order with Id {entity.Id} not found for update.";
+                _logger.LogError(_message);
+                throw new KeyNotFoundException(_message);
+            }
+            catch(Exception ex)
+            {
+                _message = $"Error occured while updating the order with Id [{entity.Id}]";
+                _logger.LogError(_message);
+                throw new InvalidOperationException(_message, ex);
+            }
 
-            _context.Orders.Remove(order);
-            await _context.SaveChangesAsync();
-
-            return true;
         }
 
-        public async Task<OrderDto> UpdateOrderAsync(Guid id, OrderDto orderDto)
+        public async Task DeleteAsync(Guid id)
         {
-            var order = await _context.Orders
-                .FirstOrDefaultAsync(o => o.Id == id);
+            var order = await _repository.GetByIdAsync(id);
 
-            if(order == null) { return null; }
+            if (order == null)
+            {
+                _message = $"Order with Id [{id}] not found.";
+                _logger.LogError(_message);
+                throw new KeyNotFoundException(_message);
+            }
 
-
-            order.UserId = orderDto.UserId;
-            order.BookIds = orderDto.BookIds;
-
-            order.Price = orderDto.Price;
-            order.DeliveryPrice = orderDto.DeliveryPrice;
-
-            order.Address = orderDto.Address;
-            order.City = orderDto.City;
-            order.Region = orderDto.Region;
-
-            order.Delivery = orderDto.Delivery;
-            order.DeliveryDate = orderDto.DeliveryDate;
-            order.DeliveryTime = orderDto.DeliveryTime;
-
-            order.Status = orderDto.Status;
-
-            await _context.SaveChangesAsync();
-
-            return _mapper.Map<OrderDto>(order);
+            try
+            {
+                await _repository.DeleteAsync(id);
+                _logger.LogInformation($"Order with Id [{id}] deleted succesfully");
+            }
+            catch (InvalidOperationException)
+            {
+                _message = $"Order with Id [{id}] not found for deletion.";
+                _logger.LogError(_message);
+                throw new KeyNotFoundException(_message);
+            }
+            catch(Exception ex)
+            {
+                _message = $"Error occurred while deleting the order with Id [{id}].";
+                _logger.LogError(_message);
+                throw new InvalidOperationException(_message, ex);
+            }
         }
     }
 }

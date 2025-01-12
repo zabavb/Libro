@@ -1,176 +1,191 @@
-﻿using Microsoft.EntityFrameworkCore;
-using System.Text;
+﻿using Library.Extensions;
+using Library.Sortings;
+using Microsoft.EntityFrameworkCore;
+using StackExchange.Redis;
+using System.Text.Json;
 using UserAPI.Data;
 using UserAPI.Models;
-using UserAPI.Models.Extensions;
 
 namespace UserAPI.Repositories
 {
-    public class UserRepository : IUserRepository
+    public class UserRepository(UserDbContext context, IConnectionMultiplexer redis, ILogger<IUserRepository> logger) : IUserRepository
     {
-        private readonly UserDbContext _context;
-        private readonly ILogger<IUserRepository> _logger;
-        private  string _message;
+        private readonly UserDbContext _context = context;
+        private readonly IDatabase _redisDatabase = redis.GetDatabase();
+        public readonly string _cacheKeyPrefix = "User_";
+        public readonly TimeSpan _cacheExpiration = TimeSpan.FromMinutes(10);
+        private readonly ILogger<IUserRepository> _logger = logger;
 
-        public UserRepository(UserDbContext context, ILogger<IUserRepository> logger, string message)
-        {
-            _context = context;
-            _logger = logger;
-            _message = message;
-        }
-
-        public async Task<PaginatedResult<User>> GetAllEntitiesPaginatedAsync(int pageNumber, int pageSize, string searchTerm, UserFilter? filter)
+        public async Task<PaginatedResult<User>> GetAllAsync(int pageNumber, int pageSize, string? searchTerm, Filter? filter, Sort? sort)
         {
             IEnumerable<User> users;
-            if (string.IsNullOrWhiteSpace(searchTerm))
-                users = await SearchEntitiesAsync(searchTerm);
-            else
-                users = _context.Users.AsNoTracking();
-            if (users.Any() && filter != null)
-                users = await FilterEntitiesAsync(users, filter);
 
-            var totalUsers = await Task.FromResult(users.Count());
-
-            users = await Task.FromResult(users.Skip((pageNumber - 1) * pageSize).Take(pageSize));
-
-            if (users == null)
+            string cacheKey = $"{_cacheKeyPrefix}All";
+            var cachedUsers = await _redisDatabase.HashGetAllAsync(cacheKey);
+            if (cachedUsers.Length > 0)
             {
-                _message = "Failed to fetch users.";
-                _logger.LogError(_message);
-                throw new InvalidOperationException(_message);
+                users = cachedUsers.Select(entry => JsonSerializer.Deserialize<User>(entry.Value!)!);
+                _logger.LogInformation("Fetched from CACHE.");
             }
             else
-                _logger.LogInformation("Successfully fetched {Count} users.", users.Count());
+            {
+                users = _context.Users.AsNoTracking();
+                _logger.LogInformation("Fetched from DB.");
+
+                var hashEntries = users.ToDictionary(
+                    user => user.UserId.ToString(),
+                    user => JsonSerializer.Serialize(user)
+                );
+                await _redisDatabase.HashSetAsync(
+                    cacheKey,
+                    [.. hashEntries.Select(kvp => new HashEntry(kvp.Key, kvp.Value))]
+                );
+                await _redisDatabase.KeyExpireAsync(cacheKey, _cacheExpiration);
+                _logger.LogInformation("Set to CACHE.");
+            }
+
+            if (users.Any() && !string.IsNullOrWhiteSpace(searchTerm))
+                users = await SearchAsync(users, searchTerm);
+            if (users.Any() && filter != null)
+                users = await FilterAsync(users, filter);
+            if (users.Any() && sort != null)
+                users = await SortAsync(users, sort);
+
+            var totalUsers = await Task.FromResult(users.Count());
+            users = await Task.FromResult(users.Skip((pageNumber - 1) * pageSize).Take(pageSize));
+            ICollection<User> result = [.. users];
 
             return new PaginatedResult<User>
             {
-                Items = (ICollection<User>)users,
+                Items = result,
                 TotalCount = totalUsers,
                 PageNumber = pageNumber,
                 PageSize = pageSize
             };
         }
 
-        public async Task<User?> GetEntityByIdAsync(Guid id)
+        public async Task<IEnumerable<User>> SearchAsync(IEnumerable<User> users, string searchTerm)
         {
-            var user = await _context.Users.AsNoTracking().FirstOrDefaultAsync(u => u.UserId == id);
+            searchTerm = searchTerm.ToLower();
 
-            if (user == null)
+            if (users == null)
+                return await _context.Users
+                    .AsNoTracking()
+                    .Where(u => u.FirstName.Contains(searchTerm, StringComparison.CurrentCultureIgnoreCase)
+                                || u.LastName!.Contains(searchTerm, StringComparison.CurrentCultureIgnoreCase)
+                                || u.Email.Contains(searchTerm))
+                    .ToListAsync();
+
+            return await Task.FromResult(
+                users.Where(u => u.FirstName.Contains(searchTerm, StringComparison.CurrentCultureIgnoreCase)
+                            || u.LastName!.Contains(searchTerm, StringComparison.CurrentCultureIgnoreCase)
+                            || u.Email.Contains(searchTerm))
+                );
+        }
+
+        public async Task<IEnumerable<User>> FilterAsync(IEnumerable<User> users, Filter filter)
+        {
+            var query = users.AsQueryable();
+
+            if (filter.Role.HasValue)
+                query = query.Where(u => u.Role.Equals(filter.Role));
+
+
+            if (filter.DateOfBirthStart.HasValue)
+                query = query.Where(u => u.DateOfBirth >= filter.DateOfBirthStart.Value);
+
+            if (filter.DateOfBirthEnd.HasValue)
+                query = query.Where(u => u.DateOfBirth <= filter.DateOfBirthEnd.Value);
+
+            if (filter.HasSubscription)
+                query = query.Where(u => u.SubscriptionId.Equals(filter.HasSubscription));
+
+            return await Task.FromResult(query.ToList());
+        }
+
+        public async Task<IEnumerable<User>> SortAsync(IEnumerable<User> users, UserSort sort)
+        {
+            var query = users.AsQueryable();
+
+            if (sort.FirstName != Bool.NULL)
+                query = sort.FirstName == Bool.ASCENDING
+                    ? query.OrderBy(u => u.FirstName)
+                    : query.OrderByDescending(u => u.FirstName);
+
+            if (sort.LastName != Bool.NULL)
+                query = sort.LastName == Bool.ASCENDING
+                    ? query.OrderBy(u => u.LastName)
+                    : query.OrderByDescending(u => u.LastName);
+
+            if (sort.DateOfBirth != Bool.NULL)
+                query = sort.DateOfBirth == Bool.ASCENDING
+                    ? query.OrderBy(u => u.DateOfBirth)
+                    : query.OrderByDescending(u => u.DateOfBirth);
+
+            if (sort.Email != Bool.NULL)
+                query = sort.Email == Bool.ASCENDING
+                    ? query.OrderBy(u => u.Email)
+                    : query.OrderByDescending(u => u.Email);
+
+            if (sort.PhoneNumber != Bool.NULL)
+                query = sort.PhoneNumber == Bool.ASCENDING
+                    ? query.OrderBy(u => u.PhoneNumber)
+                    : query.OrderByDescending(u => u.PhoneNumber);
+
+            return await Task.FromResult(query.ToList());
+        }
+
+        public async Task<User?> GetByIdAsync(Guid id)
+        {
+            string cacheKey = $"{_cacheKeyPrefix}{id}";
+            string fieldKey = id.ToString();
+
+            var cachedUser = await _redisDatabase.HashGetAsync(cacheKey, fieldKey);
+
+            if (!cachedUser.IsNullOrEmpty)
             {
-                _message = $"User with ID {id} not found.";
-                _logger.LogError(_message);
-                throw new KeyNotFoundException(_message);
+                _logger.LogInformation("Fetched from CACHE.");
+                return JsonSerializer.Deserialize<User>(cachedUser!);
             }
-            else
-                _logger.LogInformation($"User with ID {id} found.");
+
+            _logger.LogInformation("Fetched from DB.");
+            var user = await _context.Users.FindAsync(id);
+            if (user != null)
+            {
+                _logger.LogInformation("Set to CACHE.");
+                await _redisDatabase.HashSetAsync(
+                    cacheKey,
+                    fieldKey,
+                    JsonSerializer.Serialize(user)
+                );
+
+                await _redisDatabase.KeyExpireAsync(cacheKey, _cacheExpiration);
+            }
 
             return user;
         }
 
-        public async Task<IEnumerable<User>> SearchEntitiesAsync(string searchTerm)
+        public async Task CreateAsync(User entity)
         {
-            var users = await _context.Users
-                .AsNoTracking()
-                .Where(u => u.FirstName.Contains(searchTerm)
-                            || u.LastName!.Contains(searchTerm)
-                            || u.Email.Contains(searchTerm))
-                .ToListAsync();
-
-            if (users == null)
-            {
-                _message = "Failed to search users.";
-                _logger.LogError(_message);
-                throw new InvalidOperationException(_message);
-            }
-            else
-                _logger.LogInformation($"{users.Count} users searched.");
-
-
-            return users;
+            await _context.Users.AddAsync(entity);
+            await _context.SaveChangesAsync();
         }
 
-        public async Task<IEnumerable<User>> FilterEntitiesAsync(IEnumerable<User> users, UserFilter filter)
+        public async Task UpdateAsync(User entity)
         {
-            if (filter.Role.HasValue)
-                users = users.Where(u => u.Role.Equals(filter.Role));
-
-            if (filter.DateOfBirthStart.HasValue)
-                users = users.Where(u => u.DateOfBirth >= filter.DateOfBirthStart.Value);
-
-            if (filter.DateOfBirthEnd.HasValue)
-                users = users.Where(u => u.DateOfBirth <= filter.DateOfBirthEnd.Value);
-
-            if (filter.HasSubscription)
-                users = users.Where(u => u.SubscriptionId.Equals(filter.HasSubscription));
-
-            return await Task.FromResult(users);
-        }
-
-        public async Task AddEntityAsync(User entity)
-        {
-            if (entity == null)
-            {
-                _message = "User was not provided for creation.";
-                _logger.LogError(_message);
-                throw new ArgumentNullException(_message, nameof(entity));
-            }
-
-            try
-            {
-                await _context.Users.AddAsync(entity);
-                await _context.SaveChangesAsync();
-                _logger.LogInformation($"User [{entity}] successfully created.");
-            }
-            catch (ArgumentNullException ex)
-            {
-                _message = "User entity cannot be null.";
-                _logger.LogError(_message);
-                throw new ArgumentException(_message, ex);
-            }
-            catch (Exception ex)
-            {
-                _message = "Error occurred while adding the user to the database.";
-                _logger.LogError(_message);
-                throw new InvalidOperationException(_message, ex);
-            }
-        }
-
-        public async Task UpdateEntityAsync(User entity)
-        {
-            if (entity == null)
-            {
-                _message = "User was not provided for update.";
-                _logger.LogError(_message);
-                throw new ArgumentNullException(_message, nameof(entity));
-            }
-
             if (!await _context.Users.AnyAsync(u => u.UserId == entity.UserId))
-            {
-                _message = $"User with ID {entity.UserId} does not exist.";
-                _logger.LogError(_message);
-                throw new InvalidOperationException(_message);
-            }
+                throw new InvalidOperationException();
 
             _context.Users.Update(entity);
             await _context.SaveChangesAsync();
-
-            _logger.LogInformation($"User successfully updated to [{entity}].");
         }
 
-        public async Task DeleteEntityAsync(Guid id)
+        public async Task DeleteAsync(Guid id)
         {
-            var user = await _context.Users.FindAsync(id);
-
-            if (user == null)
-            {
-                _message = $"User with ID [{id}] not found for deletion.";
-                _logger.LogError(_message);
-                throw new KeyNotFoundException(_message);
-            }
-
+            var user = await _context.Users.FindAsync(id) ?? throw new KeyNotFoundException();
+            
             _context.Users.Remove(user);
             await _context.SaveChangesAsync();
-            _logger.LogInformation($"User with ID [{id}] successfully deleted.");
         }
     }
 }

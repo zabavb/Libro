@@ -1,0 +1,31 @@
+﻿@model List<Client.Models.BookEntities.Book.ManageBookViewModel>
+
+<h1>Book List</h1>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Title</th>
+            <th>Author</th>
+            <th>Year</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var book in Model)
+        {
+            <tr>
+                <td>@book.Title</td>
+                <td>@book.AuthorId</td>
+                <td>@book.Year</td>
+                <td>
+                    <a asp-action="GetBookById" asp-route-id="@book.Id">Details</a> |
+                    <a asp-action="UpdateBook" asp-route-id="@book.Id">Edit</a> |
+                    <a asp-action="DeleteBook" asp-route-id="@book.Id" onclick="return confirm('Are you sure you want to delete this book?');">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<a asp-action="CreateBook" class="btn btn-primary">Add Book</a>

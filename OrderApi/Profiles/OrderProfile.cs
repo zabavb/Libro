@@ -8,10 +8,7 @@ namespace OrderApi.Profiles
         public OrderProfile()
         {
             CreateMap<Order, OrderDto>()
-                .ForMember(dest => dest.OrderId, opt => opt.MapFrom(src => src.Id));
-
-            CreateMap<OrderDto, Order>()
-                .ForMember(dest => dest.Id, opt => opt.Ignore());
+                .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.OrderId)).ReverseMap();
         }
     }
 }

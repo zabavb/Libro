@@ -10,7 +10,7 @@ namespace UserAPI.Profiles
             CreateMap<User, UserDto>()
                 .ForMember(dst => dst.Id, opt => opt.MapFrom(src => src.UserId))
                 .ReverseMap()
-                .ForMember(dst => dst.UserId, opt => opt.Ignore());
+                .ForMember(dst => dst.UserId, opt => opt.MapFrom(src => src.Id));
         }
     }
 }

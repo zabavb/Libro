@@ -1,3 +1,5 @@
-﻿global using UserDto = Library.UserEntities.User;
-global using PasswordDto = Library.UserEntities.Password;
-global using SubscriptionDto = Library.UserEntities.Subscription;
+﻿global using UserDto = Library.DTOs.User.User;
+global using PasswordDto = Library.DTOs.User.Password;
+global using SubscriptionDto = Library.DTOs.User.Subscription;
+global using Filter = Library.Filters.UserFilter;
+global using Sort = Library.Sortings.UserSort;

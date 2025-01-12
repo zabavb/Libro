@@ -6,15 +6,14 @@
         public string Title { get; set; }
         public string? Description { get; set; }
         public DateTime EndDate { get; set; }
-        public ICollection<Guid>? UserIds { get; set; }
-        public ICollection<User>? Users { get; set; }
+        public Guid? UserId { get; set; }
+        public User? User { get; set; }
 
         public Subscription()
         {
             Title = string.Empty;
             Description = string.Empty;
             EndDate = DateTime.Now.AddDays(1);
-            Users = new HashSet<User>();
         }
     }
 }

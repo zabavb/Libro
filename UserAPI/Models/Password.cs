@@ -12,7 +12,6 @@
         {
             PasswordHash = string.Empty;
             PasswordSalt = string.Empty;
-            User = new();
         }
     }
 }

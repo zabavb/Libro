@@ -1,110 +1,92 @@
 ﻿using AutoMapper;
-using BookApi.Data;
 using BookApi.Models;
-using Microsoft.EntityFrameworkCore;
-
+using BookAPI.Repositories;
+using Library.Extensions;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace BookApi.Services
 {
     public class BookService : IBookService
     {
-        private readonly BookDbContext _context;
+        private readonly IBookRepository _bookRepository;
         private readonly IMapper _mapper;
 
-        public BookService(BookDbContext context, IMapper mapper)
+        public BookService(IBookRepository bookRepository, IMapper mapper)
         {
-            _context = context;
+            _bookRepository = bookRepository;
             _mapper = mapper;
         }
 
-        public async Task<IEnumerable<BookDto>> GetBooksAsync()
-        {
-            var books = await _context.Books
-                                       .Include(b => b.Category)
-                                       .Include(b => b.Publisher)
-                                       .Include(b => b.Feedbacks)
-                                       .ToListAsync();
 
-            if (books == null || books.Count == 0)
+        public async Task<PaginatedResult<BookDto>> GetBooksAsync(int pageNumber, int pageSize, string searchTerm, Filter? filter, Sort? sort)
+        {
+            var books = await _bookRepository.GetAllAsync(pageNumber, pageSize, searchTerm, filter, sort);
+
+            if (books == null || books.Items == null)
             {
-                return [];
+                throw new InvalidOperationException("Failed to fetch books.");
             }
 
-            return _mapper.Map<List<BookDto>>(books);
+            return new PaginatedResult<BookDto>
+            {
+                Items = _mapper.Map<ICollection<BookDto>>(books.Items),
+                TotalCount = books.TotalCount,
+                PageNumber = books.PageNumber,
+                PageSize = books.PageSize
+            };
         }
 
-
-        public async Task<BookDto> GetBookByIdAsync(Guid id) 
+        public async Task<BookDto> GetBookByIdAsync(Guid id)
         {
-            var book = await _context.Books
-                                      .Include(b => b.Category)
-                                      .Include(b => b.Publisher)
-                                      .Include(b => b.Feedbacks)
-                                      .FirstOrDefaultAsync(b => b.Id == id); 
+            var book = await _bookRepository.GetByIdAsync(id); 
 
             if (book == null)
             {
-                return null; 
+                return null;
             }
 
             return _mapper.Map<BookDto>(book); 
         }
+
         public async Task<BookDto> CreateBookAsync(BookDto bookDto)
         {
-            var book = _mapper.Map<Book>(bookDto);
+            var book = _mapper.Map<Book>(bookDto);  
 
-            _context.Books.Add(book);
-            await _context.SaveChangesAsync();
+            await _bookRepository.CreateAsync(book); 
 
-            return _mapper.Map<BookDto>(book);
+            return _mapper.Map<BookDto>(book);  
         }
+
         public async Task<BookDto> UpdateBookAsync(Guid id, BookDto bookDto)
         {
-            var existingBook = await _context.Books
-                                              .Include(b => b.Category)
-                                              .Include(b => b.Publisher)
-                                              .Include(b => b.Feedbacks)
-                                              .FirstOrDefaultAsync(b => b.Id == id);
+            var existingBook= await _bookRepository.GetByIdAsync(id);
 
             if (existingBook == null)
             {
-                return null; 
+                return null;
             }
 
-            existingBook.Title = bookDto.Title;
-            existingBook.Price = bookDto.Price;
-            existingBook.Language = (Language)bookDto.Language;
-            existingBook.Year = bookDto.Year;
-            existingBook.Description = bookDto.Description;
-            existingBook.Cover = (CoverType)bookDto.Cover;
-            existingBook.IsAvaliable = bookDto.IsAvaliable;
-            existingBook.FeedbackIds = bookDto.FeedbackIds ?? existingBook.FeedbackIds;
-            existingBook.PublisherId = bookDto.PublisherId;
-            existingBook.CategoryId = bookDto.CategoryId;
-
-            await _context.SaveChangesAsync();
+            _mapper.Map(bookDto, existingBook);
+            await _bookRepository.UpdateAsync(existingBook);
 
             return _mapper.Map<BookDto>(existingBook);
         }
 
         public async Task<bool> DeleteBookAsync(Guid id)
         {
-            var book = await _context.Books
-                                      .FirstOrDefaultAsync(b => b.Id == id);
+            var book = await _bookRepository.GetByIdAsync(id);
 
             if (book == null)
             {
                 return false; 
             }
 
-            _context.Books.Remove(book);
-            await _context.SaveChangesAsync();
+            await _bookRepository.DeleteAsync(id); 
 
             return true; 
         }
-
-
-
     }
-
 }

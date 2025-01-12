@@ -1,0 +1,102 @@
+{
+  "Routes": [
+    //======================================= Client =======================================
+
+    //======================================= BookAPI =======================================
+
+    //======================================= UserAPI =======================================
+    //======================= User entity =======================
+    {
+      "DownstreamPathTemplate": "/api/users",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7007
+        }
+      ],
+      "UpstreamPathTemplate": "/gateway/users",
+      "UpstreamHttpMethod": [ "GET", "POST" ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/users/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7007
+        }
+      ],
+      "UpstreamPathTemplate": "/gateway/users/{id}",
+      "UpstreamHttpMethod": [ "GET", "PUT", "DELETE" ]
+    },
+    //======================= Password entity =======================
+
+    //======================= Subscription entity =======================
+
+    //======================================= OrderAPI =======================================
+    //======================= Order entity =======================
+    {
+      "DownstreamPathTemplate": "/api/orders",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7051
+        }
+      ],
+      "UpstreamPathTemplate": "/gateway/orders",
+      "UpstreamHttpMethod": [ "GET", "POST", "PUT" ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/orders/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7051
+        }
+      ],
+      "UpstreamPathTemplate": "/gateway/orders/{id}",
+      "UpstreamHttpMethod": [ "GET", "DELETE" ]
+    },
+    //======================= Delivery type entity =======================
+    {
+      "DownstreamPathTemplate": "/api/deliverytypes",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7051
+        }
+      ],
+      "UpstreamPathTemplate": "/gateway/deliverytypes",
+      "UpstreamHttpMethod": [ "GET", "POST", "PUT" ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/deliverytypes/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7051
+        }
+      ],
+      "UpstreamPathTemplate": "/gateway/deliverytypes/{id}",
+      "UpstreamHttpMethod": [ "GET", "DELETE" ]
+    },
+    //======================= Status update =======================
+    {
+      "DownstreamPathTemplate": "/api/status/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7051
+        }
+      ],
+      "UpstreamPathTemplate": "/gateway/status/{id}",
+      "UpstreamHttpMethod": [ "PUT" ]
+    }
+  ]
+}

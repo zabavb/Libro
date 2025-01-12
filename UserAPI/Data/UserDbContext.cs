@@ -20,6 +20,12 @@ namespace UserAPI.Data
             modelBuilder.ApplyConfiguration(new UserConfiguration());
             modelBuilder.ApplyConfiguration(new PasswordConfiguration());
             modelBuilder.ApplyConfiguration(new SubscriptionConfiguration());
+
+            modelBuilder.Entity<User>()
+                .HasOne(u => u.Subscription) 
+                .WithOne(s => s.User)
+                .HasForeignKey<Subscription>(s => s.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

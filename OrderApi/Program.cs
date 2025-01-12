@@ -1,19 +1,45 @@
 using Microsoft.EntityFrameworkCore;
+using Serilog;
 using OrderApi.Data;
 using OrderApi.Services;
 using Microsoft.OpenApi.Models;
 using System.Reflection;
+using OrderApi.Repository;
+using OrderApi.Profiles;
+using StackExchange.Redis;
+using OrderAPI.Repository;
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+
+
 builder.Services.AddDbContext<OrderDbContext>(options => options
         .UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
-builder.Services.AddScoped<IOrderService,OrderService>();
+
+builder.Services.AddSingleton<IConnectionMultiplexer>(sp =>
+{
+    var options = new ConfigurationOptions
+    {
+        EndPoints = { "your_redis_endpoint", "your_port" },
+        User = "your_username",
+        Password = "your_password"
+    };
+    return ConnectionMultiplexer.Connect(options);
+});
+
+builder.Services.AddScoped<IOrderRepository, OrderRepository>();
+builder.Services.AddScoped<IOrderService, OrderService>();
+
+builder.Services.AddScoped<IDeliveryTypeRepository, DeliveryTypeRepository>();
+builder.Services.AddScoped<IDeliveryTypeService, DeliveryTypeService>();
+
 builder.Services.AddControllers();
-builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+
+builder.Services.AddAutoMapper(typeof(OrderProfile));
+builder.Services.AddAutoMapper(typeof(DeliveryTypeProfile));
+
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen(options => 
+builder.Services.AddSwaggerGen(options =>
 {
     options.SwaggerDoc("v1", new OpenApiInfo
     {
@@ -25,9 +51,24 @@ builder.Services.AddSwaggerGen(options =>
     options.IncludeXmlComments(xmlPath);
 });
 
+var logFilePath = Path.Combine(AppContext.BaseDirectory, "logs.log");
+Directory.CreateDirectory(Path.GetDirectoryName(logFilePath)!);
+
+Log.Logger = new LoggerConfiguration()
+.Enrich.WithProperty("LogTime", DateTime.UtcNow)
+    .WriteTo.Console(outputTemplate: "[{Level:u3}]: {Message:lj} - {LogTime:yyyy-MM-dd HH:mm:ss}{NewLine}{NewLine}")
+    .WriteTo.File(
+        logFilePath,
+        rollingInterval: RollingInterval.Day,
+        retainedFileCountLimit: 7,
+        outputTemplate: "[{Level:u3}]: {Message:lj} | Exception: {Exception} - {Timestamp:yyyy-MM-dd HH:mm:ss}{NewLine}{NewLine}"
+    )
+    .CreateLogger();
+builder.Logging.ClearProviders();
+builder.Logging.AddSerilog(Log.Logger);
+
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();

@@ -18,44 +18,11 @@ namespace BookApi.Data
         }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Book>(entity =>
-            {
-                entity.Property(b => b.Id)
-                      .HasDefaultValueSql("NEWSEQUENTIALID()");
-                 });
-
-            modelBuilder.Entity<Category>(entity =>
-            {
-                entity.Property(c => c.Id)
-                      .HasDefaultValueSql("NEWID()");
-                
-                
-            });
-
-            modelBuilder.Entity<Publisher>(entity =>
-            {
-                entity.Property(p => p.Id)
-                      .HasDefaultValueSql("NEWID()");
-                
-            });
-
-            modelBuilder.Entity<Feedback>(entity =>
-            {
-                entity.Property(f => f.Id)
-                      .HasDefaultValueSql("NEWID()");
-               
-            });
-
-            modelBuilder.Entity<Author>(entity =>
-            {
-                entity.Property(a => a.Id)
-                      .HasDefaultValueSql("NEWID()");
-            });
+            modelBuilder.ApplyConfigurationsFromAssembly(typeof(BookDbContext).Assembly);
 
             DataSeeder.Seed(modelBuilder);
-
-
         }
+
 
 
     }
