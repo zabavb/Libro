@@ -15,11 +15,13 @@ namespace BookApi.Controllers
     public class BooksController : ControllerBase
     {
         private readonly IBookService _bookService;
+        private readonly ILogger<BooksController> _logger;
 
 
-        public BooksController(IBookService bookService)
+        public BooksController(IBookService bookService, ILogger<BooksController> logger)
         {
             _bookService = bookService;
+            _logger = logger;
         }
 
         /// <summary>
@@ -35,8 +37,16 @@ namespace BookApi.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAll([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10, [FromQuery] string? searchTerm = null, [FromQuery] Filter? filter = null, [FromQuery] Sort? sort = null)
         {
-            var books = await _bookService.GetBooksAsync(pageNumber, pageSize, searchTerm, filter, sort);
-            return Ok(books);
+            try
+            {
+                var books = await _bookService.GetBooksAsync(pageNumber, pageSize, searchTerm, filter, sort);
+                return Ok(books);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error occurred while retrieving books.");
+                return StatusCode(StatusCodes.Status500InternalServerError, new { message = ex.Message });
+            }
         }
 
 
@@ -51,14 +61,24 @@ namespace BookApi.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<BookDto>> GetBookById(Guid id)
         {
-            var book = await _bookService.GetBookByIdAsync(id);
-
-            if (book == null)
+            try
             {
-                return NotFound($"Book with id {id} not found.");
-            }
+                var book = await _bookService.GetBookByIdAsync(id);
 
-            return Ok(book);
+                if (book == null)
+                {
+                    _logger.LogWarning($"Book with id {id} not found.");
+                    return NotFound($"Book with id {id} not found.");
+                }
+
+                _logger.LogInformation($"Book with id {id} successfully fetched.");
+                return Ok(book);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error occurred while retrieving book with id {id}.");
+                return StatusCode(StatusCodes.Status500InternalServerError, new { message = ex.Message });
+            }
         }
 
         /// <summary>
@@ -73,12 +93,21 @@ namespace BookApi.Controllers
         {
             if (bookDto == null)
             {
+                _logger.LogWarning("Invalid book data provided.");
                 return BadRequest("Invalid data.");
             }
 
-            var createdBook = await _bookService.CreateBookAsync(bookDto);
-
-            return CreatedAtAction(nameof(GetBookById), new { id = createdBook.BookId }, createdBook);
+            try
+            {
+                var createdBook = await _bookService.CreateBookAsync(bookDto);
+                _logger.LogInformation($"Book with id {createdBook.BookId} successfully created.");
+                return CreatedAtAction(nameof(GetBookById), new { id = createdBook.BookId }, createdBook);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error occurred while creating a new book.");
+                return StatusCode(StatusCodes.Status500InternalServerError, new { message = ex.Message });
+            }
         }
 
         /// <summary>
@@ -95,17 +124,28 @@ namespace BookApi.Controllers
         {
             if (bookDto == null)
             {
+                _logger.LogWarning("Invalid book data provided for update.");
                 return BadRequest("Invalid data.");
             }
 
-            var updatedBook = await _bookService.UpdateBookAsync(id, bookDto);
-
-            if (updatedBook == null)
+            try
             {
-                return NotFound("Book not found.");
-            }
+                var updatedBook = await _bookService.UpdateBookAsync(id, bookDto);
 
-            return Ok(updatedBook);
+                if (updatedBook == null)
+                {
+                    _logger.LogWarning($"Book with id {id} not found for update.");
+                    return NotFound($"Book with id {id} not found.");
+                }
+
+                _logger.LogInformation($"Book with id {id} successfully updated.");
+                return Ok(updatedBook);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error occurred while updating book with id {id}.");
+                return StatusCode(StatusCodes.Status500InternalServerError, new { message = ex.Message });
+            }
         }
 
         /// <summary>
@@ -118,14 +158,24 @@ namespace BookApi.Controllers
         [HttpDelete("{id}")]
         public async Task<ActionResult> DeleteBook(Guid id)
         {
-            var isDeleted = await _bookService.DeleteBookAsync(id);
-
-            if (!isDeleted)
+            try
             {
-                return NotFound("Book not found.");
-            }
+                var isDeleted = await _bookService.DeleteBookAsync(id);
 
-            return NoContent();
+                if (!isDeleted)
+                {
+                    _logger.LogWarning($"Book with id {id} not found for deletion.");
+                    return NotFound($"Book with id {id} not found.");
+                }
+
+                _logger.LogInformation($"Book with id {id} successfully deleted.");
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error occurred while deleting book with id {id}.");
+                return StatusCode(StatusCodes.Status500InternalServerError, new { message = ex.Message });
+            }
         }
     }
 }
