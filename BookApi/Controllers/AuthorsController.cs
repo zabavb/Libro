@@ -9,58 +9,93 @@ namespace BookApi.Controllers
     public class AuthorsController : ControllerBase
     {
         private readonly IAuthorService _authorService;
+        private readonly ILogger<AuthorsController> _logger;
         private const int DefaultPageNumber = 1;
         private const int DefaultPageSize = 10;
-        public AuthorsController(IAuthorService authorService)
+
+        public AuthorsController(IAuthorService authorService, ILogger<AuthorsController> logger)
         {
             _authorService = authorService;
+            _logger = logger;
         }
+
         [HttpGet]
         public async Task<ActionResult<IEnumerable<AuthorDto>>> GetAuthors(int pageNumber = DefaultPageNumber, int pageSize = DefaultPageSize)
         {
             if (pageNumber < 1 || pageSize < 1)
             {
+                _logger.LogWarning("Invalid page number or page size.");
                 return BadRequest("Page number and page size must be greater than 0.");
             }
 
-            var authors = await _authorService.GetAuthorsAsync();
-
-            if (authors == null || !authors.Any())
+            try
             {
-                return NotFound("No authors found.");
+                var authors = await _authorService.GetAuthorsAsync();
+
+                if (authors == null || !authors.Any())
+                {
+                    _logger.LogInformation("No authors found.");
+                    return NotFound("No authors found.");
+                }
+
+                var paginated = authors
+                    .Skip((pageNumber - 1) * pageSize)
+                    .Take(pageSize)
+                    .ToList();
+
+                _logger.LogInformation("Authors successfully fetched.");
+                return Ok(paginated);
             }
-
-            var paginated = authors
-                .Skip((pageNumber - 1) * pageSize)
-                .Take(pageSize)
-                .ToList();
-
-            return Ok(paginated);
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error occurred while fetching authors.");
+                return StatusCode(StatusCodes.Status500InternalServerError, new { message = ex.Message });
+            }
         }
 
         [HttpGet("{id}")]
         public async Task<ActionResult<AuthorDto>> GetAuthorById(Guid id)
         {
-            var author = await _authorService.GetAuthorByIdAsync(id);
-
-            if (author == null)
+            try
             {
-                return NotFound($"Author with id {id} not found.");
-            }
+                var author = await _authorService.GetAuthorByIdAsync(id);
 
-            return Ok(author);
+                if (author == null)
+                {
+                    _logger.LogWarning($"Author with id {id} not found.");
+                    return NotFound($"Author with id {id} not found.");
+                }
+
+                _logger.LogInformation($"Author with id {id} successfully fetched.");
+                return Ok(author);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error occurred while fetching author with id {id}.");
+                return StatusCode(StatusCodes.Status500InternalServerError, new { message = ex.Message });
+            }
         }
+
         [HttpPost]
         public async Task<ActionResult<AuthorDto>> CreateAuthor([FromBody] AuthorDto authorDto)
         {
             if (authorDto == null)
             {
+                _logger.LogWarning("Invalid author data provided.");
                 return BadRequest("Invalid data.");
             }
 
-            var created = await _authorService.CreateAuthorAsync(authorDto);
-
-            return CreatedAtAction(nameof(GetAuthorById), new { id = created.AuthorId }, created);
+            try
+            {
+                var created = await _authorService.CreateAuthorAsync(authorDto);
+                _logger.LogInformation($"Author with id {created.AuthorId} successfully created.");
+                return CreatedAtAction(nameof(GetAuthorById), new { id = created.AuthorId }, created);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error occurred while creating a new author.");
+                return StatusCode(StatusCodes.Status500InternalServerError, new { message = ex.Message });
+            }
         }
 
         [HttpPut("{id}")]
@@ -68,29 +103,51 @@ namespace BookApi.Controllers
         {
             if (authorDto == null)
             {
+                _logger.LogWarning("Invalid author data provided for update.");
                 return BadRequest("Invalid data.");
             }
 
-            var updated = await _authorService.UpdateAuthorAsync(id, authorDto);
-
-            if (updated == null)
+            try
             {
-                return NotFound("Author not found.");
-            }
+                var updated = await _authorService.UpdateAuthorAsync(id, authorDto);
 
-            return Ok(updated);
+                if (updated == null)
+                {
+                    _logger.LogWarning($"Author with id {id} not found for update.");
+                    return NotFound($"Author with id {id} not found.");
+                }
+
+                _logger.LogInformation($"Author with id {id} successfully updated.");
+                return Ok(updated);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error occurred while updating author with id {id}.");
+                return StatusCode(StatusCodes.Status500InternalServerError, new { message = ex.Message });
+            }
         }
+
         [HttpDelete("{id}")]
         public async Task<ActionResult> DeleteAuthor(Guid id)
         {
-            var isDeleted = await _authorService.DeleteAuthorAsync(id);
-
-            if (!isDeleted)
+            try
             {
-                return NotFound("Author not found.");
-            }
+                var isDeleted = await _authorService.DeleteAuthorAsync(id);
 
-            return NoContent();
+                if (!isDeleted)
+                {
+                    _logger.LogWarning($"Author with id {id} not found for deletion.");
+                    return NotFound($"Author with id {id} not found.");
+                }
+
+                _logger.LogInformation($"Author with id {id} successfully deleted.");
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error occurred while deleting author with id {id}.");
+                return StatusCode(StatusCodes.Status500InternalServerError, new { message = ex.Message });
+            }
         }
     }
 }
