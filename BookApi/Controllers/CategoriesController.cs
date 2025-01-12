@@ -1,5 +1,6 @@
 ﻿using BookApi.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 
 namespace BookApi.Controllers
 {
@@ -8,88 +9,145 @@ namespace BookApi.Controllers
     public class CategoriesController : ControllerBase
     {
         private readonly ICategoryService _categoryService;
+        private readonly ILogger<CategoriesController> _logger;
         private const int DefaultPageNumber = 1;
         private const int DefaultPageSize = 10;
-        public CategoriesController(ICategoryService сategoryService)
+
+        public CategoriesController(ICategoryService categoryService, ILogger<CategoriesController> logger)
         {
-            _categoryService = сategoryService;
+            _categoryService = categoryService;
+            _logger = logger;
         }
+
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<CategoryDto>>> GetCategorys(int pageNumber = DefaultPageNumber, int pageSize = DefaultPageSize)
+        public async Task<ActionResult<IEnumerable<CategoryDto>>> GetCategories(int pageNumber = DefaultPageNumber, int pageSize = DefaultPageSize)
         {
-            if (pageNumber < 1 || pageSize < 1)
+            try
             {
-                return BadRequest("Page number and page size must be greater than 0.");
+                if (pageNumber < 1 || pageSize < 1)
+                {
+                    _logger.LogWarning("Invalid page number or page size.");
+                    return BadRequest("Page number and page size must be greater than 0.");
+                }
+
+                var categories = await _categoryService.GetCategoriesAsync();
+
+                if (categories == null || !categories.Any())
+                {
+                    _logger.LogInformation("No categories found.");
+                    return NotFound("No categories found.");
+                }
+
+                var paginated = categories
+                    .Skip((pageNumber - 1) * pageSize)
+                    .Take(pageSize)
+                    .ToList();
+
+                return Ok(paginated);
             }
-
-            var categories = await _categoryService.GetCategoriesAsync();
-
-            if (categories == null || !categories.Any())
+            catch (Exception ex)
             {
-                return NotFound("No categories found.");
+                _logger.LogError(ex, "Error occurred while retrieving categories.");
+                return StatusCode(500, $"Internal server error: {ex.Message}");
             }
-
-            var paginated = categories
-                .Skip((pageNumber - 1) * pageSize)
-                .Take(pageSize)
-                .ToList();
-
-            return Ok(paginated);
         }
 
         [HttpGet("{id}")]
         public async Task<ActionResult<CategoryDto>> GetCategoryById(Guid id)
         {
-            var category = await _categoryService.GetCategoryByIdAsync(id);
-
-            if (category == null)
+            try
             {
-                return NotFound($"Category with id {id} not found.");
-            }
+                var category = await _categoryService.GetCategoryByIdAsync(id);
 
-            return Ok(category);
+                if (category == null)
+                {
+                    _logger.LogWarning($"Category with id {id} not found.");
+                    return NotFound($"Category with id {id} not found.");
+                }
+
+                _logger.LogInformation($"Category with id {id} successfully fetched.");
+                return Ok(category);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error occurred while retrieving category with id {id}.");
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
         }
+
         [HttpPost]
         public async Task<ActionResult<CategoryDto>> CreateCategory([FromBody] CategoryDto categoryDto)
         {
-            if (categoryDto == null)
+            try
             {
-                return BadRequest("Invalid data.");
+                if (categoryDto == null)
+                {
+                    _logger.LogWarning("Invalid data provided for creating category.");
+                    return BadRequest("Invalid data.");
+                }
+
+                var created = await _categoryService.CreateCategoryAsync(categoryDto);
+                _logger.LogInformation($"Category with id {created.CategoryId} successfully created.");
+
+                return CreatedAtAction(nameof(GetCategoryById), new { id = created.CategoryId }, created);
             }
-
-            var created = await _categoryService.CreateCategoryAsync(categoryDto);
-
-            return CreatedAtAction(nameof(GetCategoryById), new { id = created.CategoryId }, created);
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error occurred while creating a new category.");
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
         }
 
         [HttpPut("{id}")]
         public async Task<ActionResult<CategoryDto>> UpdateCategory(Guid id, [FromBody] CategoryDto categoryDto)
         {
-            if (categoryDto == null)
+            try
             {
-                return BadRequest("Invalid data.");
+                if (categoryDto == null)
+                {
+                    _logger.LogWarning("Invalid data provided for updating category.");
+                    return BadRequest("Invalid data.");
+                }
+
+                var updated = await _categoryService.UpdateCategoryAsync(id, categoryDto);
+
+                if (updated == null)
+                {
+                    _logger.LogWarning($"Category with id {id} not found for update.");
+                    return NotFound("Category not found.");
+                }
+
+                _logger.LogInformation($"Category with id {id} successfully updated.");
+                return Ok(updated);
             }
-
-            var updated = await _categoryService.UpdateCategoryAsync(id, categoryDto);
-
-            if (updated == null)
+            catch (Exception ex)
             {
-                return NotFound("Category not found.");
+                _logger.LogError(ex, $"Error occurred while updating category with id {id}.");
+                return StatusCode(500, $"Internal server error: {ex.Message}");
             }
-
-            return Ok(updated);
         }
+
         [HttpDelete("{id}")]
         public async Task<ActionResult> DeleteCategory(Guid id)
         {
-            var isDeleted = await _categoryService.DeleteCategoryAsync(id);
-
-            if (!isDeleted)
+            try
             {
-                return NotFound("Category not found.");
-            }
+                var isDeleted = await _categoryService.DeleteCategoryAsync(id);
 
-            return NoContent();
+                if (!isDeleted)
+                {
+                    _logger.LogWarning($"Category with id {id} not found for deletion.");
+                    return NotFound("Category not found.");
+                }
+
+                _logger.LogInformation($"Category with id {id} successfully deleted.");
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error occurred while deleting category with id {id}.");
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
         }
     }
 }
