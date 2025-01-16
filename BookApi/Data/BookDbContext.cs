@@ -9,7 +9,8 @@ namespace BookApi.Data
         internal DbSet<Category> Categories { get; set; } = null!;
         internal DbSet<Publisher> Publishers { get; set; } = null!;
         internal DbSet<Feedback> Feedbacks { get; set; } = null!;
-        internal DbSet<Author> Authors { get; set; } = null!; 
+        internal DbSet<Author> Authors { get; set; } = null!;
+        internal DbSet<SubCategory> Subcategories { get; set; } = null!;
 
 
         public BookDbContext(DbContextOptions<BookDbContext> options) : base(options)
