@@ -9,5 +9,12 @@
 
         public Book Book { get; set; } = null!;
         public Category Category { get; set; } = null!;
+
+        public SubCategory()
+        {
+            Name = string.Empty;
+            Book = null!;
+            Category = null!;
+        }
     }
 }
