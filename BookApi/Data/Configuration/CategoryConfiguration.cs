@@ -10,6 +10,12 @@ namespace BookApi.Data.Configuration
         {
             builder.Property(c => c.Id)
                    .HasDefaultValueSql("NEWID()");
+           
+            builder.HasMany(c => c.Subcategories)
+                   .WithOne(sc => sc.Category)
+                   .HasForeignKey(sc => sc.CategoryId)
+                   .OnDelete(DeleteBehavior.Cascade);
         }
+    }
     }
 }

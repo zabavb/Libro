@@ -10,6 +10,11 @@ namespace BookApi.Data.Configuration
         {
             builder.Property(b => b.Id)
                    .HasDefaultValueSql("NEWSEQUENTIALID()");
+
+            builder.HasMany(b => b.Subcategories)
+                   .WithOne(sc => sc.Book)
+                   .HasForeignKey(sc => sc.BookId)
+                   .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }
