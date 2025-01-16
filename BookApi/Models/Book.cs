@@ -1,4 +1,6 @@
-﻿namespace BookApi.Models
+﻿using Library.DTOs.Book;
+
+namespace BookApi.Models
 {
     public class Book
     {
@@ -19,6 +21,8 @@
         public Publisher Publisher { get; set; } = null!;
         public Author Author { get; set; } = null!;
         public List<Feedback> Feedbacks { get; set; } = new();
+        public List<SubCategory> Subcategories { get; set; } = new(); 
+
         public Book()
         {
             Title = string.Empty;
@@ -33,6 +37,8 @@
             IsAvaliable = true;
             FeedbackIds = new List<Guid>();
             Feedbacks = new List<Feedback>();
+            Subcategories = new List<SubCategory>();
+
         }
     }
 }
