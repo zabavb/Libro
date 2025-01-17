@@ -1,4 +1,4 @@
-
+﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.13.35507.96
@@ -22,6 +22,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UserAPI.Tests", "UserAPI.Tests\UserAPI.Tests.csproj", "{57015E73-9E06-49A1-AA46-2055C5DBACCF}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Clients", "Clients", "{F58F0DB2-1522-446F-B5BE-5854EF1CE7A6}"
+EndProject
+Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "client", "client\client.esproj", "{5DC3FCCF-9129-207D-CAD8-1B96C9FA47E2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -56,6 +58,12 @@ Global
 		{57015E73-9E06-49A1-AA46-2055C5DBACCF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{57015E73-9E06-49A1-AA46-2055C5DBACCF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{57015E73-9E06-49A1-AA46-2055C5DBACCF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5DC3FCCF-9129-207D-CAD8-1B96C9FA47E2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5DC3FCCF-9129-207D-CAD8-1B96C9FA47E2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5DC3FCCF-9129-207D-CAD8-1B96C9FA47E2}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{5DC3FCCF-9129-207D-CAD8-1B96C9FA47E2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5DC3FCCF-9129-207D-CAD8-1B96C9FA47E2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5DC3FCCF-9129-207D-CAD8-1B96C9FA47E2}.Release|Any CPU.Deploy.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -66,6 +74,7 @@ Global
 		{64289E2D-A6BD-4E60-9A02-B8729978266E} = {BB07D1E1-EE7C-4719-B45F-526F4217F8BB}
 		{77F81EA8-BC7F-4B38-A896-BBB406B61AB5} = {BB07D1E1-EE7C-4719-B45F-526F4217F8BB}
 		{57015E73-9E06-49A1-AA46-2055C5DBACCF} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
+		{5DC3FCCF-9129-207D-CAD8-1B96C9FA47E2} = {F58F0DB2-1522-446F-B5BE-5854EF1CE7A6}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {60388A82-D6BA-41CF-A524-04F217F478C1}
