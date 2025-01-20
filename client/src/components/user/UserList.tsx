@@ -20,21 +20,13 @@ const UserList = () => {
   return (
     <div>
       <h2>User List</h2>
-      <div style={styles.cardContainer}>
+      <div>
         {users.map((user) => (
           <UserCard key={user.id} user={user} />
         ))}
       </div>
     </div>
   );
-};
-
-const styles = {
-  cardContainer: {
-    display: "grid",
-    gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
-    gap: "16px",
-  },
 };
 
 export default UserList;
