@@ -1,5 +1,6 @@
 ﻿using BookApi.Data;
 using BookApi.Models;
+using Library.Extensions;
 using Microsoft.EntityFrameworkCore;
 
 namespace BookAPI.Repositories
@@ -25,10 +26,22 @@ namespace BookAPI.Repositories
             await _context.SaveChangesAsync();
         }
 
-        public async Task<List<Category>> GetAllAsync()
+        public async Task<PaginatedResult<Category>> GetAllAsync(int pageNumber, int pageSize)
         {
-            return await _context.Categories.ToListAsync();
+            IQueryable<Category> categories = _context.Categories.AsQueryable();
+
+            var totalCategories = await categories.CountAsync();
+            var resultCategories = await categories.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToListAsync();
+
+            return new PaginatedResult<Category>
+            {
+                Items = resultCategories,
+                TotalCount = totalCategories,
+                PageNumber = pageNumber,
+                PageSize = pageSize
+            };
         }
+
 
         public async Task<Category?> GetByIdAsync(Guid id)
         {
