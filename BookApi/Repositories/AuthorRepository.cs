@@ -32,10 +32,22 @@ namespace BookAPI.Repositories
             await _context.SaveChangesAsync();
         }
 
-        public async Task<List<Author>> GetAllAsync()
+        public async Task<PaginatedResult<Author>> GetAllAsync(int pageNumber, int pageSize)
         {
-            return await _context.Authors.ToListAsync();
+            IQueryable<Author> authors = _context.Authors.AsQueryable();
+
+            var totalAuthors = await authors.CountAsync();
+            var resultAuthors = await authors.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToListAsync();
+
+            return new PaginatedResult<Author>
+            {
+                Items = resultAuthors,
+                TotalCount = totalAuthors,
+                PageNumber = pageNumber,
+                PageSize = pageSize
+            };
         }
+
 
         public async Task<Author?> GetByIdAsync(Guid id)
         {

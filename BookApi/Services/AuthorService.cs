@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using BookApi.Models;
 using BookAPI.Repositories;
+using Library.Extensions;
 
 namespace BookApi.Services
 {
@@ -15,16 +16,20 @@ namespace BookApi.Services
             _authorRepository = authorRepository;
         }
 
-        public async Task<IEnumerable<AuthorDto>> GetAuthorsAsync()
+        public async Task<PaginatedResult<AuthorDto>> GetAuthorsAsync(int pageNumber, int pageSize)
         {
-            var authors = await _authorRepository.GetAllAsync();
-
-            if (authors == null || !authors.Any())
+            var authors = await _authorRepository.GetAllAsync(pageNumber, pageSize);
+            if (authors == null || authors.Items == null)
             {
-                return Enumerable.Empty<AuthorDto>();
+                throw new InvalidOperationException("Failed to fetch authors.");
             }
 
-            return _mapper.Map<List<AuthorDto>>(authors);
+            return new PaginatedResult<AuthorDto>
+            {
+                Items = _mapper.Map<ICollection<AuthorDto>>(authors.Items),
+                TotalCount = authors.TotalCount,
+                PageNumber = authors.PageNumber
+            };
         }
 
         public async Task<AuthorDto> GetAuthorByIdAsync(Guid id)
