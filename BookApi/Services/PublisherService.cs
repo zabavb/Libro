@@ -2,6 +2,7 @@
 using BookApi.Data;
 using BookApi.Models;
 using BookAPI.Repositories;
+using Library.Extensions;
 using Microsoft.EntityFrameworkCore;
 
 namespace BookApi.Services
@@ -37,15 +38,23 @@ namespace BookApi.Services
 
         }
 
-        public async Task<IEnumerable<PublisherDto>> GetPublishersAsync()
+        public async Task<PaginatedResult<PublisherDto>> GetPublishersAsync(int pageNumber, int pageSize)
         {
-            var publishers = await _publisherRepository.GetAllAsync();
-            if (publishers == null || !publishers.Any())
+            var publishers = await _publisherRepository.GetAllAsync(pageNumber, pageSize);
+            if (publishers == null || publishers.Items == null)
             {
-                return Enumerable.Empty<PublisherDto>();
+                throw new InvalidOperationException("Failed to fetch publishers.");
             }
-            return _mapper.Map<IEnumerable<PublisherDto>>(publishers);
+
+            return new PaginatedResult<PublisherDto>
+            {
+                Items = _mapper.Map<ICollection<PublisherDto>>(publishers.Items),
+                TotalCount = publishers.TotalCount,
+                PageNumber = publishers.PageNumber,
+                PageSize = pageSize
+            };
         }
+
 
         public async Task<PublisherDto> GetPublisherByIdAsync(Guid id)
         {
