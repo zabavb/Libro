@@ -7,7 +7,7 @@ namespace BookAPI.Repositories
 {
     public interface IAuthorRepository : IManagable<Author>
     {
-        Task<List<Author>> GetAllAsync();
+        Task<PaginatedResult<Author>> GetAllAsync(int pageNumber, int pageSize);
 
     }
 }

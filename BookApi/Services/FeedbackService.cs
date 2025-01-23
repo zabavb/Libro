@@ -3,6 +3,7 @@ using BookApi.Data;
 using BookApi.Models;
 using BookAPI.Repositories;
 using BookAPI.Services;
+using Library.Extensions;
 using Microsoft.EntityFrameworkCore;
 
 
@@ -19,17 +20,30 @@ namespace FeedbackApi.Services
             _feedbackRepository = feedbackRepository;
         }
 
-        public async Task<IEnumerable<FeedbackDto>> GetFeedbacksAsync()
+        public async Task<PaginatedResult<FeedbackDto>> GetFeedbacksAsync(int pageNumber, int pageSize)
         {
-            var feedbacks = await _feedbackRepository.GetAllAsync();
+            var feedbacks = await _feedbackRepository.GetAllAsync(pageNumber, pageSize);
 
-            if (feedbacks == null || feedbacks.Count == 0)
+            if (feedbacks == null || feedbacks.Items == null)
             {
-                return [];
+                return new PaginatedResult<FeedbackDto>
+                {
+                    Items = new List<FeedbackDto>(),
+                    TotalCount = 0,
+                    PageNumber = pageNumber,
+                    PageSize = pageSize
+                };
             }
 
-            return _mapper.Map<List<FeedbackDto>>(feedbacks);
+            return new PaginatedResult<FeedbackDto>
+            {
+                Items = _mapper.Map<ICollection<FeedbackDto>>(feedbacks.Items),
+                TotalCount = feedbacks.TotalCount,
+                PageNumber = feedbacks.PageNumber,
+                PageSize = feedbacks.PageSize
+            };
         }
+
 
 
         public async Task<FeedbackDto> GetFeedbackByIdAsync(Guid id)

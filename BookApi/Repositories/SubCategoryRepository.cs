@@ -24,7 +24,7 @@ namespace BookAPI.Repositories
         {
             var subCategory = await _context.Subcategories.FirstOrDefaultAsync(sc => sc.Id == id)
                 ?? throw new KeyNotFoundException("SubCategory not found");
-            _context.SubCategories.Remove(subCategory);
+            _context.Subcategories.Remove(subCategory);
             await _context.SaveChangesAsync();
         }
 

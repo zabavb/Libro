@@ -1,8 +1,10 @@
-﻿namespace BookApi.Services
+﻿using Library.Extensions;
+
+namespace BookApi.Services
 {
     public interface ICategoryService
     {
-        Task<IEnumerable<CategoryDto>> GetCategoriesAsync();
+        Task<PaginatedResult<CategoryDto>> GetCategoriesAsync(int pageNumber, int pageSize);
         Task<CategoryDto> GetCategoryByIdAsync(Guid id);
         Task<CategoryDto> CreateCategoryAsync(CategoryDto CategoryDto);
         Task<CategoryDto> UpdateCategoryAsync(Guid id, CategoryDto CategoryDto);

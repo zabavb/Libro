@@ -1,8 +1,10 @@
-﻿namespace BookAPI.Services
+﻿using Library.Extensions;
+
+namespace BookAPI.Services
 {
     public interface IFeedbackService
     {
-        Task<IEnumerable<FeedbackDto>> GetFeedbacksAsync();
+        Task<PaginatedResult<FeedbackDto>> GetFeedbacksAsync(int pageNumber, int pageSize);
         Task<FeedbackDto> GetFeedbackByIdAsync(Guid id);
         Task<FeedbackDto> CreateFeedbackAsync(FeedbackDto FeedbackDto);
         Task<FeedbackDto> UpdateFeedbackAsync(Guid id, FeedbackDto FeedbackDto);
