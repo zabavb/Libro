@@ -3,8 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.13.35507.96
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Client", "Client\Client.csproj", "{B60E8519-EA22-4CCC-9987-5E64B9FF1783}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Library", "Library\Library.csproj", "{EF80AD98-3273-42AA-AE7E-9A408E348474}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BookAPI", "BookAPI\BookAPI.csproj", "{62B979E1-B71F-4712-813C-5B3A824D937A}"
@@ -13,13 +11,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrderAPI", "OrderAPI\OrderA
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UserAPI", "UserAPI\UserAPI.csproj", "{77F81EA8-BC7F-4B38-A896-BBB406B61AB5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gateway", "Gateway\Gateway.csproj", "{2DA4C7CA-9B8D-4CAD-AFDA-1AB5F4335D4D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Gateway", "Gateway\Gateway.csproj", "{2DA4C7CA-9B8D-4CAD-AFDA-1AB5F4335D4D}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{02EA681E-C7D8-13C7-8484-4AC65E1B71E8}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "APIs", "APIs", "{BB07D1E1-EE7C-4719-B45F-526F4217F8BB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UserAPI.Tests", "UserAPI.Tests\UserAPI.Tests.csproj", "{57015E73-9E06-49A1-AA46-2055C5DBACCF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UserAPI.Tests", "UserAPI.Tests\UserAPI.Tests.csproj", "{57015E73-9E06-49A1-AA46-2055C5DBACCF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -27,10 +25,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{B60E8519-EA22-4CCC-9987-5E64B9FF1783}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B60E8519-EA22-4CCC-9987-5E64B9FF1783}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{B60E8519-EA22-4CCC-9987-5E64B9FF1783}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{B60E8519-EA22-4CCC-9987-5E64B9FF1783}.Release|Any CPU.Build.0 = Release|Any CPU
 		{EF80AD98-3273-42AA-AE7E-9A408E348474}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{EF80AD98-3273-42AA-AE7E-9A408E348474}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EF80AD98-3273-42AA-AE7E-9A408E348474}.Release|Any CPU.ActiveCfg = Release|Any CPU
