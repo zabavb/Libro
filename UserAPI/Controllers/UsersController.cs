@@ -102,7 +102,7 @@ namespace UserAPI.Controllers
             try
             {
                 await _userService.CreateAsync(user);
-                _logger.LogInformation($"User with ID [{user.Id}] successfully created.");
+                _logger.LogInformation($"User successfully created.");
                 return CreatedAtAction(nameof(GetById), new { id = user.Id }, user);
             }
             catch (ArgumentNullException ex)
