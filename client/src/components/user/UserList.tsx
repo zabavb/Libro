@@ -1,32 +1,33 @@
-import { useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { fetchUsers } from "../../state/redux/slices/userSlice";
-import { RootState, AppDispatch } from "../../state/redux/store";
-import UserCard from "./UserCard";
+import { useEffect } from "react"
+import { useDispatch, useSelector } from "react-redux"
+import { RootState, AppDispatch, fetchUsers } from "../../state/redux/index"
+import UserCardContainer from "../../containers/user/UserCardContainer"
 
 const UserList = () => {
-  const dispatch = useDispatch<AppDispatch>();
-  const { data: users, loading, error } = useSelector(
-    (state: RootState) => state.users
-  );
+	const dispatch = useDispatch<AppDispatch>()
+	const { data: users, loading, error } = useSelector((state: RootState) => state.users)
 
-  useEffect(() => {
-    dispatch(fetchUsers());
-  }, [dispatch]);
+	useEffect(() => {
+		dispatch(fetchUsers())
+	}, [dispatch])
 
-  if (loading) return <p>Loading...</p>;
-  if (error) return <p>Error: {error}</p>;
+	if (loading) return <p>Loading...</p>
+	if (error) return <p>Error: {error}</p>
 
-  return (
-    <div>
-      <h2>User List</h2>
-      <div>
-        {users.map((user) => (
-          <UserCard key={user.id} user={user} />
-        ))}
-      </div>
-    </div>
-  );
-};
+	return (
+		<div>
+			<h1>User List</h1>
+			<div>
+				{users.map((user) => (
+					<UserCardContainer
+						key={user.id}
+						user={user}
+					/>
+				))}
+				<hr />
+			</div>
+		</div>
+	)
+}
 
-export default UserList;
+export default UserList
