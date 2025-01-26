@@ -1,36 +1,59 @@
 import axios from "axios"
-import { API_ROUTES } from "../config/apiConfig"
+import { USERS, USER_BY_ID } from "../index"
+import { User } from "../../types"
 
-export interface User {
-	id: string
-	firstName: string
-	lastName: string
-	dateOfBirth: string
-	email: string
-	phoneNumber: string
-	role: string
+export interface PaginatedResponse<T> {
+	items: T[]
+	pageNumber: 1
+	pageSize: 10
+	totalPages: 1
+	hasPreviousPage: false
+	hasNextPage: false
 }
 
-export const getAllUsers = async (): Promise<User[]> => {
-	const response = await axios.get(API_ROUTES.USERS.BASE)
-	return response.data
+export const getAllUsers = async (): Promise<PaginatedResponse<User>> => {
+	try {
+		const response = await axios.get(USERS)
+		return response.data
+	} catch (error) {
+		throw new Error(`Failed to fetch list of users: ${error}`)
+	}
 }
 
 export const getUserById = async (id: string): Promise<User> => {
-	const response = await axios.get(API_ROUTES.USERS.BY_ID(id))
-	return response.data
+	try {
+		const response = await axios.get(USER_BY_ID(id))
+		return response.data
+	} catch (error) {
+		throw new Error(`Failed to fetch user: ${error}`)
+	}
 }
 
 export const createUser = async (user: Partial<User>): Promise<User> => {
-	const response = await axios.post(API_ROUTES.USERS.BASE, user)
-	return response.data
+	try {
+		const response = await axios.post(USERS, user)
+		console.log(`userRepository.ts: create user:[${user}$] response:[${response.data}$]`)
+		return response.data
+	} catch (error) {
+		throw new Error(`Failed to add user: ${error}`)
+	}
 }
 
 export const updateUser = async (id: string, user: Partial<User>): Promise<User> => {
-	const response = await axios.put(API_ROUTES.USERS.BY_ID(id), user)
-	return response.data
+	try {
+		const response = await axios.put(USER_BY_ID(id), user)
+		console.log(`userRepository.ts: update id:[${id}] user:[${user}$] response:[${response.data}$]`)
+		return response.data
+	} catch (error) {
+		throw new Error(`Failed to update user: ${error}`)
+	}
 }
 
 export const deleteUser = async (id: string): Promise<void> => {
-	await axios.delete(API_ROUTES.USERS.BY_ID(id))
+	try {
+		console.log(`userRepository.ts: delete id:[${id}$]`)
+		await axios.delete(USER_BY_ID(id))
+	} catch (error) {
+		throw new Error(`Failed to delete user: ${error}`)
+	}
 }

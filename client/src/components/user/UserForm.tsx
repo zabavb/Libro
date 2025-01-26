@@ -1,90 +1,94 @@
-import React, { useState } from "react"
-import { useDispatch } from "react-redux"
-import { addUser, editUser } from "../../state/redux/slices/userSlice"
-import { AppDispatch } from "../../state/redux/store"
+import React, { useState, useEffect } from "react"
+import { User } from "../../types"
 
 interface UserFormProps {
-  existingUser?: {
-    id: string
-    firstName: string
-    lastName: string
-    dateOfBirth: string
-    email: string
-    phoneNumber: string
-    role: string
-  }
+	existingUser?: User
+	onAddUser: (user: User) => void
+	onEditUser: (id: string, updatedUser: User) => void
 }
 
-const UserForm: React.FC<UserFormProps> = ({ existingUser }) => {
-  const dispatch = useDispatch<AppDispatch>()
-  const [firstName, setFirstName] = useState(existingUser?.firstName || "")
-  const [lastName, setLastName] = useState(existingUser?.lastName || "")
-  const [dateOfBirth, setDateOfBirth] = useState(existingUser?.dateOfBirth || "")
-  const [email, setEmail] = useState(existingUser?.email || "")
-  const [phoneNumber, setPhoneNumber] = useState(existingUser?.phoneNumber || "")
-  const [role, setRole] = useState(existingUser?.role || "")
+const UserForm: React.FC<UserFormProps> = ({ existingUser, onAddUser, onEditUser }) => {
+	const [id, setId] = useState("00000000-0000-0000-0000-000000000000")
+	const [firstName, setFirstName] = useState("")
+	const [lastName, setLastName] = useState("")
+	const [dateOfBirth, setDateOfBirth] = useState("")
+	const [email, setEmail] = useState("")
+	const [phoneNumber, setPhoneNumber] = useState("")
+	const [role, setRole] = useState(3)
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    const user = { firstName, lastName, dateOfBirth, email, phoneNumber, role }
-    if (existingUser)
-      dispatch(editUser({ id: existingUser.id, user }))
-    else
-      dispatch(addUser(user))
-  }
 
-  return (
-    <form onSubmit={handleSubmit}>
-      <input
-        type="text"
-        value={firstName}
-        onChange={(e) => setFirstName(e.target.value)}
-        placeholder="First Name"
-        required
-      />
-      <input
-        type="text"
-        value={lastName}
-        onChange={(e) => setLastName(e.target.value)}
-        placeholder="Last Name"
-      />
-      <input
-        type="date"
-        value={dateOfBirth}
-        onChange={(e) => setDateOfBirth(e.target.value)}
-        placeholder="Date of Birth"
-      />
-      <input
-        type="email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        placeholder="Email"
-        required
-      />
-      <input
-        type="phone"
-        value={phoneNumber}
-        onChange={(e) => setPhoneNumber(e.target.value)}
-        placeholder="Phone Number"
-        required
-      />
-      <select
-        value={role}
-        onChange={(e) => setRole(e.target.value)}
-        required
-      >
-        <option value="" disabled>Select Role</option>
-        <option value="admin">Admin</option>
-        <option value="moderator">Moderator</option>
-        <option value="user">User</option>
-        <option value="guest">Guest</option>
-      </select>
+	useEffect(() => {
+		if (existingUser) {
+			setId(existingUser.id)
+			setFirstName(existingUser.firstName)
+			setLastName(existingUser.lastName)
+			setDateOfBirth(existingUser.dateOfBirth)
+			setEmail(existingUser.email)
+			setPhoneNumber(existingUser.phoneNumber)
+			setRole(existingUser.role)
+		}
+	}, [existingUser])
 
-      <button type="submit">
-        {existingUser ? "Update User" : "Add User"}
-      </button>
-    </form>
-  )
+	const handleSubmit = (e: React.FormEvent) => {
+		e.preventDefault()
+		const user = { id, firstName, lastName, dateOfBirth, email, phoneNumber, role }
+		if (existingUser) onEditUser(existingUser.id, user)
+		else onAddUser(user)
+	}
+
+	return (
+		<form onSubmit={handleSubmit}>
+			<input
+				type="text"
+				value={firstName}
+				onChange={(e) => setFirstName(e.target.value)}
+				placeholder="First Name"
+				required
+			/>
+			<input
+				type="text"
+				value={lastName}
+				onChange={(e) => setLastName(e.target.value)}
+				placeholder="Last Name"
+			/>
+			<input
+				type="date"
+				value={dateOfBirth}
+				onChange={(e) => setDateOfBirth(e.target.value)}
+				placeholder="Date of Birth"
+			/>
+			<input
+				type="email"
+				value={email}
+				onChange={(e) => setEmail(e.target.value)}
+				placeholder="Email"
+				required
+			/>
+			<input
+				type="phone"
+				value={phoneNumber}
+				onChange={(e) => setPhoneNumber(e.target.value)}
+				placeholder="Phone Number"
+				required
+			/>
+			<select
+				value={role}
+				onChange={(e) => setRole(Number(e.target.value))}
+				required>
+				<option
+					value=""
+					disabled>
+					Select Role
+				</option>
+				<option value="0">Admin</option>
+				<option value="1">Moderator</option>
+				<option value="2">User</option>
+				<option value="3">Guest</option>
+			</select>
+
+			<button type="submit">{existingUser ? "Update User" : "Add User"}</button>
+		</form>
+	)
 }
 
 export default UserForm
