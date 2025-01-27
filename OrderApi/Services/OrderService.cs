@@ -4,20 +4,12 @@ using OrderApi.Models;
 
 namespace OrderApi.Services
 {
-    internal class OrderService : IOrderService
+    public class OrderService(IOrderRepository repository, IMapper mapper, ILogger<IOrderService> logger) : IOrderService
     {
-        private readonly IOrderRepository _repository;
-        private readonly IMapper _mapper;
-        private readonly ILogger<IOrderService> _logger;
-        private string _message;
-
-        public OrderService(IOrderRepository repository, IMapper mapper, ILogger<IOrderService> logger)
-        {
-            _repository = repository;
-            _mapper = mapper;
-            _logger = logger;
-            _message = string.Empty;
-        }
+        private readonly IOrderRepository _repository = repository;
+        private readonly IMapper _mapper = mapper;
+        private readonly ILogger<IOrderService> _logger = logger;
+        private string _message = string.Empty;
 
         public async Task<PaginatedResult<OrderDto>> GetAllAsync(int pageNumber, int pageSize, string searchTerm, Filter? filter)
         {
