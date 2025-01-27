@@ -11,22 +11,11 @@ namespace OrderApi.Controllers
     /// </remarks>
     [Route("api/[controller]")]
     [ApiController]
-    public class DeliveryTypesController : ControllerBase
+    public class DeliveryTypesController(IDeliveryTypeService deliveryTypeService, ILogger<DeliveryTypesController> logger) : ControllerBase
     {
-        private readonly IDeliveryTypeService _deliveryTypeService;
-        private readonly ILogger<DeliveryTypesController> _logger;
-        private string _message;
-        /// <summary>
-        /// Initializes a new instance of the <see cref="DeliveryTypesController"/> class.
-        /// </summary>
-        /// <param name="deliveryTypeService">Service for delivery type operations.</param>
-        /// <param name="logger">Logger for tracking operations.</param>
-        public DeliveryTypesController(IDeliveryTypeService deliveryTypeService, ILogger<DeliveryTypesController> logger)
-        {
-            _deliveryTypeService = deliveryTypeService;
-            _logger = logger;
-            _message = string.Empty;
-        }
+        private readonly IDeliveryTypeService _deliveryTypeService = deliveryTypeService;
+        private readonly ILogger<DeliveryTypesController> _logger = logger; 
+        private string _message = string.Empty;
 
         /// <summary>
         /// Retrieves list of delivery type

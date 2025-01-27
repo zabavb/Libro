@@ -12,23 +12,11 @@ namespace OrderApi.Controllers
     /// </remarks>
     [Route("api/[controller]")]
     [ApiController]
-    public class StatusController : ControllerBase
+    public class StatusController(IOrderService orderService, ILogger<StatusController> logger) : ControllerBase
     {
-        private readonly IOrderService _orderService;
-        private readonly ILogger<StatusController> _logger;
-        private string _message;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="StatusController"/> class.
-        /// </summary>
-        /// <param name="orderService">Service for order operations.</param>
-        /// <param name="logger">Logger for tracking operations.</param>
-        public StatusController(IOrderService orderService, ILogger<StatusController> logger)
-        {
-            _orderService = orderService;
-            _logger = logger;
-            _message = string.Empty;
-        }
+        private readonly IOrderService _orderService = orderService;
+        private readonly ILogger<StatusController> _logger = logger;
+        private string _message = string.Empty;
 
         /// <summary>
         /// Changes Order status in by id
