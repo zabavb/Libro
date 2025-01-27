@@ -44,7 +44,7 @@ namespace OrderApi.Controllers
         {
             try
             {
-                var orders = await _orderService.GetOrdersAsync(pageNumber, pageSize, searchTerm!, filter);
+                var orders = await _orderService.GetAllAsync(pageNumber, pageSize, searchTerm!, filter);
                 _logger.LogInformation("Orders successfully fetched.");
                 return Ok(orders);
             }
