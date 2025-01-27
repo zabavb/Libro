@@ -33,18 +33,18 @@ namespace OrderApi.Services
             };
         }
 
-        public async Task<OrderDto?> GetByIdAsync(Guid orderId)
+        public async Task<OrderDto?> GetByIdAsync(Guid id)
         {
-            var order = await _repository.GetByIdAsync(orderId);
+            var order = await _repository.GetByIdAsync(id);
 
             if (order == null)
             {
-                _message = $"Order with Id [{orderId}] not found.";
+                _message = $"Order with Id [{id}] not found.";
                 _logger.LogError(_message);
                 throw new KeyNotFoundException(_message);
             }
 
-            _logger.LogInformation($"Order with Id [{orderId}] fetched succesfully.");
+            _logger.LogInformation($"Order with Id [{id}] fetched succesfully.");
 
             return order == null ? null : _mapper.Map<OrderDto>(order);
         }
@@ -53,20 +53,21 @@ namespace OrderApi.Services
         {
             if(entity == null)
             {
-                _message = "Order wasn't provided.";
+                _message = "Order was not provided for creation.";
                 _logger.LogError(_message);
-                throw new ArgumentNullException(_message,nameof(entity));
+                throw new ArgumentNullException(null, _message);
             }
             var order = _mapper.Map<Order>(entity);
 
             try
             {
+                order.OrderId = Guid.NewGuid();
                 await _repository.CreateAsync(order);
                 _logger.LogInformation("Order created successfully.");
             }
             catch(Exception ex)
             {
-                _message = "Error occured while adding an order.";
+                _message = $"Error occured while adding an order with tID [{entity.Id}].";
                 _logger.LogError(_message);
                 throw new InvalidOperationException(_message, ex);
             }
@@ -79,14 +80,14 @@ namespace OrderApi.Services
             {
                 _message = "Order was not provided for the update";
                 _logger.LogError(_message);
-                throw new ArgumentNullException(_message,nameof(entity));
+                throw new ArgumentNullException(null, _message);
             }
 
             var order = _mapper.Map<Order>(entity);
             try
             {
                 await _repository.UpdateAsync(order);
-                _logger.LogInformation("Order updated succesfully.");
+                _logger.LogInformation($"Order with ID [{entity.Id}] updated succesfully.");
             }
             catch (InvalidOperationException)
             {
@@ -105,15 +106,6 @@ namespace OrderApi.Services
 
         public async Task DeleteAsync(Guid id)
         {
-            var order = await _repository.GetByIdAsync(id);
-
-            if (order == null)
-            {
-                _message = $"Order with Id [{id}] not found.";
-                _logger.LogError(_message);
-                throw new KeyNotFoundException(_message);
-            }
-
             try
             {
                 await _repository.DeleteAsync(id);
