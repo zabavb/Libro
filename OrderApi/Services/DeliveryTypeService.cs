@@ -42,7 +42,7 @@ namespace OrderApi.Services
             };
         }
 
-        public async Task<DeliveryTypeDto> GetByIdAsync(Guid id)
+        public async Task<DeliveryTypeDto>? GetByIdAsync(Guid id)
         {
             var deliveryType = await _repository.GetByIdAsync(id);
 
@@ -62,14 +62,15 @@ namespace OrderApi.Services
         {
             if (entity == null)
             {
-                _message = "Delivery type wasn't provided.";
+                _message = "Delivery type was not provided for creation.";
                 _logger.LogError(_message);
-                throw new ArgumentNullException(_message, nameof(entity));
+                throw new ArgumentNullException(null, _message);
             }
             var deliveryType = _mapper.Map<DeliveryType>(entity);
 
             try
             {
+                deliveryType.DeliveryId = Guid.NewGuid();
                 await _repository.CreateAsync(deliveryType);
                 _logger.LogInformation("Delivery type created successfully.");
             }
@@ -87,14 +88,14 @@ namespace OrderApi.Services
             {
                 _message = "Delivery type was not provided for the update";
                 _logger.LogError(_message);
-                throw new ArgumentNullException(_message, nameof(entity));
+                throw new ArgumentNullException(null, _message);
             }
 
             var deliveryType = _mapper.Map<DeliveryType>(entity);
             try
             {
                 await _repository.UpdateAsync(deliveryType);
-                _logger.LogInformation("Delivery type updated succesfully.");
+                _logger.LogInformation($"Delivery type with ID [{entity.Id}]updated succesfully.");
             }
             catch (InvalidOperationException)
             {
@@ -112,15 +113,6 @@ namespace OrderApi.Services
 
         public async Task DeleteAsync(Guid id)
         {
-            var deliveryType = await _repository.GetByIdAsync(id);
-
-            if (deliveryType == null)
-            {
-                _message = $"Delivery type with Id [{id}] not found.";
-                _logger.LogError(_message);
-                throw new KeyNotFoundException(_message);
-            }
-
             try
             {
                 await _repository.DeleteAsync(id);
