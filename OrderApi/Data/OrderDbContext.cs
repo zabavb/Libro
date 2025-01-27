@@ -19,6 +19,12 @@ namespace OrderApi.Data
             modelBuilder.ApplyConfiguration(new OrderConfiguration());
             modelBuilder.ApplyConfiguration(new DeliveryTypeConfiguration());
 
+            modelBuilder.Entity<Order>()
+                .HasOne(o => o.DeliveryType)
+                .WithOne(dt => dt.Order)
+                .HasForeignKey<DeliveryType>(dt => dt.OrderId)
+                .OnDelete(DeleteBehavior.Cascade);
+
             DataSeeder.Seed(modelBuilder);
         }
     }

@@ -8,7 +8,9 @@ namespace OrderApi.Profiles
         public DeliveryTypeProfile()
         {
             CreateMap<DeliveryType, DeliveryTypeDto>()
-               .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.DeliveryId)).ReverseMap();
+               .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.DeliveryId))
+               .ReverseMap()
+               .ForMember(dest => dest.DeliveryId, opt => opt.MapFrom(src => src.Id));
         }
     }
 }
