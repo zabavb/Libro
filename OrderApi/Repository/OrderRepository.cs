@@ -153,10 +153,7 @@ namespace OrderApi.Repository
 
         public async Task DeleteAsync(Guid id)
         {
-            var order = await _context.Orders.FindAsync(id);
-
-            if (order == null)
-                throw new KeyNotFoundException();
+            var order = await _context.Orders.FindAsync(id) ?? throw new KeyNotFoundException();
 
             _context.Orders.Remove(order);
             await _context.SaveChangesAsync();
