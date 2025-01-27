@@ -40,7 +40,7 @@ namespace OrderApi.Controllers
         /// <response code="200">Returns the paginated list of orders.</response>
         /// <response code="500">an unexpected error occured.</response>
         [HttpGet]
-        public async Task<IActionResult> GetOrders([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10, [FromQuery] string? searchTerm = null, [FromQuery] Filter? filter = null)
+        public async Task<IActionResult> GetAll([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10, [FromQuery] string? searchTerm = null, [FromQuery] Filter? filter = null)
         {
             try
             {
@@ -65,7 +65,7 @@ namespace OrderApi.Controllers
         /// <response code="500">an unexpected error occured.</response>
         [HttpGet("{id}")]
 
-        public async Task<IActionResult> GetOrderById(Guid id)
+        public async Task<IActionResult> GetById(Guid id)
         {
             try
             {
@@ -100,7 +100,7 @@ namespace OrderApi.Controllers
         /// <response code="400">Invalid input data.</response>
         /// <response code="500"> an unexpected error occured.</response>
         [HttpPost]
-        public async Task<ActionResult<OrderDto>> CreateOrder([FromBody]OrderDto orderDto)
+        public async Task<ActionResult<OrderDto>> Create([FromBody]OrderDto orderDto)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -109,7 +109,7 @@ namespace OrderApi.Controllers
             {
                 await _orderService.CreateAsync(orderDto);
                 _logger.LogInformation($"Order with Id [{orderDto.Id}] successfully created.");
-                return CreatedAtAction(nameof(GetOrderById), new { id = orderDto.Id }, orderDto);
+                return CreatedAtAction(nameof(GetById), new { id = orderDto.Id }, orderDto);
             }
             catch (ArgumentNullException ex)
             {
@@ -133,7 +133,7 @@ namespace OrderApi.Controllers
         /// <response code="404">the order to be updated does not exist.</response>
         /// <response code="500">an unexpected error occured.</response>
         [HttpPut]
-        public async Task<IActionResult> UpdateOrder([FromBody]OrderDto orderDto)
+        public async Task<IActionResult> Update([FromBody]OrderDto orderDto)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -170,7 +170,7 @@ namespace OrderApi.Controllers
         /// <response code="404">Could not find the order.</response>
         /// <response code="500">an unexpected error occured.</response>
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteOrder(Guid id)
+        public async Task<IActionResult> Delete(Guid id)
         {
             try
             {

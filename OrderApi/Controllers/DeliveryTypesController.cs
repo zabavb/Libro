@@ -37,7 +37,7 @@ namespace OrderApi.Controllers
         /// <response code="200">Retrieval successful, returns the list</response>
         /// <response code="500">an unexpected error occured.</response>
         [HttpGet]
-        public async Task<IActionResult> GetDeliveryTypes([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
+        public async Task<IActionResult> GetAll([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
         {
             try
             {
@@ -60,7 +60,7 @@ namespace OrderApi.Controllers
         /// <response code="200">Retrieval successful, return the delivery type.</response>
         /// <response code="404">Could not find the delivery type.</response>
         [HttpGet("{id}")]
-        public async Task<ActionResult<DeliveryTypeDto>> GetDeliveryTypeById(Guid id)
+        public async Task<ActionResult<DeliveryTypeDto>> GetById(Guid id)
         {
             try
             {
@@ -94,7 +94,7 @@ namespace OrderApi.Controllers
         /// <response code="400">Invalid input data.</response>
         /// <response code="500">Object with the given Id already exists.</response>
         [HttpPost]
-        public async Task<ActionResult<DeliveryTypeDto>> CreateDeliveryType([FromBody] DeliveryTypeDto deliveryTypeDto)
+        public async Task<ActionResult<DeliveryTypeDto>> Create([FromBody] DeliveryTypeDto deliveryTypeDto)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -103,7 +103,7 @@ namespace OrderApi.Controllers
             {
                 await _deliveryTypeService.CreateAsync(deliveryTypeDto);
                 _logger.LogInformation($"Delivery types with Id [{deliveryTypeDto.Id}] successfully created.");
-                return CreatedAtAction(nameof(GetDeliveryTypeById), new { id = deliveryTypeDto.Id }, deliveryTypeDto);
+                return CreatedAtAction(nameof(GetById), new { id = deliveryTypeDto.Id }, deliveryTypeDto);
             }
             catch(ArgumentNullException ex)
             {
@@ -127,7 +127,7 @@ namespace OrderApi.Controllers
         /// <response code="404">the delivery type to be updated does not exist.</response>
         /// <response code="500">an unexpected error occured.</response>
         [HttpPut]
-        public async Task<IActionResult> UpdateDeliveryType([FromBody] DeliveryTypeDto deliveryTypeDto)
+        public async Task<IActionResult> Update([FromBody] DeliveryTypeDto deliveryTypeDto)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -164,7 +164,7 @@ namespace OrderApi.Controllers
         /// <response code="404">Could not find the delivery type.</response>
         /// <response code="500">an unexpected error occured.</response>
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteDeliveryType(Guid id)
+        public async Task<IActionResult> Delete(Guid id)
         {
             try
             {

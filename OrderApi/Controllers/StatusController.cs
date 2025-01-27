@@ -40,7 +40,7 @@ namespace OrderApi.Controllers
         /// <response code="404">the order to be updated does not exist.</response>
         /// <response code="500">an unexpected error occured.</response>
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateStatus([FromRoute] Guid id, [FromBody] OrderStatus orderStatus)
+        public async Task<IActionResult> Update([FromRoute] Guid id, [FromBody] OrderStatus orderStatus)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
