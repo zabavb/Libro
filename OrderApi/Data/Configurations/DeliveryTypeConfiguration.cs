@@ -8,13 +8,19 @@ namespace OrderApi.Data.Configurations
     {
         public void Configure(EntityTypeBuilder<DeliveryType> builder)
         {
-            builder.Property(d => d.DeliveryId)
-                .HasDefaultValueSql("NEWSEQUENTIALID()");
+/*            builder.Property(d => d.DeliveryId)
+                .HasDefaultValueSql("NEWSEQUENTIALID()");*/
+
+            builder.HasKey(d => d.DeliveryId);
 
             builder.Property(d => d.ServiceName)
                 .IsRequired()
                 .HasMaxLength(50)
                 .HasColumnType("nvarchar(50)");
+
+            builder.HasMany(dt => dt.Orders)
+                .WithOne(o => o.DeliveryType)
+                .HasForeignKey(o => o.DeliveryTypeId);
         }
     }
 }
