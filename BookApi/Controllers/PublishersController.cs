@@ -1,4 +1,5 @@
 ﻿using BookApi.Services;
+using Library.Extensions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -21,7 +22,7 @@ namespace BookApi.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<PublisherDto>>> GetPublishers(int pageNumber = DefaultPageNumber, int pageSize = DefaultPageSize)
+        public async Task<ActionResult<PaginatedResult<PublisherDto>>> GetPublishers([FromQuery] int pageNumber = DefaultPageNumber, [FromQuery] int pageSize = DefaultPageSize)
         {
             try
             {
@@ -31,27 +32,24 @@ namespace BookApi.Controllers
                     return BadRequest("Page number and page size must be greater than 0.");
                 }
 
-                var publishers = await _publisherService.GetPublishersAsync();
+                var publishers = await _publisherService.GetPublishersAsync(pageNumber, pageSize);
 
-                if (publishers == null || !publishers.Any())
+                if (publishers == null || publishers.Items == null || !publishers.Items.Any())
                 {
                     _logger.LogInformation("No publishers found.");
                     return NotFound("No publishers found.");
                 }
 
-                var paginated = publishers
-                    .Skip((pageNumber - 1) * pageSize)
-                    .Take(pageSize)
-                    .ToList();
-
-                return Ok(paginated);
+                _logger.LogInformation("Publishers successfully fetched.");
+                return Ok(publishers);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error occurred while retrieving publishers.");
-                return StatusCode(500, $"Internal server error: {ex.Message}");
+                return StatusCode(StatusCodes.Status500InternalServerError, new { message = ex.Message });
             }
         }
+
 
         [HttpGet("{id}")]
         public async Task<ActionResult<PublisherDto>> GetPublisherById(Guid id)
