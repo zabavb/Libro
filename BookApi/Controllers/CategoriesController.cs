@@ -1,4 +1,5 @@
 ﻿using BookApi.Services;
+using Library.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
@@ -20,7 +21,7 @@ namespace BookApi.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<CategoryDto>>> GetCategories(int pageNumber = DefaultPageNumber, int pageSize = DefaultPageSize)
+        public async Task<ActionResult<PaginatedResult<CategoryDto>>> GetCategories(int pageNumber = DefaultPageNumber, int pageSize = DefaultPageSize)
         {
             try
             {
@@ -30,20 +31,15 @@ namespace BookApi.Controllers
                     return BadRequest("Page number and page size must be greater than 0.");
                 }
 
-                var categories = await _categoryService.GetCategoriesAsync();
+                var categories = await _categoryService.GetCategoriesAsync(pageNumber, pageSize);
 
-                if (categories == null || !categories.Any())
+                if (categories == null || categories.Items == null || !categories.Items.Any())
                 {
                     _logger.LogInformation("No categories found.");
                     return NotFound("No categories found.");
                 }
 
-                var paginated = categories
-                    .Skip((pageNumber - 1) * pageSize)
-                    .Take(pageSize)
-                    .ToList();
-
-                return Ok(paginated);
+                return Ok(categories);
             }
             catch (Exception ex)
             {
@@ -51,6 +47,7 @@ namespace BookApi.Controllers
                 return StatusCode(500, $"Internal server error: {ex.Message}");
             }
         }
+
 
         [HttpGet("{id}")]
         public async Task<ActionResult<CategoryDto>> GetCategoryById(Guid id)
