@@ -1,4 +1,5 @@
 ﻿using BookApi.Services;
+using Library.Extensions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -20,7 +21,7 @@ namespace BookApi.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<AuthorDto>>> GetAuthors(int pageNumber = DefaultPageNumber, int pageSize = DefaultPageSize)
+        public async Task<ActionResult<PaginatedResult<AuthorDto>>> GetAuthors(int pageNumber = DefaultPageNumber, int pageSize = DefaultPageSize)
         {
             if (pageNumber < 1 || pageSize < 1)
             {
@@ -30,21 +31,16 @@ namespace BookApi.Controllers
 
             try
             {
-                var authors = await _authorService.GetAuthorsAsync();
+                var authors = await _authorService.GetAuthorsAsync(pageNumber, pageSize);
 
-                if (authors == null || !authors.Any())
+                if (authors == null || authors.Items == null || !authors.Items.Any())
                 {
                     _logger.LogInformation("No authors found.");
                     return NotFound("No authors found.");
                 }
 
-                var paginated = authors
-                    .Skip((pageNumber - 1) * pageSize)
-                    .Take(pageSize)
-                    .ToList();
-
                 _logger.LogInformation("Authors successfully fetched.");
-                return Ok(paginated);
+                return Ok(authors); 
             }
             catch (Exception ex)
             {
