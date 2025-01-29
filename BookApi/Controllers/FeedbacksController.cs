@@ -1,6 +1,7 @@
 ﻿using BookApi.Models;
 using BookAPI.Services;
 using FeedbackApi.Services;
+using Library.Extensions;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BookApi.Controllers
@@ -25,7 +26,7 @@ namespace BookApi.Controllers
         /// Retrieves a paginated list of feedbacks.
         /// </summary>
         [HttpGet]
-        public async Task<IActionResult> GetFeedbacks([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
+        public async Task<ActionResult<PaginatedResult<FeedbackDto>>> GetFeedbacks([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
         {
             try
             {
@@ -35,21 +36,16 @@ namespace BookApi.Controllers
                     return BadRequest("Page number and page size must be greater than 0.");
                 }
 
-                var feedbacks = await _feedbackService.GetFeedbacksAsync();
+                var feedbacks = await _feedbackService.GetFeedbacksAsync(pageNumber, pageSize);
 
-                if (feedbacks == null || !feedbacks.Any())
+                if (feedbacks == null || feedbacks.Items == null || !feedbacks.Items.Any())
                 {
                     _logger.LogInformation("No feedbacks found.");
                     return NotFound("No feedbacks found.");
                 }
 
-                var paginated = feedbacks
-                    .Skip((pageNumber - 1) * pageSize)
-                    .Take(pageSize)
-                    .ToList();
-
                 _logger.LogInformation("Feedbacks successfully fetched.");
-                return Ok(paginated);
+                return Ok(feedbacks);
             }
             catch (Exception ex)
             {
@@ -57,6 +53,7 @@ namespace BookApi.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, new { message = ex.Message });
             }
         }
+
 
         /// <summary>
         /// Retrieves a feedback by its ID.
