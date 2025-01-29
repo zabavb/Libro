@@ -4,9 +4,9 @@ using BookApi.Models;
 
 namespace BookApi.Data.Configuration
 {
-    internal class SubcategoryConfiguration : IEntityTypeConfiguration<Subcategory>
+    internal class SubcategoryConfiguration : IEntityTypeConfiguration<SubCategory>
     {
-        public void Configure(EntityTypeBuilder<Subcategory> builder)
+        public void Configure(EntityTypeBuilder<SubCategory> builder)
         {
             builder.HasKey(sc => sc.Id);
 
@@ -21,7 +21,7 @@ namespace BookApi.Data.Configuration
             builder.HasOne(sc => sc.Category)
                    .WithMany(c => c.Subcategories)
                    .HasForeignKey(sc => sc.CategoryId)
-                   .OnDelete(DeleteBehavior.Cascade);
+                   .OnDelete(DeleteBehavior.NoAction);
         }
     }
 }
