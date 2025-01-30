@@ -63,7 +63,7 @@ namespace OrderApi.Services
             {
                 order.OrderId = Guid.NewGuid();
                 await _repository.CreateAsync(order);
-                _logger.LogInformation("Order successfully created .");
+                _logger.LogInformation("Order successfully created.");
             }
             catch(Exception ex)
             {
@@ -78,7 +78,7 @@ namespace OrderApi.Services
         {
             if (entity == null)
             {
-                _message = "Order was not provided for the update.";
+                _message = "Order was not provided for update.";
                 _logger.LogError(_message);
                 throw new ArgumentNullException(null, _message);
             }
@@ -87,17 +87,17 @@ namespace OrderApi.Services
             try
             {
                 await _repository.UpdateAsync(order);
-                _logger.LogInformation($"Order with ID [{entity.Id}] updated succesfully.");
+                _logger.LogInformation($"Order with ID [{entity.Id}] successfully updated.");
             }
             catch (InvalidOperationException)
             {
-                _message = $"Order with Id {entity.Id} not found for update.";
+                _message = $"Order with ID [{entity.Id}] not found for update.";
                 _logger.LogError(_message);
                 throw new KeyNotFoundException(_message);
             }
             catch(Exception ex)
             {
-                _message = $"Error occured while updating the order with ID [{entity.Id}]";
+                _message = $"Error occurred while updating the order with ID [{entity.Id}].";
                 _logger.LogError(_message);
                 throw new InvalidOperationException(_message, ex);
             }
@@ -111,7 +111,7 @@ namespace OrderApi.Services
                 await _repository.DeleteAsync(id);
                 _logger.LogInformation($"Order with ID [{id}] successfully deleted.");
             }
-            catch (InvalidOperationException)
+            catch (KeyNotFoundException)
             {
                 _message = $"Order with ID [{id}] not found for deletion.";
                 _logger.LogError(_message);
