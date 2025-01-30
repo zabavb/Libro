@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom"
-import UserList from "../../../../components/user/UserList"
+import UserListContainer from "../../../../containers/user/UserListContainer"
 
 const UserListPage = () => {
 	const navigate = useNavigate()
@@ -14,7 +14,7 @@ const UserListPage = () => {
 				<div>
 					<button onClick={() => navigate("/admin/users/add")}>Add User</button>
 				</div>
-				<UserList />
+				<UserListContainer />
 			</main>
 		</div>
 	)
