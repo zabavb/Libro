@@ -4,13 +4,10 @@ using Moq;
 using OrderApi.Services;
 using OrderDto = Library.DTOs.Order.Order;
 using Order = OrderApi.Models.Order;
-using DeliveryType = OrderApi.Models.DeliveryType;
 using Library.Extensions;
 using Library.Filters;
 using FluentAssertions;
 using Library.DTOs.Order;
-using OrderApi.Models;
-using StackExchange.Redis;
 
 namespace OrderAPI.Tests.Services
 {
@@ -86,7 +83,7 @@ namespace OrderAPI.Tests.Services
         }
 
         [Fact]
-        public async Task GetAllAsync_ReturnsInvalidOperationExpection_WhenErrorOccurs()
+        public async Task GetAllAsync_ReturnsInvalidOperationException_WhenErrorOccurs()
         {
             // Arrange
             _repositoryMock
@@ -131,7 +128,7 @@ namespace OrderAPI.Tests.Services
         //========================= Get By Id =========================
 
         [Fact]
-        public async Task GetByIdAsync_ReturnsOrder_whenOrderExists()
+        public async Task GetByIdAsync_ReturnsOrder_WhenOrderExists()
         {
             // Arrange
             var orderId = Guid.NewGuid();
@@ -207,7 +204,7 @@ namespace OrderAPI.Tests.Services
         }
 
         [Fact]
-        public async Task GetByIdAsync_ReturnsKeyNotFoundExceptiop_WhenOrderDoesNotExist()
+        public async Task GetByIdAsync_ReturnsKeyNotFoundException_WhenOrderDoesNotExist()
         {
             // Arrange
             var orderId = Guid.NewGuid();
@@ -314,7 +311,7 @@ namespace OrderAPI.Tests.Services
 
             _repositoryMock
                 .Setup(r => r.CreateAsync(It.IsAny<Order>()))
-                .ThrowsAsync(new ArgumentNullException("Order was not provided for creation"));
+                .ThrowsAsync(new ArgumentNullException("Order was not provided for creation."));
 
             string capturedLogMessage = null!;
             _loggerMock
