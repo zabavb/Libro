@@ -6,6 +6,7 @@ import { AppDispatch, removeUser } from "../../state/redux/index"
 import UserCard from "../../components/user/UserCard"
 import { resetOperationStatus } from "../../state/redux/slices/userSlice"
 import { User } from "../../types"
+import { UserToUserView } from "../../api/adapters/userAdapter"
 
 interface UserCardContainerProps {
 	user: User
@@ -13,9 +14,9 @@ interface UserCardContainerProps {
 
 const UserCardContainer: React.FC<UserCardContainerProps> = ({ user }) => {
 	const dispatch = useDispatch<AppDispatch>()
-	const navigate = useNavigate()
 	const { operationStatus, error } = useSelector((state: RootState) => state.users)
-	const formattedDateOfBirth = user.dateOfBirth.split("T")[0]
+	const userView = UserToUserView(user)
+	const navigate = useNavigate()
 
 	const handleDelete = (e: React.MouseEvent) => {
 		e.stopPropagation()
@@ -38,7 +39,7 @@ const UserCardContainer: React.FC<UserCardContainerProps> = ({ user }) => {
 
 	return (
 		<UserCard
-			user={{ ...user, dateOfBirth: formattedDateOfBirth }}
+			user={userView}
 			onDelete={handleDelete}
 			onNavigate={handleNavigate}
 		/>
