@@ -2,9 +2,14 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit"
 import { getAllUsers, createUser, updateUser, deleteUser } from "../../../api/repositories/userRepository"
 import { User } from "../../../types"
 
-export const fetchUsers = createAsyncThunk("users/fetchUsers", async () => {
-	return (await getAllUsers()).items
-})
+export const fetchUsers = createAsyncThunk(
+	"users/fetchUsers",
+	async ({ pageNumber = 1, pageSize = 10 }: { pageNumber?: number; pageSize?: number }) => {
+		const response = await getAllUsers(pageNumber, pageSize)
+		console.log(`userSlice.ts: fecth all response:`, response)
+		return response
+	}
+)
 
 export const addUser = createAsyncThunk("users/addUser", async (user: Partial<User>) => {
 	console.log(`userSlice.ts: add user:[${user}]`)
@@ -25,7 +30,6 @@ export const removeUser = createAsyncThunk("users/removeUser", async (id: string
 	return id
 })
 
-// Slice
 const userSlice = createSlice({
 	name: "users",
 	initialState: {
@@ -33,6 +37,11 @@ const userSlice = createSlice({
 		loading: false,
 		error: null as string | null | undefined,
 		operationStatus: null as "success" | "error" | "pending" | null,
+		pagination: {
+			pageNumber: 1,
+			pageSize: 10,
+			totalCount: 0,
+		},
 	},
 	reducers: {
 		resetOperationStatus: (state) => {
@@ -48,7 +57,12 @@ const userSlice = createSlice({
 			})
 			.addCase(fetchUsers.fulfilled, (state, action) => {
 				state.loading = false
-				state.data = action.payload
+				state.data = action.payload.items
+				state.pagination = {
+					pageNumber: action.payload.pageNumber,
+					pageSize: action.payload.pageSize,
+					totalCount: action.payload.totalCount,
+				}
 			})
 			.addCase(fetchUsers.rejected, (state, action) => {
 				state.loading = false
