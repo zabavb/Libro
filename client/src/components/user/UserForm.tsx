@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react"
 import { User } from "../../types"
+import { dateToString } from "../../api/adapters/commonAdapters"
 
 interface UserFormProps {
 	existingUser?: User
@@ -11,18 +12,17 @@ const UserForm: React.FC<UserFormProps> = ({ existingUser, onAddUser, onEditUser
 	const [id, setId] = useState("00000000-0000-0000-0000-000000000000")
 	const [firstName, setFirstName] = useState("")
 	const [lastName, setLastName] = useState("")
-	const [dateOfBirth, setDateOfBirth] = useState("")
+	const [dateOfBirth, setDateOfBirth] = useState(dateToString(new Date(new Date().getFullYear() - 18)))
 	const [email, setEmail] = useState("")
 	const [phoneNumber, setPhoneNumber] = useState("")
-	const [role, setRole] = useState(3)
-
+	const [role, setRole] = useState(2)
 
 	useEffect(() => {
 		if (existingUser) {
 			setId(existingUser.id)
 			setFirstName(existingUser.firstName)
 			setLastName(existingUser.lastName)
-			setDateOfBirth(existingUser.dateOfBirth)
+			setDateOfBirth(dateToString(existingUser.dateOfBirth))
 			setEmail(existingUser.email)
 			setPhoneNumber(existingUser.phoneNumber)
 			setRole(existingUser.role)
@@ -31,7 +31,15 @@ const UserForm: React.FC<UserFormProps> = ({ existingUser, onAddUser, onEditUser
 
 	const handleSubmit = (e: React.FormEvent) => {
 		e.preventDefault()
-		const user = { id, firstName, lastName, dateOfBirth, email, phoneNumber, role }
+		const user: User = {
+			id,
+			firstName,
+			lastName,
+			dateOfBirth: new Date(dateOfBirth),
+			email,
+			phoneNumber,
+			role,
+		}
 		if (existingUser) onEditUser(existingUser.id, user)
 		else onAddUser(user)
 	}
@@ -73,7 +81,7 @@ const UserForm: React.FC<UserFormProps> = ({ existingUser, onAddUser, onEditUser
 			/>
 			<select
 				value={role}
-				onChange={(e) => setRole(Number(e.target.value))}
+				onChange={(e) => setRole(Number.parseInt(e.target.value))}
 				required>
 				<option
 					value=""

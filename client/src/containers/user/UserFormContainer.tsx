@@ -14,7 +14,9 @@ interface UserFormContainerProps {
 const UserFormContainer: React.FC<UserFormContainerProps> = ({ userId }) => {
 	const dispatch = useDispatch<AppDispatch>()
 	const { data: users, operationStatus, error } = useSelector((state: RootState) => state.users)
-	const existingUser = users.find((user) => user.id === userId)
+
+	const existingUser = users.find((user) => user.id === userId) ?? undefined
+
 	const navigate = useNavigate()
 
 	const handleAddUser = (user: User) => {
