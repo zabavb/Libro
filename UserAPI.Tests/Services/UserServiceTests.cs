@@ -239,7 +239,7 @@ namespace UserAPI.Tests.Services
             // Arrange
             var userDto = new User
             {
-                Id = Guid.NewGuid(),
+                Id = Guid.Empty,
                 FirstName = "Test User Name",
                 LastName = "Test User Surname",
                 Email = "testuseremail@gmail.com",
@@ -253,8 +253,8 @@ namespace UserAPI.Tests.Services
                 .Returns(Task.CompletedTask);
 
             _mapperMock
-                .Setup(m => m.Map<User>(It.IsAny<User>()))
-                .Returns(new User());
+                    .Setup(m => m.Map<Models.User>(It.IsAny<User>()))
+                    .Returns(new Models.User());
 
             string capturedLogMessage = null!;
             _loggerMock
