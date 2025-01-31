@@ -25,6 +25,13 @@ namespace BookApi.Controllers
         /// <summary>
         /// Retrieves a paginated list of feedbacks.
         /// </summary>
+        /// <param name="pageNumber">Page number (default: 1). The page number to retrieve.</param>
+        /// <param name="pageSize">Number of feedbacks per page (default: 10). The number of feedbacks to return per page.</param>
+        /// <returns>A paginated list of feedbacks.</returns>
+        /// <response code="200">Returns a list of feedbacks according to the specified pagination parameters.</response>
+        /// <response code="400">Returns an error if the page number or page size is invalid.</response>
+        /// <response code="404">Returns an error if no feedbacks are found.</response>
+        /// <response code="500">Returns an internal server error if an exception occurs.</response>
         [HttpGet]
         public async Task<ActionResult<PaginatedResult<FeedbackDto>>> GetFeedbacks([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
         {
@@ -57,6 +64,11 @@ namespace BookApi.Controllers
         /// <summary>
         /// Retrieves a feedback by its ID.
         /// </summary>
+        /// <param name="id">The ID of the feedback to retrieve.</param>
+        /// <returns>The requested feedback.</returns>
+        /// <response code="200">Returns the feedback with the specified ID.</response>
+        /// <response code="404">Returns an error if the feedback with the specified ID is not found.</response>
+        /// <response code="500">Returns an internal server error if an exception occurs.</response>
         [HttpGet("{id}")]
         public async Task<ActionResult<FeedbackDto>> GetFeedbackById(Guid id)
         {
@@ -83,6 +95,11 @@ namespace BookApi.Controllers
         /// <summary>
         /// Creates a new feedback.
         /// </summary>
+        /// <param name="feedbackDto">The feedback data to create.</param>
+        /// <returns>The created feedback.</returns>
+        /// <response code="201">Returns the created feedback.</response>
+        /// <response code="400">Returns an error if the provided data is invalid.</response>
+        /// <response code="500">Returns an internal server error if an exception occurs.</response>
         [HttpPost]
         public async Task<ActionResult<FeedbackDto>> CreateFeedback([FromBody] FeedbackDto feedbackDto)
         {
@@ -105,9 +122,17 @@ namespace BookApi.Controllers
             }
         }
 
+
         /// <summary>
         /// Updates an existing feedback.
         /// </summary>
+        /// <param name="id">The ID of the feedback to update.</param>
+        /// <param name="feedbackDto">The updated feedback data.</param>
+        /// <returns>The updated feedback.</returns>
+        /// <response code="200">Returns the updated feedback.</response>
+        /// <response code="400">Returns an error if the provided data is invalid.</response>
+        /// <response code="404">Returns an error if the feedback with the specified ID is not found.</response>
+        /// <response code="500">Returns an internal server error if an exception occurs.</response>
         [HttpPut("{id}")]
         public async Task<ActionResult<FeedbackDto>> UpdateFeedback(Guid id, [FromBody] FeedbackDto feedbackDto)
         {
@@ -140,6 +165,11 @@ namespace BookApi.Controllers
         /// <summary>
         /// Deletes a feedback by its ID.
         /// </summary>
+        /// <param name="id">The ID of the feedback to delete.</param>
+        /// <returns>No content if the deletion is successful.</returns>
+        /// <response code="204">Returns no content if the feedback is successfully deleted.</response>
+        /// <response code="404">Returns an error if the feedback with the specified ID is not found for deletion.</response>
+        /// <response code="500">Returns an internal server error if an exception occurs.</response>
         [HttpDelete("{id}")]
         public async Task<ActionResult> DeleteFeedback(Guid id)
         {

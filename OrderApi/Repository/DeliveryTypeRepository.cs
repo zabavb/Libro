@@ -12,8 +12,8 @@ namespace OrderApi.Repository
     {
         private readonly OrderDbContext _context = context;
         private readonly IDatabase _redisDatabase = redis.GetDatabase(); 
-        private readonly string _cacheKeyPrefix = "DeliveryType_";
-        private readonly TimeSpan _cacheExpiration = TimeSpan.FromMinutes(10);
+        public readonly string _cacheKeyPrefix = "DeliveryType_";
+        public readonly TimeSpan _cacheExpiration = TimeSpan.FromMinutes(10);
         private readonly ILogger<IDeliveryTypeRepository> _logger = logger;
 
 

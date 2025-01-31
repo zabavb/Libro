@@ -34,8 +34,8 @@ namespace OrderApi.Data.Configurations
                 .HasConversion<string>();
 
             builder.HasOne(o => o.DeliveryType)
-                .WithOne()
-                .HasForeignKey<Order>(o => o.DeliveryTypeId)
+                .WithMany(dt => dt.Orders)
+                .HasForeignKey(o => o.DeliveryTypeId)
                 .IsRequired();
         }
     }

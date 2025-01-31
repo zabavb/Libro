@@ -1,15 +1,8 @@
 import React from "react"
+import { UserView } from "../../types"
 
 interface UserCardProps {
-	user: {
-		id: string
-		firstName: string
-		lastName: string
-		dateOfBirth: string
-		email: string
-		phoneNumber: string
-		role: number
-	}
+	user: UserView
 	onDelete: (e: React.MouseEvent) => void
 	onNavigate: () => void
 }

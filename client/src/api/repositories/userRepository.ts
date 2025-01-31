@@ -1,22 +1,22 @@
 import axios from "axios"
-import { USERS, USER_BY_ID } from "../index"
-import { User } from "../../types"
+import { USERS_PAGINATED, USERS, USER_BY_ID } from "../index"
+import { User, PaginatedResponse } from "../../types"
 
-export interface PaginatedResponse<T> {
-	items: T[]
-	pageNumber: 1
-	pageSize: 10
-	totalPages: 1
-	hasPreviousPage: false
-	hasNextPage: false
-}
-
-export const getAllUsers = async (): Promise<PaginatedResponse<User>> => {
+export const getAllUsers = async (
+	pageNumber: number = 1,
+	pageSize: number = 10
+): Promise<PaginatedResponse<User>> => {
 	try {
-		const response = await axios.get(USERS)
+		const url = USERS_PAGINATED(pageNumber, pageSize)
+		const response = await axios.get<PaginatedResponse<User>>(url)
 		return response.data
-	} catch (error) {
-		throw new Error(`Failed to fetch list of users: ${error}`)
+	} catch (error: unknown) {
+		if (axios.isAxiosError(error)) {
+			throw new Error(
+				`Failed to fetch list of users: ${error.response?.data?.message || error.message}`
+			)
+		}
+		throw new Error(`Failed to fetch list of users: ${String(error)}`)
 	}
 }
 
