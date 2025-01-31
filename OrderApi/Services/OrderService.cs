@@ -17,12 +17,12 @@ namespace OrderApi.Services
 
             if (paginatedOrders == null || paginatedOrders.Items == null)
             {
-                _message = "Failed to fetch paginated delivery types.";
+                _message = "Failed to fetch paginated orders.";
                 _logger.LogError(_message);
                 throw new InvalidOperationException(_message);
             }
 
-            _logger.LogInformation("Delivery types successfully fetched.");
+            _logger.LogInformation("Successfully fetched [{Count}] orders.", paginatedOrders.Items.Count);
 
             return new PaginatedResult<OrderDto>
             {
@@ -39,12 +39,12 @@ namespace OrderApi.Services
 
             if (order == null)
             {
-                _message = $"Order with Id [{id}] not found.";
+                _message = $"Order with ID [{id}] not found.";
                 _logger.LogError(_message);
                 throw new KeyNotFoundException(_message);
             }
 
-            _logger.LogInformation($"Order with Id [{id}] fetched succesfully.");
+            _logger.LogInformation($"Order with ID [{id}] successfully fetched.");
 
             return order == null ? null : _mapper.Map<OrderDto>(order);
         }
@@ -63,11 +63,11 @@ namespace OrderApi.Services
             {
                 order.OrderId = Guid.NewGuid();
                 await _repository.CreateAsync(order);
-                _logger.LogInformation("Order created successfully.");
+                _logger.LogInformation("Order successfully created.");
             }
             catch(Exception ex)
             {
-                _message = $"Error occured while adding an order with tID [{entity.Id}].";
+                _message = $"Error occurred while adding the order with ID [{entity.Id}].";
                 _logger.LogError(_message);
                 throw new InvalidOperationException(_message, ex);
             }
@@ -78,7 +78,7 @@ namespace OrderApi.Services
         {
             if (entity == null)
             {
-                _message = "Order was not provided for the update";
+                _message = "Order was not provided for update.";
                 _logger.LogError(_message);
                 throw new ArgumentNullException(null, _message);
             }
@@ -87,17 +87,17 @@ namespace OrderApi.Services
             try
             {
                 await _repository.UpdateAsync(order);
-                _logger.LogInformation($"Order with ID [{entity.Id}] updated succesfully.");
+                _logger.LogInformation($"Order with ID [{entity.Id}] successfully updated.");
             }
             catch (InvalidOperationException)
             {
-                _message = $"Order with Id {entity.Id} not found for update.";
+                _message = $"Order with ID [{entity.Id}] not found for update.";
                 _logger.LogError(_message);
                 throw new KeyNotFoundException(_message);
             }
             catch(Exception ex)
             {
-                _message = $"Error occured while updating the order with Id [{entity.Id}]";
+                _message = $"Error occurred while updating the order with ID [{entity.Id}].";
                 _logger.LogError(_message);
                 throw new InvalidOperationException(_message, ex);
             }
@@ -109,17 +109,17 @@ namespace OrderApi.Services
             try
             {
                 await _repository.DeleteAsync(id);
-                _logger.LogInformation($"Order with Id [{id}] deleted succesfully");
+                _logger.LogInformation($"Order with ID [{id}] successfully deleted.");
             }
-            catch (InvalidOperationException)
+            catch (KeyNotFoundException)
             {
-                _message = $"Order with Id [{id}] not found for deletion.";
+                _message = $"Order with ID [{id}] not found for deletion.";
                 _logger.LogError(_message);
                 throw new KeyNotFoundException(_message);
             }
             catch(Exception ex)
             {
-                _message = $"Error occurred while deleting the order with Id [{id}].";
+                _message = $"Error occurred while deleting the order with ID [{id}].";
                 _logger.LogError(_message);
                 throw new InvalidOperationException(_message, ex);
             }

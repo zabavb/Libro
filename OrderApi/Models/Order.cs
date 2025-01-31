@@ -1,5 +1,7 @@
 ﻿//using System.ComponentModel.DataAnnotations;
 //using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using OrderStatus = Library.DTOs.Order.OrderStatus;
 
 namespace OrderApi.Models
@@ -29,10 +31,6 @@ namespace OrderApi.Models
         public float Price { get; set; }
 
         //[Required]
-        //[ForeignKey(nameof(DeliveryType))]
-        public Guid DeliveryTypeId { get; set; }
-
-        //[Required]
         //[Range(0, float.MaxValue)]
         public float DeliveryPrice { get; set; }
 
@@ -42,6 +40,9 @@ namespace OrderApi.Models
 
         public OrderStatus Status { get; set; }
 
+        [Required]
+        [ForeignKey(nameof(DeliveryType))]
+        public Guid DeliveryTypeId { get; set; }
 
         public DeliveryType DeliveryType { get; set; } = null!;
 
