@@ -1,5 +1,5 @@
 ﻿using BookApi.Models;
-using Library.Filters;
+using BookAPI.Models.Filters;
 
 namespace BookAPI.Infrastructure.Extensions
 {
