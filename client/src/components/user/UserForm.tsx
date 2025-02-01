@@ -1,6 +1,10 @@
-import React, { useState, useEffect } from "react"
-import { User } from "../../types"
+import React, { useEffect } from "react"
+import { useForm } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { UserFormData, userSchema } from "../../utils"
+import { User, Role } from "../../types"
 import { dateToString } from "../../api/adapters/commonAdapters"
+import { roleEnumToNumber, roleNumberToEnum } from "../../api/adapters/userAdapter"
 
 interface UserFormProps {
 	existingUser?: User
@@ -9,90 +13,95 @@ interface UserFormProps {
 }
 
 const UserForm: React.FC<UserFormProps> = ({ existingUser, onAddUser, onEditUser }) => {
-	const [id, setId] = useState("00000000-0000-0000-0000-000000000000")
-	const [firstName, setFirstName] = useState("")
-	const [lastName, setLastName] = useState("")
-	const [dateOfBirth, setDateOfBirth] = useState(dateToString(new Date(new Date().getFullYear() - 18)))
-	const [email, setEmail] = useState("")
-	const [phoneNumber, setPhoneNumber] = useState("")
-	const [role, setRole] = useState(2)
+	const {
+		register,
+		handleSubmit,
+		setValue,
+		formState: { errors },
+	} = useForm<UserFormData>({
+		resolver: zodResolver(userSchema),
+		defaultValues: {
+			firstName: "",
+			lastName: "",
+			dateOfBirth: dateToString(new Date(new Date().getFullYear() - 18)),
+			email: "",
+			phoneNumber: "",
+			role: Role.USER,
+		},
+	})
 
 	useEffect(() => {
 		if (existingUser) {
-			setId(existingUser.id)
-			setFirstName(existingUser.firstName)
-			setLastName(existingUser.lastName)
-			setDateOfBirth(dateToString(existingUser.dateOfBirth))
-			setEmail(existingUser.email)
-			setPhoneNumber(existingUser.phoneNumber)
-			setRole(existingUser.role)
+			setValue("firstName", existingUser.firstName)
+			setValue("lastName", existingUser.lastName)
+			setValue("dateOfBirth", dateToString(existingUser.dateOfBirth))
+			setValue("email", existingUser.email)
+			setValue("phoneNumber", existingUser.phoneNumber)
+			setValue("role", roleNumberToEnum(existingUser.role))
 		}
-	}, [existingUser])
+	}, [existingUser, setValue])
 
-	const handleSubmit = (e: React.FormEvent) => {
-		e.preventDefault()
+	const onSubmit = (data: UserFormData) => {
 		const user: User = {
-			id,
-			firstName,
-			lastName,
-			dateOfBirth: new Date(dateOfBirth),
-			email,
-			phoneNumber,
-			role,
+			id: existingUser ? existingUser.id : "00000000-0000-0000-0000-000000000000",
+			firstName: data.firstName,
+			lastName: data.lastName || "",
+			dateOfBirth: new Date(data.dateOfBirth),
+			email: data.email || "",
+			phoneNumber: data.phoneNumber || "",
+			role: roleEnumToNumber(data.role),
 		}
+
 		if (existingUser) onEditUser(existingUser.id, user)
 		else onAddUser(user)
 	}
 
 	return (
-		<form onSubmit={handleSubmit}>
+		<form onSubmit={handleSubmit(onSubmit)}>
 			<input
-				type="text"
-				value={firstName}
-				onChange={(e) => setFirstName(e.target.value)}
+				{...register("firstName")}
 				placeholder="First Name"
-				required
 			/>
+			<p>{errors.firstName?.message}</p>
+
 			<input
-				type="text"
-				value={lastName}
-				onChange={(e) => setLastName(e.target.value)}
+				{...register("lastName")}
 				placeholder="Last Name"
 			/>
+			<p>{errors.lastName?.message}</p>
+
 			<input
 				type="date"
-				value={dateOfBirth}
-				onChange={(e) => setDateOfBirth(e.target.value)}
+				{...register("dateOfBirth")}
 				placeholder="Date of Birth"
 			/>
+			<p>{errors.dateOfBirth?.message}</p>
+
 			<input
 				type="email"
-				value={email}
-				onChange={(e) => setEmail(e.target.value)}
+				{...register("email")}
 				placeholder="Email"
-				required
 			/>
+			<p>{errors.email?.message}</p>
+
 			<input
-				type="phone"
-				value={phoneNumber}
-				onChange={(e) => setPhoneNumber(e.target.value)}
+				type="tel"
+				{...register("phoneNumber")}
 				placeholder="Phone Number"
-				required
 			/>
-			<select
-				value={role}
-				onChange={(e) => setRole(Number.parseInt(e.target.value))}
-				required>
-				<option
-					value=""
-					disabled>
-					Select Role
-				</option>
-				<option value="0">Admin</option>
-				<option value="1">Moderator</option>
-				<option value="2">User</option>
-				<option value="3">Guest</option>
+			<p>{errors.phoneNumber?.message}</p>
+
+			<select {...register("role")}>
+				<option value="">Select Role</option>
+				{Object.entries(Role).map(([key, value]) => (
+					<option
+						key={key}
+						value={value}>
+						{value}
+					</option>
+				))}
 			</select>
+			<p>{errors.role?.message}</p>
 
 			<button type="submit">{existingUser ? "Update User" : "Add User"}</button>
 		</form>
