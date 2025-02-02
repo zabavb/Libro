@@ -88,7 +88,8 @@ namespace BookApi.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, $"Error occurred while retrieving feedback with id {id}.");
-                return StatusCode(StatusCodes.Status500InternalServerError, new { message = ex.Message });
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+
             }
         }
 
@@ -189,7 +190,7 @@ namespace BookApi.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, $"Error occurred while deleting feedback with id {id}.");
-                return StatusCode(StatusCodes.Status500InternalServerError, new { message = ex.Message });
+                return StatusCode(500, $"Internal server error: {ex.Message}");
             }
         }
     }
