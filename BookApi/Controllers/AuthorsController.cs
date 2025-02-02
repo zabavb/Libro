@@ -135,13 +135,13 @@ namespace BookApi.Controllers
         [HttpPut("{id}")]
         public async Task<ActionResult<AuthorDto>> UpdateAuthor(Guid id, [FromBody] AuthorDto authorDto)
         {
+            if (authorDto == null)
+            {
+                _logger.LogWarning("Invalid author data provided for update.");
+                return BadRequest("Invalid data.");
+            }
             try
             {
-                if (authorDto == null)
-                {
-                    _logger.LogWarning("Invalid author data provided for update.");
-                    return BadRequest("Invalid data.");
-                }
                 var updated = await _authorService.UpdateAuthorAsync(id, authorDto);
 
                 if (updated == null)
