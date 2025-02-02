@@ -34,7 +34,6 @@ namespace BookApi.Controllers
 
                 if (categories == null || !categories.Any())
                 {
-                    _logger.LogInformation("No categories found.");
                     return NotFound("No categories found.");
                 }
 
@@ -61,11 +60,8 @@ namespace BookApi.Controllers
 
                 if (category == null)
                 {
-                    _logger.LogWarning($"Category with id {id} not found.");
                     return NotFound($"Category with id {id} not found.");
                 }
-
-                _logger.LogInformation($"Category with id {id} successfully fetched.");
                 return Ok(category);
             }
             catch (Exception ex)
@@ -82,12 +78,10 @@ namespace BookApi.Controllers
             {
                 if (categoryDto == null)
                 {
-                    _logger.LogWarning("Invalid data provided for creating category.");
                     return BadRequest("Invalid data.");
                 }
 
                 var created = await _categoryService.CreateCategoryAsync(categoryDto);
-                _logger.LogInformation($"Category with id {created.CategoryId} successfully created.");
 
                 return CreatedAtAction(nameof(GetCategoryById), new { id = created.CategoryId }, created);
             }
@@ -113,11 +107,9 @@ namespace BookApi.Controllers
 
                 if (updated == null)
                 {
-                    _logger.LogWarning($"Category with id {id} not found for update.");
                     return NotFound("Category not found.");
                 }
 
-                _logger.LogInformation($"Category with id {id} successfully updated.");
                 return Ok(updated);
             }
             catch (Exception ex)
@@ -136,11 +128,9 @@ namespace BookApi.Controllers
 
                 if (!isDeleted)
                 {
-                    _logger.LogWarning($"Category with id {id} not found for deletion.");
                     return NotFound("Category not found.");
                 }
 
-                _logger.LogInformation($"Category with id {id} successfully deleted.");
                 return NoContent();
             }
             catch (Exception ex)

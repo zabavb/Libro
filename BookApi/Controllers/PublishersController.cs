@@ -35,7 +35,6 @@ namespace BookApi.Controllers
 
                 if (publishers == null || !publishers.Any())
                 {
-                    _logger.LogInformation("No publishers found.");
                     return NotFound("No publishers found.");
                 }
 
@@ -62,11 +61,9 @@ namespace BookApi.Controllers
 
                 if (publisher == null)
                 {
-                    _logger.LogWarning($"Publisher with id {id} not found.");
                     return NotFound($"Publisher with id {id} not found.");
                 }
 
-                _logger.LogInformation($"Publisher with id {id} successfully fetched.");
                 return Ok(publisher);
             }
             catch (Exception ex)
@@ -88,7 +85,6 @@ namespace BookApi.Controllers
                 }
 
                 var created = await _publisherService.CreatePublisherAsync(publisherDto);
-                _logger.LogInformation($"Publisher with id {created.PublisherId} successfully created.");
 
                 return CreatedAtAction(nameof(GetPublisherById), new { id = created.PublisherId }, created);
             }
@@ -114,11 +110,9 @@ namespace BookApi.Controllers
 
                 if (updated == null)
                 {
-                    _logger.LogWarning($"Publisher with id {id} not found for update.");
                     return NotFound("Publisher not found.");
                 }
 
-                _logger.LogInformation($"Publisher with id {id} successfully updated.");
                 return Ok(updated);
             }
             catch (Exception ex)
@@ -137,11 +131,9 @@ namespace BookApi.Controllers
 
                 if (!isDeleted)
                 {
-                    _logger.LogWarning($"Publisher with id {id} not found for deletion.");
                     return NotFound("Publisher not found.");
                 }
 
-                _logger.LogInformation($"Publisher with id {id} successfully deleted.");
                 return NoContent();
             }
             catch (Exception ex)
