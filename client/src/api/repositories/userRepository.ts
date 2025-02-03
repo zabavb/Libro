@@ -1,21 +1,36 @@
 import axios from "axios"
 import { USERS_PAGINATED, USERS, USER_BY_ID } from "../index"
-import { User, PaginatedResponse } from "../../types"
+import { User, PaginatedResponse, UserFilter, UserSort } from "../../types"
+import { roleEnumToNumber } from "../adapters/userAdapter"
 
 export const getAllUsers = async (
 	pageNumber: number = 1,
-	pageSize: number = 10
+	pageSize: number = 10,
+	searchTerm?: string,
+	filters?: UserFilter,
+	sort?: UserSort
 ): Promise<PaginatedResponse<User>> => {
 	try {
 		const url = USERS_PAGINATED(pageNumber, pageSize)
-		const response = await axios.get<PaginatedResponse<User>>(url)
+
+		const formattedSort = Object.fromEntries(
+			Object.entries(sort || {}).map(([key, value]) => [key, value ? 1 : 2])
+		)
+
+		const params = {
+			searchTerm,
+			...filters,
+			role: filters?.role !== undefined ? roleEnumToNumber(filters.role).toString() : undefined,
+			...formattedSort,
+		}
+
+		const response = await axios.get<PaginatedResponse<User>>(url, { params })
 		return response.data
 	} catch (error: unknown) {
-		if (axios.isAxiosError(error)) {
+		if (axios.isAxiosError(error))
 			throw new Error(
 				`Failed to fetch list of users: ${error.response?.data?.message || error.message}`
 			)
-		}
 		throw new Error(`Failed to fetch list of users: ${String(error)}`)
 	}
 }

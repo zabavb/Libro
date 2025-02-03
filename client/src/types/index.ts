@@ -3,8 +3,7 @@ export type { User } from "./objects/User"
 
 export type { UserFilter } from "./Filters/UserFilter"
 
-export type { UserSort } from "./Sortings/UserSort"
+export type { UserSort } from "./sortings/UserSort"
 
 export type { PaginatedResponse } from "./subObjects/PaginatedResponse"
 export { Role } from "./subObjects/Role"
-export type { Boolean } from "./subObjects/Boolean"
