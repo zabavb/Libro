@@ -4,6 +4,7 @@ import UserFilter from "./UserFilter"
 import UserSort from "./UserSort"
 import UserCardContainer from "../../containers/user/UserCardContainer"
 import Pagination from "../common/Pagination"
+import Search from "../common/Search"
 
 interface UserListProps {
 	users?: User[]
@@ -12,6 +13,8 @@ interface UserListProps {
 	pagination: { pageNumber: number; pageSize: number; totalCount: number }
 	onPageChange: (pageNumber: number) => void
 	onNavigate: (path: string) => void
+	onSearchTermChange: (searchTerm: string) => void
+	searchTerm: string
 	onFilterChange: (filters: UserFilter) => void
 	filters: UserFilter
 	onSortChange: (field: keyof UserSort) => void
@@ -24,11 +27,13 @@ const UserList: React.FC<UserListProps> = ({
 	error,
 	pagination,
 	onPageChange,
-	onNavigate,
-	onFilterChange,
+	searchTerm,
+	onSearchTermChange,
 	filters,
-	onSortChange,
+	onFilterChange,
 	sort,
+	onSortChange,
+	onNavigate,
 }) => {
 	if (loading) return <p>Loading...</p>
 	if (error) return <p>Error: {error}</p>
@@ -39,16 +44,21 @@ const UserList: React.FC<UserListProps> = ({
 			<p onClick={() => onNavigate("/admin/users/add")}>Add User</p>
 			<h1>User List</h1>
 
+			<Search
+				searchTerm={searchTerm}
+				onSearchTermChange={onSearchTermChange}
+			/>
+
 			<UserFilter
-				onFilterChange={onFilterChange}
 				filters={filters}
+				onFilterChange={onFilterChange}
 			/>
 
 			<UserSort
-				onSortChange={onSortChange}
 				sort={sort}
+				onSortChange={onSortChange}
 			/>
-			
+
 			<div>
 				{users.map((user) => (
 					<UserCardContainer
