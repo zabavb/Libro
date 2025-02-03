@@ -1,5 +1,6 @@
 ﻿using BookApi.Data;
 using BookApi.Models;
+using Library.Extensions;
 using Microsoft.EntityFrameworkCore;
 
 namespace BookAPI.Repositories
@@ -24,17 +25,28 @@ namespace BookAPI.Repositories
         {
             var subCategory = await _context.Subcategories.FirstOrDefaultAsync(sc => sc.Id == id)
                 ?? throw new KeyNotFoundException("SubCategory not found");
-            _context.SubCategories.Remove(subCategory);
+            _context.Subcategories.Remove(subCategory);
             await _context.SaveChangesAsync();
         }
 
-        public async Task<List<SubCategory>> GetAllAsync()
+        public async Task<PaginatedResult<SubCategory>> GetAllAsync(int pageNumber, int pageSize)
         {
-            return await _context.Subcategories
+            IQueryable<SubCategory> subcategories = _context.Subcategories
                 .Include(sc => sc.Category)
-                .Include(sc => sc.Book)   
-                .ToListAsync();
+                .Include(sc => sc.Book);
+
+            var totalSubcategories = await subcategories.CountAsync();
+            var resultSubcategories = await subcategories.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToListAsync();
+
+            return new PaginatedResult<SubCategory>
+            {
+                Items = resultSubcategories,
+                TotalCount = totalSubcategories,
+                PageNumber = pageNumber,
+                PageSize = pageSize
+            };
         }
+
 
         public async Task<SubCategory?> GetByIdAsync(Guid id)
         {

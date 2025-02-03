@@ -60,6 +60,7 @@ namespace UserAPI.Services
             var user = _mapper.Map<User>(entity);
             try
             {
+                user.UserId = Guid.NewGuid();
                 await _repository.CreateAsync(user);
                 _logger.LogInformation("User successfully created.");
             }

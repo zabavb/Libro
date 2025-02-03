@@ -1,6 +1,7 @@
 ﻿using BookApi.Models;
 using BookAPI.Services;
 using FeedbackApi.Services;
+using Library.Extensions;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BookApi.Controllers
@@ -24,8 +25,15 @@ namespace BookApi.Controllers
         /// <summary>
         /// Retrieves a paginated list of feedbacks.
         /// </summary>
+        /// <param name="pageNumber">Page number (default: 1). The page number to retrieve.</param>
+        /// <param name="pageSize">Number of feedbacks per page (default: 10). The number of feedbacks to return per page.</param>
+        /// <returns>A paginated list of feedbacks.</returns>
+        /// <response code="200">Returns a list of feedbacks according to the specified pagination parameters.</response>
+        /// <response code="400">Returns an error if the page number or page size is invalid.</response>
+        /// <response code="404">Returns an error if no feedbacks are found.</response>
+        /// <response code="500">Returns an internal server error if an exception occurs.</response>
         [HttpGet]
-        public async Task<IActionResult> GetFeedbacks([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
+        public async Task<ActionResult<PaginatedResult<FeedbackDto>>> GetFeedbacks([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
         {
             try
             {
@@ -35,21 +43,16 @@ namespace BookApi.Controllers
                     return BadRequest("Page number and page size must be greater than 0.");
                 }
 
-                var feedbacks = await _feedbackService.GetFeedbacksAsync();
+                var feedbacks = await _feedbackService.GetFeedbacksAsync(pageNumber, pageSize);
 
-                if (feedbacks == null || !feedbacks.Any())
+                if (feedbacks == null || feedbacks.Items == null || !feedbacks.Items.Any())
                 {
                     _logger.LogInformation("No feedbacks found.");
                     return NotFound("No feedbacks found.");
                 }
 
-                var paginated = feedbacks
-                    .Skip((pageNumber - 1) * pageSize)
-                    .Take(pageSize)
-                    .ToList();
-
                 _logger.LogInformation("Feedbacks successfully fetched.");
-                return Ok(paginated);
+                return Ok(feedbacks);
             }
             catch (Exception ex)
             {
@@ -61,6 +64,11 @@ namespace BookApi.Controllers
         /// <summary>
         /// Retrieves a feedback by its ID.
         /// </summary>
+        /// <param name="id">The ID of the feedback to retrieve.</param>
+        /// <returns>The requested feedback.</returns>
+        /// <response code="200">Returns the feedback with the specified ID.</response>
+        /// <response code="404">Returns an error if the feedback with the specified ID is not found.</response>
+        /// <response code="500">Returns an internal server error if an exception occurs.</response>
         [HttpGet("{id}")]
         public async Task<ActionResult<FeedbackDto>> GetFeedbackById(Guid id)
         {
@@ -80,13 +88,19 @@ namespace BookApi.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, $"Error occurred while retrieving feedback with id {id}.");
-                return StatusCode(StatusCodes.Status500InternalServerError, new { message = ex.Message });
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+
             }
         }
 
         /// <summary>
         /// Creates a new feedback.
         /// </summary>
+        /// <param name="feedbackDto">The feedback data to create.</param>
+        /// <returns>The created feedback.</returns>
+        /// <response code="201">Returns the created feedback.</response>
+        /// <response code="400">Returns an error if the provided data is invalid.</response>
+        /// <response code="500">Returns an internal server error if an exception occurs.</response>
         [HttpPost]
         public async Task<ActionResult<FeedbackDto>> CreateFeedback([FromBody] FeedbackDto feedbackDto)
         {
@@ -109,9 +123,17 @@ namespace BookApi.Controllers
             }
         }
 
+
         /// <summary>
         /// Updates an existing feedback.
         /// </summary>
+        /// <param name="id">The ID of the feedback to update.</param>
+        /// <param name="feedbackDto">The updated feedback data.</param>
+        /// <returns>The updated feedback.</returns>
+        /// <response code="200">Returns the updated feedback.</response>
+        /// <response code="400">Returns an error if the provided data is invalid.</response>
+        /// <response code="404">Returns an error if the feedback with the specified ID is not found.</response>
+        /// <response code="500">Returns an internal server error if an exception occurs.</response>
         [HttpPut("{id}")]
         public async Task<ActionResult<FeedbackDto>> UpdateFeedback(Guid id, [FromBody] FeedbackDto feedbackDto)
         {
@@ -144,6 +166,11 @@ namespace BookApi.Controllers
         /// <summary>
         /// Deletes a feedback by its ID.
         /// </summary>
+        /// <param name="id">The ID of the feedback to delete.</param>
+        /// <returns>No content if the deletion is successful.</returns>
+        /// <response code="204">Returns no content if the feedback is successfully deleted.</response>
+        /// <response code="404">Returns an error if the feedback with the specified ID is not found for deletion.</response>
+        /// <response code="500">Returns an internal server error if an exception occurs.</response>
         [HttpDelete("{id}")]
         public async Task<ActionResult> DeleteFeedback(Guid id)
         {
@@ -163,7 +190,7 @@ namespace BookApi.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, $"Error occurred while deleting feedback with id {id}.");
-                return StatusCode(StatusCodes.Status500InternalServerError, new { message = ex.Message });
+                return StatusCode(500, $"Internal server error: {ex.Message}");
             }
         }
     }

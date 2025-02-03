@@ -1,5 +1,5 @@
 ﻿using BookApi.Models;
-using Library.Sortings;
+using BookAPI.Models.Sortings;
 
 namespace BookAPI.Infrastructure.Extensions
 {

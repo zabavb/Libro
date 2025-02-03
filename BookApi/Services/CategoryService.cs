@@ -2,6 +2,7 @@
 using BookApi.Models;
 using BookApi.Repositories;
 using BookAPI.Repositories;
+using Library.Extensions;
 
 namespace BookApi.Services
 {
@@ -35,11 +36,24 @@ namespace BookApi.Services
             return true;
         }
 
-        public async Task<IEnumerable<CategoryDto>> GetCategoriesAsync()
+        public async Task<PaginatedResult<CategoryDto>> GetCategoriesAsync(int pageNumber, int pageSize)
         {
-            var categories = await _categoryRepository.GetAllAsync();
-            return _mapper.Map<IEnumerable<CategoryDto>>(categories);
+            var categories = await _categoryRepository.GetAllAsync(pageNumber, pageSize);
+
+            if (categories == null || categories.Items == null)
+            {
+                throw new InvalidOperationException("Failed to fetch categories.");
+            }
+
+            return new PaginatedResult<CategoryDto>
+            {
+                Items = _mapper.Map<ICollection<CategoryDto>>(categories.Items),
+                TotalCount = categories.TotalCount,
+                PageNumber = categories.PageNumber,
+                PageSize = categories.PageSize
+            };
         }
+
 
         public async Task<CategoryDto> GetCategoryByIdAsync(Guid id)
         {

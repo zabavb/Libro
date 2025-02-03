@@ -17,5 +17,4 @@ namespace BookApi.Data.Configuration
                    .OnDelete(DeleteBehavior.Cascade);
         }
     }
-    }
 }

@@ -1,9 +1,16 @@
 ﻿using BookApi.Services;
+using Library.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
 namespace BookApi.Controllers
 {
+    /// <summary>
+    /// Controller for managing book categories.
+    /// </summary>
+    /// <remarks>
+    /// This controller provides CRUD operations for managing categories in the system.
+    /// </remarks>
     [Route("api/[controller]")]
     [ApiController]
     public class CategoriesController : ControllerBase
@@ -19,8 +26,17 @@ namespace BookApi.Controllers
             _logger = logger;
         }
 
+        /// <summary>
+        /// Retrieves a paginated list of categories.
+        /// </summary>
+        /// <param name="pageNumber">The page number (default is 1).</param>
+        /// <param name="pageSize">The number of items per page (default is 10).</param>
+        /// <returns>A response containing a paginated list of categories.</returns>
+        /// <response code="200">Returns a list of categories.</response>
+        /// <response code="400">Invalid pagination parameters.</response>
+        /// <response code="404">No categories found.</response>
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<CategoryDto>>> GetCategories(int pageNumber = DefaultPageNumber, int pageSize = DefaultPageSize)
+        public async Task<ActionResult<PaginatedResult<CategoryDto>>> GetCategories(int pageNumber = DefaultPageNumber, int pageSize = DefaultPageSize)
         {
             try
             {
@@ -30,20 +46,15 @@ namespace BookApi.Controllers
                     return BadRequest("Page number and page size must be greater than 0.");
                 }
 
-                var categories = await _categoryService.GetCategoriesAsync();
+                var categories = await _categoryService.GetCategoriesAsync(pageNumber, pageSize);
 
-                if (categories == null || !categories.Any())
+                if (categories == null || categories.Items == null || !categories.Items.Any())
                 {
                     _logger.LogInformation("No categories found.");
                     return NotFound("No categories found.");
                 }
 
-                var paginated = categories
-                    .Skip((pageNumber - 1) * pageSize)
-                    .Take(pageSize)
-                    .ToList();
-
-                return Ok(paginated);
+                return Ok(categories);
             }
             catch (Exception ex)
             {
@@ -52,6 +63,13 @@ namespace BookApi.Controllers
             }
         }
 
+        /// <summary>
+        /// Retrieves a category by its ID.
+        /// </summary>
+        /// <param name="id">The category ID.</param>
+        /// <returns>A response containing the category details.</returns>
+        /// <response code="200">Returns the category.</response>
+        /// <response code="404">Category not found.</response>
         [HttpGet("{id}")]
         public async Task<ActionResult<CategoryDto>> GetCategoryById(Guid id)
         {
@@ -75,6 +93,13 @@ namespace BookApi.Controllers
             }
         }
 
+        /// <summary>
+        /// Creates a new category.
+        /// </summary>
+        /// <param name="categoryDto">The category details.</param>
+        /// <returns>A response containing the created category.</returns>
+        /// <response code="201">Category successfully created.</response>
+        /// <response code="400">Invalid data provided.</response>
         [HttpPost]
         public async Task<ActionResult<CategoryDto>> CreateCategory([FromBody] CategoryDto categoryDto)
         {
@@ -98,6 +123,15 @@ namespace BookApi.Controllers
             }
         }
 
+        /// <summary>
+        /// Updates an existing category.
+        /// </summary>
+        /// <param name="id">The category ID.</param>
+        /// <param name="categoryDto">The updated category details.</param>
+        /// <returns>A response containing the updated category.</returns>
+        /// <response code="200">Category successfully updated.</response>
+        /// <response code="400">Invalid data provided.</response>
+        /// <response code="404">Category not found.</response>
         [HttpPut("{id}")]
         public async Task<ActionResult<CategoryDto>> UpdateCategory(Guid id, [FromBody] CategoryDto categoryDto)
         {
@@ -127,6 +161,13 @@ namespace BookApi.Controllers
             }
         }
 
+        /// <summary>
+        /// Deletes a category by its ID.
+        /// </summary>
+        /// <param name="id">The category ID.</param>
+        /// <returns>A response indicating success or failure.</returns>
+        /// <response code="204">Category successfully deleted.</response>
+        /// <response code="404">Category not found.</response>
         [HttpDelete("{id}")]
         public async Task<ActionResult> DeleteCategory(Guid id)
         {

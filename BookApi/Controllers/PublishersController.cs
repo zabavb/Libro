@@ -1,4 +1,5 @@
 ﻿using BookApi.Services;
+using Library.Extensions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -20,8 +21,17 @@ namespace BookApi.Controllers
             _logger = logger;
         }
 
+        /// <summary>
+        /// Retrieves a paginated list of publishers.
+        /// </summary>
+        /// <param name="pageNumber">Page number (default: 1). The page number to retrieve.</param>
+        /// <param name="pageSize">Number of publishers per page (default: 10). The number of publishers to return per page.</param>
+        /// <returns>A paginated list of publishers.</returns>
+        /// <response code="200">Returns a list of publishers according to the specified pagination parameters.</response>
+        /// <response code="400">Returns if the page number or page size is less than 1.</response>
+        /// <response code="404">Returns if no publishers are found.</response>
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<PublisherDto>>> GetPublishers(int pageNumber = DefaultPageNumber, int pageSize = DefaultPageSize)
+        public async Task<ActionResult<PaginatedResult<PublisherDto>>> GetPublishers([FromQuery] int pageNumber = DefaultPageNumber, [FromQuery] int pageSize = DefaultPageSize)
         {
             try
             {
@@ -31,28 +41,32 @@ namespace BookApi.Controllers
                     return BadRequest("Page number and page size must be greater than 0.");
                 }
 
-                var publishers = await _publisherService.GetPublishersAsync();
+                var publishers = await _publisherService.GetPublishersAsync(pageNumber, pageSize);
 
-                if (publishers == null || !publishers.Any())
+                if (publishers == null || publishers.Items == null || !publishers.Items.Any())
                 {
                     _logger.LogInformation("No publishers found.");
                     return NotFound("No publishers found.");
                 }
 
-                var paginated = publishers
-                    .Skip((pageNumber - 1) * pageSize)
-                    .Take(pageSize)
-                    .ToList();
-
-                return Ok(paginated);
+                _logger.LogInformation("Publishers successfully fetched.");
+                return Ok(publishers);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error occurred while retrieving publishers.");
-                return StatusCode(500, $"Internal server error: {ex.Message}");
+                return StatusCode(StatusCodes.Status500InternalServerError, new { message = ex.Message });
             }
         }
 
+
+        /// <summary>
+        /// Retrieves a publisher by its ID.
+        /// </summary>
+        /// <param name="id">The unique identifier of the publisher.</param>
+        /// <returns>A publisher object.</returns>
+        /// <response code="200">Returns the publisher with the specified ID.</response>
+        /// <response code="404">Returns if no publisher is found with the specified ID.</response>
         [HttpGet("{id}")]
         public async Task<ActionResult<PublisherDto>> GetPublisherById(Guid id)
         {
@@ -76,6 +90,13 @@ namespace BookApi.Controllers
             }
         }
 
+        /// <summary>
+        /// Creates a new publisher.
+        /// </summary>
+        /// <param name="publisherDto">The publisher data to be created.</param>
+        /// <returns>The created publisher object.</returns>
+        /// <response code="201">Returns the newly created publisher.</response>
+        /// <response code="400">Returns if the provided data is invalid.</response>
         [HttpPost]
         public async Task<ActionResult<PublisherDto>> CreatePublisher([FromBody] PublisherDto publisherDto)
         {
@@ -99,6 +120,15 @@ namespace BookApi.Controllers
             }
         }
 
+        /// <summary>
+        /// Updates an existing publisher.
+        /// </summary>
+        /// <param name="id">The unique identifier of the publisher to update.</param>
+        /// <param name="publisherDto">The updated publisher data.</param>
+        /// <returns>The updated publisher object.</returns>
+        /// <response code="200">Returns the updated publisher.</response>
+        /// <response code="400">Returns if the provided data is invalid.</response>
+        /// <response code="404">Returns if no publisher is found with the specified ID.</response>
         [HttpPut("{id}")]
         public async Task<ActionResult<PublisherDto>> UpdatePublisher(Guid id, [FromBody] PublisherDto publisherDto)
         {
@@ -128,6 +158,13 @@ namespace BookApi.Controllers
             }
         }
 
+        /// <summary>
+        /// Deletes a publisher by its ID.
+        /// </summary>
+        /// <param name="id">The unique identifier of the publisher to delete.</param>
+        /// <returns>No content response if the deletion is successful.</returns>
+        /// <response code="204">Returns if the publisher is successfully deleted.</response>
+        /// <response code="404">Returns if no publisher is found with the specified ID.</response>
         [HttpDelete("{id}")]
         public async Task<ActionResult> DeletePublisher(Guid id)
         {
@@ -150,5 +187,7 @@ namespace BookApi.Controllers
                 return StatusCode(500, $"Internal server error: {ex.Message}");
             }
         }
+    
+        
     }
 }

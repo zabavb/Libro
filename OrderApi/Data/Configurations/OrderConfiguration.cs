@@ -30,12 +30,13 @@ namespace OrderApi.Data.Configurations
                 .IsRequired()
                 .HasColumnType("float");
 
-            builder.Property(o => o.DeliveryTypeId)
-                .HasConversion<Guid>();
-
             builder.Property(o => o.Status)
                 .HasConversion<string>();
 
+            builder.HasOne(o => o.DeliveryType)
+                .WithMany(dt => dt.Orders)
+                .HasForeignKey(o => o.DeliveryTypeId)
+                .IsRequired();
         }
     }
 }
