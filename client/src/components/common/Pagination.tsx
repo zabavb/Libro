@@ -1,13 +1,12 @@
-
 interface PaginationProps {
 	pagination: { pageNumber: number; pageSize: number; totalCount: number }
 	onPageChange: (pageNumber: number) => void
 }
 
-const Pagination: React.FC<PaginationProps> = ({pagination, onPageChange}) => {
+const Pagination: React.FC<PaginationProps> = ({ pagination, onPageChange }) => {
 	const totalPages = Math.ceil(pagination.totalCount / pagination.pageSize)
 
-  return (
+	return (
 		<div>
 			<span>Pages: </span>
 			{pagination.pageNumber > 1 && (

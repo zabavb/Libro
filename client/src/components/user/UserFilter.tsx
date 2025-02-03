@@ -3,8 +3,8 @@ import type { UserFilter } from "../../types"
 import { Role } from "../../types"
 
 interface UserFilterProps {
-	onFilterChange: (filters: UserFilter) => void
 	filters: UserFilter
+	onFilterChange: (filters: UserFilter) => void
 }
 
 const UserFilter: React.FC<UserFilterProps> = ({ onFilterChange, filters }) => {
