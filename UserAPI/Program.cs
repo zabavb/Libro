@@ -21,9 +21,9 @@ builder.Services.AddSingleton<IConnectionMultiplexer>(sp =>
 {
     var options = new ConfigurationOptions
     {
-        EndPoints = { "your_redis_endpoint", "your_port" },
-        User = "your_username",
-        Password = "your_password"
+        EndPoints = { { "redis-11440.c251.east-us-mz.azure.redns.redis-cloud.com", 11440 } },
+        User = "default",
+        Password = "QJqKikr9nj2UWhNtbsHYiuLaP3wfpTjM"
     };
     return ConnectionMultiplexer.Connect(options);
 });
@@ -104,8 +104,12 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
-app.UseCors("AllowReactApp");
+using (var scope = app.Services.CreateScope())
+{
+    var dbContext = scope.ServiceProvider.GetRequiredService<UserDbContext>();
+}
 
+app.UseCors("AllowReactApp");
 
 if (app.Environment.IsDevelopment())
 {
@@ -115,6 +119,7 @@ if (app.Environment.IsDevelopment())
         options.SwaggerEndpoint("/swagger/v1/swagger.json", "UserAPI");
     });
 }
+
 
 app.UseHttpsRedirection();
 
