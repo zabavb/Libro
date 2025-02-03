@@ -1,2 +1,2 @@
-export { userSchema } from "./validationSchema"
-export type { UserFormData } from "./validationSchema"
+export { userSchema } from "./userValidationSchema"
+export type { UserFormData } from "./userValidationSchema"
