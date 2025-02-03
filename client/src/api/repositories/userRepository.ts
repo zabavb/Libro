@@ -6,6 +6,7 @@ import { roleEnumToNumber } from "../adapters/userAdapter"
 export const getAllUsers = async (
 	pageNumber: number = 1,
 	pageSize: number = 10,
+	searchTerm?: string,
 	filters?: UserFilter,
 	sort?: UserSort
 ): Promise<PaginatedResponse<User>> => {
@@ -17,6 +18,7 @@ export const getAllUsers = async (
 		)
 
 		const params = {
+			searchTerm,
 			...filters,
 			role: filters?.role !== undefined ? roleEnumToNumber(filters.role).toString() : undefined,
 			...formattedSort,

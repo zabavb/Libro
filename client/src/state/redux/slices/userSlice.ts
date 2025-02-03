@@ -7,15 +7,17 @@ export const fetchUsers = createAsyncThunk(
 	async ({
 		pageNumber = 1,
 		pageSize = 10,
+		searchTerm,
 		filters,
 		sort,
 	}: {
 		pageNumber?: number
 		pageSize?: number
+		searchTerm?: string
 		filters?: UserFilter
 		sort?: UserSort
 	}) => {
-		const response = await getAllUsers(pageNumber, pageSize, filters, sort)
+		const response = await getAllUsers(pageNumber, pageSize, searchTerm, filters, sort)
 		console.log(`userSlice.ts: fetch users:`, response)
 		return response
 	}
@@ -52,10 +54,14 @@ const userSlice = createSlice({
 			pageSize: 10,
 			totalCount: 0,
 		},
+		searchTerm: "",
 		filters: {} as UserFilter,
 		sort: {} as UserSort,
 	},
 	reducers: {
+		setSearchTerm: (state, action) => {
+			state.searchTerm = action.payload
+		},
 		setFilters: (state, action) => {
 			state.filters = action.payload
 		},
@@ -84,7 +90,6 @@ const userSlice = createSlice({
 					pageSize: action.payload.pageSize,
 					totalCount: action.payload.totalCount,
 				}
-				// state.filters = action.meta.arg.filters || {}
 			})
 			.addCase(fetchUsers.rejected, (state, action) => {
 				state.loading = false
@@ -130,6 +135,6 @@ const userSlice = createSlice({
 	},
 })
 
-export const { setFilters, setSort, resetOperationStatus } = userSlice.actions
+export const { setSearchTerm, setFilters, setSort, resetOperationStatus } = userSlice.actions
 
 export default userSlice.reducer
