@@ -1,6 +1,9 @@
 import React from "react"
-import UserCardContainer from "../../containers/user/UserCardContainer"
 import { User } from "../../types"
+import UserFilter from "./UserFilter"
+import UserSort from "./UserSort"
+import UserCardContainer from "../../containers/user/UserCardContainer"
+import Pagination from "../common/Pagination"
 
 interface UserListProps {
 	users?: User[]
@@ -9,6 +12,10 @@ interface UserListProps {
 	pagination: { pageNumber: number; pageSize: number; totalCount: number }
 	onPageChange: (pageNumber: number) => void
 	onNavigate: (path: string) => void
+	onFilterChange: (filters: UserFilter) => void
+	filters: UserFilter
+	onSortChange: (field: keyof UserSort) => void
+	sort: UserSort
 }
 
 const UserList: React.FC<UserListProps> = ({
@@ -18,17 +25,30 @@ const UserList: React.FC<UserListProps> = ({
 	pagination,
 	onPageChange,
 	onNavigate,
+	onFilterChange,
+	filters,
+	onSortChange,
+	sort,
 }) => {
 	if (loading) return <p>Loading...</p>
 	if (error) return <p>Error: {error}</p>
-
-	const totalPages = Math.ceil(pagination.totalCount / pagination.pageSize)
 
 	return (
 		<div>
 			<p onClick={() => onNavigate("/admin")}>Back to Admin Dashboard</p>
 			<p onClick={() => onNavigate("/admin/users/add")}>Add User</p>
 			<h1>User List</h1>
+
+			<UserFilter
+				onFilterChange={onFilterChange}
+				filters={filters}
+			/>
+
+			<UserSort
+				onSortChange={onSortChange}
+				sort={sort}
+			/>
+			
 			<div>
 				{users.map((user) => (
 					<UserCardContainer
@@ -37,17 +57,12 @@ const UserList: React.FC<UserListProps> = ({
 					/>
 				))}
 			</div>
+
 			<hr />
-			<div>
-				<span>Pages: </span>
-				{pagination.pageNumber > 1 && (
-					<button onClick={() => onPageChange(pagination.pageNumber - 1)}>Previous</button>
-				)}
-				<span>{pagination.pageNumber} </span>
-				{pagination.pageNumber < totalPages && (
-					<button onClick={() => onPageChange(pagination.pageNumber + 1)}>Next</button>
-				)}
-			</div>
+			<Pagination
+				pagination={pagination}
+				onPageChange={onPageChange}
+			/>
 		</div>
 	)
 }
