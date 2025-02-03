@@ -1,12 +1,22 @@
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit"
+import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit"
 import { getAllUsers, createUser, updateUser, deleteUser } from "../../../api/repositories/userRepository"
-import { User } from "../../../types"
+import { User, UserFilter, UserSort } from "../../../types"
 
 export const fetchUsers = createAsyncThunk(
 	"users/fetchUsers",
-	async ({ pageNumber = 1, pageSize = 10 }: { pageNumber?: number; pageSize?: number }) => {
-		const response = await getAllUsers(pageNumber, pageSize)
-		console.log(`userSlice.ts: fecth all response:`, response)
+	async ({
+		pageNumber = 1,
+		pageSize = 10,
+		filters,
+		sort,
+	}: {
+		pageNumber?: number
+		pageSize?: number
+		filters?: UserFilter
+		sort?: UserSort
+	}) => {
+		const response = await getAllUsers(pageNumber, pageSize, filters, sort)
+		console.log(`userSlice.ts: fetch users:`, response)
 		return response
 	}
 )
@@ -42,8 +52,19 @@ const userSlice = createSlice({
 			pageSize: 10,
 			totalCount: 0,
 		},
+		filters: {} as UserFilter,
+		sort: {} as UserSort,
 	},
 	reducers: {
+		setFilters: (state, action) => {
+			state.filters = action.payload
+		},
+		setSort: (state, action: PayloadAction<keyof UserSort>) => {
+			const field = action.payload
+			const currentSort = state.sort[field]
+			const newSort = currentSort === undefined ? true : currentSort === true ? false : undefined
+			state.sort = { [field]: newSort }
+		},
 		resetOperationStatus: (state) => {
 			state.operationStatus = null
 		},
@@ -63,6 +84,7 @@ const userSlice = createSlice({
 					pageSize: action.payload.pageSize,
 					totalCount: action.payload.totalCount,
 				}
+				// state.filters = action.meta.arg.filters || {}
 			})
 			.addCase(fetchUsers.rejected, (state, action) => {
 				state.loading = false
@@ -108,6 +130,6 @@ const userSlice = createSlice({
 	},
 })
 
-export const { resetOperationStatus } = userSlice.actions
+export const { setFilters, setSort, resetOperationStatus } = userSlice.actions
 
 export default userSlice.reducer
