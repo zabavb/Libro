@@ -28,11 +28,11 @@ namespace OrderApi.Controllers
         /// <response code="200">Returns the paginated list of orders.</response>
         /// <response code="500">an unexpected error occured.</response>
         [HttpGet]
-        public async Task<IActionResult> GetAll([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10, [FromQuery] string? searchTerm = null, [FromQuery] Filter? filter = null)
+        public async Task<IActionResult> GetAll([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10, [FromQuery] string? searchTerm = null, [FromQuery] Filter? filter = null, [FromQuery] Sort? sort = null)
         {
             try
             {
-                var orders = await _orderService.GetAllAsync(pageNumber, pageSize, searchTerm!, filter);
+                var orders = await _orderService.GetAllAsync(pageNumber, pageSize, searchTerm!, filter, sort);
                 _logger.LogInformation("Orders successfully fetched.");
                 return Ok(orders);
             }
