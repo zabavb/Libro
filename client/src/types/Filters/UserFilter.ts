@@ -1,8 +1,8 @@
 import { Role } from "../subObjects/Role"
 
 export interface UserFilter {
-	dateOdBirthStart?: Date
-	dateOdBirthEnd?: Date
+	dateOfBirthStart?: string
+	dateOfBirthEnd?: string
 	role?: Role
 	hasSubscription?: boolean
 }
