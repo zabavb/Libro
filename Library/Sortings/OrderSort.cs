@@ -7,6 +7,6 @@
         public Bool OrderPrice { get; set; }
         public Bool DeliveryPrice { get; set; }
         public Bool DeliveryDate { get; set; }
-        public Bool Status { get; set; } 
+        public Bool StatusSort { get; set; } 
     }
 }
