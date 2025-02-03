@@ -8,6 +8,7 @@ using Library.Extensions;
 using Library.Filters;
 using FluentAssertions;
 using Library.DTOs.Order;
+using Library.Sortings;
 
 namespace OrderAPI.Tests.Services
 {
@@ -43,7 +44,7 @@ namespace OrderAPI.Tests.Services
             };
 
             _repositoryMock
-                .Setup(r => r.GetAllPaginatedAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<string>(), It.IsAny<OrderFilter>()))
+                .Setup(r => r.GetAllPaginatedAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<string>(), It.IsAny<OrderFilter>(), It.IsAny<OrderSort>()))
                 .ReturnsAsync(paginatedOrders);
 
             _mapperMock
@@ -65,7 +66,7 @@ namespace OrderAPI.Tests.Services
             });
 
             // Act
-            var result = await _orderService.GetAllAsync(It.IsAny<int>(),It.IsAny<int>(), It.IsAny<string>(), It.IsAny<OrderFilter>());
+            var result = await _orderService.GetAllAsync(It.IsAny<int>(),It.IsAny<int>(), It.IsAny<string>(), It.IsAny<OrderFilter>(),It.IsAny<OrderSort>());
 
             // Assert
             result.Should().NotBeNull();
@@ -87,7 +88,7 @@ namespace OrderAPI.Tests.Services
         {
             // Arrange
             _repositoryMock
-                .Setup(r => r.GetAllPaginatedAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<string>(), It.IsAny<OrderFilter>()))
+                .Setup(r => r.GetAllPaginatedAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<string>(), It.IsAny<OrderFilter>(), It.IsAny<OrderSort>()))
                 .ReturnsAsync((PaginatedResult<Order>)null!);
 
 
@@ -107,7 +108,7 @@ namespace OrderAPI.Tests.Services
             // Act
             Func<Task> act = async () =>
             {
-                await _orderService.GetAllAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<string>(), It.IsAny<OrderFilter>());
+                await _orderService.GetAllAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<string>(), It.IsAny<OrderFilter>(), It.IsAny<OrderSort>());
             };
 
             // Assert

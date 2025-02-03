@@ -75,7 +75,7 @@ namespace OrderAPI.Tests.Repositories
                     capturedLogMessage = state.ToString();
                 });
             // Act
-            var result = await _repository.GetAllPaginatedAsync(1, 10, null, null);
+            var result = await _repository.GetAllPaginatedAsync(1, 10, null, null, null);
 
             // Assert
             Assert.NotNull(result);
@@ -133,7 +133,7 @@ namespace OrderAPI.Tests.Repositories
                 });
             // Act
             // Page 4, because our newly added orders are there
-            var result = await _repository.GetAllPaginatedAsync(4, 10, null, null);
+            var result = await _repository.GetAllPaginatedAsync(4, 10, null, null, null);
 
             // Assert
             Assert.NotNull(result);

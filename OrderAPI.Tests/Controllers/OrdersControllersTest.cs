@@ -34,7 +34,7 @@ public class OrdersControllerTests
             PageSize = 10
         };
 
-        _orderServiceMock.Setup(s => s.GetAllAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<string>(), null))
+        _orderServiceMock.Setup(s => s.GetAllAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<string>(), null, null))
                          .ReturnsAsync(paginatedResult);
 
         // Act
