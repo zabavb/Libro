@@ -1,11 +1,6 @@
-﻿using Library.DTOs.Book;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using BookApi.Models;
 
-namespace Library.Filters
+namespace BookAPI.Models.Filters
 {
     public class BookFilter
     {
