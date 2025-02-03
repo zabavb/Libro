@@ -119,7 +119,7 @@ namespace BookApi.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error occurred while creating a new author.");
-                return StatusCode(StatusCodes.Status500InternalServerError, new { message = ex.Message });
+                return StatusCode(500, $"Internal server error: {ex.Message}");
             }
         }
 
@@ -140,7 +140,6 @@ namespace BookApi.Controllers
                 _logger.LogWarning("Invalid author data provided for update.");
                 return BadRequest("Invalid data.");
             }
-
             try
             {
                 var updated = await _authorService.UpdateAuthorAsync(id, authorDto);
@@ -157,7 +156,7 @@ namespace BookApi.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, $"Error occurred while updating author with id {id}.");
-                return StatusCode(StatusCodes.Status500InternalServerError, new { message = ex.Message });
+                return StatusCode(500, $"Internal server error: {ex.Message}");
             }
         }
 

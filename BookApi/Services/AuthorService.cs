@@ -28,7 +28,8 @@ namespace BookApi.Services
             {
                 Items = _mapper.Map<ICollection<AuthorDto>>(authors.Items),
                 TotalCount = authors.TotalCount,
-                PageNumber = authors.PageNumber
+                PageNumber = authors.PageNumber,
+                PageSize = pageSize
             };
         }
 
