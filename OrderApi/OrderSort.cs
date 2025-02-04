@@ -1,4 +1,6 @@
-﻿namespace Library.Sortings
+﻿using Library.Sortings;
+
+namespace OrderAPI
 {
     public class OrderSort
     {
