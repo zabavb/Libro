@@ -3,14 +3,13 @@ import { createRoot } from "react-dom/client"
 import { Provider } from "react-redux"
 import store from "./state/redux/store"
 import AppRoutes from "./routes.tsx"
-// import { ErrorBoundary } from "./components/errorBoundary/ErrorBoundary.tsx"
+import NotificationContainer from "./containers/common/NotificationContainer.tsx"
 
 createRoot(document.getElementById("root")!).render(
 	<StrictMode>
-		{/* <ErrorBoundary> */}
-			<Provider store={store}>
-				<AppRoutes />
-			</Provider>
-		{/* </ErrorBoundary> */}
+		<Provider store={store}>
+			<NotificationContainer />
+			<AppRoutes />
+		</Provider>
 	</StrictMode>
 )
