@@ -1,13 +1,13 @@
 import React from "react"
-import { UserView } from "../../types"
+import { UserView } from "../../../types"
 
-interface UserCardProps {
+interface UserAdminCardProps {
 	user: UserView
 	onDelete: (e: React.MouseEvent) => void
 	onNavigate: () => void
 }
 
-const UserCard: React.FC<UserCardProps> = ({ user, onDelete, onNavigate }) => {
+const UserAdminCard: React.FC<UserAdminCardProps> = ({ user, onDelete, onNavigate }) => {
 	return (
 		<>
 			<hr />
@@ -48,4 +48,4 @@ const UserCard: React.FC<UserCardProps> = ({ user, onDelete, onNavigate }) => {
 	)
 }
 
-export default UserCard
+export default UserAdminCard
