@@ -1,4 +1,6 @@
-﻿namespace BookAPI.Models.Sortings
+﻿using Library.Sortings;
+
+namespace BookAPI.Models.Sortings
 {
     public class BookSort
     {

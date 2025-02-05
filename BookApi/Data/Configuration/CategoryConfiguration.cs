@@ -18,3 +18,4 @@ namespace BookApi.Data.Configuration
         }
     }
 }
+
