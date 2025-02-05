@@ -11,9 +11,9 @@ namespace OrderApi.Services
         private readonly ILogger<IOrderService> _logger = logger;
         private string _message = string.Empty;
 
-        public async Task<PaginatedResult<OrderDto>> GetAllAsync(int pageNumber, int pageSize, string searchTerm, Filter? filter)
+        public async Task<PaginatedResult<OrderDto>> GetAllAsync(int pageNumber, int pageSize, string searchTerm, Filter? filter, Sort? sort)
         {
-            var paginatedOrders = await _repository.GetAllPaginatedAsync(pageNumber, pageSize, searchTerm, filter);
+            var paginatedOrders = await _repository.GetAllPaginatedAsync(pageNumber, pageSize, searchTerm, filter, sort);
 
             if (paginatedOrders == null || paginatedOrders.Items == null)
             {

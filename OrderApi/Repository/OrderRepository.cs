@@ -1,4 +1,6 @@
-﻿using Library.Extensions;
+﻿using Library.DTOs.Order;
+using Library.Extensions;
+using Library.Sortings;
 using Microsoft.EntityFrameworkCore;
 using OrderApi.Data;
 using StackExchange.Redis;
@@ -14,7 +16,7 @@ namespace OrderApi.Repository
         public readonly TimeSpan _cacheExpiration = TimeSpan.FromMinutes(10);
         private readonly ILogger<IOrderRepository> _logger = logger;
 
-        public async Task<PaginatedResult<Order>> GetAllPaginatedAsync(int pageNumber, int pageSize, string? searchTerm, Filter? filter)
+        public async Task<PaginatedResult<Order>> GetAllPaginatedAsync(int pageNumber, int pageSize, string? searchTerm, Filter? filter, Sort? sort)
         {
             IEnumerable<Order> orders;
 
@@ -46,6 +48,8 @@ namespace OrderApi.Repository
                 orders = await SearchEntitiesAsync(searchTerm, orders);
             if (orders.Any() && filter != null)
                 orders = await FilterEntitiesAsync(orders, filter);
+            if (orders.Any() && sort != null)
+                orders = await SortAsync(orders, sort);
 
             var totalOrders = await Task.FromResult(orders.Count());
             orders = await Task.FromResult(orders.Skip((pageNumber - 1) * pageSize).Take(pageSize));
@@ -101,6 +105,42 @@ namespace OrderApi.Repository
             return await Task.FromResult(orders.ToList());
         }
 
+        public async Task<IEnumerable<Order>> SortAsync(IEnumerable<Order> orders, Sort sort)
+        {
+            var query = orders.AsQueryable();
+
+            if (sort.OrderDate != Bool.NULL)
+                query = sort.OrderDate == Bool.ASCENDING
+                    ? query.OrderBy(o => o.OrderDate)
+                    : query.OrderByDescending(o => o.OrderDate);
+
+            if (sort.BooksAmount != Bool.NULL)
+                query = sort.BooksAmount == Bool.ASCENDING
+                    ? query.OrderBy(o => o.BookIds.Count)
+                    : query.OrderByDescending(o => o.BookIds.Count);
+
+            if (sort.OrderPrice != Bool.NULL)
+                query = sort.OrderPrice == Bool.ASCENDING
+                    ? query.OrderBy(o => o.Price)
+                    : query.OrderByDescending(o => o.Price);
+
+            if (sort.DeliveryPrice != Bool.NULL)
+                query = sort.DeliveryPrice == Bool.ASCENDING
+                    ? query.OrderBy(o => o.DeliveryPrice)
+                    : query.OrderByDescending(o => o.DeliveryPrice);
+
+            if (sort.DeliveryDate != Bool.NULL)
+                query = sort.DeliveryDate == Bool.ASCENDING
+                    ? query.OrderBy(o => o.DeliveryDate)
+                    : query.OrderByDescending(o => o.DeliveryDate);
+
+            if (sort.StatusSort != Bool.NULL)
+                query = sort.StatusSort == Bool.ASCENDING
+                    ? query.OrderBy(o => o.Status)
+                    : query.OrderByDescending(o => o.Status);
+
+            return await Task.FromResult(query.ToList());
+        }
 
         public async Task<Order?> GetByIdAsync(Guid id)
         {
