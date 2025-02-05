@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit"
-import { getAllUsers, createUser, updateUser, deleteUser } from "../../../api/repositories/userRepository"
 import { User, UserFilter, UserSort } from "../../../types"
+import { fetchUsersService, addUserService, editUserService, removeUserService } from "../../../services"
 
 export const fetchUsers = createAsyncThunk(
 	"users/fetchUsers",
@@ -17,28 +17,23 @@ export const fetchUsers = createAsyncThunk(
 		filters?: UserFilter
 		sort?: UserSort
 	}) => {
-		const response = await getAllUsers(pageNumber, pageSize, searchTerm, filters, sort)
-		console.log(`userSlice.ts: fetch users:`, response)
-		return response
+		return await fetchUsersService(pageNumber, pageSize, searchTerm, filters, sort)
 	}
 )
 
 export const addUser = createAsyncThunk("users/addUser", async (user: Partial<User>) => {
-	console.log(`userSlice.ts: add user:[${user}]`)
-	return await createUser(user)
+	return await addUserService(user)
 })
 
 export const editUser = createAsyncThunk(
 	"users/editUser",
 	async ({ id, user }: { id: string; user: Partial<User> }) => {
-		console.log(`userSlice.ts: edit id:[${id}] user:[${user}]`)
-		return await updateUser(id, user)
+		return await editUserService(id, user)
 	}
 )
 
 export const removeUser = createAsyncThunk("users/removeUser", async (id: string) => {
-	console.log(`userSlice.ts: remove id:[${id}]`)
-	await deleteUser(id)
+	await removeUserService(id)
 	return id
 })
 
