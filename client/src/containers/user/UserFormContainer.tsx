@@ -1,11 +1,12 @@
-import React, { useEffect } from "react"
+import React, { useCallback, useEffect, useMemo } from "react"
 import { useDispatch, useSelector } from "react-redux"
 import { addUser, AppDispatch, editUser } from "../../state/redux/index"
 import { RootState } from "../../state/redux/store"
 import { useNavigate } from "react-router-dom"
-import UserForm from "../../components/user/UserForm"
+import UserForm from "../../components/user/admin/UserForm"
 import { User } from "../../types"
 import { resetOperationStatus } from "../../state/redux/slices/userSlice"
+import { addNotification } from "../../state/redux/slices/notificationSlice"
 
 interface UserFormContainerProps {
 	userId: string
@@ -14,28 +15,29 @@ interface UserFormContainerProps {
 const UserFormContainer: React.FC<UserFormContainerProps> = ({ userId }) => {
 	const dispatch = useDispatch<AppDispatch>()
 	const { data: users, operationStatus, error } = useSelector((state: RootState) => state.users)
-
-	const existingUser = users.find((user) => user.id === userId) ?? undefined
-
 	const navigate = useNavigate()
 
-	const handleAddUser = (user: User) => {
-		console.log("Adding user:", user)
-		dispatch(addUser(user))
-	}
-
-	const handleEditUser = (id: string, user: User) => {
-		console.log("Editing user:", id, user)
-		dispatch(editUser({ id, user }))
-	}
+	const existingUser = useMemo(() => users.find((user) => user.id === userId), [users, userId])
+	const handleAddUser = useCallback((user: User) => dispatch(addUser(user)), [dispatch])
+	const handleEditUser = useCallback((id: string, user: User) => dispatch(editUser({ id, user })), [dispatch])
 
 	useEffect(() => {
 		if (operationStatus === "success") {
-			alert(existingUser ? "User updated successfully!" : "User created successfully!")
+			dispatch(
+				addNotification({
+					message: existingUser ? "User updated successfully!" : "User created successfully!",
+					type: "success",
+				})
+			)
 			dispatch(resetOperationStatus())
 			navigate("/admin/users")
 		} else if (operationStatus === "error") {
-			alert(error)
+			dispatch(
+				addNotification({
+					message: error,
+					type: "error",
+				})
+			)
 			dispatch(resetOperationStatus())
 		}
 	}, [operationStatus, existingUser, error, dispatch, navigate])
