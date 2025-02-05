@@ -1,4 +1,4 @@
-import { Role } from "../subObjects/Role"
+import { Role } from "../subTypes/Role"
 
 export interface UserFilter {
 	dateOfBirthStart?: string
