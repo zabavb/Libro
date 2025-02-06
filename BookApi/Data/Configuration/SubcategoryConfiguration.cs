@@ -1,5 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using BookApi.Models;
 
 namespace BookApi.Data.Configuration
@@ -12,12 +12,6 @@ namespace BookApi.Data.Configuration
 
             builder.Property(sc => sc.Id)
                    .HasDefaultValueSql("NEWID()");
-                  
-            builder.HasOne(sc => sc.Book)
-                   .WithMany(b => b.Subcategories)
-                   .HasForeignKey(sc => sc.BookId)
-                   .OnDelete(DeleteBehavior.Cascade);
-
             builder.HasOne(sc => sc.Category)
                    .WithMany(c => c.Subcategories)
                    .HasForeignKey(sc => sc.CategoryId)
