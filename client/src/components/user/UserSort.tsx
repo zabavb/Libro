@@ -18,11 +18,8 @@ const UserSort: React.FC<UserSortProps> = ({ onSortChange, sort }) => {
 			<button onClick={() => onSortChange("dateOfBirth")}>
 				Date of Birth {sort.dateOfBirth === true ? "↑" : sort.dateOfBirth === false ? "↓" : ""}
 			</button>
-			<button onClick={() => onSortChange("email")}>
-				Email {sort.email === true ? "↑" : sort.email === false ? "↓" : ""}
-			</button>
-			<button onClick={() => onSortChange("phoneNumber")}>
-				Phone Number {sort.phoneNumber === true ? "↑" : sort.phoneNumber === false ? "↓" : ""}
+			<button onClick={() => onSortChange("role")}>
+				Role {sort.role === true ? "↑" : sort.role === false ? "↓" : ""}
 			</button>
 		</div>
 	)

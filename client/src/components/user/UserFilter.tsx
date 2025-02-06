@@ -38,6 +38,22 @@ const UserFilter: React.FC<UserFilterProps> = ({ onFilterChange, filters }) => {
 				/>
 			</label>
 			<label>
+				Email:
+				<select
+					value={filters.email || ""}
+					onChange={(e) => onFilterChange({ ...filters, email: e.target.value })}>
+					<option value="">All</option>
+					<option value="@gmail.com">Gmail</option>
+					<option value="@outlook.com">Outlook</option>
+					<option value="@hotmail.com">Hotmail</option>
+					<option value="@icloud.com">iCloud</option>
+					<option value="@yahoo.com">Yahoo</option>
+					<option value="@msn.com">MSN</option>
+					<option value="@aol.com">AOL</option>
+					<option value="@comcast.com">Comcast</option>
+				</select>
+			</label>
+			<label>
 				Role:
 				<select
 					value={filters.role || ""}
