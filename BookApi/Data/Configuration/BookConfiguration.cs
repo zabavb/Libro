@@ -1,5 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using BookApi.Models;
 
 namespace BookApi.Data.Configuration
@@ -12,9 +12,8 @@ namespace BookApi.Data.Configuration
                    .HasDefaultValueSql("NEWSEQUENTIALID()");
 
             builder.HasMany(b => b.Subcategories)
-                   .WithOne(sc => sc.Book)
-                   .HasForeignKey(sc => sc.BookId)
-                   .OnDelete(DeleteBehavior.Cascade);
+                   .WithMany(sc => sc.Books)
+                   .UsingEntity(j => j.ToTable("BookSubCategories"));
         }
     }
 }
