@@ -88,15 +88,20 @@ namespace UserAPI.Repositories
         {
             var query = users.AsQueryable();
 
-            if (filter.Role.HasValue)
-                query = query.Where(u => u.Role.Equals(filter.Role));
-
-
             if (filter.DateOfBirthStart.HasValue)
                 query = query.Where(u => u.DateOfBirth >= filter.DateOfBirthStart.Value);
 
             if (filter.DateOfBirthEnd.HasValue)
                 query = query.Where(u => u.DateOfBirth <= filter.DateOfBirthEnd.Value);
+
+            if (!string.IsNullOrEmpty(filter.Email))
+                query = query.Where(u => u.Email.Contains(filter.Email));
+
+            if (!string.IsNullOrEmpty(filter.PhoneNumber))
+                query = query.Where(u => u.PhoneNumber.StartsWith(filter.PhoneNumber));
+
+            if (filter.Role.HasValue)
+                query = query.Where(u => u.Role.Equals(filter.Role));
 
             if (filter.HasSubscription)
                 query = query.Where(u => u.SubscriptionId.Equals(filter.HasSubscription));
@@ -123,15 +128,10 @@ namespace UserAPI.Repositories
                     ? query.OrderBy(u => u.DateOfBirth)
                     : query.OrderByDescending(u => u.DateOfBirth);
 
-            if (sort.Email != Bool.NULL)
-                query = sort.Email == Bool.ASCENDING
-                    ? query.OrderBy(u => u.Email)
-                    : query.OrderByDescending(u => u.Email);
-
-            if (sort.PhoneNumber != Bool.NULL)
-                query = sort.PhoneNumber == Bool.ASCENDING
-                    ? query.OrderBy(u => u.PhoneNumber)
-                    : query.OrderByDescending(u => u.PhoneNumber);
+            if (sort.Role != Bool.NULL)
+                query = sort.Role == Bool.ASCENDING
+                    ? query.OrderBy(u => u.Role)
+                    : query.OrderByDescending(u => u.Role);
 
             return await Task.FromResult(query.ToList());
         }
