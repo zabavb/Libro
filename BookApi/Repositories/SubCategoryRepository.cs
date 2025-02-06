@@ -32,7 +32,7 @@ namespace BookAPI.Repositories
         {
             return await _context.Subcategories
                 .Include(sc => sc.Category)
-                .Include(sc => sc.Book)   
+                .Include(sc => sc.Books)   
                 .ToListAsync();
         }
 
@@ -40,7 +40,7 @@ namespace BookAPI.Repositories
         {
             return await _context.Subcategories
                 .Include(sc => sc.Category) 
-                .Include(sc => sc.Book)   
+                .Include(sc => sc.Books)   
                 .FirstOrDefaultAsync(sc => sc.Id == id);
         }
 
