@@ -1,6 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using Library.DTOs.Order;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -11,7 +8,7 @@ using OrderApi.Services;
 using Xunit;
 using FluentAssertions;
 
-namespace OrderApi.Tests
+namespace OrderAPI.Tests.Controllers
 {
     public class StatusControllerTests
     {
