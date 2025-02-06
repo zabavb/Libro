@@ -2,10 +2,10 @@
 using FluentAssertions;
 using Library.DTOs.User;
 using Library.Extensions;
-using Library.Filters;
-using Library.Sortings;
 using Microsoft.Extensions.Logging;
 using Moq;
+using UserAPI.Models.Filters;
+using UserAPI.Models.Sorts;
 using UserAPI.Repositories;
 using UserAPI.Services;
 

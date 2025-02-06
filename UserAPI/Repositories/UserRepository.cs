@@ -5,6 +5,7 @@ using StackExchange.Redis;
 using System.Text.Json;
 using UserAPI.Data;
 using UserAPI.Models;
+using UserAPI.Models.Sorts;
 
 namespace UserAPI.Repositories
 {

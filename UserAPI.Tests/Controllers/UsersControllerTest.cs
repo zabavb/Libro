@@ -5,8 +5,8 @@ using UserAPI.Controllers;
 using Microsoft.AspNetCore.Mvc;
 using Library.Extensions;
 using Library.DTOs.User;
-using Library.Filters;
-using Library.Sortings;
+using UserAPI.Models.Sorts;
+using UserAPI.Models.Filters;
 
 namespace UserAPI.Tests.Controllers
 {
