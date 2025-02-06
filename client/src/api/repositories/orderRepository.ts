@@ -7,6 +7,11 @@ export const getAllOrders = async (
     pageSize: number = 10,
     params:{
         status: string | undefined
+        OrderDateStart?: string
+        OrderDateEnd?: string
+        DeliveryDateStart?: string
+        DeliveryDateEnd?: string
+        DeliveryId?: string
         searchTerm: string | undefined
     }
 ): Promise<PaginatedResponse<Order>> => {
