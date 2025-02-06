@@ -95,10 +95,7 @@ namespace UserAPI.Repositories
                 query = query.Where(u => u.DateOfBirth <= filter.DateOfBirthEnd.Value);
 
             if (!string.IsNullOrEmpty(filter.Email))
-                query = query.Where(u => u.Email.Contains(filter.Email));
-
-            if (!string.IsNullOrEmpty(filter.PhoneNumber))
-                query = query.Where(u => u.PhoneNumber.StartsWith(filter.PhoneNumber));
+                query = query.Where(u => u.Email.EndsWith(filter.Email));
 
             if (filter.Role.HasValue)
                 query = query.Where(u => u.Role.Equals(filter.Role));
