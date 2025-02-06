@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit"
-import { User, UserFilter, UserSort } from "../../../types"
+import { PaginatedResponse, User, UserFilter, UserSort } from "../../../types"
 import { fetchUsersService, addUserService, editUserService, removeUserService } from "../../../services"
 
 export const fetchUsers = createAsyncThunk(
@@ -16,55 +16,57 @@ export const fetchUsers = createAsyncThunk(
 		searchTerm?: string
 		filters?: UserFilter
 		sort?: UserSort
-	}) => {
-		return await fetchUsersService(pageNumber, pageSize, searchTerm, filters, sort)
-	}
+	}): Promise<PaginatedResponse<User>> => fetchUsersService(pageNumber, pageSize, searchTerm, filters, sort)
 )
 
-export const addUser = createAsyncThunk("users/addUser", async (user: Partial<User>) => {
-	return await addUserService(user)
-})
+// Add User
+export const addUser = createAsyncThunk(
+	"users/addUser",
+	async (user: Partial<User>): Promise<User> => addUserService(user)
+)
 
+// Edit User
 export const editUser = createAsyncThunk(
 	"users/editUser",
-	async ({ id, user }: { id: string; user: Partial<User> }) => {
-		return await editUserService(id, user)
-	}
+	async ({ id, user }: { id: string; user: Partial<User> }): Promise<User> => await editUserService(id, user)
 )
 
-export const removeUser = createAsyncThunk("users/removeUser", async (id: string) => {
+// Remove User
+export const removeUser = createAsyncThunk("users/removeUser", async (id: string): Promise<string> => {
 	await removeUserService(id)
 	return id
 })
 
+const initialState = {
+	data: [] as User[],
+	loading: false,
+	error: null as string | null,
+	operationStatus: null as "success" | "error" | "pending" | null,
+	pagination: {
+		pageNumber: 1,
+		pageSize: 10,
+		totalCount: 0,
+	},
+	searchTerm: "",
+	filters: {} as UserFilter,
+	sort: {} as UserSort,
+}
+
 const userSlice = createSlice({
 	name: "users",
-	initialState: {
-		data: [] as User[],
-		loading: false,
-		error: null as string | null | undefined,
-		operationStatus: null as "success" | "error" | "pending" | null,
-		pagination: {
-			pageNumber: 1,
-			pageSize: 10,
-			totalCount: 0,
-		},
-		searchTerm: "",
-		filters: {} as UserFilter,
-		sort: {} as UserSort,
-	},
+	initialState,
 	reducers: {
-		setSearchTerm: (state, action) => {
+		setSearchTerm: (state, action: PayloadAction<string>) => {
 			state.searchTerm = action.payload
 		},
-		setFilters: (state, action) => {
+		setFilters: (state, action: PayloadAction<UserFilter>) => {
 			state.filters = action.payload
 		},
 		setSort: (state, action: PayloadAction<keyof UserSort>) => {
 			const field = action.payload
-			const currentSort = state.sort[field]
-			const newSort = currentSort === undefined ? true : currentSort === true ? false : undefined
-			state.sort = { [field]: newSort }
+			state.sort = {
+				[field]: state.sort[field] === true ? false : state.sort[field] === false ? undefined : true,
+			}
 		},
 		resetOperationStatus: (state) => {
 			state.operationStatus = null
@@ -88,8 +90,9 @@ const userSlice = createSlice({
 			})
 			.addCase(fetchUsers.rejected, (state, action) => {
 				state.loading = false
-				state.error = action.error.message
+				state.error = action.error.message ?? "Failed to fetch users."
 			})
+
 			// Add User
 			.addCase(addUser.pending, (state) => {
 				state.operationStatus = "pending"
@@ -100,8 +103,9 @@ const userSlice = createSlice({
 			})
 			.addCase(addUser.rejected, (state, action) => {
 				state.operationStatus = "error"
-				state.error = action.error.message
+				state.error = action.error.message ?? "Failed to add user."
 			})
+
 			// Edit User
 			.addCase(editUser.pending, (state) => {
 				state.operationStatus = "pending"
@@ -113,8 +117,9 @@ const userSlice = createSlice({
 			})
 			.addCase(editUser.rejected, (state, action) => {
 				state.operationStatus = "error"
-				state.error = action.error.message
+				state.error = action.error.message ?? "Failed to update user."
 			})
+
 			// Remove User
 			.addCase(removeUser.pending, (state) => {
 				state.operationStatus = "pending"
@@ -125,7 +130,7 @@ const userSlice = createSlice({
 			})
 			.addCase(removeUser.rejected, (state, action) => {
 				state.operationStatus = "error"
-				state.error = action.error.message
+				state.error = action.error.message ?? "Failed to delete user."
 			})
 	},
 })

@@ -1,15 +1,17 @@
-import { useEffect } from "react"
+import { useEffect, useCallback } from "react"
 import { useDispatch, useSelector } from "react-redux"
 import { RootState, AppDispatch, fetchUsers } from "../../state/redux/index"
 import { useNavigate } from "react-router-dom"
 import UserList from "../../components/user/UserList"
 import { UserFilter, UserSort } from "../../types"
 import { setFilters, setSearchTerm, setSort } from "../../state/redux/slices/userSlice"
+import { addNotification } from "../../state/redux/slices/notificationSlice"
 
 const UserListContainer = () => {
 	const dispatch = useDispatch<AppDispatch>()
 	const {
 		data: users,
+		operationStatus,
 		loading,
 		error,
 		pagination,
@@ -19,7 +21,7 @@ const UserListContainer = () => {
 	} = useSelector((state: RootState) => state.users)
 	const navigate = useNavigate()
 
-	useEffect(() => {
+	const fetchUserList = useCallback(() => {
 		dispatch(
 			fetchUsers({
 				pageNumber: pagination.pageNumber,
@@ -30,6 +32,18 @@ const UserListContainer = () => {
 			})
 		)
 	}, [dispatch, pagination.pageNumber, pagination.pageSize, searchTerm, filters, sort])
+
+	useEffect(() => {
+		fetchUserList()
+
+		if (operationStatus === "error")
+			dispatch(
+				addNotification({
+					message: error,
+					type: "error",
+				})
+			)
+	}, [fetchUserList, dispatch, operationStatus, error])
 
 	const handleNavigate = (path: string) => {
 		navigate(path)
@@ -82,7 +96,6 @@ const UserListContainer = () => {
 		<UserList
 			users={users}
 			loading={loading}
-			error={error}
 			pagination={pagination}
 			onPageChange={handlePageChange}
 			onNavigate={handleNavigate}
