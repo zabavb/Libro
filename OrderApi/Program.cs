@@ -18,9 +18,9 @@ builder.Services.AddSingleton<IConnectionMultiplexer>(sp =>
 {
     var options = new ConfigurationOptions
     {
-        EndPoints = { { "redis-11440.c251.east-us-mz.azure.redns.redis-cloud.com", 11440 } },
-        User = "default",
-        Password = "QJqKikr9nj2UWhNtbsHYiuLaP3wfpTjM"
+        EndPoints = { "your_redis_endpoint", "your_port" },
+        User = "your_username",
+        Password = "your_password"
     };
     return ConnectionMultiplexer.Connect(options);
 });
@@ -76,6 +76,7 @@ builder.Services.AddCors(options =>
               .AllowCredentials();
     });
 });
+
 var app = builder.Build();
 
 app.UseCors("AllowReactApp");
