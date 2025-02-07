@@ -9,8 +9,8 @@ export interface OrderView {
     address: string
     price: number
     deliveryPrice: number
-    orderDate: Date
-    deliveryDate: Date
+    orderDate: string
+    deliveryDate: string
     status: Status
     deliveryType: string // To be implemented with DeliveryRepository
 }
