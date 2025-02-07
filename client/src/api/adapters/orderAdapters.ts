@@ -1,4 +1,6 @@
-import { Status  } from "../../types";
+import { Order, Status  } from "../../types";
+import { OrderView } from "../../types/objects/OrderView";
+import { dateToString } from "./commonAdapters";
 
 export const statusNumberToEnum = (statusNumber: number): Status =>{
     const statusMap: { [key: number]: Status } =
@@ -23,5 +25,21 @@ export const statusEnumToNumber = (status: Status): number => {
     }
 
     return statusMap[status] ?? 0
+}
+
+export const OrderToOrderView = (response: Order): OrderView => {
+    return {
+        id: response.id,
+        bookIds: response.bookIds,
+        region: response.region,
+        city: response.city,
+        address: response.address,
+        price: response.price,
+        deliveryPrice: response.deliveryPrice,
+        orderDate: dateToString(response.orderDate),
+        deliveryDate: dateToString(response.deliveryDate),
+        status: statusNumberToEnum(response.status),
+        deliveryType: response.deliveryTypeId.toString() // Temporary solution
+    }
 }
 
