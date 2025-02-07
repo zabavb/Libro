@@ -53,19 +53,19 @@ const orderSlice = createSlice({
         sort: {} as OrderSort,
     },
     reducers: {
-        setSearchTerm: (state, action) => {
+        setOrderSearchTerm: (state, action) => {
             state.searchTerm = action.payload
         },
-        setFilters: (state, action) => {
+        setOrderFilters: (state, action) => {
             state.filters = action.payload
         },
-        setSort: (state, action: PayloadAction<keyof OrderSort>) => {
+        setOrderSort: (state, action: PayloadAction<keyof OrderSort>) => {
             const field = action.payload
             const currentSort = state.sort[field]
             const newSort = currentSort === undefined ? true : currentSort === true ? false : undefined
             state.sort = { [field]: newSort }
         },
-        resetOperationStatus: (state) => {
+        resetOrderOperationStatus: (state) => {
             state.operationStatus = null
         }
     },
@@ -129,5 +129,5 @@ const orderSlice = createSlice({
     }
 })
 
-export const { setSearchTerm, setFilters, setSort, resetOperationStatus } = orderSlice.actions
+export const { setOrderSearchTerm, setOrderFilters, setOrderSort, resetOrderOperationStatus } = orderSlice.actions
 export default orderSlice.reducer;
