@@ -33,10 +33,13 @@ namespace BookAPI.Repositories
         {
             IQueryable<SubCategory> subcategories = _context.Subcategories
                 .Include(sc => sc.Category)
-                .Include(sc => sc.Book);
+                .Include(sc => sc.Books); 
 
             var totalSubcategories = await subcategories.CountAsync();
-            var resultSubcategories = await subcategories.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToListAsync();
+            var resultSubcategories = await subcategories
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
 
             return new PaginatedResult<SubCategory>
             {
@@ -48,11 +51,12 @@ namespace BookAPI.Repositories
         }
 
 
+
         public async Task<SubCategory?> GetByIdAsync(Guid id)
         {
             return await _context.Subcategories
                 .Include(sc => sc.Category) 
-                .Include(sc => sc.Book)   
+                .Include(sc => sc.Books)   
                 .FirstOrDefaultAsync(sc => sc.Id == id);
         }
 
