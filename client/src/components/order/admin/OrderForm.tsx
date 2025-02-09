@@ -128,14 +128,14 @@ const OrderForm: React.FC<OrderFormProps> = ({ existingOrder, onAddOrder, onEdit
             <p>{errors.deliveryTypeId?.message}</p>
 
             <input
-                type="number"
+                type="text"
                 {...register("price")}
                 placeholder="Price"
             />
             <p>{errors.price?.message}</p>
 
             <input
-                type="number"
+                type="text"
                 {...register("deliveryPrice")}
                 placeholder="Delivery Price"
             />
