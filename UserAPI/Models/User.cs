@@ -20,12 +20,14 @@ namespace UserAPI.Models
 
         public User()
         {
+            UserId = Guid.NewGuid();
             FirstName = string.Empty;
             LastName = string.Empty;
-            DateOfBirth = DateTime.Now;
+            DateOfBirth = DateTime.Today;
             Email = string.Empty;
             PhoneNumber = string.Empty;
             Role = RoleType.GUEST;
+            Password = null!;
         }
     }
 }

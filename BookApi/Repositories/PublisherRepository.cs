@@ -16,6 +16,7 @@ namespace BookAPI.Repositories
 
         public async Task CreateAsync(Publisher entity)
         {
+            ArgumentNullException.ThrowIfNull(entity);
             entity.Id = Guid.NewGuid();
             _context.Publishers.Add(entity);
             await _context.SaveChangesAsync();
@@ -23,17 +24,17 @@ namespace BookAPI.Repositories
 
         public async Task DeleteAsync(Guid id)
         {
-            var publisher = await _context.Publishers.FirstOrDefaultAsync(a => a.Id == id);
-            if (publisher == null)
-            {
-                throw new KeyNotFoundException("Publisher not found");
-            }
+            if (id == Guid.Empty)
+                throw new ArgumentException("Id cannot be empty.", nameof(id));
+
+            var publisher = await _context.Publishers.FirstOrDefaultAsync(a => a.Id == id) ?? throw new KeyNotFoundException("Publisher not found");
             _context.Publishers.Remove(publisher);
             await _context.SaveChangesAsync();
         }
 
         public async Task<PaginatedResult<Publisher>> GetAllAsync(int pageNumber, int pageSize)
         {
+
             IQueryable<Publisher> publishers = _context.Publishers.AsQueryable();
 
             var totalPublishers = await publishers.CountAsync();
@@ -51,14 +52,25 @@ namespace BookAPI.Repositories
 
         public async Task<Publisher?> GetByIdAsync(Guid id)
         {
+            if (id == Guid.Empty)
+                throw new ArgumentException("Id cannot be empty.", nameof(id));
+
             return await _context.Publishers.FirstOrDefaultAsync(a => a.Id == id);
         }
 
         public async Task UpdateAsync(Publisher entity)
         {
+            if (entity == null)
+                throw new ArgumentNullException(nameof(entity));
+
+            if (entity.Id == Guid.Empty)
+                throw new ArgumentException("Id cannot be empty.", nameof(entity.Id));
+
+
             var existingPublisher = await _context.Publishers.FirstOrDefaultAsync(a => a.Id == entity.Id) ?? throw new KeyNotFoundException("Publisher not found");
             _context.Entry(existingPublisher).CurrentValues.SetValues(entity);
             await _context.SaveChangesAsync();
         }
+
     }
 }

@@ -80,8 +80,11 @@ namespace BookApi.Services
             _mapper.Map(publisherDto, existingPublisher);
             await _publisherRepository.UpdateAsync(existingPublisher);
 
-            return _mapper.Map<PublisherDto>(publisherDto);
+            var pub = _mapper.Map<PublisherDto>(existingPublisher);
+
+            return pub;
         }
+
     }
 
 }

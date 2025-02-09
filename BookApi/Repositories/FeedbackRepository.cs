@@ -15,6 +15,7 @@ namespace BookAPI.Repositories
         }
         public async Task CreateAsync(Feedback entity)
         {
+            ArgumentNullException.ThrowIfNull(entity);
             entity.Id = Guid.NewGuid();
             _context.Feedbacks.Add(entity);
             await _context.SaveChangesAsync();
@@ -22,11 +23,9 @@ namespace BookAPI.Repositories
 
         public async Task DeleteAsync(Guid id)
         {
-            var author = await _context.Feedbacks.FirstOrDefaultAsync(a => a.Id == id);
-            if (author == null)
-            {
-                throw new KeyNotFoundException("Author not found");
-            }
+            if (id == Guid.Empty)
+                throw new ArgumentException("Id cannot be empty.", nameof(id));
+            var author = await _context.Feedbacks.FirstOrDefaultAsync(a => a.Id == id) ?? throw new KeyNotFoundException("Author not found");
             _context.Feedbacks.Remove(author);
             await _context.SaveChangesAsync();
         }
@@ -50,6 +49,8 @@ namespace BookAPI.Repositories
 
         public async Task<Feedback?> GetByIdAsync(Guid id)
         {
+            if (id == Guid.Empty)
+                throw new ArgumentException("Id cannot be empty.", nameof(id));
             return await _context.Feedbacks.FirstOrDefaultAsync(a => a.Id == id);
         }
 

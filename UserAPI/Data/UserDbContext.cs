@@ -26,7 +26,6 @@ namespace UserAPI.Data
                 .WithOne(s => s.User)
                 .HasForeignKey<Subscription>(s => s.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
-
         }
     }
 }

@@ -12,25 +12,18 @@ namespace UserAPI.Controllers
     /// - Retrieving a specific user by ID.
     /// - CRUD (Creating, updating, and deleting) users.
     /// </remarks>
+    /// <remarks>
+    /// Initializes a new instance of the <see cref="UsersController"/> class.
+    /// </remarks>
+    /// <param name="userService">Service for user operations.</param>
+    /// <param name="logger">Logger for tracking operations.</param>
     [ApiController]
     [Route("api/[controller]")]
-    public class UsersController : ControllerBase
+    public class UsersController(IUserService userService, ILogger<UsersController> logger) : ControllerBase
     {
-        private readonly IUserService _userService;
-        private readonly ILogger<UsersController> _logger;
-        private string _message;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="UsersController"/> class.
-        /// </summary>
-        /// <param name="userService">Service for user operations.</param>
-        /// <param name="logger">Logger for tracking operations.</param>
-        public UsersController(IUserService userService, ILogger<UsersController> logger)
-        {
-            _userService = userService;
-            _logger = logger;
-            _message = string.Empty;
-        }
+        private readonly IUserService _userService = userService;
+        private readonly ILogger<UsersController> _logger = logger;
+        private string _message = string.Empty;
 
         /// <summary>
         /// Retrieves a paginated list of users with optional search and filtering.
@@ -109,7 +102,7 @@ namespace UserAPI.Controllers
             try
             {
                 await _userService.CreateAsync(user);
-                _logger.LogInformation($"User with ID [{user.Id}] successfully created.");
+                _logger.LogInformation($"User successfully created.");
                 return CreatedAtAction(nameof(GetById), new { id = user.Id }, user);
             }
             catch (ArgumentNullException ex)

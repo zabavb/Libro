@@ -15,7 +15,7 @@ namespace BookApi.Data.Configuration
             builder.HasOne(sc => sc.Category)
                    .WithMany(c => c.Subcategories)
                    .HasForeignKey(sc => sc.CategoryId)
-                   .OnDelete(DeleteBehavior.Cascade);
+                   .OnDelete(DeleteBehavior.NoAction);
         }
     }
 }

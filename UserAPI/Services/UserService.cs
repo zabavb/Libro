@@ -5,24 +5,16 @@ using UserAPI.Repositories;
 
 namespace UserAPI.Services
 {
-    public class UserService : IUserService
+    public class UserService(IUserRepository repository, IMapper mapper, ILogger<IUserService> logger) : IUserService
     {
-        private readonly IUserRepository _repository;
-        private readonly IMapper _mapper;
-        private readonly ILogger<IUserService> _logger;
-        private string _message;
+        private readonly IUserRepository _repository = repository;
+        private readonly IMapper _mapper = mapper;
+        private readonly ILogger<IUserService> _logger = logger;
+        private string _message = string.Empty;
 
-        public UserService(IUserRepository repository, IMapper mapper, ILogger<IUserService> logger)
+        public async Task<PaginatedResult<UserDto>> GetAllAsync(int pageNumber, int pageSize, string? searchTerm, Filter? filter, Sort? sort)
         {
-            _repository = repository;
-            _mapper = mapper;
-            _logger = logger;
-            _message = string.Empty;
-        }
-
-        public async Task<PaginatedResult<UserDto>> GetAllAsync(int pageNumber, int pageSize, string searchTerm, Filter? filter, Sort? sort)
-        {
-            var paginatedUsers = await _repository.GetAllAsync(pageNumber, pageSize, searchTerm, filter, sort);
+            var paginatedUsers = await _repository.GetAllAsync(pageNumber, pageSize, searchTerm!, filter, sort);
 
             if (paginatedUsers == null || paginatedUsers.Items == null)
             {
@@ -30,7 +22,7 @@ namespace UserAPI.Services
                 _logger.LogError(_message);
                 throw new InvalidOperationException(_message);
             }
-            _logger.LogInformation("Successfully fetched [{Count}] users.", paginatedUsers.Items.Count());
+            _logger.LogInformation("Successfully fetched [{Count}] users.", paginatedUsers.Items.Count);
 
             return new PaginatedResult<UserDto>
             {
@@ -68,6 +60,7 @@ namespace UserAPI.Services
             var user = _mapper.Map<User>(entity);
             try
             {
+                user.UserId = Guid.NewGuid();
                 await _repository.CreateAsync(user);
                 _logger.LogInformation("User successfully created.");
             }
