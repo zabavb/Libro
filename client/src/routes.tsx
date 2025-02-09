@@ -8,6 +8,8 @@ import UserFormPage from "./pages/Admin/UserRelated/Users/UserFormPage";
 import NotFoundPage from "./pages/Main/NotFoundPage";
 import UserListContainer from "./containers/user/UserListContainer";
 import OrderListContainer from "./containers/order/OrderListContainer";
+import OrderFormPage from "./pages/Admin/OrderRelated/Orders/OrderFormPage";
+
 
 const AppRoutes = () => (
 	<BrowserRouter>
@@ -20,6 +22,8 @@ const AppRoutes = () => (
 			<Route path="/admin/users/:userId" element={<UserFormPage />} />
 				{/* Order */}
 			<Route path="/admin/orders" element={<OrderListContainer />}/>
+			<Route path="/admin/orders/add" element={<OrderFormPage />} />
+			<Route path="/admin/orders/:orderId" element={<OrderFormPage />} />
 			<Route path="*" element={<NotFoundPage />} />
 		</Routes>
 	</BrowserRouter>
