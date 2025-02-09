@@ -11,8 +11,7 @@ export const orderSchema = z.
             .string()
             .uuid("Invalid user ID"),
         bookIds: z
-            .string()
-            .uuid(),
+            .string(),
             // Temporary removed
             // .array(z.string().min(1))
             // .nonempty("There must be at least a single book in order"),

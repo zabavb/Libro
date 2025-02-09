@@ -13,7 +13,7 @@ interface OrderFormProps {
 }
 
 const OrderForm: React.FC<OrderFormProps> = ({ existingOrder, onAddOrder, onEditOrder }) => {
-    const [bookIds, setBookIds] = useState<string[]>([]);
+    const [bookIds, setBookIds] = useState<string>("");
     
     const {
         register,
@@ -25,7 +25,7 @@ const OrderForm: React.FC<OrderFormProps> = ({ existingOrder, onAddOrder, onEdit
         defaultValues:
         {
             userId: "",
-            bookIds: [],
+            bookIds: "",
             address: "",
             region: "",
             city: "",
@@ -41,7 +41,7 @@ const OrderForm: React.FC<OrderFormProps> = ({ existingOrder, onAddOrder, onEdit
     useEffect(() => {
         if(existingOrder) {
             setValue("userId", existingOrder.userId)
-            setValue("bookIds", existingOrder.bookIds as [string, ...string[]]);
+            setValue("bookIds", bookIds);
             setValue("region", existingOrder.region)
             setValue("city", existingOrder.city)
             setValue("address", existingOrder.address)
@@ -52,13 +52,13 @@ const OrderForm: React.FC<OrderFormProps> = ({ existingOrder, onAddOrder, onEdit
             setValue("deliveryTypeId", existingOrder.deliveryTypeId)
             setValue("status", statusNumberToEnum(existingOrder.status))
         }
-    }, [existingOrder, setValue])
+    }, [existingOrder, setValue, bookIds])
 
     const onSubmit = (data: OrderFormData) => {
         const order: Order = {
             id: existingOrder ? existingOrder.id : "00000000-0000-0000-0000-000000000000",
             userId: data.userId,
-            bookIds: bookIds,
+            bookIds: bookIds.split(",").map((item) => item.trim()),
             region: data.region,
             city: data.city,
             address: data.address,
@@ -81,7 +81,7 @@ const OrderForm: React.FC<OrderFormProps> = ({ existingOrder, onAddOrder, onEdit
     }
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setBookIds(e.target.value.split(",").map((item) => item.trim()));
+        setBookIds(e.target.value);
       };
 
     return (
