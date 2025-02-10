@@ -7,6 +7,6 @@ namespace BookAPI.Repositories
     public interface ICategoryRepository : IManagable<Category>
     {
         Task<PaginatedResult<Category>> GetAllAsync(int pageNumber, int pageSize);
+        Task DeleteAsync(Guid id);
     }
-
 }

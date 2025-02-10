@@ -7,6 +7,6 @@ namespace BookAPI.Repositories
     public interface IFeedbackRepository : IManagable<Feedback>
     {
         Task<PaginatedResult<Feedback>> GetAllAsync(int pageNumber, int pageSize);
-
+        Task DeleteAsync(Guid id);
     }
 }
