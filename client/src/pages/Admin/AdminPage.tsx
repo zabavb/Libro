@@ -10,6 +10,9 @@ const AdminPage = () => {
       <button onClick={() => navigate("/admin/users")}>
         Manage Users
       </button>
+      <button onClick={() => navigate("/admin/orders")}>
+        Manage Orders
+      </button>
     </>
   );
 };
