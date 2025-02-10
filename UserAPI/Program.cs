@@ -1,3 +1,4 @@
+using Library.AWS;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -19,11 +20,13 @@ builder.Services.AddDbContext<UserDbContext>(options =>
 
 builder.Services.AddSingleton<IConnectionMultiplexer>(sp =>
 {
+    var config = sp.GetRequiredService<IConfiguration>();
+
     var options = new ConfigurationOptions
     {
-        EndPoints = { "your_redis_endpoint", "your_port" },
-        User = "your_username",
-        Password = "your_password"
+        EndPoints = { { config["Redis:Host"]!, int.Parse(config["Redis:Port"]!) } },
+        User = config["Redis:User"],
+        Password = config["Redis:Password"]
     };
     return ConnectionMultiplexer.Connect(options);
 });
@@ -44,8 +47,11 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         };
     });
 
+
 builder.Services.AddAutoMapper(typeof(UserProfile));
 //builder.Services.AddAutoMapper(typeof(SubscriptionProfile));
+
+builder.Services.AddScoped<S3StorageService>();
 
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IUserService, UserService>();
