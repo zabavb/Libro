@@ -109,22 +109,27 @@ namespace OrderApi.Controllers
         /// <summary>
         /// Updates existing deliveryType
         /// </summary>
-        /// <param name="deliveryTypeDto">Updated delivery type data</param>
+        /// <param name="id">UThe ID of the delivery type to update. </param>
+        /// <param name="deliveryTypeDto">Updated delivery type data. </param>
         /// <returns>The updated delivery type</returns>
         /// <response code="204">the delivery type is successfully updated.</response>
         /// <response code="400">the delivery type ID in the URL does not match the ID in the request body, or if the input is invalid.</response>
         /// <response code="404">the delivery type to be updated does not exist.</response>
         /// <response code="500">an unexpected error occured.</response>
         [HttpPut]
-        public async Task<IActionResult> Update([FromBody] DeliveryTypeDto deliveryTypeDto)
+        public async Task<IActionResult> Update(Guid id, [FromBody] DeliveryTypeDto deliveryTypeDto)
         {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
+            if (deliveryTypeDto != null && id != deliveryTypeDto.Id)
+            {
+                _message = "Delivery Type ID in the URL does not match the ID in the body.";
+                _logger.LogError(_message);
+                return BadRequest(_message);
+            }
 
             try
             {
-                await _deliveryTypeService.UpdateAsync(deliveryTypeDto);
-                _logger.LogInformation($"Delivery type with Id [{deliveryTypeDto.Id}] successfully updated.");
+                await _deliveryTypeService.UpdateAsync(deliveryTypeDto!);
+                _logger.LogInformation($"Delivery type with Id [{deliveryTypeDto!.Id}] successfully updated.");
                 return NoContent();
             }
             catch (ArgumentNullException ex)

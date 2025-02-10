@@ -114,22 +114,27 @@ namespace OrderApi.Controllers
         /// <summary>
         /// Updates existing order
         /// </summary>
+        /// <param name="id">The ID of the order to update.</param>
         /// <param name="orderDto">Updated order data</param>
         /// <returns>The updated order</returns>
         /// <response code="204">the order is successfully updated.</response>
         /// <response code="400">the order ID in the URL does not match the ID in the request body, or if the input is invalid.</response>
         /// <response code="404">the order to be updated does not exist.</response>
         /// <response code="500">an unexpected error occured.</response>
-        [HttpPut]
-        public async Task<IActionResult> Update([FromBody]OrderDto orderDto)
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Update(Guid id, [FromBody] OrderDto orderDto)
         {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
+            if (orderDto != null && id != orderDto.Id)
+            {
+                _message = "Order ID in the URL does not match the ID in the body.";
+                _logger.LogError(_message);
+                return BadRequest(_message);
+            }
 
             try
             {
-                await _orderService.UpdateAsync(orderDto);
-                _logger.LogInformation($"Order with Id [{orderDto.Id}] successfully updated.");
+                await _orderService.UpdateAsync(orderDto!);
+                _logger.LogInformation($"Order with Id [{orderDto!.Id}] successfully updated.");
                 return NoContent();
             }
             catch (ArgumentNullException ex)
