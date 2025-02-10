@@ -19,7 +19,11 @@ const OrderAdminCard: React.FC<OrderAdminCardProps> = ({order, onDelete, onNavig
                 <div>
                     {/* To be implemented */}
                     <p>
-                        <strong>Books:</strong> 
+                        <strong>Books:</strong>
+                        {order.bookIds.map((book) => (
+                            <p>{book}</p>
+                        ))
+                    }
                     </p>
                     <p>
                         <strong>Region:</strong> {order.region}
