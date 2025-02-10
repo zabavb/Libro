@@ -81,11 +81,12 @@ namespace OrderAPI.Tests.Controllers
         public async Task Update_ShouldReturnNoContent_WhenSuccessful()
         {
             // Arrange
-            var orderDto = new Order { Id = Guid.NewGuid(), UserId = Guid.NewGuid(), Region = "Region1" };
+            var id = Guid.NewGuid();
+            var orderDto = new Order { Id = id, UserId = Guid.NewGuid(), Region = "Region1" };
             _orderServiceMock.Setup(s => s.UpdateAsync(orderDto)).Returns(Task.CompletedTask);
 
             // Act
-            var result = await _controller.Update(orderDto);
+            var result = await _controller.Update(id, orderDto);
 
             // Assert
             result.Should().BeOfType<NoContentResult>();
