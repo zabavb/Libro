@@ -8,6 +8,8 @@ import UserFormPage from "./pages/Admin/UserRelated/Users/UserFormPage"
 import NotFoundPage from "./pages/Main/NotFoundPage"
 import UserListContainer from "./containers/user/UserListContainer"
 import AdminLayout from "./components/layouts/AdminLayout"
+import OrderListContainer from "./containers/order/OrderListContainer"
+import OrderFormPage from "./pages/Admin/OrderRelated/Orders/OrderFormPage"
 
 const AppRoutes = () => (
 	<BrowserRouter>
@@ -26,6 +28,7 @@ const AppRoutes = () => (
 					index
 					element={<AdminPage />}
 				/>
+				{/* User */}
 				<Route
 					path="/admin/users"
 					element={<UserListContainer />}
@@ -38,7 +41,21 @@ const AppRoutes = () => (
 					path="/admin/users/:userId"
 					element={<UserFormPage />}
 				/>
+				{/* Order */}
+				<Route
+					path="/admin/orders"
+					element={<OrderListContainer />}
+				/>
+				<Route
+					path="/admin/orders/add"
+					element={<OrderFormPage />}
+				/>
+				<Route
+					path="/admin/orders/:orderId"
+					element={<OrderFormPage />}
+				/>
 			</Route>
+			
 			{/* Other */}
 			<Route
 				path="*"
