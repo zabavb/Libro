@@ -583,7 +583,7 @@ namespace UserAPI.Tests.Services
                 });
 
             // Act
-            await _userService.DeleteAsync(userId);
+            await _userService.DeleteAsync(userId, "");
 
             // Assert
             capturedLogMessage.Should().NotBeNull();
@@ -624,7 +624,7 @@ namespace UserAPI.Tests.Services
                 });
 
             // Act
-            Func<Task> act = async () => await _userService.DeleteAsync(userId);
+            Func<Task> act = async () => await _userService.DeleteAsync(userId, "");
 
             // Assert
             await act.Should().ThrowAsync<KeyNotFoundException>()
@@ -667,7 +667,7 @@ namespace UserAPI.Tests.Services
                 });
 
             // Act
-            Func<Task> act = async () => await _userService.DeleteAsync(userId);
+            Func<Task> act = async () => await _userService.DeleteAsync(userId, "");
 
             // Assert
             await act.Should().ThrowAsync<InvalidOperationException>()

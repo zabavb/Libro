@@ -164,16 +164,17 @@ namespace UserAPI.Controllers
         /// Deletes a user by their unique identifier.
         /// </summary>
         /// <param name="id">The unique identifier of the user to delete.</param>
+        /// <param name="imageUrl">The link of image in AWS S3 storage for it's deletion.</param>
         /// <returns>No content if the deletion is successful.</returns>
         /// <response code="204">If the user is successfully deleted.</response>
         /// <response code="404">If the user to be deleted does not exist.</response>
         /// <response code="500">If an unexpected error occurs.</response>
         [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(Guid id)
+        public async Task<IActionResult> Delete(Guid id, string imageUrl)
         {
             try
             {
-                await _userService.DeleteAsync(id);
+                await _userService.DeleteAsync(id, imageUrl);
                 _logger.LogInformation($"User with ID [{id}] successfully deleted.");
                 return NoContent();
             }

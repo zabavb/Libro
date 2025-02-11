@@ -8,6 +8,6 @@ namespace BookAPI.Repositories
     public interface IAuthorRepository : IManagable<Author>
     {
         Task<PaginatedResult<Author>> GetAllAsync(int pageNumber, int pageSize);
-
+        Task DeleteAsync(Guid id);
     }
 }

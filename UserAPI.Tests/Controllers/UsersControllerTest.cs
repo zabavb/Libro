@@ -291,31 +291,31 @@ namespace UserAPI.Tests.Controllers
         public async Task Delete_ReturnsNoContent_WhenUserDeleted()
         {
             // Arrange
-            var user = new User { Id = Guid.NewGuid() };
+            var user = new User { Id = Guid.NewGuid(), ImageUrl = ""};
             await _controller.Create(user);
             _userServiceMock
-                .Setup(s => s.DeleteAsync(user.Id))
+                .Setup(s => s.DeleteAsync(user.Id, user.ImageUrl))
                 .Returns(Task.CompletedTask);
 
             // Act
-            var result = await _controller.Delete(user.Id);
+            var result = await _controller.Delete(user.Id, user.ImageUrl);
 
             // Assert
             var statusResult = Assert.IsType<NoContentResult>(result);
-            _userServiceMock.Verify(s => s.DeleteAsync(user.Id), Times.Once);
+            _userServiceMock.Verify(s => s.DeleteAsync(user.Id, user.ImageUrl), Times.Once);
         }
 
         [Fact]
         public async Task Delete_ReturnsNotFound_WhenUserDoesNotExist()
         {
             // Arrange
-            var user = new User { Id = Guid.NewGuid() };
+            var user = new User { Id = Guid.NewGuid(), ImageUrl = "" };
             _userServiceMock
-                .Setup(s => s.DeleteAsync(user.Id))
+                .Setup(s => s.DeleteAsync(user.Id, user.ImageUrl))
                 .ThrowsAsync(new KeyNotFoundException($"User with ID [{user.Id}] not found for deletion."));
 
             // Act
-            var result = await _controller.Delete(user.Id);
+            var result = await _controller.Delete(user.Id, user.ImageUrl);
 
             // Assert
             var statusResult = Assert.IsType<NotFoundObjectResult>(result);
@@ -327,13 +327,13 @@ namespace UserAPI.Tests.Controllers
         public async Task Delete_ReturnsInternalServerError_WhenExceptionOccurs()
         {
             // Arrange
-            var user = new User { Id = Guid.NewGuid() };
+            var user = new User { Id = Guid.NewGuid(), ImageUrl = "" };
             _userServiceMock
-                .Setup(s => s.DeleteAsync(user.Id))
+                .Setup(s => s.DeleteAsync(user.Id, user.ImageUrl))
                 .ThrowsAsync(new Exception($"Error occurred while deleting the user with ID [{user.Id}]."));
 
             // Act
-            var result = await _controller.Delete(user.Id);
+            var result = await _controller.Delete(user.Id, user.ImageUrl);
 
             // Assert
             var statusResult = Assert.IsType<ObjectResult>(result);
