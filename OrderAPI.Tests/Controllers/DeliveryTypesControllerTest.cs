@@ -110,13 +110,14 @@ namespace OrderAPI.Tests.Controllers
         public async Task Update_ReturnsNoContent_WhenSuccessful()
         {
             // Arrange
-            var deliveryType = new DeliveryType { Id = Guid.NewGuid(), ServiceName = "Updated Name" };
+            var id = Guid.NewGuid();
+            var deliveryType = new DeliveryType { Id = id, ServiceName = "Updated Name" };
 
             _deliveryTypeServiceMock.Setup(s => s.UpdateAsync(It.IsAny<DeliveryType>()))
                                      .Returns(Task.CompletedTask);
 
             // Act
-            var result = await _controller.Update(new DeliveryType { Id = deliveryType.Id, ServiceName = deliveryType.ServiceName });
+            var result = await _controller.Update(id, new DeliveryType { Id = deliveryType.Id, ServiceName = deliveryType.ServiceName });
 
             // Assert
             var noContentResult = Xunit.Assert.IsType<NoContentResult>(result);

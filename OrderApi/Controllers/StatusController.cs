@@ -12,10 +12,10 @@ namespace OrderApi.Controllers
     /// </remarks>
     [Route("api/[controller]")]
     [ApiController]
-    public class StatusController(IOrderService orderService) : ControllerBase
+    public class StatusController(IOrderService orderService, ILogger<StatusController> logger) : ControllerBase
     {
         private readonly IOrderService _orderService = orderService;
-
+        private readonly ILogger<StatusController> _logger = logger;
         /// <summary>
         /// Changes Order status in by id
         /// </summary>
@@ -36,18 +36,22 @@ namespace OrderApi.Controllers
                 var order = await _orderService.GetByIdAsync(id);
                 order.Status = orderStatus;
                 await _orderService.UpdateAsync(order);
+                _logger.LogInformation($"Status of Order with ID [{id}] updated successfully.");
                 return NoContent();
             }
-            catch (ArgumentNullException)
+            catch (ArgumentNullException ex)
             {
+                _logger.LogError(ex.Message);
                 return BadRequest(ModelState);
             }
             catch (KeyNotFoundException ex)
             {
+                _logger.LogError(ex.Message);
                 return NotFound(new { message = ex.Message });
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex.Message);
                 return StatusCode(StatusCodes.Status500InternalServerError, new { message = ex.Message });
             }
         }
