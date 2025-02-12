@@ -10,7 +10,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace BookApi.Controllers
+namespace BookAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]

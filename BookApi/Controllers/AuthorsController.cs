@@ -6,7 +6,7 @@ using Library.Extensions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
-namespace BookApi.Controllers
+namespace BookAPI.Controllers
 {
     /// <summary>
     /// Manages author-related operations such as retrieving, creating, updating, and deleting authors.

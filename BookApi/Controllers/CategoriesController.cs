@@ -4,7 +4,7 @@ using Library.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
-namespace BookApi.Controllers
+namespace BookAPI.Controllers
 {
     /// <summary>
     /// Controller for managing book categories.

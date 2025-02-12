@@ -1,11 +1,11 @@
-﻿using BookApi.Models;
+﻿using BookAPI.Models;
 using BookAPI;
 using BookAPI.Models.Filters;
 using BookAPI.Models.Sortings;
 using BookAPI.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
-namespace BookApi.Controllers
+namespace BookAPI.Controllers
 {
     /// <summary>
     /// Manages book-related operations such as retrieving, creating, updating, and deleting books.

@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
-namespace BookApi.Controllers
+namespace BookAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]

@@ -1,4 +1,4 @@
-﻿using BookApi.Models;
+﻿using BookAPI.Models;
 using BookAPI;
 using BookAPI.Models.Filters;
 using BookAPI.Models.Sortings;
@@ -7,7 +7,7 @@ using FeedbackApi.Services;
 using Library.Extensions;
 using Microsoft.AspNetCore.Mvc;
 
-namespace BookApi.Controllers
+namespace BookAPI.Controllers
 {
     /// <summary>
     /// Manages feedback-related operations such as retrieving, creating, updating, and deleting feedbacks.
