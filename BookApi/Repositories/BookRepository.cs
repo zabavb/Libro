@@ -36,7 +36,7 @@ namespace BookAPI.Repositories
             IQueryable<Book> books = _context.Books.AsQueryable();
 
             if (books.Any() && !string.IsNullOrWhiteSpace(searchTerm))
-                books = books.Search(searchTerm, b => b.Title);
+                books = books.Search(searchTerm, b => b.Title, b => b.Author.Name);
             books = filter?.Apply(books) ?? books;
             books = sort?.Apply(books) ?? books;
 
