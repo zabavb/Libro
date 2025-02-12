@@ -13,7 +13,7 @@ using Library.Extensions;
 using Library.Filters;
 using Library.Sortings;
 using FeedbackDto = Library.DTOs.Book.Feedback;
-using BookAPI.Services;
+using BookAPI.Services.Interfaces;
 
 
 namespace BookAPI.Tests.Controllers

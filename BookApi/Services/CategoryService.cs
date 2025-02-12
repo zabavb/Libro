@@ -2,6 +2,7 @@
 using BookApi.Models;
 using BookApi.Repositories;
 using BookAPI.Repositories.Interfaces;
+using BookAPI.Services.Interfaces;
 using Library.Extensions;
 
 namespace BookApi.Services

@@ -1,7 +1,7 @@
-﻿using BookApi.Services;
-using BookAPI;
+﻿using BookAPI;
 using BookAPI.Models.Filters;
 using BookAPI.Models.Sortings;
+using BookAPI.Services.Interfaces;
 using Library.Extensions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;

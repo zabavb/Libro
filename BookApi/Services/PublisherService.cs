@@ -2,6 +2,7 @@
 using BookApi.Data;
 using BookApi.Models;
 using BookAPI.Repositories.Interfaces;
+using BookAPI.Services.Interfaces;
 using Library.Extensions;
 using Microsoft.EntityFrameworkCore;
 

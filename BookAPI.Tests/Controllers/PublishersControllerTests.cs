@@ -1,5 +1,4 @@
-﻿using BookApi.Services;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using BookApi.Controllers;
@@ -13,6 +12,7 @@ using Library.Extensions;
 using Library.Filters;
 using Library.Sortings;
 using PublisherDto = Library.DTOs.Book.Publisher;
+using BookAPI.Services.Interfaces;
 
 
 namespace BookAPI.Tests.Controllers

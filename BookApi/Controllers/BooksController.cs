@@ -1,8 +1,8 @@
 ﻿using BookApi.Models;
-using BookApi.Services;
 using BookAPI;
 using BookAPI.Models.Filters;
 using BookAPI.Models.Sortings;
+using BookAPI.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BookApi.Controllers

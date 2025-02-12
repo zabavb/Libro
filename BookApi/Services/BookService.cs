@@ -3,6 +3,7 @@ using BookApi.Models;
 using BookAPI.Models.Filters;
 using BookAPI.Models.Sortings;
 using BookAPI.Repositories.Interfaces;
+using BookAPI.Services.Interfaces;
 using Library.Extensions;
 using System;
 using System.Collections.Generic;

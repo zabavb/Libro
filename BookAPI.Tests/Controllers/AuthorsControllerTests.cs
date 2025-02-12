@@ -1,5 +1,4 @@
-﻿using BookApi.Services;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using BookApi.Controllers;
@@ -12,6 +11,7 @@ using Xunit;
 using AuthorDto = Library.DTOs.Book.Author;
 
 using Library.Extensions;
+using BookAPI.Services.Interfaces;
 
 namespace BookAPI.Tests.Controllers
 {

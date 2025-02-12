@@ -1,6 +1,6 @@
 ﻿using Library.Extensions;
 
-namespace BookApi.Services
+namespace BookAPI.Services.Interfaces
 {
     public interface ICategoryService
     {

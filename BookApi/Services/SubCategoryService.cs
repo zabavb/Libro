@@ -3,6 +3,7 @@ using BookApi.Models;
 using BookApi.Repositories;
 using BookAPI.Models.Filters;
 using BookAPI.Repositories.Interfaces;
+using BookAPI.Services.Interfaces;
 using Library.Extensions;
 
 namespace BookApi.Services

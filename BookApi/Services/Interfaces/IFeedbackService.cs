@@ -1,7 +1,7 @@
 ﻿using BookAPI.Models.Filters;
 using Library.Extensions;
 
-namespace BookAPI.Services
+namespace BookAPI.Services.Interfaces
 {
     public interface IFeedbackService
     {

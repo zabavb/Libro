@@ -1,8 +1,7 @@
-﻿
-using BookAPI.Models.Filters;
+﻿using BookAPI.Models.Filters;
 using Library.Extensions;
 
-namespace BookApi.Services
+namespace BookAPI.Services.Interfaces
 {
     public interface ISubCategoryService
     {

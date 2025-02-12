@@ -4,6 +4,7 @@ using BookApi.Services;
 using BookAPI.Repositories;
 using BookAPI.Repositories.Interfaces;
 using BookAPI.Services;
+using BookAPI.Services.Interfaces;
 using FeedbackApi.Services;
 using Microsoft.CodeAnalysis.Host;
 using Microsoft.EntityFrameworkCore;
@@ -13,7 +14,7 @@ using Microsoft.OpenApi.Models;
 using Serilog;
 using System.Reflection;
 using System.Text.Json.Serialization;
-using ILanguageService = BookAPI.Services.ILanguageService;
+using ILanguageService = BookAPI.Services.Interfaces.ILanguageService;
 
 var builder = WebApplication.CreateBuilder(args);
 

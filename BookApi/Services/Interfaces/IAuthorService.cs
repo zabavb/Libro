@@ -2,7 +2,7 @@
 using BookAPI.Models.Sortings;
 using Library.Extensions;
 
-namespace BookApi.Services
+namespace BookAPI.Services.Interfaces
 {
     public interface IAuthorService
     {
