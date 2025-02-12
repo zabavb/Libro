@@ -1,5 +1,4 @@
-﻿using BookApi.Models;
-using BookAPI.Models;
+﻿using BookAPI.Models;
 using Library.Sortings;
 using System.Linq.Expressions;
 

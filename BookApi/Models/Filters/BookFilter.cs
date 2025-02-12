@@ -1,5 +1,5 @@
 ﻿using Amazon.S3.Model;
-using BookApi.Models;
+using BookAPI.Models;
 
 namespace BookAPI.Models.Filters
 {
@@ -20,6 +20,7 @@ namespace BookAPI.Models.Filters
         {
             if (!string.IsNullOrWhiteSpace(Title))
                 books = books.Where(b => b.Title.ToLower().Contains(Title.ToLower()));
+
 
             if (AuthorId.HasValue)
                 books = books.Where(b => b.AuthorId == AuthorId.Value);
