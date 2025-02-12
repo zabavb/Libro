@@ -1,4 +1,5 @@
 ﻿using BookApi.Services;
+using BookAPI.Models.Filters;
 using Library.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -15,8 +16,6 @@ namespace BookApi.Controllers
     {
         private readonly ISubCategoryService _subCategoryService;
         private readonly ILogger<SubCategoriesController> _logger;
-        private const int DefaultPageNumber = 1;
-        private const int DefaultPageSize = 10;
 
         public SubCategoriesController(ISubCategoryService subCategoryService, ILogger<SubCategoriesController> logger)
         {
@@ -25,7 +24,11 @@ namespace BookApi.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<PaginatedResult<SubCategoryDto>>> GetSubCategories(int pageNumber = DefaultPageNumber, int pageSize = DefaultPageSize)
+        public async Task<ActionResult<PaginatedResult<SubCategoryDto>>> GetSubCategories(
+            [FromQuery] int pageNumber = 1,
+            [FromQuery] int pageSize = 10,
+            [FromQuery] SubCategoryFilter? filter = null
+            )
         {
             try
             {
@@ -35,9 +38,9 @@ namespace BookApi.Controllers
                     return BadRequest("Page number and page size must be greater than 0.");
                 }
 
-                var subCategories = await _subCategoryService.GetSubCategoriesAsync(pageNumber, pageSize);
+                var subCategories = await _subCategoryService.GetSubCategoriesAsync(pageNumber, pageSize, filter);
 
-                if (subCategories == null || subCategories.Items == null || !subCategories.Items.Any())
+                if (subCategories == null || subCategories.Items == null || subCategories.Items.Count == 0)
                 {
                     _logger.LogInformation("No subcategories found.");
                     return NotFound("No subcategories found.");
