@@ -1,6 +1,7 @@
 ﻿using BookApi.Models;
 using BookAPI;
 using BookAPI.Models.Filters;
+using BookAPI.Models.Sortings;
 using BookAPI.Services.Interfaces;
 using FeedbackApi.Services;
 using Library.Extensions;
@@ -29,6 +30,8 @@ namespace BookApi.Controllers
         /// </summary>
         /// <param name="pageNumber">Page number (default: 1). The page number to retrieve.</param>
         /// <param name="pageSize">Number of feedbacks per page (default: 10). The number of feedbacks to return per page.</param>
+        /// <param name="filter"></param>
+        /// <param name="sort"></param>
         /// <returns>A paginated list of feedbacks.</returns>
         /// <response code="200">Returns a list of feedbacks according to the specified pagination parameters.</response>
         /// <response code="400">Returns an error if the page number or page size is invalid.</response>
@@ -38,7 +41,9 @@ namespace BookApi.Controllers
         public async Task<ActionResult<PaginatedResult<FeedbackDto>>> GetFeedbacks(
             [FromQuery] int pageNumber = GlobalConstants.DefaultPageNumber,
             [FromQuery] int pageSize = GlobalConstants.DefaultPageSize,
-            [FromQuery] FeedbackFilter? filter = null)
+            [FromQuery] FeedbackFilter? filter = null,
+            [FromQuery] FeedbackSort? sort = null
+            )
         {
             try
             {
@@ -48,7 +53,7 @@ namespace BookApi.Controllers
                     return BadRequest("Page number and page size must be greater than 0.");
                 }
 
-                var feedbacks = await _feedbackService.GetFeedbacksAsync(pageNumber, pageSize, filter);
+                var feedbacks = await _feedbackService.GetFeedbacksAsync(pageNumber, pageSize, filter, sort);
 
                 if (feedbacks == null || feedbacks.Items == null || !feedbacks.Items.Any())
                 {

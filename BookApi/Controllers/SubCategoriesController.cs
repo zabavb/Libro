@@ -1,5 +1,6 @@
 ﻿using BookAPI;
 using BookAPI.Models.Filters;
+using BookAPI.Models.Sortings;
 using BookAPI.Services.Interfaces;
 using Library.Extensions;
 using Microsoft.AspNetCore.Mvc;
@@ -28,7 +29,9 @@ namespace BookApi.Controllers
         public async Task<ActionResult<PaginatedResult<SubCategoryDto>>> GetSubCategories(
             [FromQuery] int pageNumber = GlobalConstants.DefaultPageNumber,
             [FromQuery] int pageSize = GlobalConstants.DefaultPageSize,
-            [FromQuery] SubCategoryFilter? filter = null
+            [FromQuery] SubCategoryFilter? filter = null,
+            [FromQuery] SubCategorySort? sort = null
+
             )
         {
             try
@@ -39,7 +42,7 @@ namespace BookApi.Controllers
                     return BadRequest("Page number and page size must be greater than 0.");
                 }
 
-                var subCategories = await _subCategoryService.GetSubCategoriesAsync(pageNumber, pageSize, filter);
+                var subCategories = await _subCategoryService.GetSubCategoriesAsync(pageNumber, pageSize, filter, sort);
 
                 if (subCategories == null || subCategories.Items == null || subCategories.Items.Count == 0)
                 {

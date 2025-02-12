@@ -1,4 +1,5 @@
 ﻿using BookAPI;
+using BookAPI.Models.Sortings;
 using BookAPI.Services.Interfaces;
 using Library.Extensions;
 using Microsoft.AspNetCore.Http;
@@ -25,6 +26,8 @@ namespace BookApi.Controllers
         /// </summary>
         /// <param name="pageNumber">Page number (default: 1). The page number to retrieve.</param>
         /// <param name="pageSize">Number of publishers per page (default: 10). The number of publishers to return per page.</param>
+        /// <param name="searchTerm"></param>
+        /// <param name="sort"></param>
         /// <returns>A paginated list of publishers.</returns>
         /// <response code="200">Returns a list of publishers according to the specified pagination parameters.</response>
         /// <response code="400">Returns if the page number or page size is less than 1.</response>
@@ -32,7 +35,9 @@ namespace BookApi.Controllers
         [HttpGet]
         public async Task<ActionResult<PaginatedResult<PublisherDto>>> GetPublishers(
             [FromQuery] int pageNumber = GlobalConstants.DefaultPageNumber,
-            [FromQuery] int pageSize = GlobalConstants.DefaultPageSize
+            [FromQuery] int pageSize = GlobalConstants.DefaultPageSize,
+            [FromQuery] string? searchTerm = null,
+            [FromQuery] PublisherSort? sort = null
             )
         {
             try
@@ -43,9 +48,9 @@ namespace BookApi.Controllers
                     return BadRequest("Page number and page size must be greater than 0.");
                 }
 
-                var publishers = await _publisherService.GetPublishersAsync(pageNumber, pageSize);
+                var publishers = await _publisherService.GetPublishersAsync(pageNumber, pageSize, searchTerm, sort);
 
-                if (publishers == null || publishers.Items == null || !publishers.Items.Any())
+                if (publishers == null || publishers.Items == null || publishers.Items.Count == 0)
                 {
                     _logger.LogInformation("No publishers found.");
                     return NotFound("No publishers found.");
