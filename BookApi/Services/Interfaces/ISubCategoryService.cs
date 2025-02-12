@@ -1,4 +1,5 @@
 ﻿using BookAPI.Models.Filters;
+using BookAPI.Models.Sortings;
 using Library.Extensions;
 
 namespace BookAPI.Services.Interfaces
@@ -7,7 +8,7 @@ namespace BookAPI.Services.Interfaces
     {
         Task<SubCategoryDto> CreateSubCategoryAsync(SubCategoryDto subCategoryDto);
         Task<bool> DeleteSubCategoryAsync(Guid id);
-        Task<PaginatedResult<SubCategoryDto>> GetSubCategoriesAsync(int pageNumber, int pageSize, SubCategoryFilter? filter);
+        Task<PaginatedResult<SubCategoryDto>> GetSubCategoriesAsync(int pageNumber, int pageSize, SubCategoryFilter? filter, SubCategorySort? sort);
         Task<SubCategoryDto> GetSubCategoryByIdAsync(Guid id);
         Task<SubCategoryDto> UpdateSubCategoryAsync(Guid id, SubCategoryDto subCategoryDto);
     }
