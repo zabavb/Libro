@@ -1,5 +1,8 @@
-﻿using BookAPI.Data;
+﻿using Amazon.S3.Model;
+using BookAPI.Data;
 using BookAPI.Models;
+using BookAPI.Models.Extensions;
+using BookAPI.Models.Sortings;
 using BookAPI.Repositories.Interfaces;
 using Library.Extensions;
 using Microsoft.EntityFrameworkCore;
@@ -27,9 +30,12 @@ namespace BookAPI.Repositories
             await _context.SaveChangesAsync();
         }
 
-        public async Task<PaginatedResult<Category>> GetAllAsync(int pageNumber, int pageSize)
+        public async Task<PaginatedResult<Category>> GetAllAsync(int pageNumber, int pageSize, string? searchTerm, CategorySort? sort)
         {
             IQueryable<Category> categories = _context.Categories.AsQueryable();
+            if (categories.Any() && !string.IsNullOrWhiteSpace(searchTerm))
+                categories = categories.Search(searchTerm, b => b.Name);
+            categories = sort?.Apply(categories) ?? categories;
 
             var totalCategories = await categories.CountAsync();
             var resultCategories = await categories.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToListAsync();

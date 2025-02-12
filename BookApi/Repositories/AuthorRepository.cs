@@ -1,5 +1,6 @@
 ﻿using BookAPI.Data;
 using BookAPI.Models;
+using BookAPI.Models.Extensions;
 using BookAPI.Models.Filters;
 using BookAPI.Models.Sortings;
 using BookAPI.Repositories.Interfaces;
@@ -35,9 +36,13 @@ namespace BookAPI.Repositories
             await _context.SaveChangesAsync();
         }
 
-        public async Task<PaginatedResult<Author>> GetAllAsync(int pageNumber, int pageSize, AuthorFilter? filter, AuthorSort? sort)
+        public async Task<PaginatedResult<Author>> GetAllAsync(int pageNumber, int pageSize, string? searchTerm, AuthorFilter? filter, AuthorSort? sort)
         {
             IQueryable<Author> authors = _context.Authors.AsQueryable();
+            if (!string.IsNullOrWhiteSpace(searchTerm))
+            {
+                authors = authors.Search(searchTerm, p => p.Name);
+            }
             authors = filter?.Apply(authors) ?? authors;
             authors = sort?.Apply(authors) ?? authors;
 

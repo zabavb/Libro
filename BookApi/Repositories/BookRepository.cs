@@ -1,6 +1,5 @@
-﻿using BookApi.Data;
-using BookApi.Models;
-using BookAPI.Infrastructure.Extensions;
+﻿using BookAPI.Data;
+using BookAPI.Models;
 using BookAPI.Models.Filters;
 using BookAPI.Models.Sortings;
 using BookAPI.Repositories.Interfaces;
@@ -12,8 +11,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using BookAPI.Models.Extensions;
 
-namespace BookApi.Repositories
+namespace BookAPI.Repositories
 {
     public class BookRepository : IBookRepository
     {
@@ -32,10 +32,11 @@ namespace BookApi.Repositories
             BookFilter? filter,
             BookSort? sort)
         {
+
             IQueryable<Book> books = _context.Books.AsQueryable();
 
             if (books.Any() && !string.IsNullOrWhiteSpace(searchTerm))
-                books = books.Search(searchTerm);
+                books = books.Search(searchTerm, b => b.Title);
             books = filter?.Apply(books) ?? books;
             books = sort?.Apply(books) ?? books;
 

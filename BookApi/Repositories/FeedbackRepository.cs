@@ -1,6 +1,7 @@
-﻿using BookApi.Data;
-using BookApi.Models;
+﻿using BookAPI.Data;
+using BookAPI.Models;
 using BookAPI.Models.Filters;
+using BookAPI.Models.Sortings;
 using BookAPI.Repositories.Interfaces;
 using Library.Extensions;
 using Microsoft.EntityFrameworkCore;
@@ -32,11 +33,11 @@ namespace BookAPI.Repositories
             await _context.SaveChangesAsync();
         }
 
-        public async Task<PaginatedResult<Feedback>> GetAllAsync(int pageNumber, int pageSize, FeedbackFilter? filter)
+        public async Task<PaginatedResult<Feedback>> GetAllAsync(int pageNumber, int pageSize, FeedbackFilter? filter, FeedbackSort? sort)
         {
             IQueryable<Feedback> feedbacks = _context.Feedbacks.AsQueryable();
-            if (feedbacks.Any() && filter != null)
-                feedbacks = filter.Apply(feedbacks);
+            feedbacks = filter?.Apply(feedbacks) ?? feedbacks;
+            feedbacks = sort?.Apply(feedbacks) ?? feedbacks;
             var totalFeedbacks = await feedbacks.CountAsync();
             var resultFeedbacks = await feedbacks.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToListAsync();
 
