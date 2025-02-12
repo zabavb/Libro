@@ -8,9 +8,7 @@ namespace BookAPI.Repositories.Interfaces
 {
     public interface ISubCategoryRepository : IManagable<SubCategory>
     {
-        Task<PaginatedResult<SubCategory>> GetAllAsync(
-            int pageNumber, int pageSize, 
-            SubCategoryFilter? filter, SubCategorySort? sort);
+        Task<PaginatedResult<SubCategory>> GetAllAsync(int pageNumber, int pageSize, string? searchTerm, SubCategoryFilter? filter, SubCategorySort? sort);
         Task DeleteAsync(Guid id);
     }
 }

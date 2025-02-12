@@ -40,11 +40,10 @@ namespace BookAPI.Services
         }
 
         public async Task<PaginatedResult<SubCategoryDto>> GetSubCategoriesAsync(
-            int pageNumber, int pageSize, 
+            int pageNumber, int pageSize, string? searchTerm,
             SubCategoryFilter? filter, SubCategorySort? sort)
         {
-            var subCategories = await _subCategoryRepository.GetAllAsync(
-                pageNumber, pageSize, filter, sort);
+            var subCategories = await _subCategoryRepository.GetAllAsync(pageNumber, pageSize, searchTerm, filter, sort);
             if (subCategories == null || subCategories.Items == null)
             {
                 throw new InvalidOperationException("Failed to fetch subcategories.");
