@@ -29,6 +29,7 @@ namespace BookAPI.Controllers
         public async Task<ActionResult<PaginatedResult<SubCategoryDto>>> GetSubCategories(
             [FromQuery] int pageNumber = GlobalConstants.DefaultPageNumber,
             [FromQuery] int pageSize = GlobalConstants.DefaultPageSize,
+            [FromQuery] string? searchTerm = null,
             [FromQuery] SubCategoryFilter? filter = null,
             [FromQuery] SubCategorySort? sort = null
 
@@ -42,7 +43,7 @@ namespace BookAPI.Controllers
                     return BadRequest("Page number and page size must be greater than 0.");
                 }
 
-                var subCategories = await _subCategoryService.GetSubCategoriesAsync(pageNumber, pageSize, filter, sort);
+                var subCategories = await _subCategoryService.GetSubCategoriesAsync(pageNumber, pageSize, searchTerm, filter, sort);
 
                 if (subCategories == null || subCategories.Items == null || subCategories.Items.Count == 0)
                 {
