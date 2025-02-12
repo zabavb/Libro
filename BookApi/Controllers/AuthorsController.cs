@@ -1,4 +1,6 @@
 ﻿using BookApi.Services;
+using BookAPI.Models.Filters;
+using BookAPI.Models.Sortings;
 using Library.Extensions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -36,7 +38,12 @@ namespace BookApi.Controllers
         /// <response code="400">If the page number or page size is invalid.</response>
         /// <response code="404">If no authors are found.</response>
         [HttpGet]
-        public async Task<ActionResult<PaginatedResult<AuthorDto>>> GetAuthors(int pageNumber = DefaultPageNumber, int pageSize = DefaultPageSize)
+        public async Task<ActionResult<PaginatedResult<AuthorDto>>> GetAuthors(
+           [FromQuery] int pageNumber = 1,
+            [FromQuery] int pageSize = 10,
+            [FromQuery] AuthorFilter? filter = null,
+            [FromQuery] AuthorSort? sort = null
+            )
         {
             if (pageNumber < 1 || pageSize < 1)
             {
@@ -46,7 +53,7 @@ namespace BookApi.Controllers
 
             try
             {
-                var authors = await _authorService.GetAuthorsAsync(pageNumber, pageSize);
+                var authors = await _authorService.GetAuthorsAsync(pageNumber, pageSize, filter, sort);
 
                 if (authors == null || authors.Items == null || !authors.Items.Any())
                 {
