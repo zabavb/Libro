@@ -32,6 +32,8 @@ namespace BookApi.Controllers
         /// </summary>
         /// <param name="pageNumber">Page number (default: 1). The page number to retrieve.</param>
         /// <param name="pageSize">Number of authors per page (default: 10). The number of authors to return per page.</param>
+        /// <param name="filter"></param>
+        /// <param name="sort"></param>
         /// <returns>A paginated list of authors.</returns>
         /// <response code="200">Returns a list of authors.</response>
         /// <response code="400">If the page number or page size is invalid.</response>
