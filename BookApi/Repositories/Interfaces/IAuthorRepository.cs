@@ -9,7 +9,7 @@ namespace BookAPI.Repositories.Interfaces
 {
     public interface IAuthorRepository : IManagable<Author>
     {
-        Task<PaginatedResult<Author>> GetAllAsync(int pageNumber, int pageSize, AuthorFilter? filter, AuthorSort? sort);
+        Task<PaginatedResult<Author>> GetAllAsync(int pageNumber, int pageSize, string? searchTerm, AuthorFilter? filter, AuthorSort? sort);
         Task DeleteAsync(Guid id);
     }
 }
