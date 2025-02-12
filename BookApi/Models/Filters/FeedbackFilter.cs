@@ -3,14 +3,6 @@
 namespace BookAPI.Models.Filters
 {
 
-    //public class FeedbackFilter
-    //{
-    //    public int? Rating { get; set; } 
-    //    public DateTime? MinPublicationDate { get; set; }
-    //    public DateTime? MaxPublicationDate { get; set; } 
-    //    public bool? IsPurchasedByReviewer { get; set; }
-    //}
-
     public class FeedbackFilter : IFilter<Feedback>
     {
         public int? Rating { get; set; }
