@@ -42,8 +42,7 @@ namespace BookApi.Controllers
             [FromQuery] int pageNumber = GlobalConstants.DefaultPageNumber,
             [FromQuery] int pageSize = GlobalConstants.DefaultPageSize,
             [FromQuery] string? searchTerm = null, 
-            [FromQuery] BookFilter? filter = null
-            ,
+            [FromQuery] BookFilter? filter = null,
             [FromQuery] BookSort? sort = null
             )
         {

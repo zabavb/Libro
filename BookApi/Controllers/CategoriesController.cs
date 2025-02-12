@@ -37,7 +37,8 @@ namespace BookApi.Controllers
         [HttpGet]
         public async Task<ActionResult<PaginatedResult<CategoryDto>>> GetCategories(
             [FromQuery] int pageNumber = GlobalConstants.DefaultPageNumber,
-            [FromQuery] int pageSize = GlobalConstants.DefaultPageSize)
+            [FromQuery] int pageSize = GlobalConstants.DefaultPageSize
+            )
         {
             try
             {
