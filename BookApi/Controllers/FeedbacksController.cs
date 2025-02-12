@@ -1,4 +1,5 @@
 ﻿using BookApi.Models;
+using BookAPI.Models.Filters;
 using BookAPI.Services;
 using FeedbackApi.Services;
 using Library.Extensions;
@@ -33,7 +34,10 @@ namespace BookApi.Controllers
         /// <response code="404">Returns an error if no feedbacks are found.</response>
         /// <response code="500">Returns an internal server error if an exception occurs.</response>
         [HttpGet]
-        public async Task<ActionResult<PaginatedResult<FeedbackDto>>> GetFeedbacks([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
+        public async Task<ActionResult<PaginatedResult<FeedbackDto>>> GetFeedbacks(
+            [FromQuery] int pageNumber = 1, 
+            [FromQuery] int pageSize = 10, 
+            [FromQuery] FeedbackFilter? filter = null)
         {
             try
             {
@@ -43,7 +47,7 @@ namespace BookApi.Controllers
                     return BadRequest("Page number and page size must be greater than 0.");
                 }
 
-                var feedbacks = await _feedbackService.GetFeedbacksAsync(pageNumber, pageSize);
+                var feedbacks = await _feedbackService.GetFeedbacksAsync(pageNumber, pageSize, filter);
 
                 if (feedbacks == null || feedbacks.Items == null || !feedbacks.Items.Any())
                 {
