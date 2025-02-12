@@ -1,6 +1,6 @@
-using BookApi.Data;
-using BookApi.Repositories;
-using BookApi.Services;
+using BookAPI.Data;
+using BookAPI.Repositories;
+using BookAPI.Services;
 using BookAPI.Repositories;
 using BookAPI.Repositories.Interfaces;
 using BookAPI.Services;
@@ -53,7 +53,7 @@ builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo
     {
-        Title = "BookApi",
+        Title = "BookAPI",
         Version = "v1"
     });
     var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
@@ -87,7 +87,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI(c =>
     {
-        c.SwaggerEndpoint("/swagger/v1/swagger.json", "BookApi");
+        c.SwaggerEndpoint("/swagger/v1/swagger.json", "BookAPI");
 
     });
 }
