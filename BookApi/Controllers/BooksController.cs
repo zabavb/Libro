@@ -1,5 +1,7 @@
 ﻿using BookApi.Models;
 using BookApi.Services;
+using BookAPI.Models.Filters;
+using BookAPI.Models.Sortings;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BookApi.Controllers
@@ -35,7 +37,14 @@ namespace BookApi.Controllers
         /// <returns>A paginated list of books.</returns>
         /// <response code="200">Returns a list of books according to the specified pagination, filter, and sort parameters.</response>
         [HttpGet]
-        public async Task<IActionResult> GetAll([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10, [FromQuery] string? searchTerm = null, [FromQuery] Filter? filter = null, [FromQuery] Sort? sort = null)
+        public async Task<IActionResult> GetAll(
+            [FromQuery] int pageNumber = 1, 
+            [FromQuery] int pageSize = 10, 
+            [FromQuery] string? searchTerm = null, 
+            [FromQuery] BookFilter? filter = null
+            ,
+            [FromQuery] BookSort? sort = null
+            )
         {
             try
             {
