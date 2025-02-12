@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq.Expressions;
 
-namespace BookAPI.Models
+namespace BookAPI.Models.Sortings
 {
     public abstract class SortBase<T>
     {

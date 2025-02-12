@@ -1,4 +1,4 @@
-﻿namespace BookAPI.Models
+﻿namespace BookAPI.Models.Filters
 {
     public interface IFilter<T>
     {
