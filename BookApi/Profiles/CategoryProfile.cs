@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
-using BookApi.Models;
+using BookAPI.Models;
 
-namespace BookApi.Profiles
+namespace BookAPI.Profiles
 {
     public class CategoryProfile : Profile
     {

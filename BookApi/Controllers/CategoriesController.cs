@@ -1,9 +1,12 @@
-﻿using BookApi.Services;
+﻿using BookAPI;
+using BookAPI.Models.Filters;
+using BookAPI.Models.Sortings;
+using BookAPI.Services.Interfaces;
 using Library.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
-namespace BookApi.Controllers
+namespace BookAPI.Controllers
 {
     /// <summary>
     /// Controller for managing book categories.
@@ -17,8 +20,6 @@ namespace BookApi.Controllers
     {
         private readonly ICategoryService _categoryService;
         private readonly ILogger<CategoriesController> _logger;
-        private const int DefaultPageNumber = 1;
-        private const int DefaultPageSize = 10;
 
         public CategoriesController(ICategoryService categoryService, ILogger<CategoriesController> logger)
         {
@@ -31,12 +32,19 @@ namespace BookApi.Controllers
         /// </summary>
         /// <param name="pageNumber">The page number (default is 1).</param>
         /// <param name="pageSize">The number of items per page (default is 10).</param>
+        /// <param name="searchTerm">Search term (optional). A string to search in the category's name or other properties.</param>
+        /// <param name="sort">Sort options (optional). An object containing sorting preferences for the categories.</param>
         /// <returns>A response containing a paginated list of categories.</returns>
         /// <response code="200">Returns a list of categories.</response>
         /// <response code="400">Invalid pagination parameters.</response>
         /// <response code="404">No categories found.</response>
         [HttpGet]
-        public async Task<ActionResult<PaginatedResult<CategoryDto>>> GetCategories(int pageNumber = DefaultPageNumber, int pageSize = DefaultPageSize)
+        public async Task<ActionResult<PaginatedResult<CategoryDto>>> GetCategories(
+            [FromQuery] int pageNumber = GlobalConstants.DefaultPageNumber,
+            [FromQuery] int pageSize = GlobalConstants.DefaultPageSize,
+            [FromQuery] string? searchTerm = null,
+            [FromQuery] CategorySort? sort = null
+            )
         {
             try
             {
@@ -46,7 +54,7 @@ namespace BookApi.Controllers
                     return BadRequest("Page number and page size must be greater than 0.");
                 }
 
-                var categories = await _categoryService.GetCategoriesAsync(pageNumber, pageSize);
+                var categories = await _categoryService.GetCategoriesAsync(pageNumber, pageSize, searchTerm, sort);
 
                 if (categories == null || categories.Items == null || !categories.Items.Any())
                 {

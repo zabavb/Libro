@@ -1,8 +1,10 @@
 ﻿using AutoMapper;
-using BookApi.Data;
-using BookApi.Models;
-using BookAPI.Repositories;
-using BookAPI.Services;
+using BookAPI.Data;
+using BookAPI.Models;
+using BookAPI.Models.Filters;
+using BookAPI.Models.Sortings;
+using BookAPI.Repositories.Interfaces;
+using BookAPI.Services.Interfaces;
 using Library.Extensions;
 using Microsoft.EntityFrameworkCore;
 
@@ -20,9 +22,17 @@ namespace FeedbackApi.Services
             _feedbackRepository = feedbackRepository;
         }
 
-        public async Task<PaginatedResult<FeedbackDto>> GetFeedbacksAsync(int pageNumber, int pageSize)
+        public async Task<PaginatedResult<FeedbackDto>> GetFeedbacksAsync(
+            int pageNumber, 
+            int pageSize,
+            FeedbackFilter? filter,
+            FeedbackSort? sort)
         {
-            var feedbacks = await _feedbackRepository.GetAllAsync(pageNumber, pageSize);
+            var feedbacks = await _feedbackRepository.GetAllAsync(
+                pageNumber, 
+                pageSize,
+                filter,
+                sort);
 
             if (feedbacks == null || feedbacks.Items == null)
             {

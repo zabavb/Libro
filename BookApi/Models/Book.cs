@@ -1,6 +1,6 @@
 ﻿using Library.DTOs.Book;
 
-namespace BookApi.Models
+namespace BookAPI.Models
 {
     public class Book
     {

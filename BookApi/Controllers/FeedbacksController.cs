@@ -1,10 +1,13 @@
-﻿using BookApi.Models;
-using BookAPI.Services;
+﻿using BookAPI.Models;
+using BookAPI;
+using BookAPI.Models.Filters;
+using BookAPI.Models.Sortings;
+using BookAPI.Services.Interfaces;
 using FeedbackApi.Services;
 using Library.Extensions;
 using Microsoft.AspNetCore.Mvc;
 
-namespace BookApi.Controllers
+namespace BookAPI.Controllers
 {
     /// <summary>
     /// Manages feedback-related operations such as retrieving, creating, updating, and deleting feedbacks.
@@ -27,13 +30,20 @@ namespace BookApi.Controllers
         /// </summary>
         /// <param name="pageNumber">Page number (default: 1). The page number to retrieve.</param>
         /// <param name="pageSize">Number of feedbacks per page (default: 10). The number of feedbacks to return per page.</param>
+        /// <param name="filter">Filter options (optional). An object containing criteria to filter the feedbacks by.</param>
+        /// <param name="sort">Sort options (optional). An object containing sorting preferences for the feedbacks.</param>
         /// <returns>A paginated list of feedbacks.</returns>
         /// <response code="200">Returns a list of feedbacks according to the specified pagination parameters.</response>
         /// <response code="400">Returns an error if the page number or page size is invalid.</response>
         /// <response code="404">Returns an error if no feedbacks are found.</response>
         /// <response code="500">Returns an internal server error if an exception occurs.</response>
         [HttpGet]
-        public async Task<ActionResult<PaginatedResult<FeedbackDto>>> GetFeedbacks([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
+        public async Task<ActionResult<PaginatedResult<FeedbackDto>>> GetFeedbacks(
+            [FromQuery] int pageNumber = GlobalConstants.DefaultPageNumber,
+            [FromQuery] int pageSize = GlobalConstants.DefaultPageSize,
+            [FromQuery] FeedbackFilter? filter = null,
+            [FromQuery] FeedbackSort? sort = null
+            )
         {
             try
             {
@@ -43,7 +53,7 @@ namespace BookApi.Controllers
                     return BadRequest("Page number and page size must be greater than 0.");
                 }
 
-                var feedbacks = await _feedbackService.GetFeedbacksAsync(pageNumber, pageSize);
+                var feedbacks = await _feedbackService.GetFeedbacksAsync(pageNumber, pageSize, filter, sort);
 
                 if (feedbacks == null || feedbacks.Items == null || !feedbacks.Items.Any())
                 {

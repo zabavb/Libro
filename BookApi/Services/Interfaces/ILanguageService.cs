@@ -1,4 +1,4 @@
-﻿namespace BookAPI.Services
+﻿namespace BookAPI.Services.Interfaces
 {
     public interface ILanguageService
     {

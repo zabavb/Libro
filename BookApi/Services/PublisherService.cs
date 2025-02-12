@@ -1,11 +1,13 @@
 ﻿using AutoMapper;
-using BookApi.Data;
-using BookApi.Models;
-using BookAPI.Repositories;
+using BookAPI.Data;
+using BookAPI.Models;
+using BookAPI.Models.Sortings;
+using BookAPI.Repositories.Interfaces;
+using BookAPI.Services.Interfaces;
 using Library.Extensions;
 using Microsoft.EntityFrameworkCore;
 
-namespace BookApi.Services
+namespace BookAPI.Services
 {
 
     public class PublisherService : IPublisherService
@@ -38,9 +40,9 @@ namespace BookApi.Services
 
         }
 
-        public async Task<PaginatedResult<PublisherDto>> GetPublishersAsync(int pageNumber, int pageSize)
+        public async Task<PaginatedResult<PublisherDto>> GetPublishersAsync(int pageNumber, int pageSize, string searchTerm, PublisherSort ? sort)
         {
-            var publishers = await _publisherRepository.GetAllAsync(pageNumber, pageSize);
+            var publishers = await _publisherRepository.GetAllAsync(pageNumber, pageSize, searchTerm, sort);
             if (publishers == null || publishers.Items == null)
             {
                 throw new InvalidOperationException("Failed to fetch publishers.");

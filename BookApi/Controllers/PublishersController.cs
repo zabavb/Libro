@@ -1,10 +1,12 @@
-﻿using BookApi.Services;
+﻿using BookAPI;
+using BookAPI.Models.Sortings;
+using BookAPI.Services.Interfaces;
 using Library.Extensions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
-namespace BookApi.Controllers
+namespace BookAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
@@ -12,8 +14,6 @@ namespace BookApi.Controllers
     {
         private readonly IPublisherService _publisherService;
         private readonly ILogger<PublishersController> _logger;
-        private const int DefaultPageNumber = 1;
-        private const int DefaultPageSize = 10;
 
         public PublishersController(IPublisherService publisherService, ILogger<PublishersController> logger)
         {
@@ -26,12 +26,19 @@ namespace BookApi.Controllers
         /// </summary>
         /// <param name="pageNumber">Page number (default: 1). The page number to retrieve.</param>
         /// <param name="pageSize">Number of publishers per page (default: 10). The number of publishers to return per page.</param>
+        /// <param name="searchTerm">Search term (optional). A string to search in the publisher's name or other properties.</param>
+        /// <param name="sort">Sort options (optional). An object containing sorting preferences for the publishers.</param>
         /// <returns>A paginated list of publishers.</returns>
         /// <response code="200">Returns a list of publishers according to the specified pagination parameters.</response>
         /// <response code="400">Returns if the page number or page size is less than 1.</response>
         /// <response code="404">Returns if no publishers are found.</response>
         [HttpGet]
-        public async Task<ActionResult<PaginatedResult<PublisherDto>>> GetPublishers([FromQuery] int pageNumber = DefaultPageNumber, [FromQuery] int pageSize = DefaultPageSize)
+        public async Task<ActionResult<PaginatedResult<PublisherDto>>> GetPublishers(
+            [FromQuery] int pageNumber = GlobalConstants.DefaultPageNumber,
+            [FromQuery] int pageSize = GlobalConstants.DefaultPageSize,
+            [FromQuery] string? searchTerm = null,
+            [FromQuery] PublisherSort? sort = null
+            )
         {
             try
             {
@@ -41,9 +48,9 @@ namespace BookApi.Controllers
                     return BadRequest("Page number and page size must be greater than 0.");
                 }
 
-                var publishers = await _publisherService.GetPublishersAsync(pageNumber, pageSize);
+                var publishers = await _publisherService.GetPublishersAsync(pageNumber, pageSize, searchTerm, sort);
 
-                if (publishers == null || publishers.Items == null || !publishers.Items.Any())
+                if (publishers == null || publishers.Items == null || publishers.Items.Count == 0)
                 {
                     _logger.LogInformation("No publishers found.");
                     return NotFound("No publishers found.");

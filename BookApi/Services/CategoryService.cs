@@ -1,10 +1,12 @@
 ﻿using AutoMapper;
-using BookApi.Models;
-using BookApi.Repositories;
+using BookAPI.Models;
+using BookAPI.Models.Sortings;
 using BookAPI.Repositories;
+using BookAPI.Repositories.Interfaces;
+using BookAPI.Services.Interfaces;
 using Library.Extensions;
 
-namespace BookApi.Services
+namespace BookAPI.Services
 {
     public class CategoryService : ICategoryService
     {
@@ -36,9 +38,9 @@ namespace BookApi.Services
             return true;
         }
 
-        public async Task<PaginatedResult<CategoryDto>> GetCategoriesAsync(int pageNumber, int pageSize)
+        public async Task<PaginatedResult<CategoryDto>> GetCategoriesAsync(int pageNumber, int pageSize, string? searchTerm, CategorySort? sort)
         {
-            var categories = await _categoryRepository.GetAllAsync(pageNumber, pageSize);
+            var categories = await _categoryRepository.GetAllAsync(pageNumber, pageSize, searchTerm, sort);
 
             if (categories == null || categories.Items == null)
             {

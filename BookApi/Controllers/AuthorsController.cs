@@ -1,9 +1,12 @@
-﻿using BookApi.Services;
+﻿using BookAPI;
+using BookAPI.Models.Filters;
+using BookAPI.Models.Sortings;
+using BookAPI.Services.Interfaces;
 using Library.Extensions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
-namespace BookApi.Controllers
+namespace BookAPI.Controllers
 {
     /// <summary>
     /// Manages author-related operations such as retrieving, creating, updating, and deleting authors.
@@ -17,8 +20,6 @@ namespace BookApi.Controllers
     {
         private readonly IAuthorService _authorService;
         private readonly ILogger<AuthorsController> _logger;
-        private const int DefaultPageNumber = 1;
-        private const int DefaultPageSize = 10;
 
         public AuthorsController(IAuthorService authorService, ILogger<AuthorsController> logger)
         {
@@ -31,12 +32,21 @@ namespace BookApi.Controllers
         /// </summary>
         /// <param name="pageNumber">Page number (default: 1). The page number to retrieve.</param>
         /// <param name="pageSize">Number of authors per page (default: 10). The number of authors to return per page.</param>
+        /// <param name="searchTerm">Search term (optional). A string to search in the author's name or other properties.</param>
+        /// <param name="filter">Filter options (optional). An object containing criteria to filter the authors by.</param>
+        /// <param name="sort">Sort options (optional). An object containing sorting preferences for the authors.</param>
         /// <returns>A paginated list of authors.</returns>
         /// <response code="200">Returns a list of authors.</response>
         /// <response code="400">If the page number or page size is invalid.</response>
         /// <response code="404">If no authors are found.</response>
         [HttpGet]
-        public async Task<ActionResult<PaginatedResult<AuthorDto>>> GetAuthors(int pageNumber = DefaultPageNumber, int pageSize = DefaultPageSize)
+        public async Task<ActionResult<PaginatedResult<AuthorDto>>> GetAuthors(
+           [FromQuery] int pageNumber = GlobalConstants.DefaultPageNumber,
+            [FromQuery] int pageSize = GlobalConstants.DefaultPageSize,
+            [FromQuery] string? searchTerm = null,
+            [FromQuery] AuthorFilter? filter = null,
+            [FromQuery] AuthorSort? sort = null
+            )
         {
             if (pageNumber < 1 || pageSize < 1)
             {
@@ -46,9 +56,9 @@ namespace BookApi.Controllers
 
             try
             {
-                var authors = await _authorService.GetAuthorsAsync(pageNumber, pageSize);
+                var authors = await _authorService.GetAuthorsAsync(pageNumber, pageSize, searchTerm, filter, sort);
 
-                if (authors == null || authors.Items == null || !authors.Items.Any())
+                if (authors == null || authors.Items == null || authors.Items.Count == 0)
                 {
                     _logger.LogInformation("No authors found.");
                     return NotFound("No authors found.");

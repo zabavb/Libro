@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using BookApi.Models;
+using BookAPI.Models;
 
 namespace BookAPI.Profiles
 {
