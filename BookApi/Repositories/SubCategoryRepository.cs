@@ -1,5 +1,6 @@
 ﻿using BookApi.Data;
 using BookApi.Models;
+using BookAPI.Models.Filters;
 using BookAPI.Repositories.Interfaces;
 using Library.Extensions;
 using Microsoft.EntityFrameworkCore;
@@ -30,11 +31,14 @@ namespace BookAPI.Repositories
             await _context.SaveChangesAsync();
         }
 
-        public async Task<PaginatedResult<SubCategory>> GetAllAsync(int pageNumber, int pageSize)
+        public async Task<PaginatedResult<SubCategory>> GetAllAsync(int pageNumber, int pageSize, SubCategoryFilter? filter)
         {
             IQueryable<SubCategory> subcategories = _context.Subcategories
                 .Include(sc => sc.Category)
-                .Include(sc => sc.Books); 
+                .Include(sc => sc.Books);
+
+            if (subcategories.Any() && filter != null)
+                subcategories = filter.Apply(subcategories);
 
             var totalSubcategories = await subcategories.CountAsync();
             var resultSubcategories = await subcategories

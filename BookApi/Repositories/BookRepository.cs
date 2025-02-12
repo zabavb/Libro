@@ -1,6 +1,8 @@
 ﻿using BookApi.Data;
 using BookApi.Models;
 using BookAPI.Infrastructure.Extensions;
+using BookAPI.Models.Filters;
+using BookAPI.Models.Sortings;
 using BookAPI.Repositories.Interfaces;
 using Library.Extensions;
 using Library.Filters;
@@ -23,16 +25,20 @@ namespace BookApi.Repositories
         }
 
       
-        public async Task<PaginatedResult<Book>> GetAllAsync(int pageNumber, int pageSize, string searchTerm, Filter? filter, Sort? sort)
+        public async Task<PaginatedResult<Book>> GetAllAsync(
+            int pageNumber, 
+            int pageSize, 
+            string searchTerm, 
+            BookFilter? filter,
+            BookSort? sort)
         {
             IQueryable<Book> books = _context.Books.AsQueryable();
 
             if (books.Any() && !string.IsNullOrWhiteSpace(searchTerm))
                 books = books.Search(searchTerm);
-            if (books.Any() && filter != null)
-                books = books.Filter(filter);
-            if (books.Any() && sort != null)
-                books = books.Sort(sort);
+            books = filter?.Apply(books) ?? books;
+            books = sort?.Apply(books) ?? books;
+
 
             var totalBooks = await books.CountAsync();
             var resultBooks = await books.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToListAsync();
