@@ -26,8 +26,8 @@ namespace BookAPI.Controllers
         /// </summary>
         /// <param name="pageNumber">Page number (default: 1). The page number to retrieve.</param>
         /// <param name="pageSize">Number of publishers per page (default: 10). The number of publishers to return per page.</param>
-        /// <param name="searchTerm"></param>
-        /// <param name="sort"></param>
+        /// <param name="searchTerm">Search term (optional). A string to search in the publisher's name or other properties.</param>
+        /// <param name="sort">Sort options (optional). An object containing sorting preferences for the publishers.</param>
         /// <returns>A paginated list of publishers.</returns>
         /// <response code="200">Returns a list of publishers according to the specified pagination parameters.</response>
         /// <response code="400">Returns if the page number or page size is less than 1.</response>

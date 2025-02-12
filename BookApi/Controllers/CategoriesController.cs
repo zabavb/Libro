@@ -32,8 +32,8 @@ namespace BookAPI.Controllers
         /// </summary>
         /// <param name="pageNumber">The page number (default is 1).</param>
         /// <param name="pageSize">The number of items per page (default is 10).</param>
-        /// <param name="searchTerm"></param>
-        /// <param name="sort"></param>
+        /// <param name="searchTerm">Search term (optional). A string to search in the category's name or other properties.</param>
+        /// <param name="sort">Sort options (optional). An object containing sorting preferences for the categories.</param>
         /// <returns>A response containing a paginated list of categories.</returns>
         /// <response code="200">Returns a list of categories.</response>
         /// <response code="400">Invalid pagination parameters.</response>
