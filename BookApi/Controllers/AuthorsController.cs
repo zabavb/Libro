@@ -32,6 +32,7 @@ namespace BookAPI.Controllers
         /// </summary>
         /// <param name="pageNumber">Page number (default: 1). The page number to retrieve.</param>
         /// <param name="pageSize">Number of authors per page (default: 10). The number of authors to return per page.</param>
+        /// <param name="searchTerm"></param>
         /// <param name="filter"></param>
         /// <param name="sort"></param>
         /// <returns>A paginated list of authors.</returns>
@@ -42,6 +43,7 @@ namespace BookAPI.Controllers
         public async Task<ActionResult<PaginatedResult<AuthorDto>>> GetAuthors(
            [FromQuery] int pageNumber = GlobalConstants.DefaultPageNumber,
             [FromQuery] int pageSize = GlobalConstants.DefaultPageSize,
+            [FromQuery] string? searchTerm = null,
             [FromQuery] AuthorFilter? filter = null,
             [FromQuery] AuthorSort? sort = null
             )
@@ -54,9 +56,9 @@ namespace BookAPI.Controllers
 
             try
             {
-                var authors = await _authorService.GetAuthorsAsync(pageNumber, pageSize, filter, sort);
+                var authors = await _authorService.GetAuthorsAsync(pageNumber, pageSize, searchTerm, filter, sort);
 
-                if (authors == null || authors.Items == null || !authors.Items.Any())
+                if (authors == null || authors.Items == null || authors.Items.Count == 0)
                 {
                     _logger.LogInformation("No authors found.");
                     return NotFound("No authors found.");
