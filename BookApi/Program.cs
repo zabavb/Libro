@@ -2,6 +2,7 @@ using BookApi.Data;
 using BookApi.Repositories;
 using BookApi.Services;
 using BookAPI.Repositories;
+using BookAPI.Repositories.Interfaces;
 using BookAPI.Services;
 using FeedbackApi.Services;
 using Microsoft.CodeAnalysis.Host;
@@ -11,6 +12,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 using Serilog;
 using System.Reflection;
+using System.Text.Json.Serialization;
 using ILanguageService = BookAPI.Services.ILanguageService;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -35,6 +37,11 @@ builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<IPublisherService, PublisherService>();
 builder.Services.AddScoped<IFeedbackService, FeedbackService>();
 builder.Services.AddScoped<ISubCategoryService, SubCategoryService>();
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+    });
 
 builder.Services.AddControllers();
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
