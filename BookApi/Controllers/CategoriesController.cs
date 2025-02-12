@@ -1,4 +1,5 @@
 ﻿using BookApi.Services;
+using BookAPI;
 using Library.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -17,8 +18,6 @@ namespace BookApi.Controllers
     {
         private readonly ICategoryService _categoryService;
         private readonly ILogger<CategoriesController> _logger;
-        private const int DefaultPageNumber = 1;
-        private const int DefaultPageSize = 10;
 
         public CategoriesController(ICategoryService categoryService, ILogger<CategoriesController> logger)
         {
@@ -37,7 +36,8 @@ namespace BookApi.Controllers
         /// <response code="404">No categories found.</response>
         [HttpGet]
         public async Task<ActionResult<PaginatedResult<CategoryDto>>> GetCategories(
-            int pageNumber = DefaultPageNumber, int pageSize = DefaultPageSize)
+            [FromQuery] int pageNumber = GlobalConstants.DefaultPageNumber,
+            [FromQuery] int pageSize = GlobalConstants.DefaultPageSize)
         {
             try
             {

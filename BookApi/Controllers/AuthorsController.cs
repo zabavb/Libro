@@ -1,4 +1,5 @@
 ﻿using BookApi.Services;
+using BookAPI;
 using BookAPI.Models.Filters;
 using BookAPI.Models.Sortings;
 using Library.Extensions;
@@ -19,8 +20,6 @@ namespace BookApi.Controllers
     {
         private readonly IAuthorService _authorService;
         private readonly ILogger<AuthorsController> _logger;
-        private const int DefaultPageNumber = 1;
-        private const int DefaultPageSize = 10;
 
         public AuthorsController(IAuthorService authorService, ILogger<AuthorsController> logger)
         {
@@ -39,8 +38,8 @@ namespace BookApi.Controllers
         /// <response code="404">If no authors are found.</response>
         [HttpGet]
         public async Task<ActionResult<PaginatedResult<AuthorDto>>> GetAuthors(
-           [FromQuery] int pageNumber = 1,
-            [FromQuery] int pageSize = 10,
+           [FromQuery] int pageNumber = GlobalConstants.DefaultPageNumber,
+            [FromQuery] int pageSize = GlobalConstants.DefaultPageSize,
             [FromQuery] AuthorFilter? filter = null,
             [FromQuery] AuthorSort? sort = null
             )

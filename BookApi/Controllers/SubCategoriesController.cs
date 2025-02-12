@@ -1,4 +1,5 @@
 ﻿using BookApi.Services;
+using BookAPI;
 using BookAPI.Models.Filters;
 using Library.Extensions;
 using Microsoft.AspNetCore.Mvc;
@@ -25,8 +26,8 @@ namespace BookApi.Controllers
 
         [HttpGet]
         public async Task<ActionResult<PaginatedResult<SubCategoryDto>>> GetSubCategories(
-            [FromQuery] int pageNumber = 1,
-            [FromQuery] int pageSize = 10,
+            [FromQuery] int pageNumber = GlobalConstants.DefaultPageNumber,
+            [FromQuery] int pageSize = GlobalConstants.DefaultPageSize,
             [FromQuery] SubCategoryFilter? filter = null
             )
         {

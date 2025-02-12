@@ -1,4 +1,5 @@
 ﻿using BookApi.Models;
+using BookAPI;
 using BookAPI.Models.Filters;
 using BookAPI.Services;
 using FeedbackApi.Services;
@@ -35,8 +36,8 @@ namespace BookApi.Controllers
         /// <response code="500">Returns an internal server error if an exception occurs.</response>
         [HttpGet]
         public async Task<ActionResult<PaginatedResult<FeedbackDto>>> GetFeedbacks(
-            [FromQuery] int pageNumber = 1, 
-            [FromQuery] int pageSize = 10, 
+            [FromQuery] int pageNumber = GlobalConstants.DefaultPageNumber,
+            [FromQuery] int pageSize = GlobalConstants.DefaultPageSize,
             [FromQuery] FeedbackFilter? filter = null)
         {
             try
