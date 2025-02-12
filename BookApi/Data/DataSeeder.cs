@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using BookApi.Models;
+using BookAPI.Models;
 
-namespace BookApi.Data
+namespace BookAPI.Data
 {
     public static class DataSeeder
     {
