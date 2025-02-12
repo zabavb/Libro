@@ -1,5 +1,7 @@
 ﻿using AutoMapper;
 using BookApi.Models;
+using BookAPI.Models.Filters;
+using BookAPI.Models.Sortings;
 using BookAPI.Repositories.Interfaces;
 using Library.Extensions;
 
@@ -16,9 +18,9 @@ namespace BookApi.Services
             _authorRepository = authorRepository;
         }
 
-        public async Task<PaginatedResult<AuthorDto>> GetAuthorsAsync(int pageNumber, int pageSize)
+        public async Task<PaginatedResult<AuthorDto>> GetAuthorsAsync(int pageNumber, int pageSize, AuthorFilter? filter, AuthorSort? sort)
         {
-            var authors = await _authorRepository.GetAllAsync(pageNumber, pageSize);
+            var authors = await _authorRepository.GetAllAsync(pageNumber, pageSize, filter, sort);
             if (authors == null || authors.Items == null)
             {
                 throw new InvalidOperationException("Failed to fetch authors.");
