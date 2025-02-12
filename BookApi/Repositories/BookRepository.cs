@@ -1,7 +1,7 @@
 ﻿using BookApi.Data;
 using BookApi.Models;
 using BookAPI.Infrastructure.Extensions;
-using BookAPI.Repositories;
+using BookAPI.Repositories.Interfaces;
 using Library.Extensions;
 using Library.Filters;
 using Library.Sortings;

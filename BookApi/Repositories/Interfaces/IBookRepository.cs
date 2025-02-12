@@ -3,7 +3,7 @@ using BookApi.Models;
 using Library.Extensions;
 using Library.Interfaces;
 
-namespace BookAPI.Repositories
+namespace BookAPI.Repositories.Interfaces
 {
     public interface IBookRepository : IManagable<Book>
     {
