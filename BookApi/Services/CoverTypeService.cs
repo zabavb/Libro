@@ -1,4 +1,4 @@
-﻿using BookApi.Models;
+﻿using BookAPI.Models;
 using BookAPI.Services.Interfaces;
 
 namespace BookAPI.Services

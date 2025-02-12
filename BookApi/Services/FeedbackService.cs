@@ -1,7 +1,8 @@
 ﻿using AutoMapper;
-using BookApi.Data;
-using BookApi.Models;
+using BookAPI.Data;
+using BookAPI.Models;
 using BookAPI.Models.Filters;
+using BookAPI.Models.Sortings;
 using BookAPI.Repositories.Interfaces;
 using BookAPI.Services.Interfaces;
 using Library.Extensions;
@@ -24,12 +25,14 @@ namespace FeedbackApi.Services
         public async Task<PaginatedResult<FeedbackDto>> GetFeedbacksAsync(
             int pageNumber, 
             int pageSize,
-            FeedbackFilter? filter)
+            FeedbackFilter? filter,
+            FeedbackSort? sort)
         {
             var feedbacks = await _feedbackRepository.GetAllAsync(
                 pageNumber, 
                 pageSize,
-                filter);
+                filter,
+                sort);
 
             if (feedbacks == null || feedbacks.Items == null)
             {
