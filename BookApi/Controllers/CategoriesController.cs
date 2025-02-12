@@ -36,7 +36,8 @@ namespace BookApi.Controllers
         /// <response code="400">Invalid pagination parameters.</response>
         /// <response code="404">No categories found.</response>
         [HttpGet]
-        public async Task<ActionResult<PaginatedResult<CategoryDto>>> GetCategories(int pageNumber = DefaultPageNumber, int pageSize = DefaultPageSize)
+        public async Task<ActionResult<PaginatedResult<CategoryDto>>> GetCategories(
+            int pageNumber = DefaultPageNumber, int pageSize = DefaultPageSize)
         {
             try
             {
