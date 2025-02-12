@@ -1,5 +1,5 @@
 ﻿
-using BookApi.Models;
+using BookAPI.Models;
 using BookAPI.Models.Filters;
 using BookAPI.Models.Sortings;
 using Library.Extensions;
