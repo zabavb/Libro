@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
-using BookApi.Models;
-using BookApi.Services;
+using BookAPI.Models;
+using BookAPI.Services;
 using BookAPI.Repositories.Interfaces;
 using Library.Extensions;
 using Microsoft.Extensions.Logging;

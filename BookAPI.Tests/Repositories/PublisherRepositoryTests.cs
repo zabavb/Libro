@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using BookApi.Data;
-using BookApi.Models;
+using BookAPI.Data;
+using BookAPI.Models;
 using BookAPI.Repositories;
 using Xunit;
 using Microsoft.Extensions.Logging;

@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using BookApi.Models;
+using BookAPI.Models;
 using BookAPI.Repositories.Interfaces;
 using FeedbackApi.Services;
 using Library.Extensions;
