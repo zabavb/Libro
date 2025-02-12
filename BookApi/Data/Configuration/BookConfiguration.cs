@@ -14,6 +14,8 @@ namespace BookApi.Data.Configuration
             builder.HasMany(b => b.Subcategories)
                    .WithMany(sc => sc.Books)
                    .UsingEntity(j => j.ToTable("BookSubCategories"));
+            builder.Property(b => b.IsAvaliable)
+                   .HasDefaultValue(true);
         }
     }
 }
