@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using BookApi.Models;
 using BookApi.Repositories;
-using BookAPI.Repositories;
+using BookAPI.Repositories.Interfaces;
 using Library.Extensions;
 
 namespace BookApi.Services

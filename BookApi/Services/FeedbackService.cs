@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using BookApi.Data;
 using BookApi.Models;
-using BookAPI.Repositories;
+using BookAPI.Repositories.Interfaces;
 using BookAPI.Services;
 using Library.Extensions;
 using Microsoft.EntityFrameworkCore;

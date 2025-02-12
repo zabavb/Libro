@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using BookApi.Models;
-using BookAPI.Repositories;
+using BookAPI.Repositories.Interfaces;
 using FeedbackApi.Services;
 using Library.Extensions;
 using Moq;
