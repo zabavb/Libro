@@ -52,7 +52,7 @@ export const fetchUserByIdService = async (id: string): Promise<User> => {
 /**
  * Create a new user.
  */
-export const addUserService = async (user: Partial<User>): Promise<User> => {
+export const addUserService = async (user: Partial<FormData>): Promise<FormData> => {
 	try {
 		return await createUser(user)
 	} catch (error) {
@@ -64,7 +64,7 @@ export const addUserService = async (user: Partial<User>): Promise<User> => {
 /**
  * Update an existing user by ID.
  */
-export const editUserService = async (id: string, user: Partial<User>): Promise<User> => {
+export const editUserService = async (id: string, user: Partial<FormData>): Promise<FormData> => {
 	try {
 		return await updateUser(id, user)
 	} catch (error) {
@@ -76,9 +76,9 @@ export const editUserService = async (id: string, user: Partial<User>): Promise<
 /**
  * Delete a user by ID.
  */
-export const removeUserService = async (id: string): Promise<void> => {
+export const removeUserService = async (id: string, imageUrl: string): Promise<void> => {
 	try {
-		await deleteUser(id)
+		await deleteUser(id, imageUrl)
 	} catch (error) {
 		console.error(`removeUserService: Failed to delete user ID [${id}]`, error)
 		throw new Error("An error occurred while deleting the user. Please try again later.")

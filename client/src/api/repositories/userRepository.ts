@@ -34,22 +34,21 @@ export const getUserById = async (id: string): Promise<User> => {
 /**
  * Create a new user.
  */
-export const createUser = async (user: Partial<User>): Promise<User> => {
-	const response = await axios.post<User>(USERS, user)
+export const createUser = async (user: Partial<FormData>): Promise<FormData> => {
+	const response = await axios.post<FormData>(USERS, user)
 	return response.data
 }
 
 /**
  * Update an existing user by ID.
  */
-export const updateUser = async (id: string, user: Partial<User>): Promise<User> => {
-	const response = await axios.put<User>(USER_BY_ID(id), user)
+export const updateUser = async (id: string, user: Partial<FormData>): Promise<FormData> => {
+	const response = await axios.put<FormData>(USER_BY_ID(id), user)
 	return response.data
 }
 
 /**
  * Delete a user by ID.
  */
-export const deleteUser = async (id: string): Promise<void> => {
-	await axios.delete(USER_BY_ID(id))
-}
+export const deleteUser = async (id: string, imageUrl: string): Promise<void> =>
+	await axios.delete(`${USER_BY_ID(id)}?imageUrl=${encodeURIComponent(imageUrl)}`)

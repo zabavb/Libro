@@ -10,6 +10,7 @@ namespace Library.AWS
     public class S3StorageService(IConfiguration configuration) : IS3StorageService
     {
         private readonly string _bucketName = configuration["AWS:BucketName"]!;
+        private readonly string _region = configuration["AWS:Region"]!;
         private readonly IAmazonS3 _s3Client = new AmazonS3Client(
             configuration["AWS:AccessKey"],
             configuration["AWS:SecretKey"],
@@ -33,8 +34,7 @@ namespace Library.AWS
 
                 var transferUtility = new TransferUtility(_s3Client);
                 await transferUtility.UploadAsync(uploadRequest);
-
-                return $"https://{_bucketName}.s3.amazonaws.com/{fileName}";
+                return $"https://{_bucketName}.s3.{_region}.amazonaws.com/{fileName}";
             }
             catch (Exception)
             {

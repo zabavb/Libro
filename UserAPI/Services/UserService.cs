@@ -87,20 +87,22 @@ namespace UserAPI.Services
                 _logger.LogError(_message);
                 throw new ArgumentNullException(nameof(dto), _message);
             }
-            
-            try
-            {
-                if (!string.IsNullOrEmpty(dto.ImageUrl))
-                    await _storageService.DeleteAsync(dto.ImageUrl);
-            }
-            catch (Exception ex)
-            {
-                _message = $"Error occurred while removing user's image from storage.";
-                _logger.LogError(_message);
-                throw new InvalidOperationException(_message, ex);
-            }
 
-            dto.ImageUrl = await UploadImageAsync(dto.Image, dto.Id);
+            if (dto.Image != null)
+            {
+                try
+                {
+                    await _storageService.DeleteAsync(dto.ImageUrl!);
+                }
+                catch (Exception ex)
+                {
+                    _message = $"Error occurred while removing user's image from storage.";
+                    _logger.LogError(_message);
+                    throw new InvalidOperationException(_message, ex);
+                }
+
+                dto.ImageUrl = await UploadImageAsync(dto.Image, dto.Id);
+            }
 
             var user = _mapper.Map<User>(dto);
             

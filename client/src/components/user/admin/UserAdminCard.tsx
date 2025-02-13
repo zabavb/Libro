@@ -1,13 +1,15 @@
 import React from "react"
 import { UserView } from "../../../types"
+import { LazyLoadImage } from "react-lazy-load-image-component"
+import "react-lazy-load-image-component/src/effects/blur.css"
 
 interface UserAdminCardProps {
 	user: UserView
-	onDelete: (e: React.MouseEvent) => void
 	onNavigate: () => void
+	onDelete: (e: React.MouseEvent) => void
 }
 
-const UserAdminCard: React.FC<UserAdminCardProps> = ({ user, onDelete, onNavigate }) => {
+const UserAdminCard: React.FC<UserAdminCardProps> = ({ user, onNavigate, onDelete }) => {
 	return (
 		<>
 			<hr />
@@ -17,6 +19,15 @@ const UserAdminCard: React.FC<UserAdminCardProps> = ({ user, onDelete, onNavigat
 					onNavigate()
 				}}>
 				<div>
+					<p>
+						<LazyLoadImage
+							src={user.imageUrl}
+							alt={`${user.firstName} ${user.lastName}`}
+							effect="opacity"
+							height="100"
+							width="100"
+						/>
+					</p>
 					<p>
 						<strong>First Name:</strong> {user.firstName}
 					</p>

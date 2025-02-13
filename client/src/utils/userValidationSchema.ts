@@ -6,10 +6,7 @@ const minDateOfBirth = new Date(today.getFullYear() - 90, today.getMonth(), toda
 
 export const userSchema = z
 	.object({
-		firstName: z
-			.string()
-			.min(2, "First name must be at least 2 characters")
-			.max(50, "First name too long"),
+		firstName: z.string().min(2, "First name must be at least 2 characters").max(50, "First name too long"),
 		lastName: z
 			.string()
 			.min(2, "Last name must be at least 2 characters")
@@ -31,6 +28,7 @@ export const userSchema = z
 			.optional()
 			.or(z.literal("")),
 		role: z.nativeEnum(Role, { errorMap: () => ({ message: "Invalid role selected" }) }),
+		image: z.instanceof(File).optional(),
 	})
 	.refine((data) => data.email !== "" || data.phoneNumber !== "", {
 		message: "Either Email or Phone Number must be provided",
