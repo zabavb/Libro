@@ -22,20 +22,24 @@ export const fetchUsers = createAsyncThunk(
 // Add User
 export const addUser = createAsyncThunk(
 	"users/addUser",
-	async (user: Partial<User>): Promise<User> => addUserService(user)
+	async (user: Partial<FormData>): Promise<FormData> => addUserService(user)
 )
 
 // Edit User
 export const editUser = createAsyncThunk(
 	"users/editUser",
-	async ({ id, user }: { id: string; user: Partial<User> }): Promise<User> => await editUserService(id, user)
+	async ({ id, user }: { id: string; user: Partial<FormData> }): Promise<FormData> =>
+		await editUserService(id, user)
 )
 
 // Remove User
-export const removeUser = createAsyncThunk("users/removeUser", async (id: string): Promise<string> => {
-	await removeUserService(id)
-	return id
-})
+export const removeUser = createAsyncThunk(
+	"users/removeUser",
+	async ({ id, imageUrl }: { id: string; imageUrl: string }): Promise<string> => {
+		await removeUserService(id, imageUrl)
+		return id
+	}
+)
 
 const initialState = {
 	data: [] as User[],
@@ -99,7 +103,11 @@ const userSlice = createSlice({
 			})
 			.addCase(addUser.fulfilled, (state, action) => {
 				state.operationStatus = "success"
-				state.data.push(action.payload)
+				const extractedUser =
+					action.payload instanceof FormData
+						? (Object.fromEntries(action.payload.entries()) as unknown as User)
+						: (action.payload as User)
+				state.data.push(extractedUser)
 			})
 			.addCase(addUser.rejected, (state, action) => {
 				state.operationStatus = "error"
@@ -112,8 +120,12 @@ const userSlice = createSlice({
 			})
 			.addCase(editUser.fulfilled, (state, action) => {
 				state.operationStatus = "success"
-				const index = state.data.findIndex((user) => user.id === action.payload.id)
-				if (index !== -1) state.data[index] = action.payload
+				const extractedUser =
+					action.payload instanceof FormData
+						? (Object.fromEntries(action.payload.entries()) as unknown as User)
+						: (action.payload as User)
+				const index = state.data.findIndex((user) => user.id === extractedUser.id)
+				if (index !== -1) state.data[index] = extractedUser
 			})
 			.addCase(editUser.rejected, (state, action) => {
 				state.operationStatus = "error"

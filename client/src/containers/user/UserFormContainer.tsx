@@ -4,7 +4,6 @@ import { addUser, AppDispatch, editUser } from "../../state/redux/index"
 import { RootState } from "../../state/redux/store"
 import { useNavigate } from "react-router-dom"
 import UserForm from "../../components/user/admin/UserForm"
-import { User } from "../../types"
 import { resetOperationStatus } from "../../state/redux/slices/userSlice"
 import { addNotification } from "../../state/redux/slices/notificationSlice"
 
@@ -18,8 +17,11 @@ const UserFormContainer: React.FC<UserFormContainerProps> = ({ userId }) => {
 	const navigate = useNavigate()
 
 	const existingUser = useMemo(() => users.find((user) => user.id === userId), [users, userId])
-	const handleAddUser = useCallback((user: User) => dispatch(addUser(user)), [dispatch])
-	const handleEditUser = useCallback((id: string, user: User) => dispatch(editUser({ id, user })), [dispatch])
+	const handleAddUser = useCallback((user: FormData) => {dispatch(addUser(user))}, [dispatch])
+	const handleEditUser = useCallback(
+		(id: string, user: FormData) => dispatch(editUser({ id, user })),
+		[dispatch]
+	)
 
 	useEffect(() => {
 		if (operationStatus === "success") {
