@@ -1,15 +1,15 @@
-import React, { useEffect } from "react"
+import React, { useEffect, useState } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { UserFormData, userSchema } from "../../../utils"
 import { User, Role } from "../../../types"
 import { dateToString } from "../../../api/adapters/commonAdapters"
-import { roleEnumToNumber, roleNumberToEnum } from "../../../api/adapters/userAdapter"
+import { roleNumberToEnum } from "../../../api/adapters/userAdapter"
 
 interface UserFormProps {
 	existingUser?: User
-	onAddUser: (user: User) => void
-	onEditUser: (id: string, updatedUser: User) => void
+	onAddUser: (user: FormData) => void
+	onEditUser: (id: string, updatedUser: FormData) => void
 }
 
 const UserForm: React.FC<UserFormProps> = ({ existingUser, onAddUser, onEditUser }) => {
@@ -30,6 +30,8 @@ const UserForm: React.FC<UserFormProps> = ({ existingUser, onAddUser, onEditUser
 		},
 	})
 
+	const [imagePreview, setImagePreview] = useState<string | null>(null)
+
 	useEffect(() => {
 		if (existingUser) {
 			setValue("firstName", existingUser.firstName)
@@ -38,26 +40,64 @@ const UserForm: React.FC<UserFormProps> = ({ existingUser, onAddUser, onEditUser
 			setValue("email", existingUser.email)
 			setValue("phoneNumber", existingUser.phoneNumber)
 			setValue("role", roleNumberToEnum(existingUser.role))
+			setImagePreview(existingUser.imageUrl)
 		}
 	}, [existingUser, setValue])
 
-	const onSubmit = (data: UserFormData) => {
-		const user: User = {
-			id: existingUser ? existingUser.id : "00000000-0000-0000-0000-000000000000",
-			firstName: data.firstName,
-			lastName: data.lastName || "",
-			dateOfBirth: new Date(data.dateOfBirth),
-			email: data.email || "",
-			phoneNumber: data.phoneNumber || "",
-			role: roleEnumToNumber(data.role),
+	const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+		const file = event.target.files?.[0]
+		if (file) {
+			const imageUrl = URL.createObjectURL(file)
+			setImagePreview(imageUrl)
+			setValue("image", file)
 		}
+	}
 
-		if (existingUser) onEditUser(existingUser.id, user)
-		else onAddUser(user)
+	const onSubmit = (data: UserFormData) => {
+		const formData = new FormData()
+		formData.append("id", existingUser?.id ?? "00000000-0000-0000-0000-000000000000")
+		formData.append("firstName", data.firstName)
+		formData.append("lastName", data.lastName || "")
+		formData.append("dateOfBirth", data.dateOfBirth)
+		formData.append("email", data.email || "")
+		formData.append("phoneNumber", data.phoneNumber || "")
+		formData.append("role", data.role)
+		formData.append("image", data.image ?? "")
+		formData.append("imageUrl", existingUser?.imageUrl ?? "")
+
+		if (existingUser) onEditUser(existingUser.id, formData)
+		else onAddUser(formData)
 	}
 
 	return (
 		<form onSubmit={handleSubmit(onSubmit)}>
+			<label
+				htmlFor="imageUpload"
+				style={{
+					display: "flex",
+					alignItems: "center",
+					justifyContent: "center",
+					width: "150px",
+					height: "150px",
+					border: "2px dashed #ccc",
+					borderRadius: "10px",
+					cursor: "pointer",
+					overflow: "hidden",
+					backgroundSize: "cover",
+					backgroundPosition: "center",
+					backgroundImage: imagePreview ? `url(${imagePreview})` : "none",
+				}}>
+				{!imagePreview && <span>Click to Upload</span>}
+			</label>
+			<input
+				id="imageUpload"
+				type="file"
+				accept="image/*"
+				style={{ display: "none" }}
+				onChange={handleImageChange}
+			/>
+			<p>{errors.image?.message}</p>
+
 			<input
 				{...register("firstName")}
 				placeholder="First Name"
