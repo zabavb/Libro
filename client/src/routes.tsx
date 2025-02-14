@@ -10,6 +10,7 @@ import UserListContainer from "./containers/user/UserListContainer"
 import AdminLayout from "./components/layouts/AdminLayout"
 import OrderListContainer from "./containers/order/OrderListContainer"
 import OrderFormPage from "./pages/Admin/OrderRelated/Orders/OrderFormPage"
+import DeliveryTypeListContainer from "./containers/order/DeliveryTypeListContainer"
 
 const AppRoutes = () => (
 	<BrowserRouter>
@@ -53,6 +54,11 @@ const AppRoutes = () => (
 				<Route
 					path="/admin/orders/:orderId"
 					element={<OrderFormPage />}
+				/>
+				{/* Delivery Types */}
+				<Route
+					path="/admin/deliverytypes"
+					element={<DeliveryTypeListContainer/>}
 				/>
 			</Route>
 			
