@@ -1,6 +1,7 @@
 // Main types
 export type { User } from "./objects/User"
 export type { Order } from "./objects/Order"
+export type { DeliveryType } from "./objects/DeliveryType"
 
 // View types
 export type { UserView } from "./objects/UserView"

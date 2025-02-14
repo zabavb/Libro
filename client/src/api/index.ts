@@ -9,11 +9,21 @@ export const USERS_PAGINATED = (pageNumber: number = 1, pageSize: number = 10) =
 
 export const USER_BY_ID = API_ROUTES.USERS.BY_ID
 
-// ================= ORDER =================
+// ================= ORDER API  =================
+	//================= ORDER =================
+	export const ORDERS = API_ROUTES.ORDERS.BASE
 
-export const ORDERS = API_ROUTES.ORDERS.BASE
+	export const ORDERS_PAGINATED = (pageNumber: number = 1, pageSize: number = 10) =>
+		API_ROUTES.ORDERS.PAGINATED(pageNumber,pageSize)
 
-export const ORDERS_PAGINATED = (pageNumber: number = 1, pageSize: number = 10) =>
-	API_ROUTES.ORDERS.PAGINATED(pageNumber,pageSize)
+	export const ORDER_BY_ID = API_ROUTES.ORDERS.BY_ID
 
-export const ORDER_BY_ID = API_ROUTES.ORDERS.BY_ID
+	// ================= DELIVERY TYPE =================
+
+	export const DELIVERYTYPES = API_ROUTES.DELIVERY.BASE
+
+	export const DELIVERYTYPES_PAGINATED = (pageNumber: number = 1, pageSize: number = 10) =>
+		API_ROUTES.DELIVERY.PAGINATED(pageNumber,pageSize)
+
+	export const DELIVERYTYPE_BY_ID = API_ROUTES.DELIVERY.BY_ID
+
