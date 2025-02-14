@@ -17,7 +17,7 @@ export const API_ROUTES = {
 	DELIVERY: {
 		BASE: `${ORDER_API_BASE_URL}/deliverytypes`,
 		PAGINATED: (pageNumber: number, pageSize: number) => 
-			`${ORDER_API_BASE_URL}/deliverytypes/pageNumber=${pageNumber}&pageSize=${pageSize}`,
+			`${ORDER_API_BASE_URL}/deliverytypes?pageNumber=${pageNumber}&pageSize=${pageSize}`,
 		BY_ID: (id: string) => `${ORDER_API_BASE_URL}/deliverytypes/${id}`,
 	},
 }
