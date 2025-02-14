@@ -1,5 +1,5 @@
 ﻿using BookAPI.Controllers;
-using BookAPI.Services;
+using BookAPI.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Moq;

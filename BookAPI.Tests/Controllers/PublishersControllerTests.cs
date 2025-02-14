@@ -1,9 +1,8 @@
-﻿using BookApi.Services;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using BookApi.Controllers;
-using BookApi.Models;
+using BookAPI.Controllers;
+using BookAPI.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -13,6 +12,7 @@ using Library.Extensions;
 using Library.Filters;
 using Library.Sortings;
 using PublisherDto = Library.DTOs.Book.Publisher;
+using BookAPI.Services.Interfaces;
 
 
 namespace BookAPI.Tests.Controllers

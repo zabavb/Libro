@@ -1,10 +1,11 @@
-﻿using Library.Extensions;
+﻿using BookAPI.Models.Sortings;
+using Library.Extensions;
 
-namespace BookApi.Services
+namespace BookAPI.Services.Interfaces
 {
     public interface ICategoryService
     {
-        Task<PaginatedResult<CategoryDto>> GetCategoriesAsync(int pageNumber, int pageSize);
+        Task<PaginatedResult<CategoryDto>> GetCategoriesAsync(int pageNumber, int pageSize, string? searchTerm, CategorySort? sort);
         Task<CategoryDto> GetCategoryByIdAsync(Guid id);
         Task<CategoryDto> CreateCategoryAsync(CategoryDto CategoryDto);
         Task<CategoryDto> UpdateCategoryAsync(Guid id, CategoryDto CategoryDto);

@@ -1,4 +1,4 @@
-﻿using BookAPI.Services;
+﻿using BookAPI.Services.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;

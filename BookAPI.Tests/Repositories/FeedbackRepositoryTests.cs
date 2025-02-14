@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using BookApi.Data;
-using BookApi.Models;
+using BookAPI.Data;
+using BookAPI.Models;
 using BookAPI.Repositories;
 using Xunit;
 using System;
@@ -37,7 +37,7 @@ namespace BookAPI.Tests.Repositories
             _dbContext.Feedbacks.AddRange(feedbacks);
             await _dbContext.SaveChangesAsync();
 
-            var result = await _repository.GetAllAsync(1, 2);
+            var result = await _repository.GetAllAsync(1, 2, null);
 
             Assert.Equal(2, result.Items.Count);
             Assert.Equal(1, result.PageNumber);
@@ -60,7 +60,7 @@ namespace BookAPI.Tests.Repositories
             var repository = new FeedbackRepository(context);
 
             // Act
-            var result = await repository.GetAllAsync(1, 10);
+            var result = await repository.GetAllAsync(1, 10, null);
 
             // Assert
             Assert.Empty(result.Items);

@@ -1,5 +1,9 @@
-﻿using BookApi.Data;
-using BookApi.Models;
+﻿using BookAPI.Data;
+using BookAPI.Models;
+using BookAPI.Models.Extensions;
+using BookAPI.Models.Filters;
+using BookAPI.Models.Sortings;
+using BookAPI.Repositories.Interfaces;
 using Library.Extensions;
 using Microsoft.EntityFrameworkCore;
 
@@ -29,11 +33,17 @@ namespace BookAPI.Repositories
             await _context.SaveChangesAsync();
         }
 
-        public async Task<PaginatedResult<SubCategory>> GetAllAsync(int pageNumber, int pageSize)
+        public async Task<PaginatedResult<SubCategory>> GetAllAsync(int pageNumber, int pageSize, string? searchTerm, SubCategoryFilter? filter, SubCategorySort? sort)
         {
             IQueryable<SubCategory> subcategories = _context.Subcategories
                 .Include(sc => sc.Category)
-                .Include(sc => sc.Books); 
+                .Include(sc => sc.Books);
+            if (!string.IsNullOrWhiteSpace(searchTerm))
+            {
+                subcategories = subcategories.Search(searchTerm, p => p.Name);
+            }
+            subcategories = filter?.Apply(subcategories) ?? subcategories;
+            subcategories = sort?.Apply(subcategories) ?? subcategories;
 
             var totalSubcategories = await subcategories.CountAsync();
             var resultSubcategories = await subcategories
@@ -49,7 +59,6 @@ namespace BookAPI.Repositories
                 PageSize = pageSize
             };
         }
-
 
 
         public async Task<SubCategory?> GetByIdAsync(Guid id)

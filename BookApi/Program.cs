@@ -1,8 +1,10 @@
-using BookApi.Data;
-using BookApi.Repositories;
-using BookApi.Services;
+using BookAPI.Data;
 using BookAPI.Repositories;
 using BookAPI.Services;
+using BookAPI.Repositories;
+using BookAPI.Repositories.Interfaces;
+using BookAPI.Services;
+using BookAPI.Services.Interfaces;
 using FeedbackApi.Services;
 using Microsoft.CodeAnalysis.Host;
 using Microsoft.EntityFrameworkCore;
@@ -11,7 +13,8 @@ using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 using Serilog;
 using System.Reflection;
-using ILanguageService = BookAPI.Services.ILanguageService;
+using System.Text.Json.Serialization;
+using ILanguageService = BookAPI.Services.Interfaces.ILanguageService;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -35,6 +38,11 @@ builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<IPublisherService, PublisherService>();
 builder.Services.AddScoped<IFeedbackService, FeedbackService>();
 builder.Services.AddScoped<ISubCategoryService, SubCategoryService>();
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+    });
 
 builder.Services.AddControllers();
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
@@ -45,7 +53,7 @@ builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo
     {
-        Title = "BookApi",
+        Title = "BookAPI",
         Version = "v1"
     });
     var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
@@ -79,7 +87,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI(c =>
     {
-        c.SwaggerEndpoint("/swagger/v1/swagger.json", "BookApi");
+        c.SwaggerEndpoint("/swagger/v1/swagger.json", "BookAPI");
 
     });
 }
