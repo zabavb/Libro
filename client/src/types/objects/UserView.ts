@@ -8,4 +8,5 @@ export interface UserView {
 	email: string
 	phoneNumber: string
 	role: Role
+	imageUrl: string
 }

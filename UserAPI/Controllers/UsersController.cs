@@ -97,7 +97,7 @@ namespace UserAPI.Controllers
         /// <response code="400">If the provided user data is invalid.</response>
         /// <response code="500">If an unexpected error occurs.</response>
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody] UserDto user)
+        public async Task<IActionResult> Create([FromForm] UserDto user)
         {
             try
             {
@@ -128,7 +128,7 @@ namespace UserAPI.Controllers
         /// <response code="404">If the user to be updated does not exist.</response>
         /// <response code="500">If an unexpected error occurs.</response>
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(Guid id, [FromBody] UserDto user)
+        public async Task<IActionResult> Update(Guid id, [FromForm] UserDto user)
         {
             if (user != null && id != user.Id)
             {
@@ -170,7 +170,7 @@ namespace UserAPI.Controllers
         /// <response code="404">If the user to be deleted does not exist.</response>
         /// <response code="500">If an unexpected error occurs.</response>
         [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(Guid id, string imageUrl)
+        public async Task<IActionResult> Delete(Guid id, [FromQuery] string imageUrl)
         {
             try
             {

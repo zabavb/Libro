@@ -7,7 +7,7 @@ import { resetOperationStatus } from "../../state/redux/slices/userSlice"
 import { User } from "../../types"
 import { UserToUserView } from "../../api/adapters/userAdapter"
 import { addNotification } from "../../state/redux/slices/notificationSlice"
-import UserRow from "../../components/user/admin/UserAdminCard"
+import UserAdminCard from "../../components/user/admin/UserAdminCard"
 
 interface UserAdminCardContainerProps {
 	user: User
@@ -19,13 +19,13 @@ const UserAdminCardContainer: React.FC<UserAdminCardContainerProps> = ({ user })
 	const userView = UserToUserView(user)
 	const navigate = useNavigate()
 
-	const handleDelete = (e: React.MouseEvent) => {
-		e.stopPropagation()
-		dispatch(removeUser(user.id))
-	}
-
 	const handleNavigate = () => {
 		navigate(`/admin/users/${user.id}`)
+	}
+
+	const handleDelete = (e: React.MouseEvent) => {
+		e.stopPropagation()
+		dispatch(removeUser( {id:user.id, imageUrl:user.imageUrl}))
 	}
 
 	useEffect(() => {
@@ -49,10 +49,10 @@ const UserAdminCardContainer: React.FC<UserAdminCardContainerProps> = ({ user })
 	}, [operationStatus, error, dispatch])
 
 	return (
-		<UserRow
+		<UserAdminCard
 			user={userView}
-			onDelete={handleDelete}
 			onNavigate={handleNavigate}
+			onDelete={handleDelete}
 		/>
 	)
 }

@@ -32,5 +32,6 @@ export const UserToUserView = (response: User): UserView => {
 		email: response.email,
 		phoneNumber: response.phoneNumber,
 		role: roleNumberToEnum(response.role),
+		imageUrl: response.imageUrl,
 	}
 }
