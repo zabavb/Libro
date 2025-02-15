@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux"
 import { addUser, AppDispatch, editUser } from "../../state/redux/index"
 import { RootState } from "../../state/redux/store"
 import { useNavigate } from "react-router-dom"
-import UserForm from "../../components/user/admin/UserForm"
+import UserForm from "../../components/user/UserForm"
 import { resetOperationStatus } from "../../state/redux/slices/userSlice"
 import { addNotification } from "../../state/redux/slices/notificationSlice"
 

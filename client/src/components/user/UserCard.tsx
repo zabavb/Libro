@@ -1,5 +1,5 @@
 import React from "react"
-import { UserView } from "../../../types"
+import { UserView } from "../../types"
 import { LazyLoadImage } from "react-lazy-load-image-component"
 import "react-lazy-load-image-component/src/effects/blur.css"
 
@@ -9,7 +9,7 @@ interface UserAdminCardProps {
 	onDelete: (e: React.MouseEvent) => void
 }
 
-const UserAdminCard: React.FC<UserAdminCardProps> = ({ user, onNavigate, onDelete }) => {
+const UserCard: React.FC<UserAdminCardProps> = ({ user, onNavigate, onDelete }) => {
 	return (
 		<>
 			<hr />
@@ -59,4 +59,4 @@ const UserAdminCard: React.FC<UserAdminCardProps> = ({ user, onNavigate, onDelet
 	)
 }
 
-export default UserAdminCard
+export default UserCard

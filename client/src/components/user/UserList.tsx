@@ -1,11 +1,12 @@
 import React from "react"
+import { FixedSizeList as List } from "react-window"
 import { User } from "../../types"
+import UserCardContainer from "../../containers/user/UserCardContainer"
 import UserFilter from "./UserFilter"
 import UserSort from "./UserSort"
 import Pagination from "../common/Pagination"
 import Search from "../common/Search"
 import Loading from "../common/Loading"
-import UserAdminCardContainer from "../../containers/user/UserAdminCardContainer"
 
 interface UserListProps {
 	users?: User[]
@@ -34,11 +35,18 @@ const UserList: React.FC<UserListProps> = ({
 	onSortChange,
 	onNavigate,
 }) => {
+	const Card = ({ index, style }: { index: number; style: React.CSSProperties }) => (
+		<div style={style}>
+			<UserCardContainer user={users[index]} />
+		</div>
+	)
+
 	return (
 		<div>
 			<p onClick={() => onNavigate("/admin")}>Back to Admin Dashboard</p>
 			<p onClick={() => onNavigate("/admin/users/add")}>Add User</p>
 			<h1>User List</h1>
+
 			<Search
 				searchTerm={searchTerm}
 				onSearchTermChange={onSearchTermChange}
@@ -51,15 +59,17 @@ const UserList: React.FC<UserListProps> = ({
 				sort={sort}
 				onSortChange={onSortChange}
 			/>
+
 			{loading ? (
 				<Loading />
 			) : users.length > 0 ? (
-				users.map((user) => (
-					<UserAdminCardContainer
-						key={user.id}
-						user={user}
-					/>
-				))
+				<List
+					height={600}
+					itemCount={users.length}
+					itemSize={100}
+					width={"100%"}>
+					{Card}
+				</List>
 			) : (
 				<p>No users found.</p>
 			)}
