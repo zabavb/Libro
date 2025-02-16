@@ -22,10 +22,10 @@ namespace BookApi.Repositories
             _context = context;
         }
 
-      
+
         public async Task<PaginatedResult<Book>> GetAllAsync(int pageNumber, int pageSize, string searchTerm, Filter? filter, Sort? sort)
         {
-            IQueryable<Book> books = _context.Books.AsQueryable();
+            IQueryable<Book> books = _context.Books.Include(b => b.Subcategories).AsQueryable();
 
             if (books.Any() && !string.IsNullOrWhiteSpace(searchTerm))
                 books = books.Search(searchTerm);
@@ -54,6 +54,7 @@ namespace BookApi.Repositories
                 .Include(b => b.Category)
                 .Include(b => b.Publisher)
                 .Include(b => b.Feedbacks)
+                .Include(b => b.Subcategories)
                 .FirstOrDefaultAsync(b => b.Id == id);
         }
 
@@ -66,20 +67,36 @@ namespace BookApi.Repositories
 
         public async Task UpdateAsync(Book entity)
         {
-            var existingBook = await _context.Books.FirstOrDefaultAsync(a => a.Id == entity.Id) ?? throw new KeyNotFoundException("Book not found");
+            var existingBook = await _context.Books
+                .Include(b => b.Subcategories)
+                .FirstOrDefaultAsync(a => a.Id == entity.Id)
+                ?? throw new KeyNotFoundException("Book not found");
+
             _context.Entry(existingBook).CurrentValues.SetValues(entity);
+
+            existingBook.Subcategories.Clear();
+            foreach (var subcategory in entity.Subcategories)
+            {
+                var existingSubcategory = await _context.Subcategories.FindAsync(subcategory.Id);
+                if (existingSubcategory != null)
+                {
+                    existingBook.Subcategories.Add(existingSubcategory);
+                }
+            }
+
             await _context.SaveChangesAsync();
         }
+
 
         public async Task DeleteAsync(Guid id)
         {
             var book = await _context.Books.FindAsync(id);
-            if (book == null) return; 
+            if (book == null) return;
 
             _context.Books.Remove(book);
             await _context.SaveChangesAsync();
         }
 
-       
+
     }
 }
