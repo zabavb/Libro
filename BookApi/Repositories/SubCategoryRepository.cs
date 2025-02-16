@@ -17,17 +17,33 @@ namespace BookAPI.Repositories
         public async Task CreateAsync(SubCategory entity)
         {
             entity.Id = Guid.NewGuid();
+
+            if (entity.Books.Any())
+            {
+                var books = await _context.Books
+                    .Where(b => entity.Books.Select(sb => sb.Id).Contains(b.Id))
+                    .ToListAsync();
+                entity.Books = books;
+            }
+
             _context.Subcategories.Add(entity);
             await _context.SaveChangesAsync();
         }
 
+
         public async Task DeleteAsync(Guid id)
         {
-            var subCategory = await _context.Subcategories.FirstOrDefaultAsync(sc => sc.Id == id)
+            var subCategory = await _context.Subcategories
+                .Include(sc => sc.Books) 
+                .FirstOrDefaultAsync(sc => sc.Id == id)
                 ?? throw new KeyNotFoundException("SubCategory not found");
+
+            subCategory.Books.Clear();
+
             _context.Subcategories.Remove(subCategory);
             await _context.SaveChangesAsync();
         }
+
 
         public async Task<PaginatedResult<SubCategory>> GetAllAsync(int pageNumber, int pageSize)
         {
@@ -62,11 +78,25 @@ namespace BookAPI.Repositories
 
         public async Task UpdateAsync(SubCategory entity)
         {
-            var existingSubCategory = await _context.Subcategories.FirstOrDefaultAsync(sc => sc.Id == entity.Id)
+            var existingSubCategory = await _context.Subcategories
+                .Include(sc => sc.Books) 
+                .FirstOrDefaultAsync(sc => sc.Id == entity.Id)
                 ?? throw new KeyNotFoundException("SubCategory not found");
 
             _context.Entry(existingSubCategory).CurrentValues.SetValues(entity);
+
+            existingSubCategory.Books.Clear();
+            foreach (var book in entity.Books)
+            {
+                var existingBook = await _context.Books.FindAsync(book.Id);
+                if (existingBook != null)
+                {
+                    existingSubCategory.Books.Add(existingBook);
+                }
+            }
+
             await _context.SaveChangesAsync();
         }
+
     }
 }
