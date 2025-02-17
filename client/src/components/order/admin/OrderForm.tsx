@@ -41,7 +41,7 @@ const OrderForm: React.FC<OrderFormProps> = ({ existingOrder, onAddOrder, onEdit
     useEffect(() => {
         if(existingOrder) {
             setValue("userId", existingOrder.userId)
-            setValue("bookIds", bookIds);
+            setValue("bookIds", existingOrder.bookIds.toString());
             setValue("region", existingOrder.region)
             setValue("city", existingOrder.city)
             setValue("address", existingOrder.address)
@@ -83,6 +83,7 @@ const OrderForm: React.FC<OrderFormProps> = ({ existingOrder, onAddOrder, onEdit
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setBookIds(e.target.value);
       };
+
 
     return (
         <form onSubmit={handleSubmit(onSubmit)}>
