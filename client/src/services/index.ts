@@ -5,3 +5,5 @@ export {
 	editUserService,
 	removeUserService,
 } from "./userService"
+
+export { loginService, registerService, getMeService } from "./authService"
