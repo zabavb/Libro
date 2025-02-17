@@ -11,6 +11,7 @@ import AdminLayout from "./components/layouts/AdminLayout"
 import OrderListContainer from "./containers/order/OrderListContainer"
 import OrderFormPage from "./pages/Admin/OrderRelated/Orders/OrderFormPage"
 import DeliveryTypeListContainer from "./containers/order/DeliveryTypeListContainer"
+import DeliveryTypeFormPage from "./pages/Admin/OrderRelated/Deliveries/DeliveryFormPage"
 
 const AppRoutes = () => (
 	<BrowserRouter>
@@ -59,6 +60,14 @@ const AppRoutes = () => (
 				<Route
 					path="/admin/deliverytypes"
 					element={<DeliveryTypeListContainer/>}
+				/>
+				<Route
+					path="/admin/deliverytypes/add"
+					element={<DeliveryTypeFormPage />}
+				/>
+				<Route
+					path="/admin/deliverytypes/:deliveryTypeId"
+					element={<DeliveryTypeFormPage />}
 				/>
 			</Route>
 			
