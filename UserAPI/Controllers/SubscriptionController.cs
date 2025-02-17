@@ -23,17 +23,14 @@ namespace UserAPI.Controllers
     public class SubscriptionController : ControllerBase
     {
         private readonly ISubscriptionService _subscriptionService;
-        private readonly ILogger<SubscriptionController> _logger;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SubscriptionController"/> class.
         /// </summary>
         /// <param name="subscriptionService">Service for subscription operations.</param>
-        /// <param name="logger">Logger for tracking operations.</param>
-        public SubscriptionController(ISubscriptionService subscriptionService, ILogger<SubscriptionController> logger)
+        public SubscriptionController(ISubscriptionService subscriptionService)
         {
             _subscriptionService = subscriptionService;
-            _logger = logger;
         }
 
         /// <summary>
@@ -51,12 +48,10 @@ namespace UserAPI.Controllers
             try
             {
                 var subscriptions = await _subscriptionService.GetAllAsync(pageNumber, pageSize, searchTerm);
-                _logger.LogInformation("Subscriptions successfully fetched.");
                 return Ok(subscriptions);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "An error occurred while fetching subscriptions.");
                 return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
             }
         }
@@ -76,17 +71,12 @@ namespace UserAPI.Controllers
             {
                 var subscription = await _subscriptionService.GetByIdAsync(id);
                 if (subscription == null)
-                {
-                    _logger.LogWarning("Subscription with ID [{Id}] not found.", id);
                     return NotFound();
-                }
 
-                _logger.LogInformation("Subscription with ID [{Id}] successfully fetched.", id);
                 return Ok(subscription);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "An error occurred while fetching the subscription with ID [{Id}].", id);
                 return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
             }
         }
@@ -103,20 +93,15 @@ namespace UserAPI.Controllers
         public async Task<IActionResult> CreateSubscription([FromBody] SubscriptionDto subscriptionDto)
         {
             if (!ModelState.IsValid)
-            {
-                _logger.LogWarning("Invalid model state for creating subscription.");
                 return BadRequest(ModelState);
-            }
 
             try
             {
                 await _subscriptionService.CreateAsync(subscriptionDto);
-                _logger.LogInformation("Subscription successfully created.");
                 return CreatedAtAction(nameof(GetSubscriptionById), new { id = subscriptionDto.Id }, subscriptionDto);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "An error occurred while creating the subscription.");
                 return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
             }
         }
@@ -135,26 +120,18 @@ namespace UserAPI.Controllers
         public async Task<IActionResult> UpdateSubscription(Guid id, [FromBody] SubscriptionDto subscriptionDto)
         {
             if (!ModelState.IsValid)
-            {
-                _logger.LogWarning("Invalid model state for updating subscription with ID [{Id}].", id);
                 return BadRequest(ModelState);
-            }
 
             if (id != subscriptionDto.Id)
-            {
-                _logger.LogWarning("ID mismatch: URL ID [{Id}] does not match body ID [{BodyId}].", id, subscriptionDto.Id);
                 return BadRequest("ID mismatch.");
-            }
 
             try
             {
                 await _subscriptionService.UpdateAsync(subscriptionDto);
-                _logger.LogInformation("Subscription with ID [{Id}] successfully updated.", id);
                 return NoContent();
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "An error occurred while updating the subscription with ID [{Id}].", id);
                 return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
             }
         }
@@ -173,12 +150,10 @@ namespace UserAPI.Controllers
             try
             {
                 await _subscriptionService.DeleteAsync(id);
-                _logger.LogInformation("Subscription with ID [{Id}] successfully deleted.", id);
                 return NoContent();
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "An error occurred while deleting the subscription with ID [{Id}].", id);
                 return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
             }
         }

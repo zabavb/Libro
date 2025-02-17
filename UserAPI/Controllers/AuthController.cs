@@ -1,4 +1,3 @@
-﻿using Library.DTOs.User;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
@@ -13,12 +12,10 @@ namespace UserAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class AuthController(IAuthService authService, IOptions<JwtSettings> jwtOptions, ILogger<AuthController> logger) : ControllerBase
+    [Route("api/[controller]")]
     {
         private readonly IAuthService _authService = authService;
         private readonly JwtSettings _jwtSettings = jwtOptions.Value;
-        private readonly ILogger<AuthController> _logger = logger;
-        private string _message = string.Empty;
 
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginRequest request)
@@ -28,11 +25,7 @@ namespace UserAPI.Controllers
 
             UserDto? user = await _authService.AuthenticateAsync(request);
             if (user == null)
-            {
-                _message = "Invalid username or password.";
-                _logger.LogError(_message);
-                return Unauthorized(_message);
-            }
+                return Unauthorized("Invalid username or password.");
             
             var token = GenerateJwtToken(user);
             return Ok(new
@@ -56,12 +49,10 @@ namespace UserAPI.Controllers
             }
             catch (ArgumentNullException ex)
             {
-                _logger.LogError(ex.Message);
                 return BadRequest(ex.Message);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
                 return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
             }
         }
@@ -81,7 +72,6 @@ namespace UserAPI.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
                 return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
             }
         }
