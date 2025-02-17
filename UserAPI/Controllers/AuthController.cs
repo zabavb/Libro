@@ -1,4 +1,4 @@
-using Library.DTOs.User;
+﻿using Library.DTOs.User;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
@@ -37,10 +37,10 @@ namespace UserAPI.Controllers
             var token = GenerateJwtToken(user);
             return Ok(new
             {
-Token = token,
+                Token = token,
                 ExpiresIn = _jwtSettings.ExpiresInMinutes,
                 User = new { user.Id, user.FirstName, user.LastName, user.Email, user.Role }
-});
+            });
         }
 
         [HttpPost("register")]
@@ -66,7 +66,7 @@ Token = token,
             }
         }
 
-[Authorize]
+        [Authorize]
         [HttpGet("me")]
         public async Task<IActionResult> Me()
         {
@@ -97,8 +97,6 @@ Token = token,
                 new(ClaimTypes.NameIdentifier, user.Id.ToString()),
                 new(ClaimTypes.Name, user.FirstName),
                 new(ClaimTypes.Surname, user.LastName!),
-                new(ClaimTypes.Email, user.Email),
-                new(ClaimTypes.MobilePhone, user.PhoneNumber),
                 new(ClaimTypes.Role, user.Role.ToString()),
             };
 
