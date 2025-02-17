@@ -1,5 +1,7 @@
-const USER_API_BASE_URL = "https://localhost:7007/api"
-const ORDER_API_BASE_URL = "https://localhost:7051/api"
+const BASE_URL = (port: number) => `https://localhost:${port}/api`
+
+const USER_API_BASE_URL = BASE_URL(7007)
+const ORDER_API_BASE_URL = BASE_URL(7051)
 
 export const API_ROUTES = {
 	USERS: {
