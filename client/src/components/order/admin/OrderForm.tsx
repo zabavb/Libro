@@ -1,5 +1,5 @@
 import { useForm } from "react-hook-form";
-import { Order, Status } from "../../../types";
+import { DeliveryType, Order, Status } from "../../../types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { dateToString } from "../../../api/adapters/commonAdapters";
 import { useEffect, useState } from "react";
@@ -7,12 +7,13 @@ import { statusEnumToNumber, statusNumberToEnum } from "../../../api/adapters/or
 import { OrderFormData, orderSchema } from "../../../utils";
 
 interface OrderFormProps {
+    deliveryTypes?: DeliveryType[]
     existingOrder?: Order
     onAddOrder: (order: Order) => void
     onEditOrder: (id: string, updatedOrder: Order) => void
 }
 
-const OrderForm: React.FC<OrderFormProps> = ({ existingOrder, onAddOrder, onEditOrder }) => {
+const OrderForm: React.FC<OrderFormProps> = ({deliveryTypes, existingOrder, onAddOrder, onEditOrder }) => {
     const [bookIds, setBookIds] = useState<string>("");
     
     const {
@@ -123,11 +124,16 @@ const OrderForm: React.FC<OrderFormProps> = ({ existingOrder, onAddOrder, onEdit
             placeholder="Delivery Date" />
             <p>{errors.orderDate?.message}</p>
 
-            {/* manual for now, will be rewritten after creation of delivery service */}
-            <input {...register("deliveryTypeId")}
-            placeholder="Delivery type id" />
+            <select {...register("deliveryTypeId")}>
+            <option value="">Select Delivery Type</option>
+                {deliveryTypes?.map((delivery) => (
+                    <option
+                        value={delivery.id}>
+                        {delivery.serviceName}
+                    </option>
+                ))}
+            </select>
             <p>{errors.deliveryTypeId?.message}</p>
-
             <input
                 type="text"
                 {...register("price")}

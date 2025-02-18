@@ -6,6 +6,9 @@ import { Order } from "../../types"
 import React, { useEffect } from "react"
 import { resetOrderOperationStatus } from "../../state/redux/slices/orderSlice"
 import OrderForm from "../../components/order/admin/OrderForm"
+import { addNotification } from "../../state/redux/slices/notificationSlice"
+import { fetchDeliveryTypes } from "../../state/redux/slices/deliveryTypeSlice"
+
 
 
 interface OrderFormContainerProps {
@@ -15,7 +18,7 @@ interface OrderFormContainerProps {
 const OrderFormContainer: React.FC<OrderFormContainerProps> = ({ orderId }) => {
     const dispatch = useDispatch<AppDispatch>()
     const {data: orders, operationStatus, error } = useSelector((state: RootState) => state.orders)
-
+    const {data: deliveryTypes} = useSelector((state: RootState) => state.deliveryTypes)
     const existingOrder = orders.find((order) => order.id == orderId) ?? undefined
 
     const navigate = useNavigate()
@@ -31,18 +34,33 @@ const OrderFormContainer: React.FC<OrderFormContainerProps> = ({ orderId }) => {
     }
 
     useEffect(() => {
+        // Forcing delivery types to be loaded into Store if they weren't
+        if(deliveryTypes.length === 0){
+            dispatch(fetchDeliveryTypes({pageNumber:1,pageSize:10}))
+        }
         if (operationStatus === "success"){
-            alert(existingOrder ? "Order updated successfully!" : "Order Created successfully!")
+            dispatch(
+                addNotification({
+                    message: existingOrder ? "Order updated successfully!" : "Order created successfully!",
+                    type: "success"
+                })
+            )
             dispatch(resetOrderOperationStatus())
             navigate("/admin/orders")
         } else if (operationStatus === "error") {
-            alert(error)
+            dispatch(
+                addNotification({
+                    message: error,
+                    type: "error",
+                })
+            )
             dispatch(resetOrderOperationStatus())
         }
-    }, [operationStatus, existingOrder, error, dispatch, navigate])
+    }, [operationStatus, existingOrder, error, dispatch, navigate, deliveryTypes])
 
     return (
         <OrderForm
+            deliveryTypes={deliveryTypes}
             existingOrder={existingOrder}
             onAddOrder={handleAddOrder}
             onEditOrder={handleEditOrder}

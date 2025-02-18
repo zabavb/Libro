@@ -41,7 +41,7 @@ const orderSlice = createSlice({
     initialState: {
         data: [] as Order[],
         loading: false,
-        error: null as string | null | undefined,
+        error: null as string | null ,
         operationStatus: null as "success" | "error" | "pending" | null,
         pagination: {
             pageNumber: 1,
@@ -87,7 +87,7 @@ const orderSlice = createSlice({
             })
             .addCase(fetchOrders.rejected, (state, action) => {
                 state.loading = false
-                state.error = action.error.message
+                state.error = action.error.message ?? "Failed fetching orders."
             })
             // Add Order
             .addCase(addOrder.pending, (state) => {
@@ -99,7 +99,7 @@ const orderSlice = createSlice({
             })
             .addCase(addOrder.rejected, (state, action) => {
                 state.operationStatus = "error"
-                state.error = action.error.message
+                state.error = action.error.message ?? "Failed add order."
             })
             // Edit Order
             .addCase(editOrder.pending, (state) => {
@@ -112,7 +112,7 @@ const orderSlice = createSlice({
             })
             .addCase(editOrder.rejected, (state, action) => {
                 state.operationStatus = "error"
-                state.error = action.error.message
+                state.error = action.error.message ?? "Failed edit order."
             })
             // Remove Order
             .addCase(removeOrder.pending, (state) => {
@@ -124,7 +124,7 @@ const orderSlice = createSlice({
             })
             .addCase(removeOrder.rejected, (state, action) =>{
                 state.operationStatus = "error"
-                state.error = action.error.message
+                state.error = action.error.message ?? "Failed delete order."
             })
     }
 })
