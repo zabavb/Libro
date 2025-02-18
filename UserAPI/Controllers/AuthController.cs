@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Library.DTOs.User;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
@@ -33,7 +35,12 @@ namespace UserAPI.Controllers
             }
             
             var token = GenerateJwtToken(user);
-            return Ok(new { Token = token, _jwtSettings.ExpiresInMinutes });
+            return Ok(new
+            {
+                Token = token,
+                ExpiresIn = _jwtSettings.ExpiresInMinutes,
+                User = new { user.Id, user.FirstName, user.LastName, user.Email, user.Role }
+            });
         }
 
         [HttpPost("register")]
@@ -59,6 +66,27 @@ namespace UserAPI.Controllers
             }
         }
 
+        [Authorize]
+        [HttpGet("me")]
+        public async Task<IActionResult> Me()
+        {
+            try
+            {
+                var idClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                if (string.IsNullOrEmpty(idClaim) || !Guid.TryParse(idClaim, out Guid userId))
+                    return Unauthorized("Invalid token.");
+
+                var user = await _authService.Me(userId);
+                return user != null ? Ok(user) : NotFound("User not found.");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+        }
+
+        [NonAction]
         private string GenerateJwtToken(UserDto user)
         {
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSettings.SecretKey));
@@ -69,8 +97,6 @@ namespace UserAPI.Controllers
                 new(ClaimTypes.NameIdentifier, user.Id.ToString()),
                 new(ClaimTypes.Name, user.FirstName),
                 new(ClaimTypes.Surname, user.LastName!),
-                new(ClaimTypes.Email, user.Email),
-                new(ClaimTypes.MobilePhone, user.PhoneNumber),
                 new(ClaimTypes.Role, user.Role.ToString()),
             };
 

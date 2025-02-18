@@ -1,10 +1,14 @@
+// Auth types
+export type { Login } from "./types/auth/login"
+export type { Register } from "./types/auth/register"
+
 // Main types
-export type { User } from "./objects/User"
-export type { Order } from "./objects/Order"
+export type { User } from "./types/user/User"
+export type { Order } from "./types/order/Order"
 
 // View types
-export type { UserView } from "./objects/UserView"
-export type { OrderView } from "./objects/OrderView"
+export type { UserView } from "./types/user/UserView"
+export type { OrderView } from "./types/order/OrderView"
 
 // Filters
 export type { UserFilter } from "./filters/UserFilter"

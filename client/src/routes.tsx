@@ -1,68 +1,89 @@
 import { Route, Routes } from "react-router-dom"
 import { BrowserRouter } from "react-router-dom"
 
+import LoginContainer from "./containers/auth/LoginContainer"
+import RegisterContainer from "./containers/auth/RegisterContainer"
+
 import MainPage from "./pages/Main/MainPage"
 
-import AdminPage from "./pages/Admin/AdminPage"
-import UserFormPage from "./pages/Admin/UserRelated/Users/UserFormPage"
-import NotFoundPage from "./pages/Main/NotFoundPage"
-import UserListContainer from "./containers/user/UserListContainer"
+import { AuthProvider } from "./state/context/AuthContext"
+import PrivateRoute from "./privateRoute"
+
 import AdminLayout from "./components/layouts/AdminLayout"
+import AdminPage from "./pages/Admin/AdminPage"
+
+import UserFormPage from "./pages/Admin/UserRelated/Users/UserFormPage"
+import UserListContainer from "./containers/user/UserListContainer"
+
 import OrderListContainer from "./containers/order/OrderListContainer"
 import OrderFormPage from "./pages/Admin/OrderRelated/Orders/OrderFormPage"
 
-const AppRoutes = () => (
-	<BrowserRouter>
-		<Routes>
-			{/* Main */}
-			<Route
-				path="/"
-				element={<MainPage />}
-			/>
+import NotFoundPage from "./pages/Main/NotFoundPage"
 
-			{/* Admin */}
-			<Route
-				path="/admin"
-				element={<AdminLayout />}>
+const AppRoutes = () => (
+	<AuthProvider>
+		<BrowserRouter>
+			<Routes>
+				{/* Authentication */}
 				<Route
-					index
-					element={<AdminPage />}
-				/>
-				{/* User */}
-				<Route
-					path="/admin/users"
-					element={<UserListContainer />}
+					path="/login"
+					element={<LoginContainer />}
 				/>
 				<Route
-					path="/admin/users/add"
-					element={<UserFormPage />}
+					path="/register"
+					element={<RegisterContainer />}
 				/>
+				{/* Main */}
 				<Route
-					path="/admin/users/:userId"
-					element={<UserFormPage />}
+					path="/"
+					element={<MainPage />}
 				/>
-				{/* Order */}
+				<Route element={<PrivateRoute />}>
+					{/* Admin */}
+					<Route
+						path="/admin"
+						element={<AdminLayout />}>
+						<Route
+							index
+							element={<AdminPage />}
+						/>
+						{/* User */}
+						<Route
+							path="/admin/users"
+							element={<UserListContainer />}
+						/>
+						<Route
+							path="/admin/users/add"
+							element={<UserFormPage />}
+						/>
+						<Route
+							path="/admin/users/:userId"
+							element={<UserFormPage />}
+						/>
+						{/* Order */}
+						<Route
+							path="/admin/orders"
+							element={<OrderListContainer />}
+						/>
+						<Route
+							path="/admin/orders/add"
+							element={<OrderFormPage />}
+						/>
+						<Route
+							path="/admin/orders/:orderId"
+							element={<OrderFormPage />}
+						/>
+					</Route>
+				</Route>
+
+				{/* Other */}
 				<Route
-					path="/admin/orders"
-					element={<OrderListContainer />}
+					path="*"
+					element={<NotFoundPage />}
 				/>
-				<Route
-					path="/admin/orders/add"
-					element={<OrderFormPage />}
-				/>
-				<Route
-					path="/admin/orders/:orderId"
-					element={<OrderFormPage />}
-				/>
-			</Route>
-			
-			{/* Other */}
-			<Route
-				path="*"
-				element={<NotFoundPage />}
-			/>
-		</Routes>
-	</BrowserRouter>
+			</Routes>
+		</BrowserRouter>
+	</AuthProvider>
 )
 
 export default AppRoutes
