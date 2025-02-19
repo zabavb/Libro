@@ -1,0 +1,44 @@
+@model IEnumerable<Libro.Models.Order>
+
+@{
+    ViewBag.Title = "My Orders";
+}
+
+<div class="container mt-5">
+    <h2 class="text-center mb-4">My Orders</h2>
+    <div class="row">
+        @foreach (var order in Model)
+        {
+            <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
+                <div class="card shadow-sm border-0">
+                    <div class="card-body">
+                        <h5 class="card-title text-primary">Order #@order.OrderId</h5>
+                        <p class="text-muted small mb-2">
+                            <strong>Date:</strong> @order.Date.ToString("MM/dd/yyyy")
+                        </p>
+                        <p class="text-muted small mb-2">
+                            <strong>Status:</strong> @order.Status
+                        </p>
+                        <p class="text-muted small mb-3">
+                            <strong>Total:</strong> @order.TotalAmount.ToString("C")
+                        </p>
+                        <h6 class="text-muted mb-3">Books in this order:</h6>
+                        <ul>
+                            @foreach (var item in order.Items)
+                            {
+                                <li>
+                                    <img src="@item.BookImageUrl" alt="Book Cover" class="img-thumbnail" width="50" />
+                                    @item.BookTitle by @item.Author
+                                </li>
+                            }
+                        </ul>
+                        <a href="@Url.Action("Details", "Orders", new { id = order.OrderId })"
+                           class="btn btn-primary btn-block">
+                            See More Details
+                        </a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>

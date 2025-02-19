@@ -1,7 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Library.Extensions;
+using Library.Interfaces;
+using Microsoft.EntityFrameworkCore;
 using OrderApi.Data;
 using OrderApi.Models;
-using OrderApi.Models.Extensions;
 using OrderApi.Repository.IRepository;
 
 namespace OrderApi.Repository
@@ -108,21 +109,15 @@ namespace OrderApi.Repository
             _logger.LogInformation($"Delivery type with Id[{deliveryType.DeliveryId}] updated succesfully.");
         }
 
-        public async Task DeleteAsync(DeliveryType deliveryType)
+        async public Task DeleteAsync(Guid id)
         {
-            try
-            {
-                _context.DeliveryTypes.Remove(deliveryType);
-                await _context.SaveChangesAsync();
-            }
-            catch (Exception ex)
-            {
-                _message = $"Deletion of Delivery type with id [{deliveryType.DeliveryId}] has failed.";
-                _logger.LogError(_message);
-                throw new ArgumentException(_message, ex);
-            }
+            var deliveryType = await _context.DeliveryTypes.FindAsync(id);
 
-            _logger.LogInformation($"Delivery type with Id [{deliveryType.DeliveryId}] deleted succesfully.");
+            if (deliveryType == null)
+                throw new KeyNotFoundException();
+
+            _context.DeliveryTypes.Remove(deliveryType);
+            await _context.SaveChangesAsync();
         }
     }
 }

@@ -1,6 +1,6 @@
 ﻿using Library.UserEntities;
 
-namespace UserAPI.Models.Extensions
+namespace Library.Filters
 {
     public class UserFilter
     {

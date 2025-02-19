@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using UserAPI.Models.Extensions;
 using UserAPI.Services;
 
 namespace UserAPI.Controllers
@@ -44,11 +43,11 @@ namespace UserAPI.Controllers
         /// <response code="200">Returns the paginated list of users.</response>
         /// <response code="500">If an unexpected error occurs.</response>
         [HttpGet]
-        public async Task<IActionResult> GetUsers([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10, [FromQuery] string? searchTerm = null, [FromQuery] UserFilter? filter = null)
+        public async Task<IActionResult> GetAll([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10, [FromQuery] string? searchTerm = null, [FromQuery] Filter? filter = null)
         {
             try
             {
-                var users = await _userService.GetAllEntitiesPaginatedAsync(pageNumber, pageSize, searchTerm!, filter);
+                var users = await _userService.GetAllAsync(pageNumber, pageSize, searchTerm!, filter);
                 _logger.LogInformation("Users successfully fetched.");
                 return Ok(users);
             }
@@ -68,11 +67,11 @@ namespace UserAPI.Controllers
         /// <response code="404">If the user with the specified ID is not found or ID was not specified.</response>
         /// <response code="500">If an unexpected error occurs.</response>
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetUserById(Guid id)
+        public async Task<IActionResult> GetById(Guid id)
         {
             try
             {
-                var user = await _userService.GetEntityByIdAsync(id);
+                var user = await _userService.GetByIdAsync(id);
                 if (id.Equals(Guid.Empty))
                 {
                     _message = $"User ID {id} was not provided.";
@@ -104,16 +103,16 @@ namespace UserAPI.Controllers
         /// <response code="400">If the provided user data is invalid.</response>
         /// <response code="500">If an unexpected error occurs.</response>
         [HttpPost]
-        public async Task<IActionResult> CreateUser([FromBody] UserDto user)
+        public async Task<IActionResult> Create([FromBody] UserDto user)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
             try
             {
-                await _userService.AddEntityAsync(user);
+                await _userService.AddAsync(user);
                 _logger.LogInformation($"User with ID [{user.Id}] successfully created.");
-                return CreatedAtAction(nameof(GetUserById), new { id = user.Id }, user);
+                return CreatedAtAction(nameof(GetById), new { id = user.Id }, user);
             }
             catch (ArgumentNullException ex)
             {
@@ -138,7 +137,7 @@ namespace UserAPI.Controllers
         /// <response code="404">If the user to be updated does not exist.</response>
         /// <response code="500">If an unexpected error occurs.</response>
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateUser(Guid id, [FromBody] UserDto user)
+        public async Task<IActionResult> Update(Guid id, [FromBody] UserDto user)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -152,7 +151,7 @@ namespace UserAPI.Controllers
 
             try
             {
-                await _userService.UpdateEntityAsync(user);
+                await _userService.UpdateAsync(user);
                 _logger.LogInformation($"User with ID [{user.Id}] successfully updated.");
                 return NoContent();
             }
@@ -182,11 +181,11 @@ namespace UserAPI.Controllers
         /// <response code="404">If the user to be deleted does not exist.</response>
         /// <response code="500">If an unexpected error occurs.</response>
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteUser(Guid id)
+        public async Task<IActionResult> Delete(Guid id)
         {
             try
             {
-                await _userService.DeleteEntityAsync(id);
+                await _userService.DeleteAsync(id);
                 _logger.LogInformation($"User with ID [{id}] successfully deleted.");
                 return NoContent();
             }

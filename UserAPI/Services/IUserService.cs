@@ -1,13 +1,10 @@
-﻿using UserAPI.Models.Extensions;
+﻿using Library.Extensions;
+using Library.Interfaces;
 
 namespace UserAPI.Services
 {
-    public interface IUserService
+    public interface IUserService : IManagable<UserDto>
     {
-        Task<PaginatedResult<UserDto>> GetAllEntitiesPaginatedAsync(int pageNumber, int pageSize, string searchTerm, UserFilter? filter);
-        Task<UserDto?> GetEntityByIdAsync(Guid id);
-        Task AddEntityAsync(UserDto entity);
-        Task UpdateEntityAsync(UserDto entity);
-        Task DeleteEntityAsync(Guid id);
+        Task<PaginatedResult<UserDto>> GetAllAsync(int pageNumber, int pageSize, string searchTerm, Filter? filter);
     }
 }
