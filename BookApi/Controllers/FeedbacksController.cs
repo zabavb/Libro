@@ -57,7 +57,6 @@ namespace BookAPI.Controllers
 
                 if (feedbacks == null || feedbacks.Items == null || !feedbacks.Items.Any())
                 {
-                    _logger.LogInformation("No feedbacks found.");
                     return NotFound("No feedbacks found.");
                 }
 
@@ -88,11 +87,9 @@ namespace BookAPI.Controllers
 
                 if (feedback == null)
                 {
-                    _logger.LogWarning($"Feedback with id {id} not found.");
                     return NotFound($"Feedback with id {id} not found.");
                 }
 
-                _logger.LogInformation($"Feedback with id {id} successfully fetched.");
                 return Ok(feedback);
             }
             catch (Exception ex)
@@ -123,7 +120,6 @@ namespace BookAPI.Controllers
             try
             {
                 var createdFeedback = await _feedbackService.CreateFeedbackAsync(feedbackDto);
-                _logger.LogInformation($"Feedback with id {createdFeedback.FeedbackId} successfully created.");
                 return CreatedAtAction(nameof(GetFeedbackById), new { id = createdFeedback.FeedbackId }, createdFeedback);
             }
             catch (Exception ex)
@@ -149,7 +145,6 @@ namespace BookAPI.Controllers
         {
             if (feedbackDto == null)
             {
-                _logger.LogWarning("Invalid feedback data provided for update.");
                 return BadRequest("Invalid data.");
             }
 
@@ -159,11 +154,9 @@ namespace BookAPI.Controllers
 
                 if (updatedFeedback == null)
                 {
-                    _logger.LogWarning($"Feedback with id {id} not found for update.");
                     return NotFound($"Feedback with id {id} not found.");
                 }
 
-                _logger.LogInformation($"Feedback with id {id} successfully updated.");
                 return Ok(updatedFeedback);
             }
             catch (Exception ex)
@@ -190,11 +183,9 @@ namespace BookAPI.Controllers
 
                 if (!isDeleted)
                 {
-                    _logger.LogWarning($"Feedback with id {id} not found for deletion.");
                     return NotFound($"Feedback with id {id} not found.");
                 }
 
-                _logger.LogInformation($"Feedback with id {id} successfully deleted.");
                 return NoContent();
             }
             catch (Exception ex)

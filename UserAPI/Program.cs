@@ -24,9 +24,9 @@ builder.Services.AddSingleton<IConnectionMultiplexer>(sp =>
 
     var options = new ConfigurationOptions
     {
-        EndPoints = { { config["Redis:Host"]!, int.Parse(config["Redis:Port"]!) } },
-        User = config["Redis:User"],
-        Password = config["Redis:Password"]
+        EndPoints = { { "", 221 } },
+        User = "default",
+        Password = ""
     };
     return ConnectionMultiplexer.Connect(options);
 });
@@ -110,6 +110,11 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
+using (var scope = app.Services.CreateScope())
+{
+    var dbContext = scope.ServiceProvider.GetRequiredService<UserDbContext>();
+}
+
 app.UseCors("AllowReactApp");
 
 
@@ -121,6 +126,7 @@ if (app.Environment.IsDevelopment())
         options.SwaggerEndpoint("/swagger/v1/swagger.json", "UserAPI");
     });
 }
+
 
 app.UseHttpsRedirection();
 

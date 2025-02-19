@@ -1,6 +1,6 @@
 ﻿using Library.DTOs.Order;
 
-namespace Library.Filters
+namespace OrderAPI
 {
     public class OrderFilter
     {

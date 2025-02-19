@@ -13,11 +13,12 @@ namespace BookAPI.Services
     {
         private readonly ISubCategoryRepository _subCategoryRepository;
         private readonly IMapper _mapper;
-
-        public SubCategoryService(ISubCategoryRepository subCategoryRepository, IMapper mapper)
+        private readonly ILogger<SubCategoryService> _logger;
+        public SubCategoryService(ISubCategoryRepository subCategoryRepository, IMapper mapper, ILogger<SubCategoryService> logger)
         {
             _subCategoryRepository = subCategoryRepository;
             _mapper = mapper;
+            _logger = logger;
         }
 
         public async Task<SubCategoryDto> CreateSubCategoryAsync(SubCategoryDto subCategoryDto)

@@ -90,16 +90,14 @@ namespace BookAPI.Controllers
 
                 if (author == null)
                 {
-                    _logger.LogWarning($"Author with id {id} not found.");
                     return NotFound($"Author with id {id} not found.");
                 }
 
-                _logger.LogInformation($"Author with id {id} successfully fetched.");
                 return Ok(author);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Error occurred while fetching author with id {id}.");
+                
                 return StatusCode(StatusCodes.Status500InternalServerError, new { message = ex.Message });
             }
         }
@@ -123,7 +121,6 @@ namespace BookAPI.Controllers
             try
             {
                 var created = await _authorService.CreateAuthorAsync(authorDto);
-                _logger.LogInformation($"Author with id {created.AuthorId} successfully created.");
                 return CreatedAtAction(nameof(GetAuthorById), new { id = created.AuthorId }, created);
             }
             catch (Exception ex)
@@ -156,11 +153,9 @@ namespace BookAPI.Controllers
 
                 if (updated == null)
                 {
-                    _logger.LogWarning($"Author with id {id} not found for update.");
                     return NotFound($"Author with id {id} not found.");
                 }
 
-                _logger.LogInformation($"Author with id {id} successfully updated.");
                 return Ok(updated);
             }
             catch (Exception ex)
@@ -186,16 +181,13 @@ namespace BookAPI.Controllers
 
                 if (!isDeleted)
                 {
-                    _logger.LogWarning($"Author with id {id} not found for deletion.");
                     return NotFound($"Author with id {id} not found.");
                 }
 
-                _logger.LogInformation($"Author with id {id} successfully deleted.");
                 return NoContent();
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Error occurred while deleting author with id {id}.");
                 return StatusCode(StatusCodes.Status500InternalServerError, new { message = ex.Message });
             }
         }
