@@ -1,6 +1,6 @@
 ﻿using Library.DTOs.User;
 
-namespace Library.Filters
+namespace UserAPI
 {
     public class UserFilter
     {

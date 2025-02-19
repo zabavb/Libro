@@ -67,11 +67,9 @@ namespace BookApi.Controllers
 
                 if (book == null)
                 {
-                    _logger.LogWarning($"Book with id {id} not found.");
                     return NotFound($"Book with id {id} not found.");
                 }
 
-                _logger.LogInformation($"Book with id {id} successfully fetched.");
                 return Ok(book);
             }
             catch (Exception ex)
@@ -100,7 +98,6 @@ namespace BookApi.Controllers
             try
             {
                 var createdBook = await _bookService.CreateBookAsync(bookDto);
-                _logger.LogInformation($"Book with id {createdBook.BookId} successfully created.");
                 return CreatedAtAction(nameof(GetBookById), new { id = createdBook.BookId }, createdBook);
             }
             catch (Exception ex)
@@ -134,11 +131,9 @@ namespace BookApi.Controllers
 
                 if (updatedBook == null)
                 {
-                    _logger.LogWarning($"Book with id {id} not found for update.");
                     return NotFound($"Book with id {id} not found.");
                 }
 
-                _logger.LogInformation($"Book with id {id} successfully updated.");
                 return Ok(updatedBook);
             }
             catch (Exception ex)
@@ -164,11 +159,8 @@ namespace BookApi.Controllers
 
                 if (!isDeleted)
                 {
-                    _logger.LogWarning($"Book with id {id} not found for deletion.");
                     return NotFound($"Book with id {id} not found.");
                 }
-
-                _logger.LogInformation($"Book with id {id} successfully deleted.");
                 return NoContent();
             }
             catch (Exception ex)

@@ -21,9 +21,9 @@ builder.Services.AddSingleton<IConnectionMultiplexer>(sp =>
 {
     var options = new ConfigurationOptions
     {
-        EndPoints = { "your_redis_endpoint", "your_port" },
-        User = "your_username",
-        Password = "your_password"
+        EndPoints = { { "", 221 } },
+        User = "default",
+        Password = ""
     };
     return ConnectionMultiplexer.Connect(options);
 });
@@ -93,6 +93,11 @@ builder.Logging.AddSerilog(Log.Logger);
 
 var app = builder.Build();
 
+using (var scope = app.Services.CreateScope())
+{
+    var dbContext = scope.ServiceProvider.GetRequiredService<UserDbContext>();
+}
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -101,6 +106,7 @@ if (app.Environment.IsDevelopment())
         options.SwaggerEndpoint("/swagger/v1/swagger.json", "UserAPI");
     });
 }
+
 
 app.UseHttpsRedirection();
 
