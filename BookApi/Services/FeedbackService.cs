@@ -1,9 +1,11 @@
 ﻿using AutoMapper;
-using BookApi.Data;
-using BookApi.Models;
-using BookApi.Services;
-using BookAPI.Repositories;
-using BookAPI.Services;
+using BookAPI.Data;
+using BookAPI.Models;
+using BookAPI.Models.Filters;
+using BookAPI.Models.Sortings;
+using BookAPI.Repositories.Interfaces;
+using BookAPI.Services.Interfaces;
+using Library.Extensions;
 using Microsoft.EntityFrameworkCore;
 
 
@@ -22,18 +24,39 @@ namespace FeedbackApi.Services
             _logger = logger;
         }
 
-        public async Task<IEnumerable<FeedbackDto>> GetFeedbacksAsync()
+        public async Task<PaginatedResult<FeedbackDto>> GetFeedbacksAsync(
+            int pageNumber, 
+            int pageSize,
+            FeedbackFilter? filter,
+            FeedbackSort? sort)
         {
-            var feedbacks = await _feedbackRepository.GetAllAsync();
+            var feedbacks = await _feedbackRepository.GetAllAsync(
+                pageNumber, 
+                pageSize,
+                filter,
+                sort);
 
-            if (feedbacks == null || feedbacks.Count == 0)
+            if (feedbacks == null || feedbacks.Items == null)
             {
                 _logger.LogWarning("No feedback found");
-                return [];
+                return new PaginatedResult<FeedbackDto>
+                {
+                    Items = new List<FeedbackDto>(),
+                    TotalCount = 0,
+                    PageNumber = pageNumber,
+                    PageSize = pageSize
+                };
             }
             _logger.LogInformation("Successfully found feedback");
-            return _mapper.Map<List<FeedbackDto>>(feedbacks);
+            return new PaginatedResult<FeedbackDto>
+            {
+                Items = _mapper.Map<ICollection<FeedbackDto>>(feedbacks.Items),
+                TotalCount = feedbacks.TotalCount,
+                PageNumber = feedbacks.PageNumber,
+                PageSize = feedbacks.PageSize
+            };
         }
+
 
 
         public async Task<FeedbackDto> GetFeedbackByIdAsync(Guid id)

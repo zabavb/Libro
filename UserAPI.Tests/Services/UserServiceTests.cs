@@ -2,10 +2,10 @@
 using FluentAssertions;
 using Library.DTOs.User;
 using Library.Extensions;
-using Library.Filters;
-using Library.Sortings;
 using Microsoft.Extensions.Logging;
 using Moq;
+using UserAPI.Models.Filters;
+using UserAPI.Models.Sorts;
 using UserAPI.Repositories;
 using UserAPI.Services;
 
@@ -239,7 +239,7 @@ namespace UserAPI.Tests.Services
             // Arrange
             var userDto = new User
             {
-                Id = Guid.NewGuid(),
+                Id = Guid.Empty,
                 FirstName = "Test User Name",
                 LastName = "Test User Surname",
                 Email = "testuseremail@gmail.com",
@@ -253,8 +253,8 @@ namespace UserAPI.Tests.Services
                 .Returns(Task.CompletedTask);
 
             _mapperMock
-                .Setup(m => m.Map<User>(It.IsAny<User>()))
-                .Returns(new User());
+                    .Setup(m => m.Map<Models.User>(It.IsAny<User>()))
+                    .Returns(new Models.User());
 
             string capturedLogMessage = null!;
             _loggerMock
@@ -583,7 +583,7 @@ namespace UserAPI.Tests.Services
                 });
 
             // Act
-            await _userService.DeleteAsync(userId);
+            await _userService.DeleteAsync(userId, "");
 
             // Assert
             capturedLogMessage.Should().NotBeNull();
@@ -624,7 +624,7 @@ namespace UserAPI.Tests.Services
                 });
 
             // Act
-            Func<Task> act = async () => await _userService.DeleteAsync(userId);
+            Func<Task> act = async () => await _userService.DeleteAsync(userId, "");
 
             // Assert
             await act.Should().ThrowAsync<KeyNotFoundException>()
@@ -667,7 +667,7 @@ namespace UserAPI.Tests.Services
                 });
 
             // Act
-            Func<Task> act = async () => await _userService.DeleteAsync(userId);
+            Func<Task> act = async () => await _userService.DeleteAsync(userId, "");
 
             // Assert
             await act.Should().ThrowAsync<InvalidOperationException>()

@@ -1,12 +1,11 @@
 ﻿using AutoMapper;
-using System.Text.RegularExpressions;
 using UserAPI.Models;
 using UserAPI.Models.Auth;
 using UserAPI.Repositories;
 
 namespace UserAPI.Services
 {
-    public class AuthService(IAuthRepository authRepository, IPasswordRepository passwordRepository, IUserRepository userRepository, IMapper mapper, ILogger<IAuthService> logger) : IAuthService
+    public class AuthService(IAuthRepository authRepository, IUserRepository userRepository, IPasswordRepository passwordRepository, IMapper mapper, ILogger<IAuthService> logger) : IAuthService
     {
         private readonly IAuthRepository _authRepository = authRepository;
         private readonly IUserRepository _userRepository = userRepository;
@@ -14,6 +13,20 @@ namespace UserAPI.Services
         private readonly IMapper _mapper = mapper;
         private readonly ILogger<IAuthService> _logger = logger;
         private string _message = string.Empty;
+
+        public async Task<User?> Me(Guid id)
+        {
+            try
+            {
+                return await _userRepository.GetByIdAsync(id);
+            }
+            catch (Exception ex)
+            {
+                _message = $"Error occurred while fetching user data.";
+                _logger.LogError(_message);
+                throw new InvalidOperationException(_message, ex);
+            }
+        }
 
         public async Task<UserDto?> AuthenticateAsync(LoginRequest request)
         {
@@ -55,9 +68,9 @@ namespace UserAPI.Services
             catch (Exception ex)
             {
                 _message = $"Error occurred while registering new user.";
-                _logger.LogError(_message); 
+                _logger.LogError(_message);
                 throw new InvalidOperationException(_message, ex);
-            }
+            }*/
         }
 
         private async Task<bool> IsRightPassword(User user, string password)

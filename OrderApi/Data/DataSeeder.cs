@@ -37,7 +37,7 @@ namespace OrderApi.Data
                 {
                     OrderId = Guid.NewGuid(),
                     UserId = Guid.NewGuid(),
-                    BookIds = { Guid.NewGuid() },
+                    BookIds = { Guid.NewGuid(), Guid.NewGuid() },
                     Region = "Lviv",
                     City = "Lviv",
                     Address = "Stepana Bandery St. 52",
@@ -52,7 +52,7 @@ namespace OrderApi.Data
                 {
                     OrderId = Guid.NewGuid(),
                     UserId = Guid.NewGuid(),
-                    BookIds = { Guid.NewGuid() },
+                    BookIds = { Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid() },
                     Region = "Lviv",
                     City = "Lviv",
                     Address = "Heroiv UPA ST. 12",
@@ -67,7 +67,7 @@ namespace OrderApi.Data
                 {
                     OrderId = Guid.NewGuid(),
                     UserId = Guid.NewGuid(),
-                    BookIds = { Guid.NewGuid() },
+                    BookIds = { Guid.NewGuid(), Guid.NewGuid() },
                     Region = "Lviv",
                     City = "Lviv",
                     Address = "Antonovycha St. 2",
@@ -127,7 +127,7 @@ namespace OrderApi.Data
                 {
                     OrderId = Guid.NewGuid(),
                     UserId = Guid.NewGuid(),
-                    BookIds = { Guid.NewGuid() },
+                    BookIds = { Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid() },
                     Region = "Lviv",
                     City = "Lviv",
                     Address = "Stepana Bandery St. 32",
@@ -187,7 +187,7 @@ namespace OrderApi.Data
                 {
                     OrderId = Guid.NewGuid(),
                     UserId = Guid.NewGuid(),
-                    BookIds = { Guid.NewGuid() },
+                    BookIds = { Guid.NewGuid(), Guid.NewGuid() },
                     Region = "Kyiv",
                     City = "Kyiv",
                     Address = "Hetmana Pavla Scoropadskoho St. 21",
@@ -232,7 +232,7 @@ namespace OrderApi.Data
                 {
                     OrderId = Guid.NewGuid(),
                     UserId = Guid.NewGuid(),
-                    BookIds = { Guid.NewGuid() },
+                    BookIds = { Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid() },
                     Region = "Lviv",
                     City = "Lviv",
                     Address = "Heroiv UPA ST. 62",
@@ -277,7 +277,7 @@ namespace OrderApi.Data
                 {
                     OrderId = Guid.NewGuid(),
                     UserId = Guid.NewGuid(),
-                    BookIds = { Guid.NewGuid() },
+                    BookIds = { Guid.NewGuid(), Guid.NewGuid() },
                     Region = "Kyiv",
                     City = "Kyiv",
                     Address = "Hetmana Pavla Scoropadskoho St. 80",
@@ -307,7 +307,7 @@ namespace OrderApi.Data
                 {
                     OrderId = Guid.NewGuid(),
                     UserId = Guid.NewGuid(),
-                    BookIds = { Guid.NewGuid() },
+                    BookIds = { Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid() },
                     Region = "Lviv",
                     City = "Lviv",
                     Address = "Stepana Bandery St. 21",
@@ -322,7 +322,7 @@ namespace OrderApi.Data
                 {
                     OrderId = Guid.NewGuid(),
                     UserId = Guid.NewGuid(),
-                    BookIds = { Guid.NewGuid() },
+                    BookIds = { Guid.NewGuid() , Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid()},
                     Region = "Lviv",
                     City = "Lviv",
                     Address = "Heroiv UPA ST. 14",
@@ -337,7 +337,7 @@ namespace OrderApi.Data
                 {
                     OrderId = Guid.NewGuid(),
                     UserId = Guid.NewGuid(),
-                    BookIds = { Guid.NewGuid() },
+                    BookIds = { Guid.NewGuid(), Guid.NewGuid()},
                     Region = "Lviv",
                     City = "Lviv",
                     Address = "Antonovycha St. 23",
@@ -367,7 +367,7 @@ namespace OrderApi.Data
                 {
                     OrderId = Guid.NewGuid(),
                     UserId = Guid.NewGuid(),
-                    BookIds = { Guid.NewGuid() },
+                    BookIds = { Guid.NewGuid(), Guid.NewGuid() },
                     Region = "Kyiv",
                     City = "Kyiv",
                     Address = "Hetmana Pavla Scoropadskoho St. 17",
@@ -382,7 +382,7 @@ namespace OrderApi.Data
                 {
                     OrderId = Guid.NewGuid(),
                     UserId = Guid.NewGuid(),
-                    BookIds = { Guid.NewGuid() },
+                    BookIds = { Guid.NewGuid(), Guid.NewGuid() },
                     Region = "Kyiv",
                     City = "Kyiv",
                     Address = "Zhylianska St. 52",
@@ -412,7 +412,7 @@ namespace OrderApi.Data
                 {
                     OrderId = Guid.NewGuid(),
                     UserId = Guid.NewGuid(),
-                    BookIds = { Guid.NewGuid() },
+                    BookIds = { Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid() },
                     Region = "Lviv",
                     City = "Lviv",
                     Address = "Heroiv UPA ST. 24",
@@ -457,7 +457,7 @@ namespace OrderApi.Data
                 {
                     OrderId = Guid.NewGuid(),
                     UserId = Guid.NewGuid(),
-                    BookIds = { Guid.NewGuid() },
+                    BookIds = { Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid() },
                     Region = "Kyiv",
                     City = "Kyiv",
                     Address = "Hetmana Pavla Scoropadskoho St. 52",
@@ -472,7 +472,7 @@ namespace OrderApi.Data
                 {
                     OrderId = Guid.NewGuid(),
                     UserId = Guid.NewGuid(),
-                    BookIds = { Guid.NewGuid() },
+                    BookIds = { Guid.NewGuid(), Guid.NewGuid() },
                     Region = "Kyiv",
                     City = "Kyiv",
                     Address = "Hetmana Pavla Scoropadskoho St. 9",

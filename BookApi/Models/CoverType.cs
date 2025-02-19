@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace BookApi.Models
+namespace BookAPI.Models
 {
     public enum CoverType
     {

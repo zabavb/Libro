@@ -1,14 +1,16 @@
 ﻿using AutoMapper;
-using BookApi.Controllers;
-using BookApi.Models;
-using BookAPI.Repositories;
+using BookAPI.Models;
+using BookAPI.Models.Filters;
+using BookAPI.Models.Sortings;
+using BookAPI.Repositories.Interfaces;
+using BookAPI.Services.Interfaces;
 using Library.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace BookApi.Services
+namespace BookAPI.Services
 {
     public class BookService : IBookService
     {
@@ -24,7 +26,12 @@ namespace BookApi.Services
         }
 
 
-        public async Task<PaginatedResult<BookDto>> GetBooksAsync(int pageNumber, int pageSize, string searchTerm, Filter? filter, Sort? sort)
+        public async Task<PaginatedResult<BookDto>> GetBooksAsync(
+            int pageNumber,
+            int pageSize, 
+            string searchTerm,
+            BookFilter? filter, 
+            BookSort? sort)
         {
             var books = await _bookRepository.GetAllAsync(pageNumber, pageSize, searchTerm, filter, sort);
 

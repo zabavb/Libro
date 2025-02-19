@@ -1,10 +1,12 @@
 ﻿using AutoMapper;
-using BookApi.Models;
+using BookAPI.Models;
+using BookAPI.Models.Sortings;
 using BookAPI.Repositories;
-using Library.DTOs.Book;
-using Category = BookApi.Models.Category;
+using BookAPI.Repositories.Interfaces;
+using BookAPI.Services.Interfaces;
+using Library.Extensions;
 
-namespace BookApi.Services
+namespace BookAPI.Services
 {
     public class CategoryService : ICategoryService
     {
@@ -58,17 +60,25 @@ namespace BookApi.Services
             }
         }
 
-        public async Task<IEnumerable<CategoryDto>> GetCategoriesAsync()
+        public async Task<PaginatedResult<CategoryDto>> GetCategoriesAsync(int pageNumber, int pageSize, string? searchTerm, CategorySort? sort)
         {
-            var categories = await _categoryRepository.GetAllAsync();
-            if (categories == null || !categories.Any())
+            var categories = await _categoryRepository.GetAllAsync(pageNumber, pageSize, searchTerm, sort);
+
+            if (categories == null || categories.Items == null)
             {
                 _logger.LogWarning("No categories found");
-                return Enumerable.Empty<CategoryDto>();
+                throw new InvalidOperationException("Failed to fetch categories.");
             }
             _logger.LogInformation("Successfully found categories");
-            return _mapper.Map<IEnumerable<CategoryDto>>(categories);
+            return new PaginatedResult<CategoryDto>
+            {
+                Items = _mapper.Map<ICollection<CategoryDto>>(categories.Items),
+                TotalCount = categories.TotalCount,
+                PageNumber = categories.PageNumber,
+                PageSize = categories.PageSize
+            };
         }
+
 
         public async Task<CategoryDto> GetCategoryByIdAsync(Guid id)
         {

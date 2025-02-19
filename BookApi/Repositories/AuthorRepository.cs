@@ -1,5 +1,9 @@
-﻿using BookApi.Data;
-using BookApi.Models;
+﻿using BookAPI.Data;
+using BookAPI.Models;
+using BookAPI.Models.Extensions;
+using BookAPI.Models.Filters;
+using BookAPI.Models.Sortings;
+using BookAPI.Repositories.Interfaces;
 using Library.Extensions;
 using Microsoft.EntityFrameworkCore;
 
@@ -16,6 +20,8 @@ namespace BookAPI.Repositories
 
         public async Task CreateAsync(Author entity)
         {
+            ArgumentNullException.ThrowIfNull(entity);
+
             entity.Id = Guid.NewGuid(); 
             _context.Authors.Add(entity);
             await _context.SaveChangesAsync();
@@ -23,22 +29,40 @@ namespace BookAPI.Repositories
 
         public async Task DeleteAsync(Guid id)
         {
-            var author = await _context.Authors.FirstOrDefaultAsync(a => a.Id == id);
-            if (author == null)
-            {
-                throw new KeyNotFoundException("Author not found");
-            }
+            if (id == Guid.Empty)
+                throw new ArgumentException("Id cannot be empty.", nameof(id));
+            var author = await _context.Authors.FirstOrDefaultAsync(a => a.Id == id) ?? throw new KeyNotFoundException("Author not found");
             _context.Authors.Remove(author);
             await _context.SaveChangesAsync();
         }
 
-        public async Task<List<Author>> GetAllAsync()
+        public async Task<PaginatedResult<Author>> GetAllAsync(int pageNumber, int pageSize, string? searchTerm, AuthorFilter? filter, AuthorSort? sort)
         {
-            return await _context.Authors.ToListAsync();
+            IQueryable<Author> authors = _context.Authors.AsQueryable();
+            if (!string.IsNullOrWhiteSpace(searchTerm))
+            {
+                authors = authors.Search(searchTerm, p => p.Name);
+            }
+            authors = filter?.Apply(authors) ?? authors;
+            authors = sort?.Apply(authors) ?? authors;
+
+            var totalAuthors = await authors.CountAsync();
+            var resultAuthors = await authors.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToListAsync();
+
+            return new PaginatedResult<Author>
+            {
+                Items = resultAuthors,
+                TotalCount = totalAuthors,
+                PageNumber = pageNumber,
+                PageSize = pageSize
+            };
         }
+
 
         public async Task<Author?> GetByIdAsync(Guid id)
         {
+            if (id == Guid.Empty)
+                throw new ArgumentException("Id cannot be empty.", nameof(id));
             return await _context.Authors.FirstOrDefaultAsync(a => a.Id == id);
         }
 

@@ -1,9 +1,13 @@
 ﻿using AutoMapper;
-using BookApi.Models;
-using BookApi.Repositories;
+using BookAPI.Models;
 using BookAPI.Repositories;
+using BookAPI.Models.Filters;
+using BookAPI.Models.Sortings;
+using BookAPI.Repositories.Interfaces;
+using BookAPI.Services.Interfaces;
+using Library.Extensions;
 
-namespace BookApi.Services
+namespace BookAPI.Services
 {
     public class SubCategoryService : ISubCategoryService
     {
@@ -36,11 +40,25 @@ namespace BookApi.Services
             return true;
         }
 
-        public async Task<IEnumerable<SubCategoryDto>> GetSubCategoriesAsync()
+        public async Task<PaginatedResult<SubCategoryDto>> GetSubCategoriesAsync(
+            int pageNumber, int pageSize, string? searchTerm,
+            SubCategoryFilter? filter, SubCategorySort? sort)
         {
-            var subCategories = await _subCategoryRepository.GetAllAsync();
-            return _mapper.Map<IEnumerable<SubCategoryDto>>(subCategories);
+            var subCategories = await _subCategoryRepository.GetAllAsync(pageNumber, pageSize, searchTerm, filter, sort);
+            if (subCategories == null || subCategories.Items == null)
+            {
+                throw new InvalidOperationException("Failed to fetch subcategories.");
+            }
+
+            return new PaginatedResult<SubCategoryDto>
+            {
+                Items = _mapper.Map<ICollection<SubCategoryDto>>(subCategories.Items),
+                TotalCount = subCategories.TotalCount,
+                PageNumber = subCategories.PageNumber,
+                PageSize = subCategories.PageSize
+            };
         }
+
 
         public async Task<SubCategoryDto> GetSubCategoryByIdAsync(Guid id)
         {

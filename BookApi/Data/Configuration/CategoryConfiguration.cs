@@ -1,8 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.EntityFrameworkCore;
-using BookApi.Models;
+using BookAPI.Models;
 
-namespace BookApi.Data.Configuration
+namespace BookAPI.Data.Configuration
 {
     internal class CategoryConfiguration : IEntityTypeConfiguration<Category>
     {
@@ -17,5 +17,5 @@ namespace BookApi.Data.Configuration
                    .OnDelete(DeleteBehavior.Cascade);
         }
     }
-    }
 }
+

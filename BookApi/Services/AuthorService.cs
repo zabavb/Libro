@@ -1,9 +1,12 @@
 ﻿using AutoMapper;
-using BookApi.Controllers;
-using BookApi.Models;
-using BookAPI.Repositories;
+using BookAPI.Models;
+using BookAPI.Models.Filters;
+using BookAPI.Models.Sortings;
+using BookAPI.Repositories.Interfaces;
+using BookAPI.Services.Interfaces;
+using Library.Extensions;
 
-namespace BookApi.Services
+namespace BookAPI.Services
 {
     public class AuthorService : IAuthorService
     {
@@ -17,18 +20,23 @@ namespace BookApi.Services
             _authorRepository = authorRepository;
             _logger = logger;
         }
-        
-        public async Task<IEnumerable<AuthorDto>> GetAuthorsAsync()
-        {
-            var authors = await _authorRepository.GetAllAsync();
 
-            if (authors == null || !authors.Any())
+        public async Task<PaginatedResult<AuthorDto>> GetAuthorsAsync(int pageNumber, int pageSize, string? searchTerm, AuthorFilter? filter, AuthorSort? sort)
+        {
+            var authors = await _authorRepository.GetAllAsync(pageNumber, pageSize, searchTerm, filter, sort);
+            if (authors == null || authors.Items == null)
             {
                 _logger.LogWarning("No authors found");
-                return Enumerable.Empty<AuthorDto>();
+                throw new InvalidOperationException("Failed to fetch authors.");
             }
-            _logger.LogInformation("Successfully found authors");
-            return _mapper.Map<List<AuthorDto>>(authors);
+
+            return new PaginatedResult<AuthorDto>
+            {
+                Items = _mapper.Map<ICollection<AuthorDto>>(authors.Items),
+                TotalCount = authors.TotalCount,
+                PageNumber = authors.PageNumber,
+                PageSize = pageSize
+            };
         }
 
         public async Task<AuthorDto> GetAuthorByIdAsync(Guid id)
