@@ -24,11 +24,10 @@ namespace Client.Controllers
 
         //=========================== Actions ===========================
 
-        public async Task<IActionResult> GetAllUsers(int pageNumber = 1, int pageSize = 10, string? searchTerm = null, string? filter = null)
         {
             try
             {
-                var queryString = BuildQueryString(pageNumber, pageSize, searchTerm, filter);
+                var queryString = BuildQueryString(pageNumber, pageSize, searchTerm, filter, sort);
                 var response = await _httpClient.GetAsync(_baseAddress + queryString);
 
                 if (response.IsSuccessStatusCode)
@@ -161,7 +160,7 @@ namespace Client.Controllers
             }
         }
 
-        private string BuildQueryString(int pageNumber, int pageSize, string? searchTerm, string? filter)
+        private string BuildQueryString(int pageNumber, int pageSize, string? searchTerm, string? filter, string? sort)
         {
             var queryParams = new List<string> { $"pageNumber={pageNumber}", $"pageSize={pageSize}" };
             
@@ -169,6 +168,8 @@ namespace Client.Controllers
                 queryParams.Add($"searchTerm={searchTerm}");
             if (!string.IsNullOrEmpty(filter))
                 queryParams.Add($"filter={filter}");
+            if (!string.IsNullOrEmpty(sort))
+                queryParams.Add($"sort={sort}");
 
             return "?" + string.Join("&", queryParams);
         }

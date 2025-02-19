@@ -20,9 +20,9 @@ namespace UserAPI.Services
             _message = string.Empty;
         }
 
-        public async Task<PaginatedResult<UserDto>> GetAllAsync(int pageNumber, int pageSize, string searchTerm, Filter? filter)
+        public async Task<PaginatedResult<UserDto>> GetAllAsync(int pageNumber, int pageSize, string searchTerm, Filter? filter, Sort sort)
         {
-            var paginatedUsers = await _repository.GetAllAsync(pageNumber, pageSize, searchTerm, filter);
+            var paginatedUsers = await _repository.GetAllAsync(pageNumber, pageSize, searchTerm, filter, sort);
 
             if (paginatedUsers == null || paginatedUsers.Items == null)
             {
