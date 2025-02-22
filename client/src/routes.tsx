@@ -10,6 +10,7 @@ import UserListContainer from "./containers/user/UserListContainer"
 import AdminLayout from "./components/layouts/AdminLayout"
 import OrderListContainer from "./containers/order/OrderListContainer"
 import OrderFormPage from "./pages/Admin/OrderRelated/Orders/OrderFormPage"
+import BookListContainer from "./containers/books/BookListContainer"
 
 const AppRoutes = () => (
 	<BrowserRouter>
@@ -55,7 +56,11 @@ const AppRoutes = () => (
 					element={<OrderFormPage />}
 				/>
 			</Route>
-			
+			{/*BOOKS*/}
+			<Route
+					path="/admin/books"
+					element={<BookListContainer />}
+				/>
 			{/* Other */}
 			<Route
 				path="*"
