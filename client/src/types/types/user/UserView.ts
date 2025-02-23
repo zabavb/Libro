@@ -1,4 +1,4 @@
-import { Role } from "../subTypes/Role"
+import { Role } from "../../subTypes/Role"
 
 export interface UserView {
 	id: string

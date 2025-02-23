@@ -1,3 +1,7 @@
+// Auth types
+export type { Login } from "./types/auth/login"
+export type { Register } from "./types/auth/register"
+
 // Main types
 export type { User } from "./objects/User"
 export type { Order } from "./objects/Order"

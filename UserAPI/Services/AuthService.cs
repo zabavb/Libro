@@ -1,18 +1,32 @@
 ﻿using AutoMapper;
-using System.Text.RegularExpressions;
 using UserAPI.Models;
 using UserAPI.Models.Auth;
 using UserAPI.Repositories;
 
 namespace UserAPI.Services
 {
-    public class AuthService(IAuthRepository authRepository, IUserRepository userRepository, IMapper mapper, ILogger<IAuthService> logger) : IAuthService
+    public class AuthService(IAuthRepository authRepository, IUserRepository userRepository, IPasswordRepository passwordRepository, IMapper mapper, ILogger<IAuthService> logger) : IAuthService
     {
         private readonly IAuthRepository _authRepository = authRepository;
         private readonly IUserRepository _userRepository = userRepository;
+        private readonly IPasswordRepository _passwordRepository = passwordRepository;
         private readonly IMapper _mapper = mapper;
         private readonly ILogger<IAuthService> _logger = logger;
         private string _message = string.Empty;
+
+        public async Task<User?> Me(Guid id)
+        {
+            try
+            {
+                return await _userRepository.GetByIdAsync(id);
+            }
+            catch (Exception ex)
+            {
+                _message = $"Error occurred while fetching user data.";
+                _logger.LogError(_message);
+                throw new InvalidOperationException(_message, ex);
+            }
+        }
 
         public async Task<UserDto?> AuthenticateAsync(LoginRequest request)
         {
@@ -20,7 +34,7 @@ namespace UserAPI.Services
                 _mapper.Map<UserDto>(await _authRepository.GetUserByEmailAsync(request)) :
                 _mapper.Map<UserDto>(await _authRepository.GetUserByPhoneNumberAsync(request));
 
-            return await IsRightPassword(user, "That is password :)") ? user : null;
+            return await IsRightPassword(_mapper.Map<User>(user), request.Password) ? user : null;
         }
 
         public async Task RegisterAsync(RegisterRequest request)
@@ -31,27 +45,44 @@ namespace UserAPI.Services
                 _logger.LogError(_message);
                 throw new ArgumentNullException(null, _message);
             }
-            var user = _mapper.Map<User>(request);  // missing password
-            try
+
+            // Unfinished part:
+            /*try
             {
+                var userId = Guid.NewGuid();
+                await _passwordRepository.CreateAsync(request.Password, userId);
+                
+                User user = new()
+                {
+                    UserId = userId,
+                    FirstName = request.FirstName,
+                    LastName = request.LastName,
+                    Email = request.Email,
+                    PhoneNumber = request.PhoneNumber,
+                };
+
                 await _userRepository.CreateAsync(user);
+                _message = "Successful user registration.";
+                _logger.LogInformation(_message);
             }
             catch (Exception ex)
             {
                 _message = $"Error occurred while registering new user.";
-                _logger.LogError(_message); 
+                _logger.LogError(_message);
                 throw new InvalidOperationException(_message, ex);
-            }
+            }*/
         }
 
-        private static async Task<bool> IsRightPassword(UserDto user, string password)
+        private async Task<bool> IsRightPassword(User user, string password)
         {
-            if (user != null && !string.IsNullOrWhiteSpace(password))
+            if (user == null || string.IsNullOrWhiteSpace(password))
             {
-                // Password check
+                _logger.LogWarning("User or password is null/empty.");
+                return false;
             }
 
-            return true;
+            Guid passwordId = user.PasswordId;
+            return await _passwordRepository.VerifyAsync(passwordId, password);
         }
     }
 }

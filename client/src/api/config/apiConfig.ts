@@ -1,8 +1,15 @@
-const USER_API_BASE_URL = "https://localhost:7007/api"
-const ORDER_API_BASE_URL = "https://localhost:7051/api"
-const BOOK_API_BASE_URL = "https://localhost:7084/api"
+const BASE_URL = (port: number) => `https://localhost:${port}/api`
+
+const USER_API_BASE_URL = BASE_URL(7007)
+const ORDER_API_BASE_URL = BASE_URL(7051)
+const BOOK_API_BASE_URL = BASE_URL(7084)
 
 export const API_ROUTES = {
+	AUTH: {
+		ME: `${USER_API_BASE_URL}/auth/me`,
+		LOGIN: `${USER_API_BASE_URL}/auth/login`,
+		REGISTER: `${USER_API_BASE_URL}/auth/register`,
+	},
 	USERS: {
 		BASE: `${USER_API_BASE_URL}/users`,
 		PAGINATED: (pageNumber: number, pageSize: number) =>
