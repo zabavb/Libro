@@ -29,6 +29,11 @@ const AppRoutes = () => (
 					path="/login"
 					element={<LoginContainer />}
 				/>
+				{/* Subscription */}
+				<Route 
+				   	path="/subscription" 
+					element={<Subscription />} 
+				/> 
 				<Route
 					path="/register"
 					element={<RegisterContainer />}
