@@ -23,3 +23,12 @@ export const ORDERS_PAGINATED = (pageNumber: number = 1, pageSize: number = 10) 
 	API_ROUTES.ORDERS.PAGINATED(pageNumber, pageSize)
 
 export const ORDER_BY_ID = API_ROUTES.ORDERS.BY_ID
+
+// ================= BOOK =================
+export const BOOKS = API_ROUTES.BOOKS.BASE
+
+export const BOOKS_PAGINATED = (pageNumber: number = 1, pageSize: number = 10) =>
+	API_ROUTES.BOOKS.PAGINATED(pageNumber, pageSize)
+
+export const BOOK_BY_ID = API_ROUTES.BOOKS.BY_ID
+
