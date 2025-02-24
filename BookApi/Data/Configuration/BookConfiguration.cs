@@ -14,6 +14,13 @@ namespace BookAPI.Data.Configuration
             builder.HasMany(b => b.Subcategories)
                    .WithMany(sc => sc.Books)
                    .UsingEntity(j => j.ToTable("BookSubCategories"));
+            builder.HasMany(b => b.Subcategories)
+              .WithMany(sc => sc.Books)
+              .UsingEntity<Dictionary<string, object>>(
+                  "BookSubCategory",
+                  j => j.HasOne<SubCategory>().WithMany().HasForeignKey("SubCategoryId"),
+                  j => j.HasOne<Book>().WithMany().HasForeignKey("BookId")
+              );
             builder.Property(b => b.IsAvaliable)
                    .HasDefaultValue(true);
         }
