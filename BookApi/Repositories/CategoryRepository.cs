@@ -32,7 +32,8 @@ namespace BookAPI.Repositories
 
         public async Task<PaginatedResult<Category>> GetAllAsync(int pageNumber, int pageSize, string? searchTerm, CategorySort? sort)
         {
-            IQueryable<Category> categories = _context.Categories.AsQueryable();
+            IQueryable<Category> categories = _context.Categories
+                .Include(b => b.Subcategories).AsQueryable();
             if (categories.Any() && !string.IsNullOrWhiteSpace(searchTerm))
                 categories = categories.Search(searchTerm, b => b.Name);
             categories = sort?.Apply(categories) ?? categories;
