@@ -17,15 +17,26 @@ namespace UserAPI.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            
             modelBuilder.ApplyConfiguration(new UserConfiguration());
             modelBuilder.ApplyConfiguration(new PasswordConfiguration());
             modelBuilder.ApplyConfiguration(new SubscriptionConfiguration());
 
             modelBuilder.Entity<User>()
-                .HasOne(u => u.Subscription) 
+                .HasOne(u => u.Subscription)
                 .WithOne(s => s.User)
                 .HasForeignKey<Subscription>(s => s.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<Password>()
+                .Property(p => p.PasswordHash)
+                .HasColumnType("nvarchar(150)");
+
+            modelBuilder.Entity<Password>()
+                .Property(p => p.PasswordSalt)
+                .HasColumnType("nvarchar(30)");
+
+            DataSeeder.Seed(modelBuilder);
         }
     }
 }

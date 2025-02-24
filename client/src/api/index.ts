@@ -33,3 +33,12 @@ export const USER_BY_ID = API_ROUTES.USERS.BY_ID
 
 	export const DELIVERYTYPE_BY_ID = API_ROUTES.DELIVERY.BY_ID
 
+
+  // ================= BOOK =================
+  export const BOOKS = API_ROUTES.BOOKS.BASE
+
+  export const BOOKS_PAGINATED = (pageNumber: number = 1, pageSize: number = 10) =>
+    API_ROUTES.BOOKS.PAGINATED(pageNumber, pageSize)
+
+  export const BOOK_BY_ID = API_ROUTES.BOOKS.BY_ID
+

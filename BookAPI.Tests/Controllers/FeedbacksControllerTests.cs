@@ -35,7 +35,7 @@ namespace BookAPI.Tests.Controllers
         {
             // Arrange
             _mockFeedbackService
-                .Setup(s => s.GetFeedbacksAsync(It.IsAny<int>(), It.IsAny<int>()))
+                .Setup(s => s.GetFeedbacksAsync(It.IsAny<int>(), It.IsAny<int>(), null, null))
                 .ReturnsAsync(new PaginatedResult<FeedbackDto>
                 {
                     Items = new List<FeedbackDto> { new FeedbackDto() }, 
@@ -50,14 +50,14 @@ namespace BookAPI.Tests.Controllers
             var okResult = Assert.IsType<OkObjectResult>(actionResult.Result);
             var returnedFeedbacks = Assert.IsType<PaginatedResult<FeedbackDto>>(okResult.Value);
             Assert.Equal(1, returnedFeedbacks.TotalCount); 
-            _mockFeedbackService.Verify(s => s.GetFeedbacksAsync(It.IsAny<int>(), It.IsAny<int>()));
+            _mockFeedbackService.Verify(s => s.GetFeedbacksAsync(It.IsAny<int>(), It.IsAny<int>(), null, null));
         }
         [Fact]
         public async Task GetAll_ReturnsNotFound_WhenNoFeedbacksFound()
         {
             // Arrange
             _mockFeedbackService
-                .Setup(s => s.GetFeedbacksAsync(It.IsAny<int>(), It.IsAny<int>()))
+                .Setup(s => s.GetFeedbacksAsync(It.IsAny<int>(), It.IsAny<int>(), null, null))
                 .ReturnsAsync(new PaginatedResult<FeedbackDto>
                 {
                     Items = new List<FeedbackDto>(), 
@@ -71,7 +71,7 @@ namespace BookAPI.Tests.Controllers
             var actionResult = Assert.IsType<ActionResult<PaginatedResult<FeedbackDto>>>(result);
             var notFoundResult = Assert.IsType<NotFoundObjectResult>(actionResult.Result);
             Assert.Equal("No feedbacks found.", notFoundResult.Value);
-            _mockFeedbackService.Verify(s => s.GetFeedbacksAsync(It.IsAny<int>(), It.IsAny<int>()));
+            _mockFeedbackService.Verify(s => s.GetFeedbacksAsync(It.IsAny<int>(), It.IsAny<int>(), null, null));
         }
         [Fact]
         public async Task GetAll_ReturnsBadRequest_WhenInvalidPageNumberOrSize()
@@ -87,14 +87,14 @@ namespace BookAPI.Tests.Controllers
             var actionResult = Assert.IsType<ActionResult<PaginatedResult<FeedbackDto>>>(result);
             var badRequestResult = Assert.IsType<BadRequestObjectResult>(actionResult.Result);
             Assert.Equal("Page number and page size must be greater than 0.", badRequestResult.Value);
-            _mockFeedbackService.Verify(s => s.GetFeedbacksAsync(It.IsAny<int>(), It.IsAny<int>()), Times.Never);
+            _mockFeedbackService.Verify(s => s.GetFeedbacksAsync(It.IsAny<int>(), It.IsAny<int>(), null, null), Times.Never);
         }
         [Fact]
         public async Task GetAll_ReturnsInternalServerError_WhenExceptionOccurs()
         {
             // Arrange
             _mockFeedbackService
-                .Setup(s => s.GetFeedbacksAsync(It.IsAny<int>(), It.IsAny<int>()))
+                .Setup(s => s.GetFeedbacksAsync(It.IsAny<int>(), It.IsAny<int>(), null, null))
                 .ThrowsAsync(new Exception("Something went wrong"));
 
             // Act
@@ -111,7 +111,7 @@ namespace BookAPI.Tests.Controllers
         {
             // Arrange
             _mockFeedbackService
-                .Setup(s => s.GetFeedbacksAsync(It.IsAny<int>(), It.IsAny<int>()))
+                .Setup(s => s.GetFeedbacksAsync(It.IsAny<int>(), It.IsAny<int>(), null, null))
                 .ReturnsAsync(new PaginatedResult<FeedbackDto>
                 {
                     Items = new List<FeedbackDto> { new FeedbackDto() },
@@ -122,7 +122,7 @@ namespace BookAPI.Tests.Controllers
             var result = await _controller.GetFeedbacks(1, 10);
 
             // Assert
-            _mockFeedbackService.Verify(s => s.GetFeedbacksAsync(It.IsAny<int>(), It.IsAny<int>()), Times.Once);
+            _mockFeedbackService.Verify(s => s.GetFeedbacksAsync(It.IsAny<int>(), It.IsAny<int>(), null, null), Times.Once);
         }
 
         [Fact]

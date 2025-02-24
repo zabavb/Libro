@@ -20,6 +20,8 @@ import OrderFormPage from "./pages/Admin/OrderRelated/Orders/OrderFormPage"
 import DeliveryTypeListContainer from "./containers/order/DeliveryTypeListContainer"
 import DeliveryTypeFormPage from "./pages/Admin/OrderRelated/Deliveries/DeliveryFormPage"
 
+import BookListContainer from "./containers/books/BookListContainer"
+
 import NotFoundPage from "./pages/Main/NotFoundPage"
 
 const AppRoutes = () => (
@@ -101,9 +103,21 @@ const AppRoutes = () => (
 					path="*"
 					element={<NotFoundPage />}
 				/>
+      </Route>
+        {/*BOOKS*/}
+        <Route
+            path="/admin/books"
+            element={<BookListContainer />}
+          />
+        {/* Other */}
+        <Route
+          path="*"
+          element={<NotFoundPage />}
+        />
 			</Routes>
 		</BrowserRouter>
 	</AuthProvider>
+
 )
 
 export default AppRoutes

@@ -38,7 +38,7 @@ namespace BookAPI.Tests.Repositories
             await _dbContext.SaveChangesAsync();
 
             // Act
-            var result = await _repository.GetAllAsync(1, 2);
+            var result = await _repository.GetAllAsync(1, 2, null, null, null);
 
             // Assert
             Assert.Equal(2, result.Items.Count);
@@ -62,7 +62,7 @@ namespace BookAPI.Tests.Repositories
             var repository = new AuthorRepository(context);
 
             // Act
-            var result = await repository.GetAllAsync(1, 10);
+            var result = await repository.GetAllAsync(1, 10, null, null, null);
 
             // Assert
             Assert.Empty(result.Items);

@@ -2,6 +2,7 @@ const BASE_URL = (port: number) => `https://localhost:${port}/api`
 
 const USER_API_BASE_URL = BASE_URL(7007)
 const ORDER_API_BASE_URL = BASE_URL(7051)
+const BOOK_API_BASE_URL = BASE_URL(7084)
 
 export const API_ROUTES = {
 	AUTH: {
@@ -26,5 +27,10 @@ export const API_ROUTES = {
 		PAGINATED: (pageNumber: number, pageSize: number) => 
 			`${ORDER_API_BASE_URL}/deliverytypes?pageNumber=${pageNumber}&pageSize=${pageSize}`,
 		BY_ID: (id: string) => `${ORDER_API_BASE_URL}/deliverytypes/${id}`,
+	BOOKS: {
+		BASE: `${BOOK_API_BASE_URL}/books`,
+		PAGINATED: (pageNumber: number, pageSize: number) =>
+			`${BOOK_API_BASE_URL}/books?pageNumber=${pageNumber}&pageSize=${pageSize}`,
+		BY_ID: (id: string) => `${BOOK_API_BASE_URL}/books/${id}`,
 	},
 }

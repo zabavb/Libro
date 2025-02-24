@@ -4,7 +4,6 @@ using BookAPI.Models.Filters;
 using BookAPI.Models.Sortings;
 using BookAPI.Repositories.Interfaces;
 using Library.Extensions;
-using Library.Filters;
 using Library.Sortings;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -33,7 +32,9 @@ namespace BookAPI.Repositories
             BookSort? sort)
         {
 
-            IQueryable<Book> books = _context.Books.AsQueryable();
+            IQueryable<Book> books = _context.Books
+                .Include(x => x.Subcategories)
+                .Include(x=>x.Feedbacks).AsQueryable();
 
             if (books.Any() && !string.IsNullOrWhiteSpace(searchTerm))
                 books = books.Search(searchTerm, b => b.Title, b => b.Author.Name);
@@ -57,12 +58,16 @@ namespace BookAPI.Repositories
 
         public async Task<Book> GetByIdAsync(Guid id)
         {
-            return await _context.Books
+            var book = await _context.Books
                 .Include(b => b.Category)
                 .Include(b => b.Publisher)
                 .Include(b => b.Feedbacks)
+                .Include(b => b.Subcategories)
                 .FirstOrDefaultAsync(b => b.Id == id);
+
+            return book;
         }
+
 
         public async Task CreateAsync(Book entity)
         {

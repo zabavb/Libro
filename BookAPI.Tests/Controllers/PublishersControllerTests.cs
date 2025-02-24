@@ -34,7 +34,7 @@ namespace BookAPI.Tests.Controllers
         {
             // Arrange
             _mockPublisherService
-                .Setup(s => s.GetPublishersAsync(It.IsAny<int>(), It.IsAny<int>()))
+                .Setup(s => s.GetPublishersAsync(It.IsAny<int>(), It.IsAny<int>(), null, null))
                 .ReturnsAsync(new PaginatedResult<PublisherDto>
                 {
                     Items = new List<PublisherDto> { new PublisherDto() }, 
@@ -49,14 +49,14 @@ namespace BookAPI.Tests.Controllers
             var okResult = Assert.IsType<OkObjectResult>(actionResult.Result);
             var returnedPublishers = Assert.IsType<PaginatedResult<PublisherDto>>(okResult.Value);
             Assert.Equal(1, returnedPublishers.TotalCount); 
-            _mockPublisherService.Verify(s => s.GetPublishersAsync(It.IsAny<int>(), It.IsAny<int>()));
+            _mockPublisherService.Verify(s => s.GetPublishersAsync(It.IsAny<int>(), It.IsAny<int>(), null, null));
         }
         [Fact]
         public async Task GetAll_ReturnsNotFound_WhenNoPublishersFound()
         {
             // Arrange
             _mockPublisherService
-                .Setup(s => s.GetPublishersAsync(It.IsAny<int>(), It.IsAny<int>()))
+                .Setup(s => s.GetPublishersAsync(It.IsAny<int>(), It.IsAny<int>(), null, null))
                 .ReturnsAsync(new PaginatedResult<PublisherDto>
                 {
                     Items = new List<PublisherDto>(), 
@@ -70,7 +70,7 @@ namespace BookAPI.Tests.Controllers
             var actionResult = Assert.IsType<ActionResult<PaginatedResult<PublisherDto>>>(result);
             var notFoundResult = Assert.IsType<NotFoundObjectResult>(actionResult.Result);
             Assert.Equal("No publishers found.", notFoundResult.Value);
-            _mockPublisherService.Verify(s => s.GetPublishersAsync(It.IsAny<int>(), It.IsAny<int>()));
+            _mockPublisherService.Verify(s => s.GetPublishersAsync(It.IsAny<int>(), It.IsAny<int>(), null, null));
         }
         [Fact]
         public async Task GetAll_ReturnsBadRequest_WhenInvalidPageNumberOrSize()
@@ -86,14 +86,14 @@ namespace BookAPI.Tests.Controllers
             var actionResult = Assert.IsType<ActionResult<PaginatedResult<PublisherDto>>>(result);
             var badRequestResult = Assert.IsType<BadRequestObjectResult>(actionResult.Result);
             Assert.Equal("Page number and page size must be greater than 0.", badRequestResult.Value);
-            _mockPublisherService.Verify(s => s.GetPublishersAsync(It.IsAny<int>(), It.IsAny<int>()), Times.Never);
+            _mockPublisherService.Verify(s => s.GetPublishersAsync(It.IsAny<int>(), It.IsAny<int>(), null, null), Times.Never);
         }
         [Fact]
         public async Task GetAll_ReturnsInternalServerError_WhenExceptionOccurs()
         {
             // Arrange
             _mockPublisherService
-                .Setup(s => s.GetPublishersAsync(It.IsAny<int>(), It.IsAny<int>()))
+                .Setup(s => s.GetPublishersAsync(It.IsAny<int>(), It.IsAny<int>(), null, null))
                 .ThrowsAsync(new Exception("Something went wrong"));
 
             // Act
@@ -110,7 +110,7 @@ namespace BookAPI.Tests.Controllers
         {
             // Arrange
             _mockPublisherService
-                .Setup(s => s.GetPublishersAsync(It.IsAny<int>(), It.IsAny<int>()))
+                .Setup(s => s.GetPublishersAsync(It.IsAny<int>(), It.IsAny<int>(), null, null))
                 .ReturnsAsync(new PaginatedResult<PublisherDto>
                 {
                     Items = new List<PublisherDto> { new PublisherDto() },
@@ -121,7 +121,7 @@ namespace BookAPI.Tests.Controllers
             var result = await _controller.GetPublishers(1, 10);
 
             // Assert
-            _mockPublisherService.Verify(s => s.GetPublishersAsync(It.IsAny<int>(), It.IsAny<int>()), Times.Once);
+            _mockPublisherService.Verify(s => s.GetPublishersAsync(It.IsAny<int>(), It.IsAny<int>(), null, null), Times.Once);
         }
 
         // GetPublisherById Tests

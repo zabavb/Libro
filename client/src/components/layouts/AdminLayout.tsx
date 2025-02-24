@@ -21,6 +21,13 @@ const AdminLayout: React.FC = () => {
 								Users
 							</a>
 						</li>
+						<li>
+							<a
+								href="/admin/books"
+								style={{ textDecoration: "none", color: "#333" }}>
+								Books
+							</a>
+						</li>
 					</ul>
 				</nav>
 			</aside>
