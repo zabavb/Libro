@@ -17,6 +17,7 @@ import UserListContainer from "./containers/user/UserListContainer"
 
 import OrderListContainer from "./containers/order/OrderListContainer"
 import OrderFormPage from "./pages/Admin/OrderRelated/Orders/OrderFormPage"
+import BookListContainer from "./containers/books/BookListContainer"
 
 import NotFoundPage from "./pages/Main/NotFoundPage"
 
@@ -86,9 +87,21 @@ const AppRoutes = () => (
 					path="*"
 					element={<NotFoundPage />}
 				/>
+      </Route>
+        {/*BOOKS*/}
+        <Route
+            path="/admin/books"
+            element={<BookListContainer />}
+          />
+        {/* Other */}
+        <Route
+          path="*"
+          element={<NotFoundPage />}
+        />
 			</Routes>
 		</BrowserRouter>
 	</AuthProvider>
+
 )
 
 export default AppRoutes
