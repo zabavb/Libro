@@ -109,18 +109,18 @@ namespace BookAPI.Tests.Services
                 PageSize = 2
             };
 
-            _repositoryMock.Setup(repo => repo.GetAllAsync(It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync(paginatedResult);
+            _repositoryMock.Setup(repo => repo.GetAllAsync(It.IsAny<int>(), It.IsAny<int>(), null, null)).ReturnsAsync(paginatedResult);
             _mapperMock.Setup(m => m.Map<ICollection<FeedbackDto>>(It.IsAny<ICollection<Feedback>>()))
                 .Returns(new List<FeedbackDto> { new FeedbackDto { Comment = "Great service!" }, new FeedbackDto { Comment = "Very helpful." } });
 
             // Act
-            var result = await _feedbackService.GetFeedbacksAsync(1, 2);
+            var result = await _feedbackService.GetFeedbacksAsync(1, 2, null, null);
 
             // Assert
             Assert.Equal(2, result.Items.Count);
             Assert.Equal(1, result.PageNumber);
             Assert.Equal(2, result.PageSize);
-            _repositoryMock.Verify(repo => repo.GetAllAsync(It.IsAny<int>(), It.IsAny<int>()), Times.Once);
+            _repositoryMock.Verify(repo => repo.GetAllAsync(It.IsAny<int>(), It.IsAny<int>(), null, null), Times.Once);
         }
 
         [Fact]

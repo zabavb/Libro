@@ -33,7 +33,7 @@ namespace BookAPI.Tests.Controllers
         {
             // Arrange
             _mockAuthorService
-                .Setup(s => s.GetAuthorsAsync(It.IsAny<int>(), It.IsAny<int>()))
+                .Setup(s => s.GetAuthorsAsync(It.IsAny<int>(), It.IsAny<int>(), null, null, null))
                 .ReturnsAsync(new PaginatedResult<AuthorDto>
                 {
                     Items = new List<AuthorDto> { new AuthorDto() },
@@ -48,7 +48,7 @@ namespace BookAPI.Tests.Controllers
             var okResult = Assert.IsType<OkObjectResult>(actionResult.Result);
             var returnedAuthors = Assert.IsType<PaginatedResult<AuthorDto>>(okResult.Value);
             Assert.Equal(1, returnedAuthors.TotalCount);
-            _mockAuthorService.Verify(s => s.GetAuthorsAsync(It.IsAny<int>(), It.IsAny<int>()));
+            _mockAuthorService.Verify(s => s.GetAuthorsAsync(It.IsAny<int>(), It.IsAny<int>(), null, null, null));
         }
 
         [Fact]
@@ -56,7 +56,7 @@ namespace BookAPI.Tests.Controllers
         {
             // Arrange
             _mockAuthorService
-                .Setup(s => s.GetAuthorsAsync(It.IsAny<int>(), It.IsAny<int>()))
+                .Setup(s => s.GetAuthorsAsync(It.IsAny<int>(), It.IsAny<int>(), null, null, null))
                 .ReturnsAsync(new PaginatedResult<AuthorDto>
                 {
                     Items = new List<AuthorDto>(),
@@ -70,7 +70,7 @@ namespace BookAPI.Tests.Controllers
             var actionResult = Assert.IsType<ActionResult<PaginatedResult<AuthorDto>>>(result);
             var notFoundResult = Assert.IsType<NotFoundObjectResult>(actionResult.Result);
             Assert.Equal("No authors found.", notFoundResult.Value);
-            _mockAuthorService.Verify(s => s.GetAuthorsAsync(It.IsAny<int>(), It.IsAny<int>()));
+            _mockAuthorService.Verify(s => s.GetAuthorsAsync(It.IsAny<int>(), It.IsAny<int>(), null, null, null));
         }
 
         [Fact]
@@ -87,7 +87,7 @@ namespace BookAPI.Tests.Controllers
             var actionResult = Assert.IsType<ActionResult<PaginatedResult<AuthorDto>>>(result);
             var badRequestResult = Assert.IsType<BadRequestObjectResult>(actionResult.Result);
             Assert.Equal("Page number and page size must be greater than 0.", badRequestResult.Value);
-            _mockAuthorService.Verify(s => s.GetAuthorsAsync(It.IsAny<int>(), It.IsAny<int>()), Times.Never);
+            _mockAuthorService.Verify(s => s.GetAuthorsAsync(It.IsAny<int>(), It.IsAny<int>(), null, null, null), Times.Never);
         }
 
         [Fact]
@@ -95,7 +95,7 @@ namespace BookAPI.Tests.Controllers
         {
             // Arrange
             _mockAuthorService
-                .Setup(s => s.GetAuthorsAsync(It.IsAny<int>(), It.IsAny<int>()))
+                .Setup(s => s.GetAuthorsAsync(It.IsAny<int>(), It.IsAny<int>(), null, null, null))
                 .ThrowsAsync(new Exception("Something went wrong"));
 
             // Act
@@ -113,7 +113,7 @@ namespace BookAPI.Tests.Controllers
         {
             // Arrange
             _mockAuthorService
-                .Setup(s => s.GetAuthorsAsync(It.IsAny<int>(), It.IsAny<int>()))
+                .Setup(s => s.GetAuthorsAsync(It.IsAny<int>(), It.IsAny<int>(), null, null, null))
                 .ReturnsAsync(new PaginatedResult<AuthorDto>
                 {
                     Items = new List<AuthorDto> { new AuthorDto() },
@@ -124,7 +124,7 @@ namespace BookAPI.Tests.Controllers
             var result = await _controller.GetAuthors(1, 10);
 
             // Assert
-            _mockAuthorService.Verify(s => s.GetAuthorsAsync(It.IsAny<int>(), It.IsAny<int>()), Times.Once);
+            _mockAuthorService.Verify(s => s.GetAuthorsAsync(It.IsAny<int>(), It.IsAny<int>(), null, null, null), Times.Once);
         }
 
         // GetAuthorById Tests
