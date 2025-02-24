@@ -1,11 +1,11 @@
 // Main types
-export type { User } from "./objects/User"
-export type { Order } from "./objects/Order"
-export type { DeliveryType } from "./objects/DeliveryType"
+export type { User } from "./types/user/User"
+export type { Order } from "./types/order/Order"
+export type { DeliveryType } from "./types/delivery/DeliveryType"
 
 // View types
-export type { UserView } from "./objects/UserView"
-export type { OrderView } from "./objects/OrderView"
+export type { UserView } from "./types/user/UserView"
+export type { OrderView } from "./types/order/OrderView"
 
 // Filters
 export type { UserFilter } from "./filters/UserFilter"
