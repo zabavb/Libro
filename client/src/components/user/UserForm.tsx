@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { UserFormData, userSchema } from "../../../utils"
-import { User, Role } from "../../../types"
-import { dateToString } from "../../../api/adapters/commonAdapters"
-import { roleNumberToEnum } from "../../../api/adapters/userAdapter"
+import { UserFormData, userSchema } from "../../utils"
+import { User, Role } from "../../types"
+import { dateToString } from "../../api/adapters/commonAdapters"
+import { roleNumberToEnum } from "../../api/adapters/userAdapter"
 
 interface UserFormProps {
 	existingUser?: User

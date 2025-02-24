@@ -1,5 +1,11 @@
 import { API_ROUTES } from "./config/apiConfig"
 
+// ================= AUTHENTICATION =================
+
+export const LOGIN = API_ROUTES.AUTH.LOGIN
+export const REGISTER = API_ROUTES.AUTH.REGISTER
+export const ME = API_ROUTES.AUTH.ME
+
 // ================= USER =================
 
 export const USERS = API_ROUTES.USERS.BASE

@@ -7,9 +7,9 @@ namespace UserAPI.Models
         public Guid UserId { get; set; }
         public string FirstName { get; set; }
         public string? LastName { get; set; }
-        public DateTime DateOfBirth { get; set; }
-        public string Email { get; set; }
-        public string PhoneNumber { get; set; }
+        public DateTime? DateOfBirth { get; set; }
+        public string? Email { get; set; }
+        public string? PhoneNumber { get; set; }
         public RoleType Role { get; set; }
         public string ImageUrl { get; set; }
         public Guid PasswordId { get; set; }
@@ -23,10 +23,8 @@ namespace UserAPI.Models
             FirstName = string.Empty;
             LastName = string.Empty;
             DateOfBirth = DateTime.Today;
-            Email = string.Empty;
-            PhoneNumber = string.Empty;
             ImageUrl = string.Empty;
-            Role = RoleType.GUEST;
+            Role = RoleType.USER;
             Password = null!;
         }
     }

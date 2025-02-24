@@ -1,5 +1,5 @@
 import React from "react";
-import { OrderView } from "../../../types/objects/OrderView";
+import { OrderView } from "../../../types/types/order/OrderView";
 
 interface OrderAdminCardProps {
     order: OrderView

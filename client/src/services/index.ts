@@ -21,3 +21,5 @@ export {
 	editDeliveryTypeService,
 	removeDeliveryTypeService
 } from "./deliveryTypeService"
+
+export { loginService, registerService, getMeService } from "./authService"
