@@ -1,10 +1,7 @@
 ﻿using Library.DTOs.User;
 
-<<<<<<<< HEAD:UserAPI/UserFilter.cs
 namespace UserAPI
-========
-namespace UserAPI.Models.Filters
->>>>>>>> df2510ef3c2820bbf596e5396461943c6258e93a:UserAPI/Models/Filters/UserFilter.cs
+
 {
     public class UserFilter
     {

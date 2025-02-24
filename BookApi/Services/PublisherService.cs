@@ -14,11 +14,13 @@ namespace BookAPI.Services
     {
         private readonly IMapper _mapper;
         private readonly IPublisherRepository _publisherRepository;
+        private readonly ILogger<PublisherService> _logger;
 
-        public PublisherService(IMapper mapper, IPublisherRepository publisherRepository)
+        public PublisherService(IMapper mapper, IPublisherRepository publisherRepository, ILogger<PublisherService> logger)
         {
             _mapper = mapper;
             _publisherRepository = publisherRepository;
+            _logger = logger;
         }
         public async Task<PublisherDto> CreatePublisherAsync(PublisherDto publisherDto)
         {
