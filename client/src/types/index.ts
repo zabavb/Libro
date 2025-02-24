@@ -3,8 +3,9 @@ export type { Login } from "./types/auth/login"
 export type { Register } from "./types/auth/register"
 
 // Main types
-export type { User } from "./objects/User"
-export type { Order } from "./objects/Order"
+export type { User } from "./types/user/User"
+export type { Order } from "./types/order/Order"
+export type { DeliveryType } from "./types/delivery/DeliveryType"
 export type { Book } from "./objects/Book"
 
 // View types

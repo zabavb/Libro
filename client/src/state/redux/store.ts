@@ -3,10 +3,12 @@ import userReducer from "./slices/userSlice"
 import bookReducer from "./slices/bookSlice"
 import notificationReducer from "./slices/notificationSlice"
 import orderReducer from "./slices/orderSlice"
+import deliveryTypeSlice from "./slices/deliveryTypeSlice"
 const store = configureStore({
 	reducer: {
 		users: userReducer,
 		orders: orderReducer,
+		deliveryTypes: deliveryTypeSlice,
 		books: bookReducer,
 		notifications: notificationReducer,
 	},

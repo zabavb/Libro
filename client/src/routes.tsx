@@ -17,6 +17,9 @@ import UserListContainer from "./containers/user/UserListContainer"
 
 import OrderListContainer from "./containers/order/OrderListContainer"
 import OrderFormPage from "./pages/Admin/OrderRelated/Orders/OrderFormPage"
+import DeliveryTypeListContainer from "./containers/order/DeliveryTypeListContainer"
+import DeliveryTypeFormPage from "./pages/Admin/OrderRelated/Deliveries/DeliveryFormPage"
+
 import BookListContainer from "./containers/books/BookListContainer"
 
 import NotFoundPage from "./pages/Main/NotFoundPage"
@@ -79,6 +82,19 @@ const AppRoutes = () => (
 							path="/admin/orders/:orderId"
 							element={<OrderFormPage />}
 						/>
+            {/* Delivery Types */}
+            <Route
+              path="/admin/deliverytypes"
+              element={<DeliveryTypeListContainer/>}
+            />
+            <Route
+              path="/admin/deliverytypes/add"
+              element={<DeliveryTypeFormPage />}
+            />
+            <Route
+              path="/admin/deliverytypes/:deliveryTypeId"
+              element={<DeliveryTypeFormPage />}
+            />
 					</Route>
 				</Route>
 
