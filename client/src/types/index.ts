@@ -19,6 +19,7 @@ export type { OrderFilter } from "./Filters/OrderFilter"
 // Sorts
 export type { UserSort } from "./Sortings/UserSort"
 export type { OrderSort } from "./Sortings/OrderSort"
+export type { BookSort } from "./Sortings/BookSort"
 
 // Subtypes
 export type { PaginatedResponse } from "./subTypes/PaginatedResponse"
