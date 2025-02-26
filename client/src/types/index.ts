@@ -9,17 +9,17 @@ export type { DeliveryType } from "./types/delivery/DeliveryType"
 export type { Book } from "./objects/Book"
 
 // View types
-export type { UserView } from "./objects/UserView"
+export type { UserView } from "./types/user/UserView"
 export type { BookView } from "./objects/BookView"
-export type { OrderView } from "./objects/OrderView"
+export type { OrderView } from "./types/order/OrderView"
 
 // Filters
-export type { UserFilter } from "./Filters/UserFilter"
-export type { OrderFilter } from "./Filters/OrderFilter"
+export type { UserFilter } from "./filters/UserFilter"
+export type { OrderFilter } from "./filters/OrderFilter"
 
 // Sorts
-export type { UserSort } from "./Sortings/UserSort"
-export type { OrderSort } from "./Sortings/OrderSort"
+export type { UserSort } from "./sortings/UserSort"
+export type { OrderSort } from "./sortings/OrderSort"
 
 // Subtypes
 export type { PaginatedResponse } from "./subTypes/PaginatedResponse"
