@@ -20,9 +20,9 @@ namespace UserAPI.Data
                 DateOfBirth = new DateTime(1990, 1, 1),
                 Email = "john.doe@example.com",
                 PhoneNumber = "123-456-7890",
-                Role = Library.UserEntities.RoleType.GUEST,
+                Role = Library.DTOs.User.RoleType.GUEST,
                 Subscription = null,
-                Password = null,
+                Password = null!,
 
             };
 
@@ -61,9 +61,9 @@ namespace UserAPI.Data
                 DateOfBirth = new DateTime(1985, 5, 15),
                 Email = "jane.smith@example.com",
                 PhoneNumber = "987-654-3210",
-                Role = Library.UserEntities.RoleType.GUEST,
+                Role = Library.DTOs.User.RoleType.GUEST,
                 Subscription = null,
-                Password = null,
+                Password = null!,
             };
 
             var sub2 = new Subscription

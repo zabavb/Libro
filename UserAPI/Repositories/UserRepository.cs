@@ -2,42 +2,30 @@
 using Library.Sortings;
 using Microsoft.EntityFrameworkCore;
 using StackExchange.Redis;
-using System.Reflection.Metadata;
 using System.Text.Json;
 using UserAPI.Data;
 using UserAPI.Models;
-using UserAPI.Services;
+using UserAPI.Models.Sorts;
 
 namespace UserAPI.Repositories
 {
-    public class UserRepository : IUserRepository
+    public class UserRepository(UserDbContext context, IConnectionMultiplexer redis, ILogger<IUserRepository> logger) : IUserRepository
     {
-        private readonly UserDbContext _context;
-        private readonly IDatabase _redisDatabase;
-        private readonly string _cacheKeyPrefix;
-        private readonly TimeSpan _cacheExpiration;
-        private readonly ILogger<IUserRepository> _logger;
+        private readonly UserDbContext _context = context;
+        private readonly IDatabase _redisDatabase = redis.GetDatabase();
+        public readonly string _cacheKeyPrefix = "User_";
+        public readonly TimeSpan _cacheExpiration = TimeSpan.FromMinutes(10);
+        private readonly ILogger<IUserRepository> _logger = logger;
 
-        public UserRepository(UserDbContext context, IConnectionMultiplexer redis, ILogger<IUserRepository> logger)
-        {
-            _context = context;
-            _redisDatabase = redis.GetDatabase();
-
-            _cacheKeyPrefix = "User_";
-            _cacheExpiration = TimeSpan.FromMinutes(10);
-
-            _logger = logger;
-        }
-
-        public async Task<PaginatedResult<User>> GetAllAsync(int pageNumber, int pageSize, string searchTerm, Filter? filter, Sort sort)
+        public async Task<PaginatedResult<User>> GetAllAsync(int pageNumber, int pageSize, string? searchTerm, Filter? filter, Sort? sort)
         {
             IEnumerable<User> users;
 
             string cacheKey = $"{_cacheKeyPrefix}All";
-            var cachedUsers = await _redisDatabase.StringGetAsync(cacheKey);
-            if (!cachedUsers.IsNullOrEmpty)
+            var cachedUsers = await _redisDatabase.HashGetAllAsync(cacheKey);
+            if (cachedUsers.Length > 0)
             {
-                users = JsonSerializer.Deserialize<ICollection<User>>(cachedUsers!)!;
+                users = cachedUsers.Select(entry => JsonSerializer.Deserialize<User>(entry.Value!)!);
                 _logger.LogInformation("Fetched from CACHE.");
             }
             else
@@ -45,13 +33,18 @@ namespace UserAPI.Repositories
                 users = _context.Users.AsNoTracking();
                 _logger.LogInformation("Fetched from DB.");
 
-                await _redisDatabase.StringSetAsync(
-                    cacheKey,
-                    JsonSerializer.Serialize(users),
-                    _cacheExpiration
+                var hashEntries = users.ToDictionary(
+                    user => user.UserId.ToString(),
+                    user => JsonSerializer.Serialize(user)
                 );
+                await _redisDatabase.HashSetAsync(
+                    cacheKey,
+                    [.. hashEntries.Select(kvp => new HashEntry(kvp.Key, kvp.Value))]
+                );
+                await _redisDatabase.KeyExpireAsync(cacheKey, _cacheExpiration);
                 _logger.LogInformation("Set to CACHE.");
             }
+
             if (users.Any() && !string.IsNullOrWhiteSpace(searchTerm))
                 users = await SearchAsync(users, searchTerm);
             if (users.Any() && filter != null)
@@ -61,7 +54,7 @@ namespace UserAPI.Repositories
 
             var totalUsers = await Task.FromResult(users.Count());
             users = await Task.FromResult(users.Skip((pageNumber - 1) * pageSize).Take(pageSize));
-            ICollection<User> result = new List<User>(users);
+            ICollection<User> result = [.. users];
 
             return new PaginatedResult<User>
             {
@@ -74,19 +67,19 @@ namespace UserAPI.Repositories
 
         public async Task<IEnumerable<User>> SearchAsync(IEnumerable<User> users, string searchTerm)
         {
-            searchTerm.ToLower();
+            searchTerm = searchTerm.ToLower();
 
             if (users == null)
                 return await _context.Users
                     .AsNoTracking()
-                    .Where(u => u.FirstName.ToLower().Contains(searchTerm)
-                                || u.LastName!.ToLower().Contains(searchTerm)
+                    .Where(u => u.FirstName.Contains(searchTerm, StringComparison.CurrentCultureIgnoreCase)
+                                || u.LastName!.Contains(searchTerm, StringComparison.CurrentCultureIgnoreCase)
                                 || u.Email.Contains(searchTerm))
                     .ToListAsync();
-            
+
             return await Task.FromResult(
-                users.Where(u => u.FirstName.ToLower().Contains(searchTerm)
-                            || u.LastName!.ToLower().Contains(searchTerm)
+                users.Where(u => u.FirstName.Contains(searchTerm, StringComparison.CurrentCultureIgnoreCase)
+                            || u.LastName!.Contains(searchTerm, StringComparison.CurrentCultureIgnoreCase)
                             || u.Email.Contains(searchTerm))
                 );
         }
@@ -94,15 +87,18 @@ namespace UserAPI.Repositories
         public async Task<IEnumerable<User>> FilterAsync(IEnumerable<User> users, Filter filter)
         {
             var query = users.AsQueryable();
-            
-            if (filter.Role.HasValue)
-                query = query.Where(u => u.Role.Equals(filter.Role));
 
             if (filter.DateOfBirthStart.HasValue)
                 query = query.Where(u => u.DateOfBirth >= filter.DateOfBirthStart.Value);
 
             if (filter.DateOfBirthEnd.HasValue)
                 query = query.Where(u => u.DateOfBirth <= filter.DateOfBirthEnd.Value);
+
+            if (!string.IsNullOrEmpty(filter.Email))
+                query = query.Where(u => u.Email.EndsWith(filter.Email));
+
+            if (filter.Role.HasValue)
+                query = query.Where(u => u.Role.Equals(filter.Role));
 
             if (filter.HasSubscription)
                 query = query.Where(u => u.SubscriptionId.Equals(filter.HasSubscription));
@@ -129,15 +125,10 @@ namespace UserAPI.Repositories
                     ? query.OrderBy(u => u.DateOfBirth)
                     : query.OrderByDescending(u => u.DateOfBirth);
 
-            if (sort.Email != Bool.NULL)
-                query = sort.Email == Bool.ASCENDING
-                    ? query.OrderBy(u => u.Email)
-                    : query.OrderByDescending(u => u.Email);
-
-            if (sort.PhoneNumber != Bool.NULL)
-                query = sort.PhoneNumber == Bool.ASCENDING
-                    ? query.OrderBy(u => u.PhoneNumber)
-                    : query.OrderByDescending(u => u.PhoneNumber);
+            if (sort.Role != Bool.NULL)
+                query = sort.Role == Bool.ASCENDING
+                    ? query.OrderBy(u => u.Role)
+                    : query.OrderByDescending(u => u.Role);
 
             return await Task.FromResult(query.ToList());
         }
@@ -145,29 +136,34 @@ namespace UserAPI.Repositories
         public async Task<User?> GetByIdAsync(Guid id)
         {
             string cacheKey = $"{_cacheKeyPrefix}{id}";
-            var cachedProduct = await _redisDatabase.StringGetAsync(cacheKey);
+            string fieldKey = id.ToString();
 
-            if (!cachedProduct.IsNullOrEmpty)
+            var cachedUser = await _redisDatabase.HashGetAsync(cacheKey, fieldKey);
+
+            if (!cachedUser.IsNullOrEmpty)
             {
                 _logger.LogInformation("Fetched from CACHE.");
-                return JsonSerializer.Deserialize<User>(cachedProduct!);
+                return JsonSerializer.Deserialize<User>(cachedUser!);
             }
 
-            _logger.LogInformation($"Fetched from DB.");
+            _logger.LogInformation("Fetched from DB.");
             var user = await _context.Users.FindAsync(id);
             if (user != null)
             {
                 _logger.LogInformation("Set to CACHE.");
-                await _redisDatabase.StringSetAsync(
+                await _redisDatabase.HashSetAsync(
                     cacheKey,
-                    JsonSerializer.Serialize(user),
-                    _cacheExpiration
+                    fieldKey,
+                    JsonSerializer.Serialize(user)
                 );
+
+                await _redisDatabase.KeyExpireAsync(cacheKey, _cacheExpiration);
             }
 
             return user;
         }
 
+<<<<<<< HEAD
         public async Task<User?> GetByIdAsync(Guid id)
         {
             string cacheKey = $"{_cacheKeyPrefix}{id}";
@@ -195,6 +191,9 @@ namespace UserAPI.Repositories
         }
 
         public async Task AddAsync(User entity)
+=======
+        public async Task CreateAsync(User entity)
+>>>>>>> master
         {
             await _context.Users.AddAsync(entity);
             await _context.SaveChangesAsync();
@@ -211,11 +210,8 @@ namespace UserAPI.Repositories
 
         public async Task DeleteAsync(Guid id)
         {
-            var user = await _context.Users.FindAsync(id);
-
-            if (user == null)
-                throw new KeyNotFoundException();
-
+            var user = await _context.Users.FindAsync(id) ?? throw new KeyNotFoundException();
+            
             _context.Users.Remove(user);
             await _context.SaveChangesAsync();
         }

@@ -1,5 +1,9 @@
-﻿global using BookDto = Library.BookEntities.Book;
-global using CategoryDto = Library.BookEntities.Category;
-global using AuthorDto = Library.BookEntities.Author;
-global using PublisherDto = Library.BookEntities.Publisher;
-global using FeedbackDto = Library.BookEntities.Feedback;
+﻿global using BookDto = Library.DTOs.Book.Book;
+global using CategoryDto = Library.DTOs.Book.Category;
+global using AuthorDto = Library.DTOs.Book.Author;
+global using PublisherDto = Library.DTOs.Book.Publisher;
+global using FeedbackDto = Library.DTOs.Book.Feedback;
+global using SubCategoryDto = Library.DTOs.Book.SubCategory;
+global using Sort = BookAPI.Models.Sortings.BookSort;
+global using Filter = BookAPI.Models.Filters.BookFilter;
+

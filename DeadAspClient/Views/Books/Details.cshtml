@@ -1,0 +1,20 @@
+﻿@model Client.Models.BookEntities.Book.ManageBookViewModel
+
+<div class="container mt-5">
+    <h1 class="display-4">@Model.Title</h1>
+    <hr />
+    <div class="row mt-4">
+        <div class="col-md-6">
+            <p><strong>Author:</strong> @Model.AuthorId</p>
+            <p><strong>Publisher:</strong> @Model.PublisherId</p>
+            <p><strong>Category:</strong> @Model.CategoryId</p>
+            <p><strong>Language:</strong> @Model.Language</p>
+            <p><strong>Year of Publication:</strong> @Model.Year.ToShortDateString()</p>
+            <p><strong>Price:</strong> @Model.Price.ToString("C")</p>
+            <p><strong>Description:</strong> @Model.Description</p>
+            <p><strong>Cover:</strong> @Model.Cover</p>
+            <p><strong>Availability:</strong> @(Model.IsAvailable ? "Yes" : "No")</p>
+        </div>
+    </div>
+    <a asp-action="GetAllBooks" class="btn btn-primary mt-3">Back to Book List</a>
+</div>

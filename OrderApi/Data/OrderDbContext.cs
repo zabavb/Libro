@@ -7,8 +7,8 @@ namespace OrderApi.Data
 {
     public class OrderDbContext : DbContext
     {
-        internal DbSet<Order> Orders { get; private set; } = null!;
-        internal DbSet<DeliveryType> DeliveryTypes { get; private set; } = null!;
+        public DbSet<Order> Orders { get; private set; } = null!;
+        public DbSet<DeliveryType> DeliveryTypes { get; private set; } = null!;
 
         public OrderDbContext(DbContextOptions<OrderDbContext> options) : base(options)
         {
@@ -18,6 +18,16 @@ namespace OrderApi.Data
         {
             modelBuilder.ApplyConfiguration(new OrderConfiguration());
             modelBuilder.ApplyConfiguration(new DeliveryTypeConfiguration());
+
+            // One-to-many DeliveryType -> Orders
+            modelBuilder.Entity<DeliveryType>()
+                .HasMany(dt => dt.Orders)
+                .WithOne(o => o.DeliveryType)
+                .HasForeignKey(o => o.DeliveryTypeId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<DeliveryType>()
+                .HasKey(d => d.DeliveryId);
 
             DataSeeder.Seed(modelBuilder);
         }

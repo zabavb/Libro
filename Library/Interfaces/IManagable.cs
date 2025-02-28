@@ -3,8 +3,7 @@
     public interface IManagable<T>
     {
         Task<T?> GetByIdAsync(Guid id);
-        Task AddAsync(T entity);
+        Task CreateAsync(T entity);
         Task UpdateAsync(T entity);
-        Task DeleteAsync(Guid id);
     }
 }

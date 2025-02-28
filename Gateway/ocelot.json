@@ -1,10 +1,43 @@
 {
   "Routes": [
-    //======================================= Client =======================================
-
-    //======================================= BookAPI =======================================
-
     //======================================= UserAPI =======================================
+    //======================= Authentication =======================
+    {
+      "DownstreamPathTemplate": "/api/auth/login",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7007
+        }
+      ],
+      "UpstreamPathTemplate": "/gateway/auth/login",
+      "UpstreamHttpMethod": [ "POST" ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/auth/register",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7007
+        }
+      ],
+      "UpstreamPathTemplate": "/gateway/auth/register",
+      "UpstreamHttpMethod": [ "POST" ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/auth/me",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7007
+        }
+      ],
+      "UpstreamPathTemplate": "/gateway/auth/me",
+      "UpstreamHttpMethod": [ "GET" ]
+    },
     //======================= User entity =======================
     {
       "DownstreamPathTemplate": "/api/users",
@@ -30,9 +63,36 @@
       "UpstreamPathTemplate": "/gateway/users/{id}",
       "UpstreamHttpMethod": [ "GET", "PUT", "DELETE" ]
     },
+    {
+      "DownstreamPathTemplate": "/api/auth/login",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7007
+        }
+      ],
+      "UpstreamPathTemplate": "/gateway/auth/login",
+      "UpstreamHttpMethod": [ "POST" ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/auth/register",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7007
+        }
+      ],
+      "UpstreamPathTemplate": "/gateway/auth/register",
+      "UpstreamHttpMethod": [ "POST" ]
+    },
     //======================= Password entity =======================
 
     //======================= Subscription entity =======================
+
+    //======================================= BookAPI =======================================
+
 
     //======================================= OrderAPI =======================================
     //======================= Order entity =======================
@@ -59,7 +119,44 @@
       ],
       "UpstreamPathTemplate": "/gateway/orders/{id}",
       "UpstreamHttpMethod": [ "GET", "DELETE" ]
-    }
+    },
     //======================= Delivery type entity =======================
+    {
+      "DownstreamPathTemplate": "/api/deliverytypes",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7051
+        }
+      ],
+      "UpstreamPathTemplate": "/gateway/deliverytypes",
+      "UpstreamHttpMethod": [ "GET", "POST", "PUT" ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/deliverytypes/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7051
+        }
+      ],
+      "UpstreamPathTemplate": "/gateway/deliverytypes/{id}",
+      "UpstreamHttpMethod": [ "GET", "DELETE" ]
+    },
+    //======================= Status update =======================
+    {
+      "DownstreamPathTemplate": "/api/status/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7051
+        }
+      ],
+      "UpstreamPathTemplate": "/gateway/status/{id}",
+      "UpstreamHttpMethod": [ "PUT" ]
+    }
   ]
 }

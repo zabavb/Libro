@@ -1,15 +1,16 @@
-﻿using BookApi.Models;
+﻿using BookAPI.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace BookApi.Data
+namespace BookAPI.Data
 {
     public class BookDbContext : DbContext
     {
-        internal DbSet<Book> Books { get; set; } = null!;
-        internal DbSet<Category> Categories { get; set; } = null!;
-        internal DbSet<Publisher> Publishers { get; set; } = null!;
-        internal DbSet<Feedback> Feedbacks { get; set; } = null!;
-        internal DbSet<Author> Authors { get; set; } = null!; 
+        public DbSet<Book> Books { get; set; } = null!;
+        public DbSet<Category> Categories { get; set; } = null!;
+        public DbSet<Publisher> Publishers { get; set; } = null!;
+        public DbSet<Feedback> Feedbacks { get; set; } = null!;
+        public DbSet<Author> Authors { get; set; } = null!;
+        public DbSet<SubCategory> Subcategories { get; set; } = null!;
 
 
         public BookDbContext(DbContextOptions<BookDbContext> options) : base(options)

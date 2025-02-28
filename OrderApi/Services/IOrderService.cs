@@ -5,6 +5,7 @@ namespace OrderApi.Services
 {
     public interface IOrderService : IManagable<OrderDto>
     {
-        Task<PaginatedResult<OrderDto>> GetOrdersAsync(int pageNumber, int pageSize, string searchTerm, Filter? filter);
+        Task<PaginatedResult<OrderDto>> GetAllAsync(int pageNumber, int pageSize, string searchTerm, Filter? filter, Sort? sort);
+        Task DeleteAsync(Guid id);
     }
 }

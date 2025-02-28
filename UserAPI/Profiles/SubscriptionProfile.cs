@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿/*using AutoMapper;
+using Library.DTOs.User;
 using UserAPI.Models;
 
 namespace UserAPI.Profiles
@@ -13,3 +14,4 @@ namespace UserAPI.Profiles
         }
     }
 }
+*/

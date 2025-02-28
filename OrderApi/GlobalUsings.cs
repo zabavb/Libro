@@ -1,5 +1,4 @@
-﻿global using OrderDto = Library.OrderEntities.Order;
-global using DeliveryTypeDto = Library.OrderEntities.DeliveryType;
+﻿global using OrderDto = Library.DTOs.Order.Order;
+global using DeliveryTypeDto = Library.DTOs.Order.DeliveryType;
 global using Filter = Library.Filters.OrderFilter;
-global using UserDto = Library.UserEntities.User;
-global using BookDto = Library.BookEntities.Book;
+global using Sort = OrderAPI.OrderSort;

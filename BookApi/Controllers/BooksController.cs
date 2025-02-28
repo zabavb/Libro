@@ -1,8 +1,11 @@
-﻿using BookApi.Models;
-using BookApi.Services;
+﻿using BookAPI.Models;
+using BookAPI;
+using BookAPI.Models.Filters;
+using BookAPI.Models.Sortings;
+using BookAPI.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
-namespace BookApi.Controllers
+namespace BookAPI.Controllers
 {
     /// <summary>
     /// Manages book-related operations such as retrieving, creating, updating, and deleting books.
@@ -15,48 +18,47 @@ namespace BookApi.Controllers
     public class BooksController : ControllerBase
     {
         private readonly IBookService _bookService;
-        private const int DefaultPageNumber = 1;
-        private const int DefaultPageSize = 10;
+        private readonly ILogger<BooksController> _logger;
 
 
-        public BooksController(IBookService bookService)
+        public BooksController(IBookService bookService, ILogger<BooksController> logger)
         {
             _bookService = bookService;
+            _logger = logger;
         }
 
         /// <summary>
-        /// Retrieves a paginated list of books.
+        /// Retrieves a paginated list of books based on the specified filters, search term, and sorting options.
         /// </summary>
-        /// <param name="pageNumber">Page number (default: 1).</param>
-        /// <param name="pageSize">Number of books per page (default: 10).</param>
-        /// <param name="searchQuery"></param>
-        /// <param name="sortBy"></param>
+        /// <param name="pageNumber">Page number (default: 1). The page number to retrieve.</param>
+        /// <param name="pageSize">Number of books per page (default: 10). The number of books to return per page.</param>
+        /// <param name="searchTerm">Search term (optional). A string to search in the book's title, author, or other properties.</param>
+        /// <param name="filter">Filter options (optional). Filters to apply on the books, such as author, price range, etc.</param>
+        /// <param name="sort">Sort options (optional). Specifies the sorting order, such as by title or price.</param>
         /// <returns>A paginated list of books.</returns>
-        /// <response code="200">Returns the list of books.</response>
-        /// <response code="400">Invalid pagination parameters.</response>
-        /// <response code="404">No books found.</response>
+        /// <response code="200">Returns a list of books according to the specified pagination, filter, and sort parameters.</response>
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<BookDto>>> GetBooks(int pageNumber = DefaultPageNumber, int pageSize = DefaultPageSize, string? searchQuery = null, string? sortBy = null)
+        public async Task<IActionResult> GetAll(
+            [FromQuery] int pageNumber = GlobalConstants.DefaultPageNumber,
+            [FromQuery] int pageSize = GlobalConstants.DefaultPageSize,
+            [FromQuery] string? searchTerm = null, 
+            [FromQuery] BookFilter? filter = null,
+            [FromQuery] BookSort? sort = null
+            )
         {
-            if (pageNumber < 1 || pageSize < 1)
+            try
             {
-                return BadRequest("Page number and page size must be greater than 0.");
+                var books = await _bookService.GetBooksAsync(pageNumber, pageSize, searchTerm, filter, sort);
+                return Ok(books);
             }
-
-            var books = await _bookService.GetBooksAsync(searchQuery, sortBy);
-
-            if (books == null || !books.Any())
+            catch (Exception ex)
             {
-                return NotFound("No books found.");
+                _logger.LogError(ex, "Error occurred while retrieving books.");
+                return StatusCode(StatusCodes.Status500InternalServerError, new { message = ex.Message });
             }
-
-            var paginatedBooks = books
-                .Skip((pageNumber - 1) * pageSize)
-                .Take(pageSize)
-                .ToList();
-
-            return Ok(paginatedBooks);
         }
+
+
 
         /// <summary>
         /// Retrieves a book by its ID.
@@ -68,14 +70,24 @@ namespace BookApi.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<BookDto>> GetBookById(Guid id)
         {
-            var book = await _bookService.GetBookByIdAsync(id);
-
-            if (book == null)
+            try
             {
-                return NotFound($"Book with id {id} not found.");
-            }
+                var book = await _bookService.GetBookByIdAsync(id);
 
-            return Ok(book);
+                if (book == null)
+                {
+                    _logger.LogWarning($"Book with id {id} not found.");
+                    return NotFound($"Book with id {id} not found.");
+                }
+
+                _logger.LogInformation($"Book with id {id} successfully fetched.");
+                return Ok(book);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error occurred while retrieving book with id {id}.");
+                return StatusCode(StatusCodes.Status500InternalServerError, new { message = ex.Message });
+            }
         }
 
         /// <summary>
@@ -90,12 +102,21 @@ namespace BookApi.Controllers
         {
             if (bookDto == null)
             {
+                _logger.LogWarning("Invalid book data provided.");
                 return BadRequest("Invalid data.");
             }
 
-            var createdBook = await _bookService.CreateBookAsync(bookDto);
-
-            return CreatedAtAction(nameof(GetBookById), new { id = createdBook.BookId }, createdBook);
+            try
+            {
+                var createdBook = await _bookService.CreateBookAsync(bookDto);
+                _logger.LogInformation($"Book with id {createdBook.BookId} successfully created.");
+                return CreatedAtAction(nameof(GetBookById), new { id = createdBook.BookId }, createdBook);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error occurred while creating a new book.");
+                return StatusCode(StatusCodes.Status500InternalServerError, new { message = ex.Message });
+            }
         }
 
         /// <summary>
@@ -112,17 +133,28 @@ namespace BookApi.Controllers
         {
             if (bookDto == null)
             {
+                _logger.LogWarning("Invalid book data provided for update.");
                 return BadRequest("Invalid data.");
             }
 
-            var updatedBook = await _bookService.UpdateBookAsync(id, bookDto);
-
-            if (updatedBook == null)
+            try
             {
-                return NotFound("Book not found.");
-            }
+                var updatedBook = await _bookService.UpdateBookAsync(id, bookDto);
 
-            return Ok(updatedBook);
+                if (updatedBook == null)
+                {
+                    _logger.LogWarning($"Book with id {id} not found for update.");
+                    return NotFound($"Book with id {id} not found.");
+                }
+
+                _logger.LogInformation($"Book with id {id} successfully updated.");
+                return Ok(updatedBook);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error occurred while updating book with id {id}.");
+                return StatusCode(StatusCodes.Status500InternalServerError, new { message = ex.Message });
+            }
         }
 
         /// <summary>
@@ -135,14 +167,24 @@ namespace BookApi.Controllers
         [HttpDelete("{id}")]
         public async Task<ActionResult> DeleteBook(Guid id)
         {
-            var isDeleted = await _bookService.DeleteBookAsync(id);
-
-            if (!isDeleted)
+            try
             {
-                return NotFound("Book not found.");
-            }
+                var isDeleted = await _bookService.DeleteBookAsync(id);
 
-            return NoContent();
+                if (!isDeleted)
+                {
+                    _logger.LogWarning($"Book with id {id} not found for deletion.");
+                    return NotFound($"Book with id {id} not found.");
+                }
+
+                _logger.LogInformation($"Book with id {id} successfully deleted.");
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error occurred while deleting book with id {id}.");
+                return StatusCode(StatusCodes.Status500InternalServerError, new { message = ex.Message });
+            }
         }
     }
 }

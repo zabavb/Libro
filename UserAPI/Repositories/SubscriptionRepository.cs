@@ -45,7 +45,7 @@ namespace UserAPI.Repositories
             return subscriptions;
         }
 
-        public async Task AddAsync(Subscription entity)
+        public async Task CreateAsync(Subscription entity)
         {
             await _context.Subscriptions.AddAsync(entity);
             await _context.SaveChangesAsync();
