@@ -54,9 +54,9 @@ namespace UserAPI.Repositories
             return await _context.Passwords.FirstOrDefaultAsync(p => p.PasswordId == passwordId);
         }
 
-        public async Task<bool> UpdateAsync(Guid userId, string newPassword)
+        public async Task<bool> UpdateAsync(Guid userId, string oldPassword, string newPassword)
         {
-            if (await VerifyAsync(userId, newPassword))
+            if (await VerifyAsync(userId, oldPassword))
             {
                 var passwordEntity = await GetByIdAsync(userId);
                 var newPasswordEntity = new Password
