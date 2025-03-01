@@ -82,37 +82,31 @@ const AppRoutes = () => (
 							path="/admin/orders/:orderId"
 							element={<OrderFormPage />}
 						/>
-            {/* Delivery Types */}
-            <Route
-              path="/admin/deliverytypes"
-              element={<DeliveryTypeListContainer/>}
-            />
-            <Route
-              path="/admin/deliverytypes/add"
-              element={<DeliveryTypeFormPage />}
-            />
-            <Route
-              path="/admin/deliverytypes/:deliveryTypeId"
-              element={<DeliveryTypeFormPage />}
-            />
+						{/* Delivery Types */}
+						<Route
+							path="/admin/deliverytypes"
+							element={<DeliveryTypeListContainer/>}
+						/>
+						<Route
+							path="/admin/deliverytypes/add"
+							element={<DeliveryTypeFormPage />}
+						/>
+						<Route
+							path="/admin/deliverytypes/:deliveryTypeId"
+							element={<DeliveryTypeFormPage />}
+						/>
+						{/*BOOKS*/}
+						<Route
+							path="/admin/books"
+							element={<BookListContainer />}
+						/>
+						{/* Other */}
+						<Route
+							path="*"
+							element={<NotFoundPage />}
+						/>
 					</Route>
 				</Route>
-
-				{/* Other */}
-				<Route
-					path="*"
-					element={<NotFoundPage />}
-				/>
-			{/*BOOKS*/}
-			<Route
-				path="/admin/books"
-				element={<BookListContainer />}
-			  />
-			{/* Other */}
-			<Route
-			  path="*"
-			  element={<NotFoundPage />}
-			/>
 			</Routes>
 		</BrowserRouter>
 	</AuthProvider>
