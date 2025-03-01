@@ -42,16 +42,15 @@ const OrderFormBookSearch: React.FC<OrderFormBookSearchProps> = ({ page, books, 
 
     return (
         <div> {/* Book select container*/}
-            <div>
+            <div style={{display:"flex"}}>
                 <input
                     placeholder="Book Search"
-                    onKeyDown={handleBookIdSubmit}
                     onFocus={() => handleFocus(true)}
                     onBlur={() => handleFocus(false)}
                     onChange={(e) => {setSearch(e.target.value)}}
                     value={search}
                 />
-                <button onClick={handleBookIdSubmit}>Submit</button>
+                <p style={{cursor:"pointer"}} onClick={handleBookIdSubmit}>Submit</p>
             </div>
             {searchFocus === true &&
                 (

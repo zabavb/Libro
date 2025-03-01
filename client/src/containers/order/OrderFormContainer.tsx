@@ -32,7 +32,7 @@ const OrderFormContainer: React.FC<OrderFormContainerProps> = ({ orderId }) => {
     const handlePageChange = (page: number) =>{
         if(page > 0 && page <= totalCount / pageSize){
             setPage(page)
-            dispatch(fetchBooks({pageNumber:page,pageSize:1}))
+            dispatch(fetchBooks({pageNumber:page,pageSize:pageSize}))
         }
     }
 
@@ -52,7 +52,7 @@ const OrderFormContainer: React.FC<OrderFormContainerProps> = ({ orderId }) => {
             dispatch(fetchDeliveryTypes({pageNumber:1,pageSize:10}))
         }
         if(books.length === 0){
-            dispatch(fetchBooks({pageNumber:page,pageSize:1}))
+            dispatch(fetchBooks({pageNumber:page,pageSize:pageSize}))
         }
         if (operationStatus === "success"){
             dispatch(
