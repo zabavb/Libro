@@ -1,21 +1,26 @@
 import { useForm } from "react-hook-form";
-import { DeliveryType, Order, Status } from "../../../types";
+import { Book, DeliveryType, Order, Status } from "../../../types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { dateToString } from "../../../api/adapters/commonAdapters";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { statusEnumToNumber, statusNumberToEnum } from "../../../api/adapters/orderAdapters";
 import { OrderFormData, orderSchema } from "../../../utils";
+import OrderFormBookSearch from "./OrderFormBookSearch";
+import OrderFormBookList from "./OrderFormBookList";
 
 interface OrderFormProps {
+    page: number
+    books?: Book[]
     deliveryTypes?: DeliveryType[]
     existingOrder?: Order
     onAddOrder: (order: Order) => void
     onEditOrder: (id: string, updatedOrder: Order) => void
+    onPageChange: (page: number) => void
 }
 
-const OrderForm: React.FC<OrderFormProps> = ({deliveryTypes, existingOrder, onAddOrder, onEditOrder }) => {
-    const [bookIds, setBookIds] = useState<string>("");
-    
+const OrderForm: React.FC<OrderFormProps> = ({page, books, deliveryTypes, existingOrder, onAddOrder, onEditOrder, onPageChange }) => {
+    const [bookIds, setBookIds] = useState<string[]>([])
+   
     const {
         register,
         handleSubmit,
@@ -59,7 +64,7 @@ const OrderForm: React.FC<OrderFormProps> = ({deliveryTypes, existingOrder, onAd
         const order: Order = {
             id: existingOrder ? existingOrder.id : "00000000-0000-0000-0000-000000000000",
             userId: data.userId,
-            bookIds: bookIds.split(",").map((item) => item.trim()),
+            bookIds: bookIds,
             region: data.region,
             city: data.city,
             address: data.address,
@@ -80,12 +85,16 @@ const OrderForm: React.FC<OrderFormProps> = ({deliveryTypes, existingOrder, onAd
             console.log("Order add")
         } 
     }
+    
+    const handleBookAdd = (bookId: string) => {
+        console.log("Book added")
+        setBookIds((prev) => [...prev, bookId]);
+    }
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setBookIds(e.target.value);
-      };
-
-
+    const handleBookDelete = (bookId: string) => {
+        setBookIds((prev) => prev.filter((id) => id !== bookId));
+    }
+    
     return (
         <form onSubmit={handleSubmit(onSubmit)}>
             {/* manual for now, will be rewritten in the future */}
@@ -93,11 +102,17 @@ const OrderForm: React.FC<OrderFormProps> = ({deliveryTypes, existingOrder, onAd
             placeholder="User ID" />
             <p>{errors.userId?.message}</p>
 
-            {/* To implement: More user friendly input */}
-            <input {...register("bookIds")}
-            placeholder="Write bookIds separated by commas" 
-            onChange={handleChange}/>
-            <p>{errors.bookIds?.message}</p>
+            <OrderFormBookSearch
+                page={page}
+                books={books}
+                onBookAdd={handleBookAdd}
+                onPageChange={onPageChange}
+                />
+
+            <OrderFormBookList
+                bookIds={bookIds}
+                onBookDelete={handleBookDelete}
+            />
 
 
             <input {...register("region")}
