@@ -34,10 +34,10 @@ const AppRoutes = () => (
 					element={<LoginContainer />}
 				/>
 				{/* Subscription */}
-				<Route 
+				{/* <Route 
 				   	path="/subscription" 
 					element={<Subscription />} 
-				/> 
+				/>  */}
 				<Route
 					path="/register"
 					element={<RegisterContainer />}
@@ -103,17 +103,16 @@ const AppRoutes = () => (
 					path="*"
 					element={<NotFoundPage />}
 				/>
-      </Route>
-        {/*BOOKS*/}
-        <Route
-            path="/admin/books"
-            element={<BookListContainer />}
-          />
-        {/* Other */}
-        <Route
-          path="*"
-          element={<NotFoundPage />}
-        />
+			{/*BOOKS*/}
+			<Route
+				path="/admin/books"
+				element={<BookListContainer />}
+			  />
+			{/* Other */}
+			<Route
+			  path="*"
+			  element={<NotFoundPage />}
+			/>
 			</Routes>
 		</BrowserRouter>
 	</AuthProvider>
