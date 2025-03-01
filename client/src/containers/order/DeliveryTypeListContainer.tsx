@@ -3,7 +3,7 @@ import { AppDispatch, fetchDeliveryTypes, RootState } from "../../state/redux"
 import { useSelector } from "react-redux"
 import { useNavigate } from "react-router-dom"
 import { useEffect } from "react"
-import DeliveryTypeList from "../../components/order/Deliverylist"
+import DeliveryTypeList from "../../components/order/DeliveryList"
 
 const DeliveryTypeListContainer = () => {
     const dispatch = useDispatch<AppDispatch>()
