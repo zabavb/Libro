@@ -9,12 +9,14 @@ interface OrderFormBookSearchProps {
 }
 
 const OrderFormBookSearch: React.FC<OrderFormBookSearchProps> = ({ page, books, onPageChange, onBookAdd }) => {
+    const [search, setSearch] = useState<string>()
     const [searchFocus, setSearchFocus] = useState<boolean>()
     const timeoutRef = useRef<NodeJS.Timeout | null>()
 
-    const handleBookIdSubmit = (e: React.KeyboardEvent<HTMLInputElement>) => {
-        if (e.key === "Enter") {
-            alert("Submit")
+    const handleBookIdSubmit = () => {
+        if(search != undefined){
+            handleBookAdd(search)
+            setSearch("")
         }
     };
 
@@ -22,7 +24,7 @@ const OrderFormBookSearch: React.FC<OrderFormBookSearchProps> = ({ page, books, 
         if (value === false) {
             timeoutRef.current = setTimeout(() => {
                 setSearchFocus(false)
-            }, 50)
+            }, 100)
         }
         else if (timeoutRef.current) {
             clearTimeout(timeoutRef.current)
@@ -40,16 +42,21 @@ const OrderFormBookSearch: React.FC<OrderFormBookSearchProps> = ({ page, books, 
 
     return (
         <div> {/* Book select container*/}
-            <input
-                placeholder="Book Search"
-                onKeyDown={handleBookIdSubmit}
-                onFocus={() => handleFocus(true)}
-                onBlur={() => handleFocus(false)}
-            />
+            <div>
+                <input
+                    placeholder="Book Search"
+                    onKeyDown={handleBookIdSubmit}
+                    onFocus={() => handleFocus(true)}
+                    onBlur={() => handleFocus(false)}
+                    onChange={(e) => {setSearch(e.target.value)}}
+                    value={search}
+                />
+                <button onClick={handleBookIdSubmit}>Submit</button>
+            </div>
             {searchFocus === true &&
                 (
-                    <div style={{ cursor: "pointer" }} onFocus={() => handleFocus(true)}> {/* Book selection container*/}
-                        <div>
+                    <div style={{ cursor: "pointer" }} onFocus={() => handleFocus(true)} onBlur={() => handleFocus(false)}> {/* Book selection container*/}
+                        <div> 
                             {books?.map((book) => (
                                 <div onClick={() => handleBookAdd(book.bookId)}>
                                     <p>{book.title}</p>
