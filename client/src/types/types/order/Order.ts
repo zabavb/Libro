@@ -1,7 +1,7 @@
 export interface Order {
     id: string
     userId: string
-    bookIds: Array<string>
+    books: Record<string,number>
     region: string
     city: string
     address: string
