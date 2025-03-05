@@ -11,9 +11,9 @@ interface BookFilterProps {
 const BookFilter: React.FC<BookFilterProps> = ({ onFilterChange, filters }) => {
     return (
         <div>
-            <h3>Фільтри</h3>
+            <h3>Filters</h3>
             <label>
-                Автор:
+                Author:
                 <input
                     type="text"
                     value={filters.author || ""}
@@ -21,7 +21,7 @@ const BookFilter: React.FC<BookFilterProps> = ({ onFilterChange, filters }) => {
                 />
             </label>
             <label>
-                Видавництво:
+                Publisher:
                 <input
                     type="text"
                     value={filters.publisher || ""}
@@ -29,7 +29,7 @@ const BookFilter: React.FC<BookFilterProps> = ({ onFilterChange, filters }) => {
                 />
             </label>
             <label>
-                Ціна (від):
+                Price (from):
                 <input
                     type="number"
                     value={filters.priceFrom || ""}
@@ -37,7 +37,7 @@ const BookFilter: React.FC<BookFilterProps> = ({ onFilterChange, filters }) => {
                 />
             </label>
             <label>
-                Ціна (до):
+                Price (to):
                 <input
                     type="number"
                     value={filters.priceTo || ""}
@@ -45,7 +45,7 @@ const BookFilter: React.FC<BookFilterProps> = ({ onFilterChange, filters }) => {
                 />
             </label>
             <label>
-                Рік (від):
+                Year (from):
                 <input
                     type="number"
                     value={filters.yearFrom || ""}
@@ -53,7 +53,7 @@ const BookFilter: React.FC<BookFilterProps> = ({ onFilterChange, filters }) => {
                 />
             </label>
             <label>
-                Рік (до):
+                Year (to):
                 <input
                     type="number"
                     value={filters.yearTo || ""}
@@ -61,31 +61,31 @@ const BookFilter: React.FC<BookFilterProps> = ({ onFilterChange, filters }) => {
                 />
             </label>
             <label>
-                Мова:
+                Language:
                 <select
                     value={filters.language || ""}
                     onChange={(e) => onFilterChange({ ...filters, language: e.target.value as Language })}
                 >
-                    <option value="">Усі</option>
+                    <option value="">All</option>
                     {Object.values(Language).map((lang) => (
                         <option key={lang} value={lang}>{lang}</option>
                     ))}
                 </select>
             </label>
             <label>
-                Обкладинка:
+                Cover Type:
                 <select
                     value={filters.coverType || ""}
                     onChange={(e) => onFilterChange({ ...filters, coverType: e.target.value as CoverType })}
                 >
-                    <option value="">Усі</option>
+                    <option value="">All</option>
                     {Object.values(CoverType).map((cover) => (
                         <option key={cover} value={cover}>{cover}</option>
                     ))}
                 </select>
             </label>
             <label>
-                Чи в наявності:
+                In Stock:
                 <input
                     type="checkbox"
                     checked={filters.inStock || false}
@@ -93,7 +93,7 @@ const BookFilter: React.FC<BookFilterProps> = ({ onFilterChange, filters }) => {
                 />
             </label>
             <label>
-                Під категорія:
+                Subcategory:
                 <input
                     type="text"
                     value={filters.subcategory || ""}
