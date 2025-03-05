@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using OrderApi.Models;
+using System.Text.Json;
 
 namespace OrderApi.Data.Configurations
 {
@@ -32,6 +33,13 @@ namespace OrderApi.Data.Configurations
 
             builder.Property(o => o.Status)
                 .HasConversion<string>();
+
+            builder.Property(e => e.Books)
+                .HasConversion(
+                    v => JsonSerializer.Serialize(v, new JsonSerializerOptions()),
+                    v => JsonSerializer.Deserialize<Dictionary<Guid, int>>(v, new JsonSerializerOptions())
+                );
+
 
             builder.HasOne(o => o.DeliveryType)
                 .WithMany(dt => dt.Orders)
