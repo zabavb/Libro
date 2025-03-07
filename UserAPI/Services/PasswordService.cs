@@ -18,7 +18,7 @@ namespace UserAPI.Services
             _logger = logger;
         }
 
-        async Task<bool> UpdateAsync(UserDto user, string oldPassword, string newPassword)
+        public async Task<bool> UpdateAsync(UserDto user, string oldPassword, string newPassword)
         {
             try
             {

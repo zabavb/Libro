@@ -10,11 +10,11 @@ namespace UserAPI.Repositories
     {
 
         private readonly UserDbContext _context;
-
-        public PasswordRepository(UserDbContext context)
+        private readonly ILogger<IPasswordRepository> _logger;
+        public PasswordRepository(UserDbContext context, ILogger<IPasswordRepository> logger)
         {
             _context = context;
-
+            _logger = logger;
         }
         public PasswordRepository()
         {
@@ -36,7 +36,7 @@ namespace UserAPI.Repositories
         {
             if (size % 8 != 0)
             {
-                Console.WriteLine("Wrong size of salt");
+                _logger.LogInformation("Wrong size in GenerateSalt");
                 return null;
             }
 
@@ -46,6 +46,7 @@ namespace UserAPI.Repositories
                 rng.GetBytes(saltBytes);
             }
             string result = Convert.ToBase64String(saltBytes);
+            _logger.LogInformation("Successfull creation of salt");
             return result.Substring(0, result.Length - (size / 8));
         }
 
@@ -115,7 +116,7 @@ namespace UserAPI.Repositories
             }
             catch (Exception ex)
             {
-                //log exception
+                _logger.LogInformation($"Problem in PasswordRepository, method DeleteAsync: {ex}");
                 return false;
             }
         }

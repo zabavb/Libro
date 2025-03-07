@@ -163,37 +163,7 @@ namespace UserAPI.Repositories
             return user;
         }
 
-<<<<<<< HEAD
-        public async Task<User?> GetByIdAsync(Guid id)
-        {
-            string cacheKey = $"{_cacheKeyPrefix}{id}";
-            var cachedProduct = await _redisDatabase.StringGetAsync(cacheKey);
-
-            if (!cachedProduct.IsNullOrEmpty)
-            {
-                _logger.LogInformation("Fetched from CACHE.");
-                return JsonSerializer.Deserialize<User>(cachedProduct!);
-            }
-
-            _logger.LogInformation($"Fetched from DB.");
-            var user = await _context.Users.FindAsync(id);
-            if (user != null)
-            {
-                _logger.LogInformation("Set to CACHE.");
-                await _redisDatabase.StringSetAsync(
-                    cacheKey,
-                    JsonSerializer.Serialize(user),
-                    _cacheExpiration
-                );
-            }
-
-            return user;
-        }
-
-        public async Task AddAsync(User entity)
-=======
         public async Task CreateAsync(User entity)
->>>>>>> master
         {
             await _context.Users.AddAsync(entity);
             await _context.SaveChangesAsync();

@@ -5,7 +5,7 @@ namespace UserAPI.Repositories
     public interface IPasswordRepository
     {
         
-        protected Task<bool> VerifyAsync(Guid userId, string plainPassword);
+        Task<bool> VerifyAsync(Guid userId, string plainPassword);
         Task<bool> AddAsync(string password, User user);
         Task<bool> UpdateAsync(Guid userId, string oldPassword, string newPassword);
         Task<bool> DeleteAsync(Guid passwordId);
