@@ -1,17 +1,21 @@
-import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { addDeliveryTypeService, editDeliveryTypeService, fetchDeliveryTypesService, removeDeliveryTypeService } from "../../../services";
-import { DeliveryType } from "../../../types";
+import { DeliverySort, DeliveryType } from "../../../types";
 
 export const fetchDeliveryTypes = createAsyncThunk(
     "deliverytypes/fetchDeliveryTypes",
     async({
         pageNumber = 1,
-        pageSize = 10
+        pageSize = 10,
+        searchTerm,
+        sort
     }:{
         pageNumber?: number
         pageSize?: number
+        searchTerm?: string
+        sort?: DeliverySort
     }) => {
-        return await fetchDeliveryTypesService(pageNumber, pageSize)
+        return await fetchDeliveryTypesService(pageNumber, pageSize, searchTerm, sort)
     }
 )
 
@@ -45,11 +49,22 @@ const deliveryTypeSlice = createSlice({
             pageNumber: 1,
             pageSize: 10,
             totalCount: 0
-        }
+        },
+        searchTerm: "",
+        sort: {} as DeliverySort
     },
     reducers: {
         resetDeliveryTypeOperationStatus: (state) => {
             state.operationStatus = null
+        },
+        setDeliverySearchTerm: (state,action) => {
+            state.searchTerm = action.payload
+        },
+        setDeliverySort: (state, action: PayloadAction<keyof DeliverySort>) => {
+            const field = action.payload
+            const currentSort = state.sort[field]
+            const newSort = currentSort === undefined ? true : currentSort === true ? false: undefined
+            state.sort = { [field]: newSort }
         }
     },
     extraReducers: (builder) => {
@@ -112,5 +127,5 @@ const deliveryTypeSlice = createSlice({
     }
 })
 
-export const {resetDeliveryTypeOperationStatus} = deliveryTypeSlice.actions
+export const {setDeliverySearchTerm, setDeliverySort, resetDeliveryTypeOperationStatus} = deliveryTypeSlice.actions
 export default deliveryTypeSlice.reducer
