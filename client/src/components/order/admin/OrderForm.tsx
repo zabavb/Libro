@@ -137,7 +137,7 @@ const OrderForm: React.FC<OrderFormProps> = ({page, books, deliveryTypes, existi
             type="date"
             {...register("deliveryDate")}
             placeholder="Delivery Date" />
-            <p>{errors.orderDate?.message}</p>
+            <p>{errors.deliveryDate?.message}</p>
 
             <select {...register("deliveryTypeId")}>
             <option value="">Select Delivery Type</option>
@@ -161,7 +161,7 @@ const OrderForm: React.FC<OrderFormProps> = ({page, books, deliveryTypes, existi
                 {...register("deliveryPrice")}
                 placeholder="Delivery Price"
             />
-            <p>{errors.price?.message}</p>
+            <p>{errors.deliveryPrice?.message}</p>
 
             <select {...register("status")}>
                 <option value="">Select Status</option>
