@@ -1,7 +1,9 @@
 ﻿using Library.Extensions;
+using Library.Sortings;
 using Microsoft.EntityFrameworkCore;
 using OrderApi.Data;
 using OrderApi.Models;
+using OrderAPI;
 using OrderAPI.Repository;
 using StackExchange.Redis;
 using System.Text.Json;
@@ -17,7 +19,7 @@ namespace OrderApi.Repository
         private readonly ILogger<IDeliveryTypeRepository> _logger = logger;
 
 
-        public async Task<PaginatedResult<DeliveryType>> GetAllPaginatedAsync(int pageNumber, int pageSize)
+        public async Task<PaginatedResult<DeliveryType>> GetAllPaginatedAsync(int pageNumber, int pageSize, string? searchTerm, DeliverySort? sort)
         {
             IEnumerable<DeliveryType> deliveryTypes;
 
@@ -46,6 +48,11 @@ namespace OrderApi.Repository
                 _logger.LogInformation("Set to CACHE.");
             }
 
+            if (!string.IsNullOrEmpty(searchTerm))
+                deliveryTypes = await SearchEntitiesAsync(searchTerm, deliveryTypes);
+            if (deliveryTypes.Any() && sort != null)
+                deliveryTypes = await SortAsync(deliveryTypes, sort);
+
             var totalDeliveryTypes = await Task.FromResult(deliveryTypes.Count());
 
             deliveryTypes = await Task.FromResult(deliveryTypes.Skip((pageNumber - 1) * pageSize).Take(pageSize));
@@ -58,6 +65,31 @@ namespace OrderApi.Repository
                 PageNumber = pageNumber,
                 PageSize = pageSize
             };
+        }
+
+        public async Task<IEnumerable<DeliveryType>> SearchEntitiesAsync(string searchTerm, IEnumerable<DeliveryType> data)
+        {
+            if(data == null)
+            {
+                return await _context.DeliveryTypes
+                    .AsNoTracking()
+                    .Where(d => d.ServiceName.Contains(searchTerm))
+                    .ToListAsync();
+            }
+
+            return await Task.FromResult(data.Where(d => d.ServiceName.Contains(searchTerm)));
+        }
+
+        public async Task<IEnumerable<DeliveryType>> SortAsync(IEnumerable<DeliveryType> deliveryTypes, DeliverySort sort)
+        {
+            var query = deliveryTypes.AsQueryable();
+
+            if(sort.ServiceName != Bool.NULL)
+                query = sort.ServiceName == Bool.ASCENDING
+                    ? query.OrderBy(d => d.ServiceName)
+                    : query.OrderByDescending(d => d.ServiceName);
+
+            return await Task.FromResult(query.ToList());
         }
 
         public async Task<DeliveryType?> GetByIdAsync(Guid id)

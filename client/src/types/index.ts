@@ -18,6 +18,7 @@ export type { UserFilter } from "./filters/UserFilter"
 export type { OrderFilter } from "./filters/OrderFilter"
 
 // Sorts
+export type { DeliverySort } from "./sortings/DeliverySort"
 export type { UserSort } from "./sortings/UserSort"
 export type { OrderSort } from "./sortings/OrderSort"
 export type { BookSort } from "./sortings/BookSort"

@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Library.Extensions;
 using OrderApi.Models;
+using OrderAPI;
 using OrderAPI.Repository;
 
 namespace OrderApi.Services
@@ -20,9 +21,9 @@ namespace OrderApi.Services
             _message = string.Empty;
         }
 
-        public async Task<PaginatedResult<DeliveryTypeDto>> GetAllAsync(int pageNumber, int pageSize)
+        public async Task<PaginatedResult<DeliveryTypeDto>> GetAllAsync(int pageNumber, int pageSize, string searchTerm, DeliverySort? sort)
         {
-            var paginatedDeliveryTypes = await _repository.GetAllPaginatedAsync(pageNumber,pageSize);
+            var paginatedDeliveryTypes = await _repository.GetAllPaginatedAsync(pageNumber,pageSize,searchTerm, sort);
 
             if (paginatedDeliveryTypes == null || paginatedDeliveryTypes.Items == null)
             {

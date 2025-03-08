@@ -1,12 +1,23 @@
 import { createDeliveryType, deleteDeliveryType, getAllDeliveryTypes, getDeliveryTypeById, updateDeliveryType } from "../api/repositories/deliveryTypeRepository";
-import { DeliveryType, PaginatedResponse } from "../types";
+import { DeliverySort, DeliveryType, PaginatedResponse } from "../types";
 
 export const fetchDeliveryTypesService = async (
     pageNumber: number = 1,
-    pageSize: number = 10
+    pageSize: number = 10,
+    searchTerm?: string,
+    sort?: DeliverySort
 ): Promise<PaginatedResponse<DeliveryType>> => {
+    const formattedSort = Object.fromEntries(
+        Object.entries(sort || {}).map(([key,value]) => [key, value ? 1 : 2])
+    )
+
+    const params = {
+        searchTerm,
+        ...formattedSort
+    }
+
     try{
-        return await getAllDeliveryTypes(pageNumber, pageSize)
+        return await getAllDeliveryTypes(pageNumber, pageSize, params)
     } catch(error){
         throw new Error(`Error fetching delivery types: ${error}`)
     }

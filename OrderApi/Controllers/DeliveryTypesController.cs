@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using OrderApi.Services;
-
+using OrderAPI;
 namespace OrderApi.Controllers
 {
     /// <summary>
@@ -22,15 +22,16 @@ namespace OrderApi.Controllers
         /// </summary>
         /// <param name="pageNumber">The page number to retrieve (default is 1).</param>
         /// <param name="pageSize">The number of items per page (default is 10).</param>
+        /// <param name="searchTerm">Optional search term to filter orders.</param>
         /// <returns>List of delivery types</returns>
         /// <response code="200">Retrieval successful, returns the list</response>
         /// <response code="500">an unexpected error occured.</response>
         [HttpGet]
-        public async Task<IActionResult> GetAll([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
+        public async Task<IActionResult> GetAll([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10, [FromQuery] string? searchTerm = null,[FromQuery] DeliverySort? sort = null)
         {
             try
             {
-                var deliveryTypes = await _deliveryTypeService.GetAllAsync(pageNumber, pageSize);
+                var deliveryTypes = await _deliveryTypeService.GetAllAsync(pageNumber, pageSize, searchTerm!, sort);
                 _logger.LogInformation("Delivery types succesfully fetched.");
                 return Ok(deliveryTypes);
             }
