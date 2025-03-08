@@ -16,7 +16,10 @@ namespace DeadAspClient.Controllers
 
         //=========================== Actions ===========================
 
+<<<<<<< HEAD:Client/Controllers/UsersController.cs
+=======
         public async Task<IActionResult> GetAllUsers(int pageNumber = 1, int pageSize = 10, string? searchTerm = null, string? filter = null)
+>>>>>>> master:DeadAspClient/Controllers/UsersController.cs
         {
             try
             {

@@ -6,9 +6,10 @@ using UserAPI.Repositories;
 
 namespace UserAPI.Services
 {
-    public class UserService(IUserRepository repository, S3StorageService storageService, IMapper mapper, ILogger<IUserService> logger) : IUserService
+    public class UserService(IUserRepository repository, IPasswordRepository passwordRepository, S3StorageService storageService, IMapper mapper, ILogger<IUserService> logger) : IUserService
     {
         private readonly IUserRepository _repository = repository;
+        private readonly IPasswordRepository _passwordRepository = passwordRepository;
         private readonly S3StorageService _storageService = storageService;
         private readonly IMapper _mapper = mapper;
         private readonly ILogger<IUserService> _logger = logger;
@@ -131,6 +132,9 @@ namespace UserAPI.Services
             {
                 try
                 {
+                    var user = await _repository.GetByIdAsync(id);
+                    var passId = user.PasswordId;
+                    await _passwordRepository.DeleteAsync(passId);
                     await _storageService.DeleteAsync(imageUrl);
                 }
                 catch (Exception ex)
