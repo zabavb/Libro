@@ -1,19 +1,23 @@
 import React from "react"
 
 interface OrderFormBookListProps {
-    bookIds: string[]
+    books: Record<string,number>
     onBookDelete: (bookId: string) => void
+    onBookAdd: (bookId: string) => void
 }
 
-const OrderFormBookList: React.FC<OrderFormBookListProps> = ({bookIds, onBookDelete}) => {
+const OrderFormBookList: React.FC<OrderFormBookListProps> = ({books, onBookDelete,onBookAdd}) => {
     
     
     return(
         <div> 
-        {bookIds?.map((book) => (
+        {Object.entries(books)?.map(([book,count]) => (
             <div key={book}>
-                <p>{book}</p>
-                <button onClick={() => onBookDelete(book)}>Delete </button>
+                <p>{book} (x{count})</p>
+                <div style={{display:"flex"}}>
+                <p style={{cursor:"pointer"}} onClick={() => onBookDelete(book)}>-</p>
+                <p style={{cursor:"pointer"}} onClick={() => onBookAdd(book)}>+</p>
+                </div>
             </div>
         ))}
         </div>

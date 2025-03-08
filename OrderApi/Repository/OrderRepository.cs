@@ -116,8 +116,8 @@ namespace OrderApi.Repository
 
             if (sort.BooksAmount != Bool.NULL)
                 query = sort.BooksAmount == Bool.ASCENDING
-                    ? query.OrderBy(o => o.BookIds.Count)
-                    : query.OrderByDescending(o => o.BookIds.Count);
+                    ? query.OrderBy(o => o.Books.Values.Sum())
+                    : query.OrderByDescending(o => o.Books.Values.Sum());
 
             if (sort.OrderPrice != Bool.NULL)
                 query = sort.OrderPrice == Bool.ASCENDING

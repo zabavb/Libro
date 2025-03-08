@@ -19,7 +19,7 @@ interface OrderFormProps {
 }
 
 const OrderForm: React.FC<OrderFormProps> = ({page, books, deliveryTypes, existingOrder, onAddOrder, onEditOrder, onPageChange }) => {
-    const [bookIds, setBookIds] = useState<string[]>([])
+    const [bookObjs, setBookObjs] = useState<Record<string,number>>({})
    
     const {
         register,
@@ -31,7 +31,7 @@ const OrderForm: React.FC<OrderFormProps> = ({page, books, deliveryTypes, existi
         defaultValues:
         {
             userId: "",
-            bookIds: "",
+            books: {},
             address: "",
             region: "",
             city: "",
@@ -47,7 +47,7 @@ const OrderForm: React.FC<OrderFormProps> = ({page, books, deliveryTypes, existi
     useEffect(() => {
         if(existingOrder) {
             setValue("userId", existingOrder.userId)
-            setValue("bookIds", existingOrder.bookIds.toString());
+            setValue("books", existingOrder.books);
             setValue("region", existingOrder.region)
             setValue("city", existingOrder.city)
             setValue("address", existingOrder.address)
@@ -58,13 +58,13 @@ const OrderForm: React.FC<OrderFormProps> = ({page, books, deliveryTypes, existi
             setValue("deliveryTypeId", existingOrder.deliveryTypeId)
             setValue("status", statusNumberToEnum(existingOrder.status))
         }
-    }, [existingOrder, setValue, bookIds])
+    }, [existingOrder, setValue, bookObjs])
 
     const onSubmit = (data: OrderFormData) => {
         const order: Order = {
             id: existingOrder ? existingOrder.id : "00000000-0000-0000-0000-000000000000",
             userId: data.userId,
-            bookIds: bookIds,
+            books: bookObjs,
             region: data.region,
             city: data.city,
             address: data.address,
@@ -88,11 +88,26 @@ const OrderForm: React.FC<OrderFormProps> = ({page, books, deliveryTypes, existi
     
     const handleBookAdd = (bookId: string) => {
         console.log("Book added")
-        setBookIds((prev) => [...prev, bookId]);
+        setBookObjs((prev) => ({
+            ...prev,
+            [bookId]: (prev?.[bookId] || 0) + 1
+        }));
     }
 
     const handleBookDelete = (bookId: string) => {
-        setBookIds((prev) => prev.filter((id) => id !== bookId));
+        setBookObjs((prev) => {
+            if (!prev || !prev[bookId]) return prev;
+
+            const updatedBooks = { ...prev };
+    
+            if (updatedBooks[bookId] > 1) {
+                updatedBooks[bookId] -= 1;
+            } else {
+                delete updatedBooks[bookId];
+            }
+    
+            return updatedBooks;
+        });
     }
     
     return (
@@ -110,8 +125,9 @@ const OrderForm: React.FC<OrderFormProps> = ({page, books, deliveryTypes, existi
                 />
 
             <OrderFormBookList
-                bookIds={bookIds}
+                books={bookObjs}
                 onBookDelete={handleBookDelete}
+                onBookAdd={handleBookAdd}
             />
 
 

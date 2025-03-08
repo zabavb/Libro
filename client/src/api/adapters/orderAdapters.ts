@@ -29,7 +29,7 @@ export const statusEnumToNumber = (status: Status): number => {
 export const OrderToOrderView = (response: Order): OrderView => {
     return {
         id: response.id,
-        bookIds: response.bookIds,
+        books: response.books,
         region: response.region,
         city: response.city,
         address: response.address,

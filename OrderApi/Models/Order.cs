@@ -6,7 +6,7 @@ namespace OrderApi.Models
     {
         public Guid OrderId { get; set; }
         public Guid UserId { get; set; }
-        public List<Guid> BookIds { get; set; }
+        public Dictionary<Guid,int> Books { get; set; }
 
         public string Region { get; set; }
         public string City { get; set; }
@@ -28,7 +28,7 @@ namespace OrderApi.Models
 
         public Order()
         {
-            BookIds = new List<Guid>();
+            Books = new Dictionary<Guid, int>();
             Region = string.Empty;
             City = string.Empty;
             Address = string.Empty;
