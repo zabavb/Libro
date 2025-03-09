@@ -1,13 +1,20 @@
-import * as z from "zod";
+import * as Yup from "yup";
 
-export const subscriptionSchema = z.object({
-  email: z.string().email("Невірний email"),
-  name: z.string().min(2, "Мінімум 2 символи"),
-  plan: z.enum(["basic", "premium", "vip"], {
-    required_error: "Оберіть план підписки",
-  }),
-  startDate: z.string().optional(),
-  endDate: z.string().optional(),
+// Validation schema for subscription
+export const subscriptionValidationSchema = Yup.object().shape({
+  userId: Yup.string().required("User ID is required"), // Ensure user ID is provided
+  plan: Yup.string().oneOf(["basic", "premium", "pro"], "Invalid subscription plan"), // Ensure the plan is one of the allowed options
+  autoRenewal: Yup.boolean(), // Boolean value for auto-renewal
 });
 
-export type SubscriptionFormValues = z.infer<typeof subscriptionSchema>;
+// Function to validate the subscription data
+export const validateSubscription = (data: any) => {
+  try {
+    // Validate data against the schema, and return true if successful
+    subscriptionValidationSchema.validateSync(data, { abortEarly: false });
+    return true;
+  } catch (error) {
+    console.error("Validation errors:", error);
+    return false;
+  }
+};
