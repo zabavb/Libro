@@ -5,7 +5,10 @@ import LoginContainer from "./containers/auth/LoginContainer"
 import RegisterContainer from "./containers/auth/RegisterContainer"
 
 import MainPage from "./pages/Main/MainPage"
+import SubscriptionPage from "./pages/Main/SubscriptionPage"
+import SubscriptionDetailsPage from "./pages/Admin/UserRelated/Subscriptions/SubscriptionDetailsPage"
 
+import SubscriptionFormPage from "./pages/Admin/UserRelated/Subscriptions/SubscriptionFormPage"
 import { AuthProvider } from "./state/context/AuthContext"
 import PrivateRoute from "./privateRoute"
 
@@ -33,14 +36,22 @@ const AppRoutes = () => (
 					path="/login"
 					element={<LoginContainer />}
 				/>
-				{/* Subscription */}
-				{/* <Route 
-				   	path="/subscription" 
-					element={<Subscription />} 
-				/>  */}
 				<Route
 					path="/register"
 					element={<RegisterContainer />}
+				/>
+				{/* Subscriptions */}
+				<Route 
+				    path="/" 
+					element={<SubscriptionPage />} 
+				/>
+                <Route 
+					path="/subscriptions/:id" 
+					element={<SubscriptionDetailsPage />} 
+				/>
+                <Route 
+					path="/subscriptions/new" 
+					element={<SubscriptionFormPage />} 
 				/>
 				{/* Main */}
 				<Route
