@@ -8,4 +8,5 @@ export interface User {
 	role: number
 	image: File
 	imageUrl: string
+	name: string
 }
