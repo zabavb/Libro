@@ -1,19 +1,23 @@
-import { subscriptionApi } from "../api/subscriptionApi";
+import subscriptionService from "./subscriptionService";
 
-export const autoRenewSubscription = async (id: string) => {
+/**
+ * Handle the auto-renewal of subscriptions.
+ * It checks all subscriptions and renews the ones with auto-renewal enabled.
+ */
+export const handleAutoRenewal = async () => {
   try {
-    const existingSubscription = await subscriptionApi.fetchById(id);
-    if (existingSubscription.data.status !== "active") {
-      throw new Error("Не можна продовжити неактивну підписку");
+    // Fetch all subscriptions
+    const subscriptions = await subscriptionService.getAll();
+
+    // Filter subscriptions that have auto-renewal enabled
+    const autoRenewableSubscriptions = subscriptions.filter((sub) => sub.autoRenewal);
+
+    // Renew each subscription
+    for (const sub of autoRenewableSubscriptions) {
+      console.log(`Renewing subscription for user ${sub.userId}`);
+      await subscriptionService.create({ userId: sub.userId, plan: sub.plan });
     }
-
-    const newEndDate = new Date(existingSubscription.data.endDate);
-    newEndDate.setMonth(newEndDate.getMonth() + 1); // продовження на місяць
-
-    await subscriptionApi.update(id, { endDate: newEndDate.toISOString() });
-
-    return "Підписка успішно продовжена!";
   } catch (error) {
-    throw new Error("Помилка при продовженні підписки");
+    console.error("Error with auto-renewal:", error);
   }
 };
