@@ -1,39 +1,46 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchSubscriptionById } from "../../../../state/redux/slices/subscriptionSlice";
+import { RootState, AppDispatch } from "../../../../state/redux/store";
 import { useParams } from "react-router-dom";
-import { subscriptionApi } from "../../../api/subscriptionApi";
-import { Subscription } from "../../../types";
 
-export default function SubscriptionDetailsPage() {
+const SubscriptionDetailsPage = () => {
+  // Extracting the subscription ID from the URL params.
   const { id } = useParams<{ id: string }>();
-  const [subscription, setSubscription] = useState<Subscription | null>(null);
-  const [loading, setLoading] = useState(true);
 
+  // Dispatch and selector hooks from Redux to manage state.
+  const dispatch: AppDispatch = useDispatch();
+  // Accessing the current state of subscriptions, including loading status and errors.
+  const { current, loading, error } = useSelector((state: RootState) => state.subscriptions);
+
+  // Using useEffect to fetch subscription details when the component mounts
+  // or when the `id` from the URL changes.
   useEffect(() => {
-    async function fetchData() {
-      try {
-        const response = await subscriptionApi.fetchById(id!);
-        setSubscription(response.data);
-      } catch (error) {
-        console.error("Error fetching subscription", error);
-      }
-      setLoading(false);
+    if (id) {
+      // Dispatching the action to fetch subscription by ID.
+      dispatch(fetchSubscriptionById(id));
     }
-    fetchData();
-  }, [id]);
+  }, [id, dispatch]);
 
-  if (loading) return <p>Завантаження...</p>;
+  // Rendering loading state while the subscription data is being fetched.
+  if (loading) return <p>Loading...</p>;
 
+  // Displaying an error message if there is an error fetching the subscription data.
+  if (error) return <p style={{ color: "red" }}>Error: {error}</p>;
+
+  // Displaying a message if no subscription data is found for the given ID.
+  if (!current) return <p>Subscription not found</p>;
+
+  // Rendering the details of the subscription once the data is available.
   return (
-    <div className="max-w-md mx-auto p-6 bg-white rounded shadow">
-      <h2 className="text-xl font-bold">Деталі підписки</h2>
-      {subscription && (
-        <>
-          <p><strong>Email:</strong> {subscription.email}</p>
-          <p><strong>План:</strong> {subscription.plan}</p>
-          <p><strong>Дата початку:</strong> {subscription.startDate}</p>
-          <p><strong>Дата закінчення:</strong> {subscription.endDate}</p>
-        </>
-      )}
+    <div>
+      <h1>Subscription Details</h1>
+      <p>ID: {current.id}</p>
+      <p>User ID: {current.userId}</p>
+      <p>Plan: {current.plan}</p>
+      <p>Status: {current.status}</p>
     </div>
   );
-}
+};
+
+export default SubscriptionDetailsPage;
