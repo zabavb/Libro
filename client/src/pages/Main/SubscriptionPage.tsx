@@ -1,88 +1,37 @@
-import { useState } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
-import axios from "axios";
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchSubscriptions } from "../../state/redux/slices/subscriptionSlice";
+import { RootState, AppDispatch } from "../../state/redux/store"; 
 
-const subscriptionSchema = z.object({
-  email: z.string().email("Невірний email"),
-  name: z.string().min(2, "Мінімум 2 символи"),
-  plan: z.enum(["basic", "premium", "vip"], {
-    required_error: "Оберіть план підписки",
-  }),
-});
+const SubscriptionPage = () => {
+  const dispatch = useDispatch<AppDispatch>(); 
+  // Accessing subscriptions state from the Redux store
+  const { list, loading, error } = useSelector((state: RootState) => state.subscriptions);
 
-type SubscriptionFormValues = z.infer<typeof subscriptionSchema>;
+  // Fetching subscriptions data when the component mounts
+  useEffect(() => {
+    dispatch(fetchSubscriptions());
+  }, [dispatch]);
 
-export default function SubscriptionForm() {
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<SubscriptionFormValues>({
-    resolver: zodResolver(subscriptionSchema),
-  });
+  // Display loading message while fetching data
+  if (loading) return <p>Loading...</p>;
 
-  const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState("");
-
-  const onSubmit = async (data: SubscriptionFormValues) => {
-    setLoading(true);
-    setMessage("");
-    try {
-      await axios.post("/api/subscriptions", data);
-      setMessage("Підписка успішно оформлена!");
-    } catch (error) {
-      setMessage("Помилка при оформленні підписки");
-    }
-    setLoading(false);
-  };
+  // Display error message if there's an error fetching the data
+  if (error) return <p style={{ color: "red" }}>Error: {error}</p>;
 
   return (
-    <div className="max-w-md mx-auto bg-white p-6 rounded-lg shadow-md">
-      <h2 className="text-xl font-bold mb-4">Оформлення підписки</h2>
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <div className="mb-4">
-          <label className="block text-gray-700">Email</label>
-          <input
-            type="email"
-            {...register("email")}
-            className="w-full p-2 border rounded"
-          />
-          {errors.email && <p className="text-red-500 text-sm">{errors.email.message}</p>}
-        </div>
-
-        <div className="mb-4">
-          <label className="block text-gray-700">Ім'я</label>
-          <input
-            type="text"
-            {...register("name")}
-            className="w-full p-2 border rounded"
-          />
-          {errors.name && <p className="text-red-500 text-sm">{errors.name.message}</p>}
-        </div>
-
-        <div className="mb-4">
-          <label className="block text-gray-700">Оберіть план</label>
-          <select {...register("plan")} className="w-full p-2 border rounded">
-            <option value="">-- Виберіть --</option>
-            <option value="basic">Basic</option>
-            <option value="premium">Premium</option>
-            <option value="vip">VIP</option>
-          </select>
-          {errors.plan && <p className="text-red-500 text-sm">{errors.plan.message}</p>}
-        </div>
-
-        <button
-          type="submit"
-          className="bg-blue-500 text-white p-2 rounded w-full"
-          disabled={loading}
-        >
-          {loading ? "Обробка..." : "Підписатися"}
-        </button>
-      </form>
-
-      {message && <p className="mt-4 text-center text-green-500">{message}</p>}
+    <div>
+      <h1>My Subscriptions</h1>
+      <ul>
+        {/* Mapping through the list of subscriptions and displaying each one */}
+        {list.map((sub) => (
+          <li key={sub.id}>
+            {sub.plan} - <strong>{sub.status}</strong> {/* Displaying the plan and its status */}
+          </li>
+        ))}
+      </ul>
     </div>
   );
-}
+};
+
+export default SubscriptionPage;
