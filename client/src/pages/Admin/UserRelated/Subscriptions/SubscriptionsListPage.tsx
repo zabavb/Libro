@@ -1,77 +1,43 @@
-import { useEffect, useState } from "react";
-import { fetchSubscriptionsService, removeSubscriptionService } from "../../../services/subscriptionService";
-import { Subscription } from "../../../types";
-import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchSubscriptions } from "../../../../state/redux/slices/subscriptionSlice.ts";
+import { RootState, AppDispatch } from "../../../../state/redux/store";
+import { useMemo } from "react";
 
-export default function SubscriptionsListPage() {
-  const [subscriptions, setSubscriptions] = useState<Subscription[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
-  const navigate = useNavigate();
+const SubscriptionsListPage = () => {
+  // Dispatching and accessing the Redux store
+  const dispatch: AppDispatch = useDispatch();
+  const { list, loading, error } = useSelector((state: RootState) => state.subscriptions);
 
+  // Fetching subscriptions when the component mounts
   useEffect(() => {
-    loadSubscriptions();
-  }, []);
+    dispatch(fetchSubscriptions());
+  }, [dispatch]);
 
-  const loadSubscriptions = async () => {
-    setLoading(true);
-    try {
-      const data = await fetchSubscriptionsService();
-      setSubscriptions(data.items);
-    } catch (err) {
-      setError("Помилка завантаження підписок");
-    }
-    setLoading(false);
-  };
+  // Memoizing the sorted subscriptions list to avoid unnecessary re-sorting
+  const sortedSubscriptions = useMemo(() => {
+    return [...list].sort((a, b) => a.plan.localeCompare(b.plan)); // Sorting by subscription plan
+  }, [list]);
 
-  const handleDelete = async (id: string) => {
-    if (!confirm("Ви впевнені, що хочете видалити підписку?")) return;
-    try {
-      await removeSubscriptionService(id);
-      setSubscriptions(subscriptions.filter((s) => s.id !== id));
-    } catch (err) {
-      alert("Помилка при видаленні підписки");
-    }
-  };
+  // Display loading message while fetching data
+  if (loading) return <p>Loading...</p>;
+  
+  // Display error message if there's an error fetching the data
+  if (error) return <p style={{ color: "red" }}>Error: {error}</p>;
 
   return (
-    <div className="max-w-4xl mx-auto p-6 bg-white rounded shadow">
-      <h2 className="text-xl font-bold mb-4">Список підписок</h2>
-
-      {loading && <p>Завантаження...</p>}
-      {error && <p className="text-red-500">{error}</p>}
-
-      <button onClick={() => navigate("/admin/subscriptions/new")} className="bg-green-500 text-white p-2 rounded mb-4">
-        + Додати підписку
-      </button>
-
-      <table className="w-full border-collapse border">
-        <thead>
-          <tr className="bg-gray-200">
-            <th className="border p-2">ID</th>
-            <th className="border p-2">Email</th>
-            <th className="border p-2">План</th>
-            <th className="border p-2">Дії</th>
-          </tr>
-        </thead>
-        <tbody>
-          {subscriptions.map((sub) => (
-            <tr key={sub.id} className="border">
-              <td className="border p-2">{sub.id}</td>
-              <td className="border p-2">{sub.email}</td>
-              <td className="border p-2">{sub.plan}</td>
-              <td className="border p-2">
-                <button onClick={() => navigate(`/admin/subscriptions/edit/${sub.id}`)} className="text-blue-500 mr-2">
-                  Редагувати
-                </button>
-                <button onClick={() => handleDelete(sub.id)} className="text-red-500">
-                  Видалити
-                </button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+    <div>
+      <h1>Subscriptions List</h1>
+      <ul>
+        {/* Mapping through the sorted subscription list and displaying each one */}
+        {sortedSubscriptions.map((sub) => (
+          <li key={sub.id}>
+            {sub.plan} — <strong>{sub.status}</strong> {/* Displaying the plan and status */}
+          </li>
+        ))}
+      </ul>
     </div>
   );
-}
+};
+
+export default SubscriptionsListPage;
