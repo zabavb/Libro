@@ -20,8 +20,8 @@ const OrderAdminCard: React.FC<OrderAdminCardProps> = ({order, onDelete, onNavig
                     {/* To be implemented */}
                     <p>
                         <strong>Books:</strong>
-                        {order.bookIds.map((book) => (
-                            <p>{book}</p>
+                        {Object.entries(order.books).map(([book, count]) => (
+                            <p>{book} (x{count})</p>
                         ))
                     }
                     </p>
