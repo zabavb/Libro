@@ -7,9 +7,9 @@ namespace UserAPI.Data
 {
     public class DataSeeder
     {
-        public static void Seed(ModelBuilder modelBuilder)
+        /*public static void Seed(ModelBuilder modelBuilder)
         {
-            var passwordRepo = new PasswordRepository();
+            // var passwordRepo = new PasswordRepository();
 
 
             var user1 = new User
@@ -80,7 +80,6 @@ namespace UserAPI.Data
             modelBuilder.Entity<User>().HasData(user1, user2);
             modelBuilder.Entity<Subscription>().HasData(sub1, sub2);
             modelBuilder.Entity<Password>().HasData(pass1, pass2);
-        }
+        }*/
     }
-    
 }

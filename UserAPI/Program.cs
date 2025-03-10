@@ -21,12 +21,13 @@ builder.Services.AddDbContext<UserDbContext>(options =>
 builder.Services.AddSingleton<IConnectionMultiplexer>(sp =>
 {
     var config = sp.GetRequiredService<IConfiguration>();
+    var redisConfig = config.GetSection("Redis");
 
     var options = new ConfigurationOptions
     {
-        EndPoints = { { "", 221 } },
-        User = "default",
-        Password = ""
+        EndPoints = { { redisConfig["Host"]!, int.Parse(redisConfig["Port"]!) } },
+        User = redisConfig["User"],
+        Password = redisConfig["Password"]
     };
     return ConnectionMultiplexer.Connect(options);
 });
