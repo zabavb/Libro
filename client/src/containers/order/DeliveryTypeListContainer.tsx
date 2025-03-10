@@ -4,6 +4,8 @@ import { useSelector } from "react-redux"
 import { useNavigate } from "react-router-dom"
 import { useEffect } from "react"
 import DeliveryTypeList from "../../components/order/DeliveryList"
+import { setDeliverySearchTerm, setDeliverySort } from "../../state/redux/slices/deliveryTypeSlice"
+import { DeliverySort } from "../../types"
 
 const DeliveryTypeListContainer = () => {
     const dispatch = useDispatch<AppDispatch>()
@@ -11,7 +13,9 @@ const DeliveryTypeListContainer = () => {
         data: deliveryTypes,
         loading,
         error,
-        pagination
+        pagination,
+        searchTerm,
+        sort
     } = useSelector((state: RootState) => state.deliveryTypes)
     const navigate = useNavigate()
 
@@ -19,10 +23,12 @@ const DeliveryTypeListContainer = () => {
         dispatch(
             fetchDeliveryTypes({
                 pageNumber: pagination.pageNumber,
-                pageSize: pagination.pageSize
+                pageSize: pagination.pageSize,
+                searchTerm,
+                sort
             })
         )
-    }, [dispatch, pagination.pageNumber, pagination.pageSize])
+    }, [dispatch, pagination.pageNumber, pagination.pageSize, searchTerm, sort])
 
     const handleNavigate = (path: string) => {
         navigate(path)
@@ -30,6 +36,30 @@ const DeliveryTypeListContainer = () => {
 
     const handlePageChange = (pageNumber: number) => {
         dispatch(fetchDeliveryTypes({pageNumber, pageSize: pagination.pageSize}))
+    }
+
+    const handleSearchTermChange = (newSearchTerm: string) => {
+        dispatch(setDeliverySearchTerm(newSearchTerm))
+        dispatch(
+            fetchDeliveryTypes({
+                pageNumber: 1,
+                pageSize: pagination.pageSize,
+                searchTerm: newSearchTerm,
+                sort
+            })
+        )
+    }
+
+    const handleSortChange = (field: keyof DeliverySort) => {
+        dispatch(setDeliverySort(field))
+        dispatch(
+            fetchDeliveryTypes({
+                pageNumber: 1,
+                pageSize: pagination.pageSize,
+                searchTerm,
+                sort: { [field ]: true}
+            })
+        )
     }
 
     return (
@@ -40,6 +70,10 @@ const DeliveryTypeListContainer = () => {
         pagination={pagination}
         onPageChange={handlePageChange}
         onNavigate={handleNavigate}
+        onSearchTermChange={handleSearchTermChange}
+        searchTerm={searchTerm}
+        onSortChange={handleSortChange}
+        sort={sort}
         />
     )
 }

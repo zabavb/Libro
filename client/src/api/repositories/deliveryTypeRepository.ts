@@ -5,9 +5,12 @@ import { DeliveryType, PaginatedResponse } from "../../types";
 export const getAllDeliveryTypes = async (
     pageNumber: number = 1,
     pageSize: number = 10,
+    params:{
+        searchTerm: string | undefined
+    }
 ): Promise<PaginatedResponse<DeliveryType>> => {
     const url = DELIVERYTYPES_PAGINATED(pageNumber, pageSize)
-    const response = await axios.get<PaginatedResponse<DeliveryType>>(url)
+    const response = await axios.get<PaginatedResponse<DeliveryType>>(url, {params})
     return response.data
 }
 
