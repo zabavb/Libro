@@ -70,7 +70,7 @@ namespace UserAPI.Services
                 _message = $"Error occurred while registering new user.";
                 _logger.LogError(_message);
                 throw new InvalidOperationException(_message, ex);
-            }*/
+            }
         }
 
         private async Task<bool> IsRightPassword(User user, string password)
