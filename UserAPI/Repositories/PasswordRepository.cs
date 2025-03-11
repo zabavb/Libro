@@ -16,11 +16,11 @@ namespace UserAPI.Repositories
             _context = context;
             _logger = logger;
         }
-        public PasswordRepository()
+        /*public PasswordRepository()
         {
             _context = null;
 
-        }
+        }*/
 
         public string HashPassword(string password, string salt)
         {
