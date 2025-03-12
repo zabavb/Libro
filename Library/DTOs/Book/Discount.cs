@@ -1,12 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Library.DTOs.Book
+﻿namespace Library.DTOs.Book
 {
-    class Discount
+    public class Discount
     {
+        public Guid DiscountId { get; set; }
+
+        public Guid BookId { get; set; }
+
+        public float DiscountRate { get; set; }
+
+        public DateTime StartDate { get; set; }
+        public DateTime EndDate { get; set; }
     }
 }
