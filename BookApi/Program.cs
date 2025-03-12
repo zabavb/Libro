@@ -1,9 +1,7 @@
 using BookAPI.Data;
 using BookAPI.Repositories;
 using BookAPI.Services;
-using BookAPI.Repositories;
 using BookAPI.Repositories.Interfaces;
-using BookAPI.Services;
 using BookAPI.Services.Interfaces;
 using FeedbackApi.Services;
 using Microsoft.CodeAnalysis.Host;
@@ -18,6 +16,7 @@ using ILanguageService = BookAPI.Services.Interfaces.ILanguageService;
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using StackExchange.Redis;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -25,6 +24,20 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<BookDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddScoped<IBookService, BookService>();
+
+builder.Services.AddSingleton<IConnectionMultiplexer>(sp =>
+{
+    var config = sp.GetRequiredService<IConfiguration>();
+    var redisConfig = config.GetSection("Redis");
+
+    var options = new ConfigurationOptions
+    {
+        EndPoints = { { redisConfig["Host"]!, int.Parse(redisConfig["Port"]!) } },
+        User = redisConfig["User"],
+        Password = redisConfig["Password"]
+    };
+    return ConnectionMultiplexer.Connect(options);
+});
 
 builder.Services.AddScoped<IAuthorRepository, AuthorRepository>();
 builder.Services.AddScoped<IBookRepository, BookRepository>();
