@@ -16,11 +16,6 @@ namespace UserAPI.Repositories
             _context = context;
 
         }
-        public PasswordRepository()
-        {
-            _context = null;
-
-        }
 
         public string HashPassword(string password, string salt)
         {
