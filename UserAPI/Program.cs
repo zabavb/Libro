@@ -116,8 +116,6 @@ using (var scope = app.Services.CreateScope())
     var dbContext = scope.ServiceProvider.GetRequiredService<UserDbContext>();
 }
 
-app.UseCors("AllowReactApp");
-
 
 if (app.Environment.IsDevelopment())
 {
@@ -128,8 +126,9 @@ if (app.Environment.IsDevelopment())
     });
 }
 
-
 app.UseHttpsRedirection();
+
+app.UseCors("AllowReactApp");
 
 app.UseAuthentication();
 app.UseAuthorization();

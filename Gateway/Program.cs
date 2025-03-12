@@ -10,10 +10,14 @@ builder.Services.AddOcelot(builder.Configuration);
 
 var app = builder.Build();
 
+app.UseRouting();
+
 app.UseCors(builder => builder
-    .WithOrigins("http://localhost:53506")
+    .WithOrigins("http://localhost:58482")
     .AllowAnyMethod()
-    .AllowAnyHeader());
+    .AllowAnyHeader()
+    .AllowCredentials()
+);
 
 app.UseOcelot().Wait();
 

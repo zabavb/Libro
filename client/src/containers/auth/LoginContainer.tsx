@@ -1,38 +1,38 @@
-import { useDispatch, useSelector } from "react-redux"
-import { AppDispatch, RootState } from "../../state/redux"
-import { useNavigate } from "react-router-dom"
-import { useEffect, useCallback } from "react"
-import { addNotification } from "../../state/redux/slices/notificationSlice"
-import { resetOperationStatus } from "../../state/redux/slices/userSlice"
-import Login from "../../components/auth/Login"
+import { useDispatch } from 'react-redux';
+import { AppDispatch } from '../../state/redux';
+import { useAuth } from '../../state/context';
+import { useNavigate } from 'react-router-dom';
+import { useCallback } from 'react';
+import { addNotification } from '../../state/redux/slices/notificationSlice';
+import Login from '../../components/auth/Login';
+import { LoginFormData } from '../../utils';
+import { NotificationData } from '../../types';
 
 const LoginContainer: React.FC = () => {
-	const dispatch = useDispatch<AppDispatch>()
-	const { operationStatus, error } = useSelector((state: RootState) => state.users)
-	const navigate = useNavigate()
+  const dispatch = useDispatch<AppDispatch>();
+  const { login } = useAuth();
+  const navigate = useNavigate();
 
-	const handleSuccess = useCallback(() => {
-		dispatch(
-			addNotification({
-				message: "Login successful!",
-				type: "success",
-			})
-		)
-		dispatch(resetOperationStatus())
-		navigate("/")
-	}, [dispatch, navigate])
+  const handleSubmit = async (userData: LoginFormData) => {
+    const data = await login(userData);
+    if (data.type === 'success') handleSuccess(data);
+    else handleError(data);
+  };
 
-	const handleError = useCallback(() => {
-		dispatch(addNotification({ message: error, type: "error" }))
-		dispatch(resetOperationStatus())
-	}, [dispatch, error])
+  const handleSuccess = useCallback(
+    (data: NotificationData) => {
+      dispatch(addNotification(data));
+      navigate('/');
+    },
+    [dispatch, navigate],
+  );
 
-	useEffect(() => {
-		if (operationStatus === "success") handleSuccess()
-		else if (operationStatus === "error") handleError()
-	}, [operationStatus, handleSuccess, handleError])
+  const handleError = useCallback(
+    (data: NotificationData) => dispatch(addNotification(data)),
+    [dispatch],
+  );
 
-	return <Login />
-}
+  return <Login onSubmit={handleSubmit} />;
+};
 
-export default LoginContainer
+export default LoginContainer;
