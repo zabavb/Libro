@@ -31,7 +31,7 @@ namespace UserAPI.Services
         public async Task<UserDto?> AuthenticateAsync(LoginRequest request)
         {
             
-            UserDto? user = request.Identifier.Contains('@') ?
+            var user = request.Identifier.Contains('@') ?
                 _mapper.Map<UserDto>(await _authRepository.GetUserByEmailAsync(request)) :
                 _mapper.Map<UserDto>(await _authRepository.GetUserByPhoneNumberAsync(request));
 
