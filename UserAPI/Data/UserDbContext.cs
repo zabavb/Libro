@@ -37,6 +37,7 @@ namespace UserAPI.Data
                 .HasColumnType("nvarchar(30)");
 
             DataSeeder.Seed(modelBuilder);
+
         }
     }
 }

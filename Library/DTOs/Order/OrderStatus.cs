@@ -4,8 +4,8 @@
     {
         PENDING,
         PROCESSING,
-        PAYMENT,
         TRANSIT,
+        PAYMENT,
         COMPLETED,
     }
 }

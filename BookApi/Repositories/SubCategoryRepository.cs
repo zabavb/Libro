@@ -1,5 +1,10 @@
-﻿using BookApi.Data;
-using BookApi.Models;
+﻿using BookAPI.Data;
+using BookAPI.Models;
+using BookAPI.Models.Extensions;
+using BookAPI.Models.Filters;
+using BookAPI.Models.Sortings;
+using BookAPI.Repositories.Interfaces;
+using Library.Extensions;
 using Microsoft.EntityFrameworkCore;
 
 namespace BookAPI.Repositories
@@ -24,23 +29,43 @@ namespace BookAPI.Repositories
         {
             var subCategory = await _context.Subcategories.FirstOrDefaultAsync(sc => sc.Id == id)
                 ?? throw new KeyNotFoundException("SubCategory not found");
-            _context.SubCategories.Remove(subCategory);
+            _context.Subcategories.Remove(subCategory);
             await _context.SaveChangesAsync();
         }
 
-        public async Task<List<SubCategory>> GetAllAsync()
+        public async Task<PaginatedResult<SubCategory>> GetAllAsync(int pageNumber, int pageSize, string? searchTerm, SubCategoryFilter? filter, SubCategorySort? sort)
         {
-            return await _context.Subcategories
+            IQueryable<SubCategory> subcategories = _context.Subcategories
                 .Include(sc => sc.Category)
-                .Include(sc => sc.Book)   
+                .Include(sc => sc.Books);
+            if (!string.IsNullOrWhiteSpace(searchTerm))
+            {
+                subcategories = subcategories.Search(searchTerm, p => p.Name);
+            }
+            subcategories = filter?.Apply(subcategories) ?? subcategories;
+            subcategories = sort?.Apply(subcategories) ?? subcategories;
+
+            var totalSubcategories = await subcategories.CountAsync();
+            var resultSubcategories = await subcategories
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
                 .ToListAsync();
+
+            return new PaginatedResult<SubCategory>
+            {
+                Items = resultSubcategories,
+                TotalCount = totalSubcategories,
+                PageNumber = pageNumber,
+                PageSize = pageSize
+            };
         }
+
 
         public async Task<SubCategory?> GetByIdAsync(Guid id)
         {
             return await _context.Subcategories
                 .Include(sc => sc.Category) 
-                .Include(sc => sc.Book)   
+                .Include(sc => sc.Books)   
                 .FirstOrDefaultAsync(sc => sc.Id == id);
         }
 

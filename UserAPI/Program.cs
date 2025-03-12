@@ -1,3 +1,4 @@
+using Library.AWS;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -19,11 +20,14 @@ builder.Services.AddDbContext<UserDbContext>(options =>
 
 builder.Services.AddSingleton<IConnectionMultiplexer>(sp =>
 {
+    var config = sp.GetRequiredService<IConfiguration>();
+    var redisConfig = config.GetSection("Redis");
+
     var options = new ConfigurationOptions
     {
-        EndPoints = { { "redis-11440.c251.east-us-mz.azure.redns.redis-cloud.com", 11440 } },
-        User = "default",
-        Password = "QJqKikr9nj2UWhNtbsHYiuLaP3wfpTjM"
+        EndPoints = { { redisConfig["Host"]!, int.Parse(redisConfig["Port"]!) } },
+        User = redisConfig["User"],
+        Password = redisConfig["Password"]
     };
     return ConnectionMultiplexer.Connect(options);
 });
@@ -44,8 +48,11 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         };
     });
 
+
 builder.Services.AddAutoMapper(typeof(UserProfile));
 //builder.Services.AddAutoMapper(typeof(SubscriptionProfile));
+
+builder.Services.AddScoped<S3StorageService>();
 
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IUserService, UserService>();
@@ -91,6 +98,17 @@ Log.Logger = new LoggerConfiguration()
 builder.Logging.ClearProviders();
 builder.Logging.AddSerilog(Log.Logger);
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowReactApp", policy =>
+    {
+        policy.WithOrigins("http://localhost:58482")
+              .AllowAnyMethod()
+              .AllowAnyHeader()
+              .AllowCredentials();
+    });
+});
+
 var app = builder.Build();
 
 using (var scope = app.Services.CreateScope())
@@ -109,6 +127,8 @@ if (app.Environment.IsDevelopment())
 
 
 app.UseHttpsRedirection();
+
+app.UseCors("AllowReactApp");
 
 app.UseAuthentication();
 app.UseAuthorization();

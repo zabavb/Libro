@@ -1,10 +1,13 @@
-﻿using BookAPI.Services;
+﻿using BookAPI.Services.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
 namespace BookAPI.Controllers
 {
+    /// <summary>
+    /// Controller for retrieving reference data such as cover types and languages.
+    /// </summary>
     [Route("api/[controller]")]
     [ApiController]
     public class ReferenceDataController : ControllerBase
@@ -20,6 +23,13 @@ namespace BookAPI.Controllers
             _logger = logger;
         }
 
+        /// <summary>
+        /// Retrieves a list of cover types.
+        /// </summary>
+        /// <returns>A list of cover types.</returns>
+        /// <response code="200">Returns the list of cover types.</response>
+        /// <response code="404">If no cover types are found.</response>
+        /// <response code="500">If an error occurs while retrieving cover types.</response>
         [HttpGet("cover-types")]
         public async Task<ActionResult<IEnumerable<string>>> GetCoverTypes()
         {
@@ -42,6 +52,14 @@ namespace BookAPI.Controllers
             }
         }
 
+        /// <summary>
+        /// Retrieves a specific cover type by its ID.
+        /// </summary>
+        /// <param name="id">The ID of the cover type.</param>
+        /// <returns>The cover type corresponding to the given ID.</returns>
+        /// <response code="200">Returns the cover type with the specified ID.</response>
+        /// <response code="404">If the cover type with the specified ID is not found.</response>
+        /// <response code="500">If an error occurs while retrieving the cover type.</response>
         [HttpGet("cover-types/{id}")]
         public async Task<ActionResult<string>> GetCoverType(int id)
         {
@@ -64,6 +82,13 @@ namespace BookAPI.Controllers
             }
         }
 
+        /// <summary>
+        /// Retrieves a list of languages.
+        /// </summary>
+        /// <returns>A list of languages.</returns>
+        /// <response code="200">Returns the list of languages.</response>
+        /// <response code="404">If no languages are found.</response>
+        /// <response code="500">If an error occurs while retrieving languages.</response>
         [HttpGet("languages")]
         public async Task<ActionResult<IEnumerable<string>>> GetLanguages()
         {
@@ -86,6 +111,14 @@ namespace BookAPI.Controllers
             }
         }
 
+        /// <summary>
+        /// Retrieves a specific language by its ID.
+        /// </summary>
+        /// <param name="id">The ID of the language.</param>
+        /// <returns>The language corresponding to the given ID.</returns>
+        /// <response code="200">Returns the language with the specified ID.</response>
+        /// <response code="404">If the language with the specified ID is not found.</response>
+        /// <response code="500">If an error occurs while retrieving the language.</response>
         [HttpGet("languages/{id}")]
         public async Task<ActionResult<string>> GetLanguage(int id)
         {

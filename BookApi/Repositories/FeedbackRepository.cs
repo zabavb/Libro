@@ -1,5 +1,9 @@
-﻿using BookApi.Data;
-using BookApi.Models;
+﻿using BookAPI.Data;
+using BookAPI.Models;
+using BookAPI.Models.Filters;
+using BookAPI.Models.Sortings;
+using BookAPI.Repositories.Interfaces;
+using Library.Extensions;
 using Microsoft.EntityFrameworkCore;
 
 namespace BookAPI.Repositories
@@ -14,6 +18,7 @@ namespace BookAPI.Repositories
         }
         public async Task CreateAsync(Feedback entity)
         {
+            ArgumentNullException.ThrowIfNull(entity);
             entity.Id = Guid.NewGuid();
             _context.Feedbacks.Add(entity);
             await _context.SaveChangesAsync();
@@ -21,22 +26,35 @@ namespace BookAPI.Repositories
 
         public async Task DeleteAsync(Guid id)
         {
-            var author = await _context.Feedbacks.FirstOrDefaultAsync(a => a.Id == id);
-            if (author == null)
-            {
-                throw new KeyNotFoundException("Author not found");
-            }
+            if (id == Guid.Empty)
+                throw new ArgumentException("Id cannot be empty.", nameof(id));
+            var author = await _context.Feedbacks.FirstOrDefaultAsync(a => a.Id == id) ?? throw new KeyNotFoundException("Author not found");
             _context.Feedbacks.Remove(author);
             await _context.SaveChangesAsync();
         }
 
-        public async Task<List<Feedback>> GetAllAsync()
+        public async Task<PaginatedResult<Feedback>> GetAllAsync(int pageNumber, int pageSize, FeedbackFilter? filter, FeedbackSort? sort)
         {
-            return await _context.Feedbacks.ToListAsync();
+            IQueryable<Feedback> feedbacks = _context.Feedbacks.AsQueryable();
+            feedbacks = filter?.Apply(feedbacks) ?? feedbacks;
+            feedbacks = sort?.Apply(feedbacks) ?? feedbacks;
+            var totalFeedbacks = await feedbacks.CountAsync();
+            var resultFeedbacks = await feedbacks.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToListAsync();
+
+            return new PaginatedResult<Feedback>
+            {
+                Items = resultFeedbacks,
+                TotalCount = totalFeedbacks,
+                PageNumber = pageNumber,
+                PageSize = pageSize
+            };
         }
+
 
         public async Task<Feedback?> GetByIdAsync(Guid id)
         {
+            if (id == Guid.Empty)
+                throw new ArgumentException("Id cannot be empty.", nameof(id));
             return await _context.Feedbacks.FirstOrDefaultAsync(a => a.Id == id);
         }
 

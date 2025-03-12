@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using OrderApi.Models;
+using System.Text.Json;
 using OrderStatus = Library.DTOs.Order.OrderStatus;
 namespace OrderApi.Data
 {
@@ -37,7 +38,11 @@ namespace OrderApi.Data
                 {
                     OrderId = Guid.NewGuid(),
                     UserId = Guid.NewGuid(),
-                    BookIds = { Guid.NewGuid() },
+                    Books = new Dictionary<Guid, int>
+                    {
+                        { Guid.NewGuid(), 1 },
+                        { Guid.NewGuid(), 2 }
+                    },
                     Region = "Lviv",
                     City = "Lviv",
                     Address = "Stepana Bandery St. 52",
@@ -52,7 +57,12 @@ namespace OrderApi.Data
                 {
                     OrderId = Guid.NewGuid(),
                     UserId = Guid.NewGuid(),
-                    BookIds = { Guid.NewGuid() },
+                    Books = new Dictionary<Guid, int>
+                    {
+                        { Guid.NewGuid(), 1 },
+                        { Guid.NewGuid(), 1 },
+                        { Guid.NewGuid(), 2 }
+                    },
                     Region = "Lviv",
                     City = "Lviv",
                     Address = "Heroiv UPA ST. 12",
@@ -67,7 +77,11 @@ namespace OrderApi.Data
                 {
                     OrderId = Guid.NewGuid(),
                     UserId = Guid.NewGuid(),
-                    BookIds = { Guid.NewGuid() },
+                    Books = new Dictionary<Guid, int>
+                    {
+                        { Guid.NewGuid(), 1 },
+                        { Guid.NewGuid(), 2 }
+                    },
                     Region = "Lviv",
                     City = "Lviv",
                     Address = "Antonovycha St. 2",
@@ -82,7 +96,11 @@ namespace OrderApi.Data
                 {
                     OrderId = Guid.NewGuid(),
                     UserId = Guid.NewGuid(),
-                    BookIds = { Guid.NewGuid() },
+                    Books = new Dictionary<Guid, int>
+                    {
+                        { Guid.NewGuid(), 1 },
+                        { Guid.NewGuid(), 2 }
+                    },
                     Region = "Lviv",
                     City = "Lviv",
                     Address = "Zelena St. 34",
@@ -97,7 +115,11 @@ namespace OrderApi.Data
                 {
                     OrderId = Guid.NewGuid(),
                     UserId = Guid.NewGuid(),
-                    BookIds = { Guid.NewGuid() },
+                    Books = new Dictionary<Guid, int>
+                    {
+                        { Guid.NewGuid(), 1 },
+                        { Guid.NewGuid(), 2 }
+                    },
                     Region = "Kyiv",
                     City = "Kyiv",
                     Address = "Hetmana Pavla Scoropadskoho St. 34",
@@ -112,7 +134,10 @@ namespace OrderApi.Data
                 {
                     OrderId = Guid.NewGuid(),
                     UserId = Guid.NewGuid(),
-                    BookIds = { Guid.NewGuid() },
+                    Books = new Dictionary<Guid, int>
+                    {
+                        { Guid.NewGuid(), 1 }
+                    },
                     Region = "Kyiv",
                     City = "Kyiv",
                     Address = "Hetmana Pavla Scoropadskoho St. 12",
@@ -127,7 +152,11 @@ namespace OrderApi.Data
                 {
                     OrderId = Guid.NewGuid(),
                     UserId = Guid.NewGuid(),
-                    BookIds = { Guid.NewGuid() },
+                    Books = new Dictionary<Guid, int>
+                    {
+                        { Guid.NewGuid(), 6 },
+                        { Guid.NewGuid(), 2 }
+                    },
                     Region = "Lviv",
                     City = "Lviv",
                     Address = "Stepana Bandery St. 32",
@@ -142,7 +171,11 @@ namespace OrderApi.Data
                 {
                     OrderId = Guid.NewGuid(),
                     UserId = Guid.NewGuid(),
-                    BookIds = { Guid.NewGuid() },
+                    Books = new Dictionary<Guid, int>
+                    {
+                        { Guid.NewGuid(), 3 },
+                        { Guid.NewGuid(), 2 }
+                    },
                     Region = "Lviv",
                     City = "Lviv",
                     Address = "Heroiv UPA ST. 12",
@@ -157,7 +190,11 @@ namespace OrderApi.Data
                 {
                     OrderId = Guid.NewGuid(),
                     UserId = Guid.NewGuid(),
-                    BookIds = { Guid.NewGuid() },
+                    Books = new Dictionary<Guid, int>
+                    {
+                        { Guid.NewGuid(), 1 },
+                        { Guid.NewGuid(), 2 }
+                    },
                     Region = "Lviv",
                     City = "Lviv",
                     Address = "Antonovycha St. 59",
@@ -172,7 +209,10 @@ namespace OrderApi.Data
                 {
                     OrderId = Guid.NewGuid(),
                     UserId = Guid.NewGuid(),
-                    BookIds = { Guid.NewGuid() },
+                    Books = new Dictionary<Guid, int>
+                    {
+                        { Guid.NewGuid(), 1 }
+                    },
                     Region = "Lviv",
                     City = "Lviv",
                     Address = "Zelena St. 68",
@@ -187,7 +227,11 @@ namespace OrderApi.Data
                 {
                     OrderId = Guid.NewGuid(),
                     UserId = Guid.NewGuid(),
-                    BookIds = { Guid.NewGuid() },
+                    Books = new Dictionary<Guid, int>
+                    {
+                        { Guid.NewGuid(), 5 },
+                        { Guid.NewGuid(), 2 }
+                    },
                     Region = "Kyiv",
                     City = "Kyiv",
                     Address = "Hetmana Pavla Scoropadskoho St. 21",
@@ -202,7 +246,11 @@ namespace OrderApi.Data
                 {
                     OrderId = Guid.NewGuid(),
                     UserId = Guid.NewGuid(),
-                    BookIds = { Guid.NewGuid() },
+                    Books = new Dictionary<Guid, int>
+                    {
+                        { Guid.NewGuid(), 1 },
+                        { Guid.NewGuid(), 2 }
+                    },
                     Region = "Kyiv",
                     City = "Kyiv",
                     Address = "Zhylianska St. 52",
@@ -217,7 +265,10 @@ namespace OrderApi.Data
                 {
                     OrderId = Guid.NewGuid(),
                     UserId = Guid.NewGuid(),
-                    BookIds = { Guid.NewGuid() },
+                    Books = new Dictionary<Guid, int>
+                    {
+                        { Guid.NewGuid(), 1 }
+                    },
                     Region = "Lviv",
                     City = "Lviv",
                     Address = "Stepana Bandery St. 10",
@@ -232,7 +283,11 @@ namespace OrderApi.Data
                 {
                     OrderId = Guid.NewGuid(),
                     UserId = Guid.NewGuid(),
-                    BookIds = { Guid.NewGuid() },
+                    Books = new Dictionary<Guid, int>
+                    {
+                        { Guid.NewGuid(), 1 },
+                        { Guid.NewGuid(), 2 }
+                    },
                     Region = "Lviv",
                     City = "Lviv",
                     Address = "Heroiv UPA ST. 62",
@@ -247,7 +302,11 @@ namespace OrderApi.Data
                 {
                     OrderId = Guid.NewGuid(),
                     UserId = Guid.NewGuid(),
-                    BookIds = { Guid.NewGuid() },
+                    Books = new Dictionary<Guid, int>
+                    {
+                        { Guid.NewGuid(), 1 },
+                        { Guid.NewGuid(), 2 }
+                    },
                     Region = "Lviv",
                     City = "Lviv",
                     Address = "Antonovycha St. 50",
@@ -262,7 +321,11 @@ namespace OrderApi.Data
                 {
                     OrderId = Guid.NewGuid(),
                     UserId = Guid.NewGuid(),
-                    BookIds = { Guid.NewGuid() },
+                    Books = new Dictionary<Guid, int>
+                    {
+                        { Guid.NewGuid(), 1 },
+                        { Guid.NewGuid(), 2 }
+                    },
                     Region = "Lviv",
                     City = "Lviv",
                     Address = "Zelena St. 3",
@@ -277,7 +340,11 @@ namespace OrderApi.Data
                 {
                     OrderId = Guid.NewGuid(),
                     UserId = Guid.NewGuid(),
-                    BookIds = { Guid.NewGuid() },
+                    Books = new Dictionary<Guid, int>
+                    {
+                        { Guid.NewGuid(), 3 },
+                        { Guid.NewGuid(), 2 }
+                    },
                     Region = "Kyiv",
                     City = "Kyiv",
                     Address = "Hetmana Pavla Scoropadskoho St. 80",
@@ -292,7 +359,11 @@ namespace OrderApi.Data
                 {
                     OrderId = Guid.NewGuid(),
                     UserId = Guid.NewGuid(),
-                    BookIds = { Guid.NewGuid() },
+                    Books = new Dictionary<Guid, int>
+                    {
+                        { Guid.NewGuid(), 1 },
+                        { Guid.NewGuid(), 2 }
+                    },
                     Region = "Kyiv",
                     City = "Kyiv",
                     Address = "Hetmana Pavla Scoropadskoho St. 5",
@@ -307,7 +378,11 @@ namespace OrderApi.Data
                 {
                     OrderId = Guid.NewGuid(),
                     UserId = Guid.NewGuid(),
-                    BookIds = { Guid.NewGuid() },
+                    Books = new Dictionary<Guid, int>
+                    {
+                        { Guid.NewGuid(), 3 },
+                        { Guid.NewGuid(), 2 }
+                    },
                     Region = "Lviv",
                     City = "Lviv",
                     Address = "Stepana Bandery St. 21",
@@ -322,7 +397,14 @@ namespace OrderApi.Data
                 {
                     OrderId = Guid.NewGuid(),
                     UserId = Guid.NewGuid(),
-                    BookIds = { Guid.NewGuid() },
+                    Books = new Dictionary<Guid, int>
+                    {
+                        { Guid.NewGuid(), 1 },
+                        { Guid.NewGuid(), 1 },
+                        { Guid.NewGuid(), 1 },
+                        { Guid.NewGuid(), 1 },
+                        { Guid.NewGuid(), 1 }
+                    },
                     Region = "Lviv",
                     City = "Lviv",
                     Address = "Heroiv UPA ST. 14",
@@ -337,7 +419,11 @@ namespace OrderApi.Data
                 {
                     OrderId = Guid.NewGuid(),
                     UserId = Guid.NewGuid(),
-                    BookIds = { Guid.NewGuid() },
+                    Books = new Dictionary<Guid, int>
+                    {
+                        { Guid.NewGuid(), 1 },
+                        { Guid.NewGuid(), 2 }
+                    },
                     Region = "Lviv",
                     City = "Lviv",
                     Address = "Antonovycha St. 23",
@@ -352,7 +438,11 @@ namespace OrderApi.Data
                 {
                     OrderId = Guid.NewGuid(),
                     UserId = Guid.NewGuid(),
-                    BookIds = { Guid.NewGuid() },
+                    Books = new Dictionary<Guid, int>
+                    {
+                        { Guid.NewGuid(), 1 },
+                        { Guid.NewGuid(), 2 }
+                    },
                     Region = "Lviv",
                     City = "Lviv",
                     Address = "Zelena St. 62",
@@ -367,7 +457,11 @@ namespace OrderApi.Data
                 {
                     OrderId = Guid.NewGuid(),
                     UserId = Guid.NewGuid(),
-                    BookIds = { Guid.NewGuid() },
+                    Books = new Dictionary<Guid, int>
+                    {
+                        { Guid.NewGuid(), 1 },
+                        { Guid.NewGuid(), 2 }
+                    },
                     Region = "Kyiv",
                     City = "Kyiv",
                     Address = "Hetmana Pavla Scoropadskoho St. 17",
@@ -382,7 +476,11 @@ namespace OrderApi.Data
                 {
                     OrderId = Guid.NewGuid(),
                     UserId = Guid.NewGuid(),
-                    BookIds = { Guid.NewGuid() },
+                    Books = new Dictionary<Guid, int>
+                    {
+                        { Guid.NewGuid(), 1 },
+                        { Guid.NewGuid(), 2 }
+                    },
                     Region = "Kyiv",
                     City = "Kyiv",
                     Address = "Zhylianska St. 52",
@@ -397,7 +495,11 @@ namespace OrderApi.Data
                 {
                     OrderId = Guid.NewGuid(),
                     UserId = Guid.NewGuid(),
-                    BookIds = { Guid.NewGuid() },
+                    Books = new Dictionary<Guid, int>
+                    {
+                        { Guid.NewGuid(), 1 },
+                        { Guid.NewGuid(), 2 }
+                    },
                     Region = "Lviv",
                     City = "Lviv",
                     Address = "Stepana Bandery St. 12",
@@ -412,7 +514,11 @@ namespace OrderApi.Data
                 {
                     OrderId = Guid.NewGuid(),
                     UserId = Guid.NewGuid(),
-                    BookIds = { Guid.NewGuid() },
+                    Books = new Dictionary<Guid, int>
+                    {
+                        { Guid.NewGuid(), 1 },
+                        { Guid.NewGuid(), 2 }
+                    },
                     Region = "Lviv",
                     City = "Lviv",
                     Address = "Heroiv UPA ST. 24",
@@ -427,7 +533,10 @@ namespace OrderApi.Data
                 {
                     OrderId = Guid.NewGuid(),
                     UserId = Guid.NewGuid(),
-                    BookIds = { Guid.NewGuid() },
+                    Books = new Dictionary<Guid, int>
+                    {
+                        { Guid.NewGuid(), 1 },
+                    },
                     Region = "Lviv",
                     City = "Lviv",
                     Address = "Antonovycha St. 15",
@@ -442,7 +551,10 @@ namespace OrderApi.Data
                 {
                     OrderId = Guid.NewGuid(),
                     UserId = Guid.NewGuid(),
-                    BookIds = { Guid.NewGuid() },
+                    Books = new Dictionary<Guid, int>
+                    {
+                        { Guid.NewGuid(), 1 },
+                    },
                     Region = "Lviv",
                     City = "Lviv",
                     Address = "Zelena St. 95",
@@ -457,7 +569,11 @@ namespace OrderApi.Data
                 {
                     OrderId = Guid.NewGuid(),
                     UserId = Guid.NewGuid(),
-                    BookIds = { Guid.NewGuid() },
+                    Books = new Dictionary<Guid, int>
+                    {
+                        { Guid.NewGuid(), 2 },
+                        { Guid.NewGuid(), 1 },
+                    },
                     Region = "Kyiv",
                     City = "Kyiv",
                     Address = "Hetmana Pavla Scoropadskoho St. 52",
@@ -472,7 +588,11 @@ namespace OrderApi.Data
                 {
                     OrderId = Guid.NewGuid(),
                     UserId = Guid.NewGuid(),
-                    BookIds = { Guid.NewGuid() },
+                    Books = new Dictionary<Guid, int>
+                    {
+                        { Guid.NewGuid(), 1 },
+                        { Guid.NewGuid(), 1 },
+                    },
                     Region = "Kyiv",
                     City = "Kyiv",
                     Address = "Hetmana Pavla Scoropadskoho St. 9",

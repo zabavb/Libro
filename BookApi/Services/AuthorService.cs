@@ -1,30 +1,42 @@
 ﻿using AutoMapper;
-using BookApi.Models;
-using BookAPI.Repositories;
+using BookAPI.Models;
+using BookAPI.Models.Filters;
+using BookAPI.Models.Sortings;
+using BookAPI.Repositories.Interfaces;
+using BookAPI.Services.Interfaces;
+using Library.Extensions;
 
-namespace BookApi.Services
+namespace BookAPI.Services
 {
     public class AuthorService : IAuthorService
     {
         private readonly IMapper _mapper;
         private readonly IAuthorRepository _authorRepository;
+        private readonly ILogger<AuthorService> _logger;
 
-        public AuthorService(IMapper mapper, IAuthorRepository authorRepository)
+        public AuthorService(ILogger<AuthorService> logger, IMapper mapper, IAuthorRepository authorRepository)
         {
             _mapper = mapper;
             _authorRepository = authorRepository;
+            _logger = logger;
         }
 
-        public async Task<IEnumerable<AuthorDto>> GetAuthorsAsync()
+        public async Task<PaginatedResult<AuthorDto>> GetAuthorsAsync(int pageNumber, int pageSize, string? searchTerm, AuthorFilter? filter, AuthorSort? sort)
         {
-            var authors = await _authorRepository.GetAllAsync();
-
-            if (authors == null || !authors.Any())
+            var authors = await _authorRepository.GetAllAsync(pageNumber, pageSize, searchTerm, filter, sort);
+            if (authors == null || authors.Items == null)
             {
-                return Enumerable.Empty<AuthorDto>();
+                _logger.LogWarning("No authors found");
+                throw new InvalidOperationException("Failed to fetch authors.");
             }
 
-            return _mapper.Map<List<AuthorDto>>(authors);
+            return new PaginatedResult<AuthorDto>
+            {
+                Items = _mapper.Map<ICollection<AuthorDto>>(authors.Items),
+                TotalCount = authors.TotalCount,
+                PageNumber = authors.PageNumber,
+                PageSize = pageSize
+            };
         }
 
         public async Task<AuthorDto> GetAuthorByIdAsync(Guid id)
@@ -33,17 +45,26 @@ namespace BookApi.Services
 
             if (author == null)
             {
+                _logger.LogWarning($"No author with id {id}");
                 return null;
             }
 
+            _logger.LogInformation($"Successfully found author with id {id}");
             return _mapper.Map<AuthorDto>(author);
         }
 
         public async Task<AuthorDto> CreateAuthorAsync(AuthorDto authorDto)
         {
             var author = _mapper.Map<Author>(authorDto);
-
-            await _authorRepository.CreateAsync(author);
+            try
+            {
+                await _authorRepository.CreateAsync(author);
+                _logger.LogInformation($"Successfully created author with id {authorDto.AuthorId}");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning($"Failed to create author. Error: {ex.Message}");
+            }
 
             return _mapper.Map<AuthorDto>(author);
         }
@@ -54,12 +75,20 @@ namespace BookApi.Services
 
             if (existingAuthor == null)
             {
+                _logger.LogWarning($"UpdateAuthorAsync returns null");
                 return null;
             }
 
-            _mapper.Map(authorDto, existingAuthor); 
-            await _authorRepository.UpdateAsync(existingAuthor);
-
+            try
+            {
+                _mapper.Map(authorDto, existingAuthor);
+                await _authorRepository.UpdateAsync(existingAuthor);
+                _logger.LogInformation($"Successfully updated author with id {authorDto.AuthorId}");
+            }
+            catch (Exception ex) 
+            {
+                _logger.LogWarning($"Failed to update author. Error: {ex.Message}");
+            }
             return _mapper.Map<AuthorDto>(existingAuthor);
         }
 
@@ -69,11 +98,21 @@ namespace BookApi.Services
 
             if (author == null)
             {
+                _logger.LogWarning($"DeleteAuthorAsync returns null");
                 return false;
             }
 
-            await _authorRepository.DeleteAsync(id);
-            return true;
+            try
+            {
+                await _authorRepository.DeleteAsync(id);
+                _logger.LogInformation($"Successfully deleted author with id {id}");
+                return true;
+            }
+            catch(Exception ex)
+            {
+                _logger.LogWarning($"Failed to delete autor. Error: {ex.Message}");
+                return false;
+            }
         }
     }
 }

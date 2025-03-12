@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
-using BookApi.Models;
+using BookAPI.Models;
 
-namespace BookApi.Profiles
+namespace BookAPI.Profiles
 {
     public class CategoryProfile : Profile
     {
@@ -9,8 +9,10 @@ namespace BookApi.Profiles
         {
             CreateMap<Category, CategoryDto>()
              .ForMember(dest => dest.CategoryId, opt => opt.MapFrom(src => src.Id))
+             .ForMember(dest => dest.SubcategoryIds, opt => opt.MapFrom(src => src.Subcategories.Select(f => f.Id).ToList()))
              .ReverseMap()
-             .ForMember(dest => dest.Id, opt => opt.Ignore());
+             .ForMember(dest => dest.Id, opt => opt.Ignore())
+             .ForMember(dest => dest.Subcategories, opt => opt.Ignore());
 
         }
     }

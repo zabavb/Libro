@@ -1,21 +1,26 @@
 ﻿using AutoMapper;
-using BookApi.Data;
-using BookApi.Models;
-using BookAPI.Repositories;
+using BookAPI.Data;
+using BookAPI.Models;
+using BookAPI.Models.Sortings;
+using BookAPI.Repositories.Interfaces;
+using BookAPI.Services.Interfaces;
+using Library.Extensions;
 using Microsoft.EntityFrameworkCore;
 
-namespace BookApi.Services
+namespace BookAPI.Services
 {
 
     public class PublisherService : IPublisherService
     {
         private readonly IMapper _mapper;
         private readonly IPublisherRepository _publisherRepository;
+        private readonly ILogger<PublisherService> _logger;
 
-        public PublisherService(IMapper mapper, IPublisherRepository publisherRepository)
+        public PublisherService(IMapper mapper, IPublisherRepository publisherRepository, ILogger<PublisherService> logger)
         {
             _mapper = mapper;
             _publisherRepository = publisherRepository;
+            _logger = logger;
         }
         public async Task<PublisherDto> CreatePublisherAsync(PublisherDto publisherDto)
         {
@@ -37,15 +42,23 @@ namespace BookApi.Services
 
         }
 
-        public async Task<IEnumerable<PublisherDto>> GetPublishersAsync()
+        public async Task<PaginatedResult<PublisherDto>> GetPublishersAsync(int pageNumber, int pageSize, string searchTerm, PublisherSort ? sort)
         {
-            var publishers = await _publisherRepository.GetAllAsync();
-            if (publishers == null || !publishers.Any())
+            var publishers = await _publisherRepository.GetAllAsync(pageNumber, pageSize, searchTerm, sort);
+            if (publishers == null || publishers.Items == null)
             {
-                return Enumerable.Empty<PublisherDto>();
+                throw new InvalidOperationException("Failed to fetch publishers.");
             }
-            return _mapper.Map<IEnumerable<PublisherDto>>(publishers);
+
+            return new PaginatedResult<PublisherDto>
+            {
+                Items = _mapper.Map<ICollection<PublisherDto>>(publishers.Items),
+                TotalCount = publishers.TotalCount,
+                PageNumber = publishers.PageNumber,
+                PageSize = pageSize
+            };
         }
+
 
         public async Task<PublisherDto> GetPublisherByIdAsync(Guid id)
         {
@@ -71,8 +84,11 @@ namespace BookApi.Services
             _mapper.Map(publisherDto, existingPublisher);
             await _publisherRepository.UpdateAsync(existingPublisher);
 
-            return _mapper.Map<PublisherDto>(publisherDto);
+            var pub = _mapper.Map<PublisherDto>(existingPublisher);
+
+            return pub;
         }
+
     }
 
 }

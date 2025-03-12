@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using BookApi.Models;
+using BookAPI.Models;
 
 namespace BookAPI.Profiles
 {
@@ -10,10 +10,13 @@ namespace BookAPI.Profiles
             CreateMap<SubCategory, SubCategoryDto>()
                 .ForMember(dest => dest.SubCategoryId, opt => opt.MapFrom(src => src.Id))
                 .ForMember(dest => dest.CategoryId, opt => opt.MapFrom(src => src.CategoryId))
+                .ForMember(dest => dest.BookIds, opt => opt.MapFrom(src => src.Books.Select(f => f.Id).ToList()))
                 .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name))
                 .ReverseMap()
                 .ForMember(dest => dest.Id, opt => opt.Ignore()) 
-                .ForMember(dest => dest.Category, opt => opt.Ignore());
+                .ForMember(dest => dest.Category, opt => opt.Ignore())
+                .ForMember(dest => dest.Books, opt => opt.Ignore());
+
         }
     }
 }

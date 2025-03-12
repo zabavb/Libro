@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+using AutoMapper;
+using Microsoft.Extensions.Logging;
 using UserAPI.Models;
 using UserAPI.Repositories;
 
@@ -8,62 +9,26 @@ namespace UserAPI.Services
     {
         private readonly IPasswordRepository _repositoryPassword;
         private readonly IMapper _mapper;
-        public PasswordService(IPasswordRepository repository, IMapper mapper)
+        private readonly ILogger<PasswordService> _logger;
+
+        public PasswordService(IPasswordRepository repository, IMapper mapper, ILogger<PasswordService> logger)
         {
             _repositoryPassword = repository;
             _mapper = mapper;
+            _logger = logger;
         }
 
-        public async Task<bool> AddAsync(string password, UserDto userDto)
+        public async Task<bool> UpdateAsync(UserDto user, string oldPassword, string newPassword)
         {
-            try {
-                User user = _mapper.Map<User>(userDto);
-                await _repositoryPassword.AddAsync(password, user);
+            try
+            {
+                _logger.LogInformation("Updating password for user {UserId}", user.Id);
+                await _repositoryPassword.UpdateAsync(user.Id, oldPassword, newPassword);
                 return true;
             }
             catch (Exception ex)
             {
-                return false;
-                // log exception
-            }   
-        }
-
-        public async Task<bool> DeleteAsync(Guid id)
-        {
-            try
-            {
-                await _repositoryPassword.DeleteAsync(id);
-                return true;
-            }
-            catch (Exception ex)
-            {
-                // log exception
-                return false;
-            }
-        }
-
-        public async Task<PasswordDto?> GetByIdAsync(Guid id)
-        {
-            try
-            {
-                var password = await _repositoryPassword.GetByIdAsync(id);
-                return _mapper.Map<PasswordDto>(password);
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-        }
-
-        public async Task<bool> UpdateAsync(UserDto user, string newPassword)
-        {
-            try
-            {
-                _repositoryPassword.UpdateAsync(user.Id, newPassword);
-                return true;
-            }
-            catch
-            {
+                _logger.LogError(ex, "Error updating password for user {UserId}", user.Id);
                 return false;
             }
         }

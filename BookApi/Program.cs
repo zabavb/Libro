@@ -1,8 +1,10 @@
-using BookApi.Data;
-using BookApi.Repositories;
-using BookApi.Services;
+using BookAPI.Data;
 using BookAPI.Repositories;
 using BookAPI.Services;
+using BookAPI.Repositories;
+using BookAPI.Repositories.Interfaces;
+using BookAPI.Services;
+using BookAPI.Services.Interfaces;
 using FeedbackApi.Services;
 using Microsoft.CodeAnalysis.Host;
 using Microsoft.EntityFrameworkCore;
@@ -11,6 +13,11 @@ using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 using Serilog;
 using System.Reflection;
+using System.Text.Json.Serialization;
+using ILanguageService = BookAPI.Services.Interfaces.ILanguageService;
+using System.Text;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -24,6 +31,7 @@ builder.Services.AddScoped<IBookRepository, BookRepository>();
 builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 builder.Services.AddScoped<IFeedbackRepository, FeedbackRepository>();
 builder.Services.AddScoped<IPublisherRepository, PublisherRepository>();
+builder.Services.AddScoped<ISubCategoryRepository, SubCategoryRepository>();
 
 builder.Services.AddScoped<IAuthorService, AuthorService>();
 builder.Services.AddScoped<IAuthorService, AuthorService>();
@@ -32,22 +40,51 @@ builder.Services.AddScoped<ILanguageService, LanguageService>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<IPublisherService, PublisherService>();
 builder.Services.AddScoped<IFeedbackService, FeedbackService>();
+builder.Services.AddScoped<ISubCategoryService, SubCategoryService>();
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+    });
 
 builder.Services.AddControllers();
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle 
 builder.Services.AddEndpointsApiExplorer();
+//var jwtSettings = builder.Configuration.GetSection("JwtSettings");
+//var secretKey = Encoding.UTF8.GetBytes(jwtSettings["SecretKey"]!);
+
+//builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+//    .AddJwtBearer(options =>
+//    {
+//        options.RequireHttpsMetadata = false;
+//        options.SaveToken = true;
+//        options.TokenValidationParameters = new TokenValidationParameters
+//        {
+//            ValidateIssuer = true,
+//            ValidateAudience = true,
+//            ValidateLifetime = true,
+//            ValidateIssuerSigningKey = true,
+//            ValidIssuer = jwtSettings["Issuer"],
+//            ValidAudience = jwtSettings["Audience"],
+//            IssuerSigningKey = new SymmetricSecurityKey(secretKey)
+//        };
+//    });
+//builder.Services.AddAuthorization();
+
+
 builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo
     {
-        Title = "BookApi",
+        Title = "BookAPI",
         Version = "v1"
     });
     var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
     var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
     c.IncludeXmlComments(xmlPath);
+    c.CustomSchemaIds(type => type.FullName);
 });
 
 var logFilePath = Path.Combine(AppContext.BaseDirectory, "logs.log");
@@ -75,7 +112,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI(c =>
     {
-        c.SwaggerEndpoint("/swagger/v1/swagger.json", "BookApi");
+        c.SwaggerEndpoint("/swagger/v1/swagger.json", "BookAPI");
+
     });
 }
 
@@ -88,7 +126,7 @@ app.Use(async (context, next) =>
     await next();
     Log.Information($"Outgoing Response: {context.Response.StatusCode}");
 });
-
+//app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();

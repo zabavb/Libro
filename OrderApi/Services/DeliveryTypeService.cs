@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Library.Extensions;
 using OrderApi.Models;
+using OrderAPI;
 using OrderAPI.Repository;
 
 namespace OrderApi.Services
@@ -20,9 +21,9 @@ namespace OrderApi.Services
             _message = string.Empty;
         }
 
-        public async Task<PaginatedResult<DeliveryTypeDto>> GetAllAsync(int pageNumber, int pageSize)
+        public async Task<PaginatedResult<DeliveryTypeDto>> GetAllAsync(int pageNumber, int pageSize, string searchTerm, DeliverySort? sort)
         {
-            var paginatedDeliveryTypes = await _repository.GetAllPaginatedAsync(pageNumber,pageSize);
+            var paginatedDeliveryTypes = await _repository.GetAllPaginatedAsync(pageNumber,pageSize,searchTerm, sort);
 
             if (paginatedDeliveryTypes == null || paginatedDeliveryTypes.Items == null)
             {
@@ -31,7 +32,7 @@ namespace OrderApi.Services
                 throw new InvalidOperationException(_message);
             }
 
-            _logger.LogInformation("Delivery types successfully fetched.");
+            _logger.LogInformation("Successfully fetched [{Count}] delivery types.", paginatedDeliveryTypes.Items.Count);
 
             return new PaginatedResult<DeliveryTypeDto>
             {
@@ -42,18 +43,18 @@ namespace OrderApi.Services
             };
         }
 
-        public async Task<DeliveryTypeDto> GetByIdAsync(Guid id)
+        public async Task<DeliveryTypeDto>? GetByIdAsync(Guid id)
         {
             var deliveryType = await _repository.GetByIdAsync(id);
 
             if (deliveryType == null)
             {
-                _message = $"Delivery type with Id [{id}] not found.";
+                _message = $"Delivery type with ID [{id}] not found.";
                 _logger.LogError(_message);
                 throw new KeyNotFoundException(_message);
             }
 
-            _logger.LogInformation($"Delivery type with Id [{id}] fetched succesfully.");
+            _logger.LogInformation($"Delivery type with ID [{id}] successfully fetched.");
 
             return deliveryType == null ? null : _mapper.Map<DeliveryTypeDto>(deliveryType);
         }
@@ -62,20 +63,21 @@ namespace OrderApi.Services
         {
             if (entity == null)
             {
-                _message = "Delivery type wasn't provided.";
+                _message = "Delivery type was not provided for creation.";
                 _logger.LogError(_message);
-                throw new ArgumentNullException(_message, nameof(entity));
+                throw new ArgumentNullException(null, _message);
             }
             var deliveryType = _mapper.Map<DeliveryType>(entity);
 
             try
             {
+                deliveryType.DeliveryId = Guid.NewGuid();
                 await _repository.CreateAsync(deliveryType);
-                _logger.LogInformation("Delivery type created successfully.");
+                _logger.LogInformation("Delivery type successfully created.");
             }
             catch (Exception ex)
             {
-                _message = "Error occured while adding an delivery type.";
+                _message = $"Error occurred while adding the delivery type with ID [{entity.Id}].";
                 _logger.LogError(_message);
                 throw new InvalidOperationException(_message, ex);
             }
@@ -85,26 +87,26 @@ namespace OrderApi.Services
         {
             if (entity == null)
             {
-                _message = "Delivery type was not provided for the update";
+                _message = "Delivery type was not provided for the update.";
                 _logger.LogError(_message);
-                throw new ArgumentNullException(_message, nameof(entity));
+                throw new ArgumentNullException(null, _message);
             }
 
             var deliveryType = _mapper.Map<DeliveryType>(entity);
             try
             {
                 await _repository.UpdateAsync(deliveryType);
-                _logger.LogInformation("Delivery type updated succesfully.");
+                _logger.LogInformation($"Delivery type with ID [{entity.Id}] successfully updated.");
             }
             catch (InvalidOperationException)
             {
-                _message = $"Delivery type with Id {entity.Id} not found for update.";
+                _message = $"Delivery type with ID [{entity.Id}] not found for update.";
                 _logger.LogError(_message);
                 throw new KeyNotFoundException(_message);
             }
             catch (Exception ex)
             {
-                _message = $"Error occured while updating the delivery type with Id [{entity.Id}]";
+                _message = $"Error occured while updating the delivery type with ID [{entity.Id}].";
                 _logger.LogError(_message);
                 throw new InvalidOperationException(_message, ex);
             }
@@ -112,29 +114,20 @@ namespace OrderApi.Services
 
         public async Task DeleteAsync(Guid id)
         {
-            var deliveryType = await _repository.GetByIdAsync(id);
-
-            if (deliveryType == null)
-            {
-                _message = $"Delivery type with Id [{id}] not found.";
-                _logger.LogError(_message);
-                throw new KeyNotFoundException(_message);
-            }
-
             try
             {
                 await _repository.DeleteAsync(id);
-                _logger.LogInformation($"Delivery type with Id [{id}] deleted succesfully");
+                _logger.LogInformation($"Delivery type with ID [{id}] successfully deleted.");
             }
-            catch (InvalidOperationException)
+            catch (KeyNotFoundException)
             {
-                _message = $"Delivery type with Id [{id}] not found for deletion.";
+                _message = $"Delivery type with ID [{id}] not found for deletion.";
                 _logger.LogError(_message);
                 throw new KeyNotFoundException(_message);
             }
             catch (Exception ex)
             {
-                _message = $"Error occurred while deleting the delivery type with Id [{id}].";
+                _message = $"Error occurred while deleting the delivery type with ID [{id}].";
                 _logger.LogError(_message);
                 throw new InvalidOperationException(_message, ex);
             }

@@ -1,17 +1,18 @@
-﻿using BookApi.Data;
-using BookApi.Models;
-using BookAPI.Infrastructure.Extensions;
-using BookAPI.Repositories;
+﻿using BookAPI.Data;
+using BookAPI.Models;
+using BookAPI.Models.Filters;
+using BookAPI.Models.Sortings;
+using BookAPI.Repositories.Interfaces;
 using Library.Extensions;
-using Library.Filters;
 using Library.Sortings;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using BookAPI.Models.Extensions;
 
-namespace BookApi.Repositories
+namespace BookAPI.Repositories
 {
     public class BookRepository : IBookRepository
     {
@@ -23,16 +24,23 @@ namespace BookApi.Repositories
         }
 
       
-        public async Task<PaginatedResult<Book>> GetAllAsync(int pageNumber, int pageSize, string searchTerm, Filter? filter, Sort? sort)
+        public async Task<PaginatedResult<Book>> GetAllAsync(
+            int pageNumber, 
+            int pageSize, 
+            string searchTerm, 
+            BookFilter? filter,
+            BookSort? sort)
         {
-            IQueryable<Book> books = _context.Books.AsQueryable();
+
+            IQueryable<Book> books = _context.Books
+                .Include(x => x.Subcategories)
+                .Include(x=>x.Feedbacks).AsQueryable();
 
             if (books.Any() && !string.IsNullOrWhiteSpace(searchTerm))
-                books = books.Search(searchTerm);
-            if (books.Any() && filter != null)
-                books = books.Filter(filter);
-            if (books.Any() && sort != null)
-                books = books.Sort(sort);
+                books = books.Search(searchTerm, b => b.Title, b => b.Author.Name);
+            books = filter?.Apply(books) ?? books;
+            books = sort?.Apply(books) ?? books;
+
 
             var totalBooks = await books.CountAsync();
             var resultBooks = await books.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToListAsync();
@@ -50,12 +58,16 @@ namespace BookApi.Repositories
 
         public async Task<Book> GetByIdAsync(Guid id)
         {
-            return await _context.Books
+            var book = await _context.Books
                 .Include(b => b.Category)
                 .Include(b => b.Publisher)
                 .Include(b => b.Feedbacks)
+                .Include(b => b.Subcategories)
                 .FirstOrDefaultAsync(b => b.Id == id);
+
+            return book;
         }
+
 
         public async Task CreateAsync(Book entity)
         {
