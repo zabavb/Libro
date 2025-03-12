@@ -9,7 +9,6 @@ namespace UserAPI.Data
     {
         public static void Seed(ModelBuilder modelBuilder)
         {
-            var passwordRepo = new PasswordRepository();
 
 
             var user1 = new User
@@ -32,8 +31,8 @@ namespace UserAPI.Data
             };
 
 
-            var salt1 = passwordRepo.GenerateSalt();
-            var hash1 = passwordRepo.HashPassword("123", salt1);
+            var salt1 = PasswordRepository.GenerateSalt();
+            var hash1 = PasswordRepository.HashPassword("123456Aa!", salt1);
 
             var pass1 = new Password
             {
@@ -65,8 +64,8 @@ namespace UserAPI.Data
                 UserId = user2.UserId
             };
             
-            var salt2 = passwordRepo.GenerateSalt();
-            var hash2 = passwordRepo.HashPassword("1", salt2);
+            var salt2 = PasswordRepository.GenerateSalt();
+            var hash2 = PasswordRepository.HashPassword("abcdefg123@", salt2);
 
             var pass2 = new Password
             {
