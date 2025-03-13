@@ -16,13 +16,8 @@ namespace UserAPI.Repositories
             _context = context;
             _logger = logger;
         }
-        /*public PasswordRepository()
-        {
-            _context = null;
 
-        }*/
-
-        public string HashPassword(string password, string salt)
+        public static string HashPassword(string password, string salt)
         {
             using var sha256 = SHA256.Create();
             var combined = Encoding.UTF8.GetBytes(password + salt);
@@ -32,7 +27,7 @@ namespace UserAPI.Repositories
         }
 
         // size -> size % 8 == 0
-        public string GenerateSalt(int size = 8)
+        public static string GenerateSalt(int size = 8)
         {
             if (size % 8 != 0)
             {

@@ -116,7 +116,6 @@ using (var scope = app.Services.CreateScope())
     var dbContext = scope.ServiceProvider.GetRequiredService<UserDbContext>();
 }
 
-
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -125,6 +124,7 @@ if (app.Environment.IsDevelopment())
         options.SwaggerEndpoint("/swagger/v1/swagger.json", "UserAPI");
     });
 }
+
 
 app.UseHttpsRedirection();
 

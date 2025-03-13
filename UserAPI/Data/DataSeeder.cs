@@ -7,10 +7,8 @@ namespace UserAPI.Data
 {
     public class DataSeeder
     {
-        /*public static void Seed(ModelBuilder modelBuilder)
+        public static void Seed(ModelBuilder modelBuilder)
         {
-            // var passwordRepo = new PasswordRepository();
-
 
             var user1 = new User
             {
@@ -31,9 +29,9 @@ namespace UserAPI.Data
                 UserId = user1.UserId
             };
 
+            var salt1 = PasswordRepository.GenerateSalt();
+            var hash1 = PasswordRepository.HashPassword("123456Aa!", salt1);
 
-            var salt1 = passwordRepo.GenerateSalt();
-            var hash1 = passwordRepo.HashPassword("123", salt1);
 
             var pass1 = new Password
             {
@@ -65,8 +63,8 @@ namespace UserAPI.Data
                 UserId = user2.UserId
             };
             
-            var salt2 = passwordRepo.GenerateSalt();
-            var hash2 = passwordRepo.HashPassword("1", salt2);
+            var salt2 = PasswordRepository.GenerateSalt();
+            var hash2 = PasswordRepository.HashPassword("abcdefg123@", salt2);
 
             var pass2 = new Password
             {
@@ -80,6 +78,6 @@ namespace UserAPI.Data
             modelBuilder.Entity<User>().HasData(user1, user2);
             modelBuilder.Entity<Subscription>().HasData(sub1, sub2);
             modelBuilder.Entity<Password>().HasData(pass1, pass2);
-        }*/
+        }
     }
 }
