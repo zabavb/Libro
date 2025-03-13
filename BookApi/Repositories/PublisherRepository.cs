@@ -5,16 +5,25 @@ using BookAPI.Repositories.Interfaces;
 using Library.Extensions;
 using Microsoft.EntityFrameworkCore;
 using BookAPI.Models.Extensions;
+using StackExchange.Redis;
+using System.Text.Json;
+using Microsoft.Extensions.Logging;
 
 namespace BookAPI.Repositories
 {
     public class PublisherRepository : IPublisherRepository
     {
         private readonly BookDbContext _context;
+        private readonly IDatabase _redisDatabase;
+        private readonly ILogger<PublisherRepository> _logger;
+        private readonly string _cacheKeyPrefix = "Publisher_";
+        private readonly TimeSpan _cacheExpiration = TimeSpan.FromMinutes(10);
 
-        public PublisherRepository(BookDbContext context)
+        public PublisherRepository(BookDbContext context, IConnectionMultiplexer redis, ILogger<PublisherRepository> logger)
         {
             _context = context;
+            _redisDatabase = redis.GetDatabase();
+            _logger = logger;
         }
 
         public async Task CreateAsync(Publisher entity)
@@ -23,6 +32,7 @@ namespace BookAPI.Repositories
             entity.Id = Guid.NewGuid();
             _context.Publishers.Add(entity);
             await _context.SaveChangesAsync();
+            await _redisDatabase.HashSetAsync(_cacheKeyPrefix + entity.Id, entity.Id.ToString(), JsonSerializer.Serialize(entity));
         }
 
         public async Task DeleteAsync(Guid id)
@@ -33,11 +43,11 @@ namespace BookAPI.Repositories
             var publisher = await _context.Publishers.FirstOrDefaultAsync(a => a.Id == id) ?? throw new KeyNotFoundException("Publisher not found");
             _context.Publishers.Remove(publisher);
             await _context.SaveChangesAsync();
+            await _redisDatabase.KeyDeleteAsync(_cacheKeyPrefix + id);
         }
 
         public async Task<PaginatedResult<Publisher>> GetAllAsync(int pageNumber, int pageSize, string searchTerm, PublisherSort? sort)
         {
-
             IQueryable<Publisher> publishers = _context.Publishers.AsQueryable();
             if (!string.IsNullOrWhiteSpace(searchTerm))
             {
@@ -57,13 +67,29 @@ namespace BookAPI.Repositories
             };
         }
 
-
         public async Task<Publisher?> GetByIdAsync(Guid id)
         {
             if (id == Guid.Empty)
                 throw new ArgumentException("Id cannot be empty.", nameof(id));
 
-            return await _context.Publishers.FirstOrDefaultAsync(a => a.Id == id);
+            string cacheKey = _cacheKeyPrefix + id;
+            var cachedPublisher = await _redisDatabase.HashGetAsync(cacheKey, id.ToString());
+
+            if (!cachedPublisher.IsNullOrEmpty)
+            {
+                _logger.LogInformation("Fetched from CACHE.");
+                return JsonSerializer.Deserialize<Publisher>(cachedPublisher!);
+            }
+
+            var publisher = await _context.Publishers.FirstOrDefaultAsync(a => a.Id == id);
+            if (publisher != null)
+            {
+                _logger.LogInformation("Fetched from DB and stored in CACHE.");
+                await _redisDatabase.HashSetAsync(cacheKey, id.ToString(), JsonSerializer.Serialize(publisher));
+                await _redisDatabase.KeyExpireAsync(cacheKey, _cacheExpiration);
+            }
+
+            return publisher;
         }
 
         public async Task UpdateAsync(Publisher entity)
@@ -74,11 +100,10 @@ namespace BookAPI.Repositories
             if (entity.Id == Guid.Empty)
                 throw new ArgumentException("Id cannot be empty.", nameof(entity.Id));
 
-
             var existingPublisher = await _context.Publishers.FirstOrDefaultAsync(a => a.Id == entity.Id) ?? throw new KeyNotFoundException("Publisher not found");
             _context.Entry(existingPublisher).CurrentValues.SetValues(entity);
             await _context.SaveChangesAsync();
+            await _redisDatabase.HashSetAsync(_cacheKeyPrefix + entity.Id, entity.Id.ToString(), JsonSerializer.Serialize(entity));
         }
-
     }
 }
