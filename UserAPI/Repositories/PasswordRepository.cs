@@ -27,13 +27,10 @@ namespace UserAPI.Repositories
         }
 
         // size -> size % 8 == 0
-        public static string GenerateSalt(int size = 8)
+        public static string? GenerateSalt(int size = 8)
         {
             if (size % 8 != 0)
-            {
-                _logger.LogInformation("Wrong size in GenerateSalt");
                 return null;
-            }
 
             var saltBytes = new byte[size];
             using (var rng = RandomNumberGenerator.Create())
@@ -41,7 +38,6 @@ namespace UserAPI.Repositories
                 rng.GetBytes(saltBytes);
             }
             string result = Convert.ToBase64String(saltBytes);
-            _logger.LogInformation("Successfull creation of salt");
             return result.Substring(0, result.Length - (size / 8));
         }
 
