@@ -1,63 +1,102 @@
 ﻿using BookAPI.Data;
 using BookAPI.Models;
+using BookAPI.Models.Extensions;
 using BookAPI.Models.Filters;
 using BookAPI.Models.Sortings;
 using BookAPI.Repositories.Interfaces;
 using Library.Extensions;
 using Library.Sortings;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using BookAPI.Models.Extensions;
+using Microsoft.EntityFrameworkCore.Storage;
+using StackExchange.Redis;
+using System.Text.Json;
+using IDatabase = StackExchange.Redis.IDatabase;
 
 namespace BookAPI.Repositories
 {
     public class BookRepository : IBookRepository
     {
         private readonly BookDbContext _context;
+        private readonly IDatabase _redisDatabase;
+        private readonly ILogger<IBookRepository> _logger;
+        private readonly string _cacheKeyPrefix = "Book_";
+        private readonly TimeSpan _cacheExpiration = TimeSpan.FromMinutes(10);
 
-        public BookRepository(BookDbContext context)
+        public BookRepository(BookDbContext context, IConnectionMultiplexer redis, ILogger<IBookRepository> logger)
         {
             _context = context;
+            _redisDatabase = redis.GetDatabase();
+            _logger = logger;
         }
 
-      
         public async Task<PaginatedResult<Book>> GetAllAsync(
-            int pageNumber, 
-            int pageSize, 
-            string searchTerm, 
+            int pageNumber,
+            int pageSize,
+            string searchTerm,
             BookFilter? filter,
             BookSort? sort)
         {
+            IQueryable<Book> books;
+            string cacheKey = $"{_cacheKeyPrefix}All";
+            var cachedBooks = await _redisDatabase.HashGetAllAsync(cacheKey);
 
-            IQueryable<Book> books = _context.Books
-                .Include(x => x.Subcategories)
-                .Include(x=>x.Feedbacks).AsQueryable();
+            if (cachedBooks.Length > 0)
+            {
+                books = (IQueryable<Book>)cachedBooks.Select(entry => JsonSerializer.Deserialize<Book>(entry.Value!)!);
+                _logger.LogInformation("Fetched from CACHE.");
+            }
+            else
+            {
+                books = (IQueryable<Book>)await _context.Books
+                    .Include(x => x.Subcategories)
+                    .Include(x => x.Feedbacks)
+                    .AsNoTracking()
+                    .ToListAsync();
+                _logger.LogInformation("Fetched from DB.");
+
+                var hashEntries = books.ToDictionary(
+                    book => book.Id.ToString(),
+                    book => JsonSerializer.Serialize(book)
+                );
+
+                await _redisDatabase.HashSetAsync(
+                    cacheKey,
+                    [.. hashEntries.Select(kvp => new HashEntry(kvp.Key, kvp.Value))]
+                );
+                await _redisDatabase.KeyExpireAsync(cacheKey, _cacheExpiration);
+                _logger.LogInformation("Set to CACHE.");
+            }
 
             if (books.Any() && !string.IsNullOrWhiteSpace(searchTerm))
                 books = books.Search(searchTerm, b => b.Title, b => b.Author.Name);
-            books = filter?.Apply(books) ?? books;
-            books = sort?.Apply(books) ?? books;
+            books = filter?.Apply(books.AsQueryable()) ?? books;
+            books = sort?.Apply(books.AsQueryable()) ?? books;
 
-
-            var totalBooks = await books.CountAsync();
-            var resultBooks = await books.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToListAsync();
+            var totalBooks = books.Count();
+            books = books.Skip((pageNumber - 1) * pageSize).Take(pageSize);
 
             return new PaginatedResult<Book>
             {
-                Items = resultBooks,
+                Items = books.ToList(),
                 TotalCount = totalBooks,
                 PageNumber = pageNumber,
                 PageSize = pageSize
             };
-
         }
 
-
-        public async Task<Book> GetByIdAsync(Guid id)
+        public async Task<Book?> GetByIdAsync(Guid id)
         {
+            string cacheKey = $"{_cacheKeyPrefix}{id}";
+            string fieldKey = id.ToString();
+
+            var cachedBook = await _redisDatabase.HashGetAsync(cacheKey, fieldKey);
+            if (!cachedBook.IsNullOrEmpty)
+            {
+                _logger.LogInformation("Fetched from CACHE.");
+                return JsonSerializer.Deserialize<Book>(cachedBook!);
+            }
+
+            _logger.LogInformation("Fetched from DB.");
             var book = await _context.Books
                 .Include(b => b.Category)
                 .Include(b => b.Publisher)
@@ -65,9 +104,15 @@ namespace BookAPI.Repositories
                 .Include(b => b.Subcategories)
                 .FirstOrDefaultAsync(b => b.Id == id);
 
+            if (book != null)
+            {
+                _logger.LogInformation("Set to CACHE.");
+                await _redisDatabase.HashSetAsync(cacheKey, fieldKey, JsonSerializer.Serialize(book));
+                await _redisDatabase.KeyExpireAsync(cacheKey, _cacheExpiration);
+            }
+
             return book;
         }
-
 
         public async Task CreateAsync(Book entity)
         {
@@ -78,7 +123,9 @@ namespace BookAPI.Repositories
 
         public async Task UpdateAsync(Book entity)
         {
-            var existingBook = await _context.Books.FirstOrDefaultAsync(a => a.Id == entity.Id) ?? throw new KeyNotFoundException("Book not found");
+            var existingBook = await _context.Books.FirstOrDefaultAsync(a => a.Id == entity.Id)
+                ?? throw new KeyNotFoundException("Book not found");
+
             _context.Entry(existingBook).CurrentValues.SetValues(entity);
             await _context.SaveChangesAsync();
         }
@@ -86,12 +133,10 @@ namespace BookAPI.Repositories
         public async Task DeleteAsync(Guid id)
         {
             var book = await _context.Books.FindAsync(id);
-            if (book == null) return; 
+            if (book == null) return;
 
             _context.Books.Remove(book);
             await _context.SaveChangesAsync();
         }
-
-       
     }
 }
