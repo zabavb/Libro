@@ -82,7 +82,7 @@
         }
       ],
       "UpstreamPathTemplate": "/gateway/orders",
-      "UpstreamHttpMethod": [ "GET", "POST", "PUT" ]
+      "UpstreamHttpMethod": [ "GET", "POST" ]
     },
     {
       "DownstreamPathTemplate": "/api/orders/{id}",
@@ -94,7 +94,7 @@
         }
       ],
       "UpstreamPathTemplate": "/gateway/orders/{id}",
-      "UpstreamHttpMethod": [ "GET", "DELETE" ]
+      "UpstreamHttpMethod": [ "GET", "DELETE", "PUT" ]
     },
     //======================= Delivery type entity =======================
     {
