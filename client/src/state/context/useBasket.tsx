@@ -30,15 +30,34 @@ const useBasket = () => {
         })
     }
 
-    const removeItem = (id: string) => {
-        setBasket((prevBasket) => prevBasket.filter((item) => item.bookId !== id));
+    const removeItem = (item: BasketItem) => {
+        setBasket((prevBasket) => {
+            const existingItem = prevBasket.find((i) => i.bookId === item.bookId)
+            if (existingItem && existingItem.amount - item.amount <= 0) {
+                return prevBasket.filter((i) => i.bookId != item.bookId)
+            }
+            if (existingItem) {
+                return prevBasket.map((i) =>
+                    i.bookId === item.bookId ? { ...i, amount: i.amount - item.amount } : i
+                )
+            }
+            return [...prevBasket, item]
+        })
+    }
+
+    const clearItem = (id: string) => 
+    {
+        setBasket((prevBasket) => {
+            return prevBasket.filter((i) => i.bookId != id)
+        })
     }
 
     const clearBasket = () => {
         setBasket([])
     }
 
-    return {basket, addItem, removeItem, clearBasket}
+    return { basket, addItem, removeItem, clearItem,clearBasket }
+    
 }
 
 export default useBasket
