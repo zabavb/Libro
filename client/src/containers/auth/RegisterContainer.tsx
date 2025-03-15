@@ -1,38 +1,38 @@
-import { useDispatch, useSelector } from "react-redux"
-import Register from "../../components/auth/Register"
-import { AppDispatch, RootState } from "../../state/redux"
-import { useNavigate } from "react-router-dom"
-import { useCallback, useEffect } from "react"
-import { addNotification } from "../../state/redux/slices/notificationSlice"
-import { resetOperationStatus } from "../../state/redux/slices/userSlice"
+import { useDispatch } from 'react-redux';
+import Register from '../../components/auth/Register';
+import { AppDispatch } from '../../state/redux';
+import { useNavigate } from 'react-router-dom';
+import { useCallback } from 'react';
+import { addNotification } from '../../state/redux/slices/notificationSlice';
+import { useAuth } from '../../state/context';
+import { RegisterFormData } from '../../utils';
+import { NotificationData } from '../../types';
 
 const RegisterContainer: React.FC = () => {
-	const dispatch = useDispatch<AppDispatch>()
-	const { operationStatus, error } = useSelector((state: RootState) => state.users)
-	const navigate = useNavigate()
+  const dispatch = useDispatch<AppDispatch>();
+  const { register } = useAuth();
+  const navigate = useNavigate();
 
-	const handleSuccess = useCallback(() => {
-		dispatch(
-			addNotification({
-				message: "Registration successful!",
-				type: "success",
-			})
-		)
-		dispatch(resetOperationStatus())
-		navigate("/login")
-	}, [dispatch, navigate])
+  const handleSubmit = async (userData: RegisterFormData) => {
+    const data = await register(userData);
+    if (data.type === 'success') handleSuccess(data);
+    else handleError(data);
+  };
 
-	const handleError = useCallback(() => {
-		dispatch(addNotification({ message: error, type: "error" }))
-		dispatch(resetOperationStatus())
-	}, [dispatch, error])
+  const handleSuccess = useCallback(
+    (data: NotificationData) => {
+      dispatch(addNotification(data));
+      navigate('/login');
+    },
+    [dispatch, navigate],
+  );
 
-	useEffect(() => {
-		if (operationStatus === "success") handleSuccess()
-		else if (operationStatus === "error") handleError()
-	}, [operationStatus, handleSuccess, handleError])
+  const handleError = useCallback(
+    (data: NotificationData) => dispatch(addNotification(data)),
+    [dispatch],
+  );
 
-	return <Register />
-}
+  return <Register onSubmit={handleSubmit} />;
+};
 
-export default RegisterContainer
+export default RegisterContainer;

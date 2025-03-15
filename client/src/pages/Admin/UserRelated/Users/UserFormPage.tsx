@@ -1,25 +1,25 @@
-import { useParams, useNavigate } from "react-router-dom"
-import UserFormContainer from "../../../../containers/user/UserFormContainer"
+import { useParams, useNavigate } from 'react-router-dom';
+import UserFormContainer from '../../../../containers/user/UserFormContainer';
 
 const UserFormPage = () => {
-  const { userId } = useParams<{ userId: string }>()
-	const navigate = useNavigate()
+  const { userId } = useParams<{ userId: string }>();
+  const navigate = useNavigate();
 
-	const handleGoBack = () => {
-		navigate("/admin/users")
-	}
+  const handleGoBack = () => {
+    navigate('/admin/users');
+  };
 
-	return (
-		<div>
-			<header>
-				<h1>{userId ? "Edit User" : "Add User"}</h1>
-				<button onClick={handleGoBack}>Back to User List</button>
-			</header>
-			<main>
-				<UserFormContainer userId={userId ?? ""} />
-			</main>
-		</div>
-	)
-}
+  return (
+    <div>
+      <header>
+        <h1>{userId ? 'Edit User' : 'Add User'}</h1>
+        <button onClick={handleGoBack}>Back to User List</button>
+      </header>
+      <main>
+        <UserFormContainer userId={userId ?? ''} />
+      </main>
+    </div>
+  );
+};
 
-export default UserFormPage
+export default UserFormPage;

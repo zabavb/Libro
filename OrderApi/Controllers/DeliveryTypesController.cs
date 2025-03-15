@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using OrderApi.Services;
-
+using OrderAPI;
 namespace OrderApi.Controllers
 {
     /// <summary>
@@ -14,7 +14,7 @@ namespace OrderApi.Controllers
     public class DeliveryTypesController(IDeliveryTypeService deliveryTypeService, ILogger<DeliveryTypesController> logger) : ControllerBase
     {
         private readonly IDeliveryTypeService _deliveryTypeService = deliveryTypeService;
-        private readonly ILogger<DeliveryTypesController> _logger = logger; 
+        private readonly ILogger<DeliveryTypesController> _logger = logger;
         private string _message = string.Empty;
 
         /// <summary>
@@ -22,15 +22,16 @@ namespace OrderApi.Controllers
         /// </summary>
         /// <param name="pageNumber">The page number to retrieve (default is 1).</param>
         /// <param name="pageSize">The number of items per page (default is 10).</param>
+        /// <param name="searchTerm">Optional search term to filter orders.</param>
         /// <returns>List of delivery types</returns>
         /// <response code="200">Retrieval successful, returns the list</response>
         /// <response code="500">an unexpected error occured.</response>
         [HttpGet]
-        public async Task<IActionResult> GetAll([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
+        public async Task<IActionResult> GetAll([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10, [FromQuery] string? searchTerm = null,[FromQuery] DeliverySort? sort = null)
         {
             try
             {
-                var deliveryTypes = await _deliveryTypeService.GetAllAsync(pageNumber, pageSize);
+                var deliveryTypes = await _deliveryTypeService.GetAllAsync(pageNumber, pageSize, searchTerm!, sort);
                 _logger.LogInformation("Delivery types succesfully fetched.");
                 return Ok(deliveryTypes);
             }
@@ -94,12 +95,12 @@ namespace OrderApi.Controllers
                 _logger.LogInformation($"Delivery types with Id [{deliveryTypeDto.Id}] successfully created.");
                 return CreatedAtAction(nameof(GetById), new { id = deliveryTypeDto.Id }, deliveryTypeDto);
             }
-            catch(ArgumentNullException ex)
+            catch (ArgumentNullException ex)
             {
                 _logger.LogError(ex.Message);
                 return BadRequest(ModelState);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 _logger.LogError(ex.Message);
                 return StatusCode(StatusCodes.Status500InternalServerError, new { message = ex.Message });
@@ -116,7 +117,7 @@ namespace OrderApi.Controllers
         /// <response code="400">the delivery type ID in the URL does not match the ID in the request body, or if the input is invalid.</response>
         /// <response code="404">the delivery type to be updated does not exist.</response>
         /// <response code="500">an unexpected error occured.</response>
-        [HttpPut]
+        [HttpPut("{id}")]
         public async Task<IActionResult> Update(Guid id, [FromBody] DeliveryTypeDto deliveryTypeDto)
         {
             if (deliveryTypeDto != null && id != deliveryTypeDto.Id)

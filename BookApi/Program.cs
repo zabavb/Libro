@@ -1,9 +1,7 @@
 using BookAPI.Data;
 using BookAPI.Repositories;
 using BookAPI.Services;
-using BookAPI.Repositories;
 using BookAPI.Repositories.Interfaces;
-using BookAPI.Services;
 using BookAPI.Services.Interfaces;
 using FeedbackApi.Services;
 using Microsoft.CodeAnalysis.Host;
@@ -15,6 +13,10 @@ using Serilog;
 using System.Reflection;
 using System.Text.Json.Serialization;
 using ILanguageService = BookAPI.Services.Interfaces.ILanguageService;
+using System.Text;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using StackExchange.Redis;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,6 +24,20 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<BookDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddScoped<IBookService, BookService>();
+
+builder.Services.AddSingleton<IConnectionMultiplexer>(sp =>
+{
+    var config = sp.GetRequiredService<IConfiguration>();
+    var redisConfig = config.GetSection("Redis");
+
+    var options = new ConfigurationOptions
+    {
+        EndPoints = { { redisConfig["Host"]!, int.Parse(redisConfig["Port"]!) } },
+        User = redisConfig["User"],
+        Password = redisConfig["Password"]
+    };
+    return ConnectionMultiplexer.Connect(options);
+});
 
 builder.Services.AddScoped<IAuthorRepository, AuthorRepository>();
 builder.Services.AddScoped<IBookRepository, BookRepository>();
@@ -49,6 +65,28 @@ builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle 
 builder.Services.AddEndpointsApiExplorer();
+//var jwtSettings = builder.Configuration.GetSection("JwtSettings");
+//var secretKey = Encoding.UTF8.GetBytes(jwtSettings["SecretKey"]!);
+
+//builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+//    .AddJwtBearer(options =>
+//    {
+//        options.RequireHttpsMetadata = false;
+//        options.SaveToken = true;
+//        options.TokenValidationParameters = new TokenValidationParameters
+//        {
+//            ValidateIssuer = true,
+//            ValidateAudience = true,
+//            ValidateLifetime = true,
+//            ValidateIssuerSigningKey = true,
+//            ValidIssuer = jwtSettings["Issuer"],
+//            ValidAudience = jwtSettings["Audience"],
+//            IssuerSigningKey = new SymmetricSecurityKey(secretKey)
+//        };
+//    });
+//builder.Services.AddAuthorization();
+
+
 builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo
@@ -79,7 +117,23 @@ Log.Logger = new LoggerConfiguration()
 builder.Logging.ClearProviders();
 builder.Logging.AddSerilog(Log.Logger);
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowReactApp", policy =>
+    {
+        policy.WithOrigins("http://localhost:58482")
+              .AllowAnyMethod()
+              .AllowAnyHeader()
+              .AllowCredentials();
+    });
+});
+
+
+
 var app = builder.Build();
+
+app.UseCors("AllowReactApp");
+
 
 // Configure the HTTP request pipeline. 
 if (app.Environment.IsDevelopment())
@@ -101,7 +155,7 @@ app.Use(async (context, next) =>
     await next();
     Log.Information($"Outgoing Response: {context.Response.StatusCode}");
 });
-
+//app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();

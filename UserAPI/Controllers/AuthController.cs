@@ -46,7 +46,7 @@ namespace UserAPI.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            UserDto? user = await _authService.AuthenticateAsync(request);
+            var user = await _authService.AuthenticateAsync(request);
             if (user == null)
                 return Unauthorized("Invalid username or password.");
 
@@ -55,7 +55,17 @@ namespace UserAPI.Controllers
             {
                 Token = token,
                 ExpiresIn = _jwtSettings.ExpiresInMinutes,
-                User = new { user.Id, user.FirstName, user.LastName, user.Email, user.Role }
+                User = new
+                {
+                    user.Id,
+                    user.FirstName,
+                    user.LastName,
+                    user.DateOfBirth,
+                    user.Email,
+                    user.PhoneNumber,
+                    user.Role,
+                    user.ImageUrl
+                }
             });
         }
 
@@ -80,7 +90,7 @@ namespace UserAPI.Controllers
             try
             {
                 await _authService.RegisterAsync(request);
-                return Created(nameof(Register), request);
+                return Created(nameof(Register), null);
             }
             catch (ArgumentNullException ex)
             {

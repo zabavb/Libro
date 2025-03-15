@@ -4,3 +4,6 @@ export { userSchema } from "./userValidationSchema"
 export type { UserFormData } from "./userValidationSchema"
 export { orderSchema } from "./orderValidationSchema"
 export type { OrderFormData } from "./orderValidationSchema"
+export { deliveryTypeSchema } from "./deliveryTypeValidationSchema"
+export type { DeliveryTypeFormData } from "./deliveryTypeValidationSchema"
+

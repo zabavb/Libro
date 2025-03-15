@@ -13,6 +13,9 @@ const AdminPage = () => {
       <button onClick={() => navigate("/admin/orders")}>
         Manage Orders
       </button>
+      <button onClick={() => navigate("/admin/deliverytypes")}>
+        Manage Delivery Types
+      </button>
     </>
   );
 };

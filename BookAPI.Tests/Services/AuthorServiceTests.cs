@@ -111,18 +111,18 @@ namespace BookAPI.Tests.Services
                 PageSize = 2
             };
 
-            _repositoryMock.Setup(repo => repo.GetAllAsync(It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync(paginatedResult);
+            _repositoryMock.Setup(repo => repo.GetAllAsync(It.IsAny<int>(), It.IsAny<int>(), null, null, null)).ReturnsAsync(paginatedResult);
             _mapperMock.Setup(m => m.Map<ICollection<AuthorDto>>(It.IsAny<ICollection<Author>>()))
                 .Returns(new List<AuthorDto> { new AuthorDto { Name = "Author 1" }, new AuthorDto { Name = "Author 2" } });
 
             // Act
-            var result = await _authorService.GetAuthorsAsync(1, 2);
+            var result = await _authorService.GetAuthorsAsync(1, 2, null, null, null);
 
             // Assert
             Assert.Equal(2, result.Items.Count);
             Assert.Equal(1, result.PageNumber);
             Assert.Equal(2, result.PageSize);
-            _repositoryMock.Verify(repo => repo.GetAllAsync(It.IsAny<int>(), It.IsAny<int>()), Times.Once);
+            _repositoryMock.Verify(repo => repo.GetAllAsync(It.IsAny<int>(), It.IsAny<int>(), null, null, null), Times.Once);
         }
 
         [Fact]

@@ -21,12 +21,13 @@ builder.Services.AddDbContext<UserDbContext>(options =>
 builder.Services.AddSingleton<IConnectionMultiplexer>(sp =>
 {
     var config = sp.GetRequiredService<IConfiguration>();
+    var redisConfig = config.GetSection("Redis");
 
     var options = new ConfigurationOptions
     {
-        EndPoints = { { config["Redis:Host"]!, int.Parse(config["Redis:Port"]!) } },
-        User = config["Redis:User"],
-        Password = config["Redis:Password"]
+        EndPoints = { { redisConfig["Host"]!, int.Parse(redisConfig["Port"]!) } },
+        User = redisConfig["User"],
+        Password = redisConfig["Password"]
     };
     return ConnectionMultiplexer.Connect(options);
 });
@@ -110,8 +111,10 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
-app.UseCors("AllowReactApp");
-
+using (var scope = app.Services.CreateScope())
+{
+    var dbContext = scope.ServiceProvider.GetRequiredService<UserDbContext>();
+}
 
 if (app.Environment.IsDevelopment())
 {
@@ -122,7 +125,10 @@ if (app.Environment.IsDevelopment())
     });
 }
 
+
 app.UseHttpsRedirection();
+
+app.UseCors("AllowReactApp");
 
 app.UseAuthentication();
 app.UseAuthorization();

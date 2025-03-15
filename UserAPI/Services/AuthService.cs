@@ -30,7 +30,8 @@ namespace UserAPI.Services
 
         public async Task<UserDto?> AuthenticateAsync(LoginRequest request)
         {
-            UserDto? user = request.Identifier.Contains('@') ?
+            
+            var user = request.Identifier.Contains('@') ?
                 _mapper.Map<UserDto>(await _authRepository.GetUserByEmailAsync(request)) :
                 _mapper.Map<UserDto>(await _authRepository.GetUserByPhoneNumberAsync(request));
 
@@ -46,43 +47,49 @@ namespace UserAPI.Services
                 throw new ArgumentNullException(null, _message);
             }
 
-            // Unfinished part:
-            /*try
+            User user = new User()
             {
-                var userId = Guid.NewGuid();
-                await _passwordRepository.CreateAsync(request.Password, userId);
-                
-                User user = new()
-                {
-                    UserId = userId,
-                    FirstName = request.FirstName,
-                    LastName = request.LastName,
-                    Email = request.Email,
-                    PhoneNumber = request.PhoneNumber,
-                };
+                UserId = new Guid(),
+                FirstName = request.FirstName,
+                LastName = request.LastName,
+                Email = request.Email,
+                PhoneNumber = request.PhoneNumber,
+            };
 
+            var password = request.Password;    
+            
+            try
+            {
                 await _userRepository.CreateAsync(user);
-                _message = "Successful user registration.";
-                _logger.LogInformation(_message);
+                await _passwordRepository.AddAsync(password, user);
+                _message = "Successful user registration in UserAPI.Services.AuthService.RegisterAsync";
+                _logger.LogError(_message);
             }
             catch (Exception ex)
             {
                 _message = $"Error occurred while registering new user.";
                 _logger.LogError(_message);
                 throw new InvalidOperationException(_message, ex);
-            }*/
+            }
         }
 
         private async Task<bool> IsRightPassword(User user, string password)
         {
-            if (user == null || string.IsNullOrWhiteSpace(password))
+            try
             {
-                _logger.LogWarning("User or password is null/empty.");
-                return false;
+                if (user != null && !string.IsNullOrWhiteSpace(password))
+                {
+                    Guid passwordId = user.PasswordId;
+                    return await _passwordRepository.VerifyAsync(passwordId, password);
+                }
+            }
+            catch
+            {
+                _message = $"Error occurred while registering new user.";
+                _logger.LogError(_message);
             }
 
-            Guid passwordId = user.PasswordId;
-            return await _passwordRepository.VerifyAsync(passwordId, password);
+            return false;
         }
     }
 }

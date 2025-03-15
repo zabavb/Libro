@@ -1,24 +1,35 @@
-const BASE_URL = (port: number) => `https://localhost:${port}/api`
-
-const USER_API_BASE_URL = BASE_URL(7007)
-const ORDER_API_BASE_URL = BASE_URL(7051)
+const GATEWAY = `https://localhost:7102/gateway`
+const AUTH = `${GATEWAY}/auth`
+const USERS = `${GATEWAY}/users`
 
 export const API_ROUTES = {
 	AUTH: {
-		ME: `${USER_API_BASE_URL}/auth/me`,
-		LOGIN: `${USER_API_BASE_URL}/auth/login`,
-		REGISTER: `${USER_API_BASE_URL}/auth/register`,
+		ME: `${AUTH}/me`,
+		LOGIN: `${AUTH}/login`,
+		REGISTER: `${AUTH}/register`,
 	},
 	USERS: {
-		BASE: `${USER_API_BASE_URL}/users`,
+		BASE: USERS,
 		PAGINATED: (pageNumber: number, pageSize: number) =>
-			`${USER_API_BASE_URL}/users?pageNumber=${pageNumber}&pageSize=${pageSize}`,
-		BY_ID: (id: string) => `${USER_API_BASE_URL}/users/${id}`,
+			`${USERS}?pageNumber=${pageNumber}&pageSize=${pageSize}`,
+		BY_ID: (id: string) => `${USERS}/${id}`,
 	},
 	ORDERS: {
-		BASE: `${ORDER_API_BASE_URL}/orders`,
+		BASE: `${GATEWAY}/orders`,
 		PAGINATED: (pageNumber: number, pageSize: number) =>
-			`${ORDER_API_BASE_URL}/orders?pageNumber=${pageNumber}&pageSize=${pageSize}`,
-		BY_ID: (id: string) => `${ORDER_API_BASE_URL}/orders/${id}`,
+			`${GATEWAY}/orders?pageNumber=${pageNumber}&pageSize=${pageSize}`,
+		BY_ID: (id: string) => `${GATEWAY}/orders/${id}`,
+	},
+	DELIVERY: {
+		BASE: `${GATEWAY}/deliverytypes`,
+		PAGINATED: (pageNumber: number, pageSize: number) => 
+			`${GATEWAY}/deliverytypes?pageNumber=${pageNumber}&pageSize=${pageSize}`,
+		BY_ID: (id: string) => `${GATEWAY}/deliverytypes/${id}`,
+	},
+	BOOKS: {
+		BASE: `${GATEWAY}/books`,
+		PAGINATED: (pageNumber: number, pageSize: number) =>
+			`${GATEWAY}/books?pageNumber=${pageNumber}&pageSize=${pageSize}`,
+		BY_ID: (id: string) => `${GATEWAY}/books/${id}`,
 	},
 }
