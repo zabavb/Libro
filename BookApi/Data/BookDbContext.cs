@@ -12,6 +12,8 @@ namespace BookAPI.Data
         public DbSet<Author> Authors { get; set; } = null!;
         public DbSet<SubCategory> Subcategories { get; set; } = null!;
 
+        public DbSet<Discount> Discounts { get; set; } = null!;
+
 
         public BookDbContext(DbContextOptions<BookDbContext> options) : base(options)
         {
