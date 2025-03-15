@@ -7,7 +7,6 @@ const UserBasket = () => {
     const navigate = useNavigate()
     return (
         <div>
-            <h2>Shopping Cart</h2>
             {basket.length === 0 ? (
                 <p>Your basket is empty.</p>
             ) : (
@@ -17,11 +16,11 @@ const UserBasket = () => {
                             {item.name} x ({item.amount})
                             <div>
                                 <button
-                                    onClick={() => removeItem({ bookId: item.bookId, amount: 1, name: item.name })}>
+                                    onClick={() => removeItem({ bookId: item.bookId, amount: 1, name: item.name, price:item.price })}>
                                     -
                                 </button>
                                 <button
-                                    onClick={() => addItem({ bookId: item.bookId, amount: 1, name: item.name })}>
+                                    onClick={() => addItem({ bookId: item.bookId, amount: 1, name: item.name, price:item.price})}>
                                     +
                                 </button>
                                 <button onClick={() => clearItem(item.bookId)}>
@@ -36,12 +35,13 @@ const UserBasket = () => {
                 <button onClick={clearBasket}>Clear Basket</button>
             </div>
             <div>
+                {/* If price isn't calculating during test, replace the bookId with one that is in BookAPI database */}
                 <button
-                    onClick={() => addItem({ bookId: "1", amount: 1, name: "sample name" })}>
+                    onClick={() => addItem({ bookId: "685DB04F-01C9-4313-B7A1-27B9EB507398", amount: 1, name: "Емоційний інтелект", price:400.99 })}>
                     Add sample</button>
             </div>
             <div>
-                <button onClick={() => navigate("/basket/checkout")}>Basket</button>
+                <button onClick={() => navigate("/basket/checkout")}>Checkout</button>
             </div>
         </div>
     )
