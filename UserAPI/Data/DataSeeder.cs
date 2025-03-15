@@ -10,6 +10,7 @@ namespace UserAPI.Data
 
         public static void Seed(ModelBuilder modelBuilder)
         {
+
             var userData = new[]
                 {
                     ("Alice", "Smith", new DateTime(1992, 5, 14), "123-456-0001", "A!ice123"),
@@ -51,6 +52,7 @@ namespace UserAPI.Data
                 };
 
             #region Manual Seed
+
             var user1 = new User
             {
                 UserId = Guid.NewGuid(),
