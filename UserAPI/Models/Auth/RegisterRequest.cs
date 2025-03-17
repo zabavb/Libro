@@ -9,9 +9,7 @@ namespace UserAPI.Models.Auth
         [MinLength(2, ErrorMessage = "First name must be at least 2 characters.")]
         public string FirstName { get; set; }
 
-        [Required(ErrorMessage = "Last name is required.")]
-        [StringLength(50, ErrorMessage = "Last name cannot exceed 50 characters.")]
-        [MinLength(2, ErrorMessage = "First name must be at least 2 characters.")]
+        [StringLength(50, ErrorMessage = "Last name cannot exceed 50 characters.")] 
         public string LastName { get; set; }
 
         [Required(ErrorMessage = "Email is required.")]
