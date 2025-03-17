@@ -54,7 +54,7 @@ namespace UserAPI.Controllers
             return Ok(new
             {
                 Token = token,
-                ExpiresIn = _jwtSettings.ExpiresInMinutes,
+                ExpiresIn = _jwtSettings.ExpiresInDays,
                 User = new
                 {
                     user.Id,
@@ -164,7 +164,7 @@ namespace UserAPI.Controllers
                 issuer: _jwtSettings.Issuer,
                 audience: _jwtSettings.Audience,
                 claims: claims,
-                expires: DateTime.UtcNow.AddMinutes(_jwtSettings.ExpiresInMinutes),
+                expires: DateTime.UtcNow.AddDays(_jwtSettings.ExpiresInDays),
                 signingCredentials: creds
             );
 
