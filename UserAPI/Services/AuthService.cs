@@ -30,12 +30,11 @@ namespace UserAPI.Services
 
         public async Task<UserDto?> AuthenticateAsync(LoginRequest request)
         {
-            
             var user = request.Identifier.Contains('@') ?
-                _mapper.Map<UserDto>(await _authRepository.GetUserByEmailAsync(request)) :
-                _mapper.Map<UserDto>(await _authRepository.GetUserByPhoneNumberAsync(request));
+                await _authRepository.GetUserByEmailAsync(request) :
+                await _authRepository.GetUserByPhoneNumberAsync(request);
 
-            return await IsRightPassword(_mapper.Map<User>(user), request.Password) ? user : null;
+            return await IsRightPasswordAsync(user!, request.Password) ? _mapper.Map<UserDto>(user) : null;
         }
 
         public async Task RegisterAsync(RegisterRequest request)
@@ -47,21 +46,24 @@ namespace UserAPI.Services
                 throw new ArgumentNullException(null, _message);
             }
 
-            User user = new User()
+            var passwordId = Guid.NewGuid();
+            var password = request.Password;
+
+            User user = new()
             {
-                UserId = new Guid(),
+                UserId = Guid.NewGuid(),
                 FirstName = request.FirstName,
                 LastName = request.LastName,
                 Email = request.Email,
                 PhoneNumber = request.PhoneNumber,
-            };
-
-            var password = request.Password;    
+                Role = Library.DTOs.User.RoleType.USER,
+                PasswordId = passwordId
+            }; 
             
             try
             {
                 await _userRepository.CreateAsync(user);
-                await _passwordRepository.AddAsync(password, user);
+                await _passwordRepository.AddAsync(passwordId, password, user);
                 _message = "Successful user registration in UserAPI.Services.AuthService.RegisterAsync";
                 _logger.LogError(_message);
             }
@@ -73,7 +75,7 @@ namespace UserAPI.Services
             }
         }
 
-        private async Task<bool> IsRightPassword(User user, string password)
+        private async Task<bool> IsRightPasswordAsync(User user, string password)
         {
             try
             {
