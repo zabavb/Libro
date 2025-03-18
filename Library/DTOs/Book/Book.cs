@@ -1,4 +1,8 @@
-﻿namespace Library.DTOs.Book
+﻿using Microsoft.AspNetCore.Http;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
+
+namespace Library.DTOs.Book
 {
     public class Book
     {
@@ -13,6 +17,12 @@
         public string? Description { get; set; }
         public CoverType Cover { get; set; }
         public bool IsAvaliable { get; set; }
+        public string? ImageUrl { get; set; }
+        public string? AudioFileUrl { get; set; }
+        [JsonIgnore]
+        public bool HasAudio => !string.IsNullOrEmpty(AudioFileUrl);
+
+
         public List<Guid> FeedbackIds { get; set; } = new List<Guid>();
         public List<Guid> SubcategoryIds { get; set; } = new List<Guid>();
     }
