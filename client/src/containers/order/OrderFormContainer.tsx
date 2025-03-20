@@ -28,9 +28,7 @@ const OrderFormContainer: React.FC<OrderFormContainerProps> = ({ orderId }) => {
 
     useEffect(() => {
         if (orders.length === 0) return;
-        console.log(orders);
         const foundOrder = orders.find((order) => order.id == orderId)
-        console.log(foundOrder)
         if(!foundOrder){
             navigate("/admin/orders")
         }

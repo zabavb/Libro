@@ -46,6 +46,11 @@ const OrderForm: React.FC<OrderFormProps> = ({page, books, existingOrder, onEdit
     useEffect(() => {
         if(existingOrder) {
             setBookObjs(existingOrder.books)
+        }
+    },[existingOrder])
+
+    useEffect(() => {
+        if(existingOrder) {
             setValue("userId", existingOrder.userId)
             setValue("books", existingOrder.books);
             setValue("region", existingOrder.region)
