@@ -10,5 +10,6 @@ namespace OrderAPI
         public DateTime? DeliveryDateEnd { get; set; }
         public OrderStatus? Status { get; set; }
         public Guid? DeliveryId { get; set; }
+        public Guid? UserId { get; set; }
     }
 }

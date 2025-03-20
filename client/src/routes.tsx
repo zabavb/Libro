@@ -28,6 +28,7 @@ import OrderListPage from './pages/admin/orderRelated/orders/OrdersListPage';
 import DeliveriesListPage from './pages/admin/orderRelated/deliveries/DeliveriesListPage';
 import UserCartPage from './pages/Main/UserCartPage';
 import UserCheckoutPage from './pages/main/UserCheckoutPage';
+import UserOrdersPage from './pages/main/UserOrdersPage';
 
 
 const AppRoutes = () => (
@@ -46,6 +47,7 @@ const AppRoutes = () => (
         <Route path='/' element={<MainPage />} />
         <Route path='/cart' element={<UserCartPage />}/>
         <Route path='/cart/checkout' element={<UserCheckoutPage />}/>
+        <Route path='/orders' element={<UserOrdersPage/>}/>
         <Route element={<PrivateRoute />}>
           {/* Admin */}
           <Route path='/admin' element={<AdminLayout />}>

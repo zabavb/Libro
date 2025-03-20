@@ -7,4 +7,5 @@ export interface OrderFilter{
     deliveryDateEnd?: string
     status?: Status
     deliveryId?: string
+    userId?: string
 }
