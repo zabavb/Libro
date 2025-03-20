@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { LOGIN, OAUTH, REGISTER } from '../api/index';
-import { JwtResponse } from '../types';
+import { JwtResponse, User } from '../types';
 import { LoginFormData, RegisterFormData } from '../utils';
 
 /**
@@ -31,17 +31,17 @@ export const loginService = async (data: LoginFormData): Promise<JwtResponse> =>
 /**
  * Registers a new user.
  */
-export const registerService = async (data: RegisterFormData): Promise<void> =>
-  await apiCall('post', REGISTER, data);
+export const registerService = async (
+  data: RegisterFormData,
+): Promise<void> => {
+  if (data.phoneNumber === '') delete data.phoneNumber;
+
+  const response = await apiCall('post', REGISTER, data);
+  return response;
+};
 
 /**
- * Fetches the current user.
- */
-/* export const getMeService = async () => {
-	const token = localStorage.getItem("token")
-	if (!token) throw new Error("User is not authenticated.")
-	return await apiCall("get", ME, undefined, token)
-}
+ * Logs in the user using OAuth (Google Authentication).
  */
 export const oAuthService = async (
   token: string,
