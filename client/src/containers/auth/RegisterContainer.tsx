@@ -6,9 +6,13 @@ import { useCallback } from 'react';
 import { addNotification } from '../../state/redux/slices/notificationSlice';
 import { useAuth } from '../../state/context';
 import { RegisterFormData } from '../../utils';
-import { NotificationData } from '../../types';
+import { NotificationData, User } from '../../types';
 
-const RegisterContainer: React.FC = () => {
+interface RegisterContainerProps {
+  user?: User;
+}
+
+const RegisterContainer: React.FC<RegisterContainerProps> = ({ user }) => {
   const dispatch = useDispatch<AppDispatch>();
   const { register } = useAuth();
   const navigate = useNavigate();
@@ -32,7 +36,7 @@ const RegisterContainer: React.FC = () => {
     [dispatch],
   );
 
-  return <Register onSubmit={handleSubmit} />;
+  return <Register data={user} onSubmit={handleSubmit} />;
 };
 
 export default RegisterContainer;

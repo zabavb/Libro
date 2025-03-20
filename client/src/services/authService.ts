@@ -1,6 +1,6 @@
 import axios from 'axios';
-import { LOGIN, REGISTER, ME } from '../api/index';
-import { JwtResponse } from '../types';
+import { LOGIN, OAUTH, REGISTER } from '../api/index';
+import { JwtResponse, User } from '../types';
 import { LoginFormData, RegisterFormData } from '../utils';
 
 /**
@@ -31,27 +31,18 @@ export const loginService = async (data: LoginFormData): Promise<JwtResponse> =>
 /**
  * Registers a new user.
  */
-export const registerService = async (data: RegisterFormData): Promise<void> =>
-  await apiCall('post', REGISTER, data);
+export const registerService = async (
+  data: RegisterFormData,
+): Promise<void> => {
+  if (data.phoneNumber === '') delete data.phoneNumber;
+
+  const response = await apiCall('post', REGISTER, data);
+  return response;
+};
 
 /**
- * Fetches the current user.
+ * Logs in the user using OAuth (Google Authentication).
  */
-/* export const getMeService = async () => {
-	const token = localStorage.getItem("token")
-	if (!token) throw new Error("User is not authenticated.")
-	return await apiCall("get", ME, undefined, token)
-}
- */
-export const getMeService = async (token?: string) => {
-  return await apiCall('get', ME, undefined, token);
-  /* try {
-		const response = await axios.get(ME, {
-			headers: { Authorization: `Bearer ${token}` },
-		})
-		return response.data
-	} catch (error) {
-		console.error(`getMeService: Failed to fetch current user`, error)
-		throw new Error(`Failed to load your data. Please try again later.`)
-	} */
-};
+export const oAuthService = async (
+  token: string,
+): Promise<JwtResponse | User> => await apiCall('post', OAUTH, { token });

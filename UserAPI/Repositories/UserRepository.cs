@@ -163,6 +163,36 @@ namespace UserAPI.Repositories
             return user;
         }
 
+        public async Task<User?> GetByEmailAsync(string email)
+        {
+            string cacheKey = $"{_cacheKeyPrefix}{email}";
+            string fieldKey = email;
+
+            var cachedUser = await _redisDatabase.HashGetAsync(cacheKey, fieldKey);
+
+            if (!cachedUser.IsNullOrEmpty)
+            {
+                _logger.LogInformation("Fetched from CACHE.");
+                return JsonSerializer.Deserialize<User>(cachedUser!);
+            }
+
+            _logger.LogInformation("Fetched from DB.");
+            var user = await _context.Users.AsNoTracking().FirstOrDefaultAsync(u => u.Email!.Equals(email));
+            if (user != null)
+            {
+                _logger.LogInformation("Set to CACHE.");
+                await _redisDatabase.HashSetAsync(
+                    cacheKey,
+                    fieldKey,
+                    JsonSerializer.Serialize(user)
+                );
+
+                await _redisDatabase.KeyExpireAsync(cacheKey, _cacheExpiration);
+            }
+
+            return user;
+        }
+
         public async Task CreateAsync(User entity)
         {
             await _context.Users.AddAsync(entity);
