@@ -33,7 +33,7 @@ export const orderSchema = z.
         orderDate: z
             .string()
             .refine((val) => !isNaN(Date.parse(val)),"Invalid date")
-            .refine((val) => new Date(val).getDate() <= today.getDate(), "Order cannot be placed in the future"),
+            .refine((val) => new Date(val) <= today, "Order cannot be placed in the future"),
         deliveryDate: z
             .string()
             .refine((val) => !isNaN(Date.parse(val)),"Invalid date"),

@@ -1,6 +1,9 @@
 const GATEWAY = `https://localhost:7102/gateway`;
 const AUTH = `${GATEWAY}/auth`;
 const USERS = `${GATEWAY}/users`;
+const ORDERS = `${GATEWAY}/orders`;
+const DELIVERY = `${GATEWAY}/deliverytypes`;
+const BOOKS = `${GATEWAY}/books`;
 
 export const API_ROUTES = {
   AUTH: {

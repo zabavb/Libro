@@ -62,5 +62,32 @@ namespace Library.AWS
                 throw;
             }
         }
+
+        public string GenerateSignedUrl(string fileKey, int expirationMinutes = 20)
+        {
+            try
+            {
+                var request = new GetPreSignedUrlRequest
+                {
+                    BucketName = _bucketName,
+                    Key = fileKey,
+                    Expires = DateTime.UtcNow.AddMinutes(expirationMinutes)
+                };
+
+                string signedUrl = _s3Client.GetPreSignedURL(request);
+                Console.WriteLine($"Generated Signed URL: {signedUrl}");
+                return signedUrl;
+            }
+            catch (AmazonS3Exception ex)
+            {
+                Console.WriteLine($"AmazonS3Exception: {ex.Message}");
+                throw;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Exception: {ex.Message}");
+                throw;
+            }
+        }
     }
 }

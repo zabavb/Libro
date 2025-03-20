@@ -17,14 +17,23 @@ using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using StackExchange.Redis;
+using Library.AWS;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container. 
-builder.Services.AddDbContext<BookDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
-builder.Services.AddScoped<IBookService, BookService>();
+//builder.Services.AddDbContext<BookDbContext>(options =>
+//    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+
+builder.Services.AddSingleton<S3StorageService>();
+
+// Реєстрація DbContext з передачею S3StorageService
+builder.Services.AddDbContext<BookDbContext>((serviceProvider, options) =>
+{
+    var storageService = serviceProvider.GetRequiredService<S3StorageService>();
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
+});
 builder.Services.AddSingleton<IConnectionMultiplexer>(sp =>
 {
     var config = sp.GetRequiredService<IConfiguration>();
@@ -38,7 +47,14 @@ builder.Services.AddSingleton<IConnectionMultiplexer>(sp =>
     };
     return ConnectionMultiplexer.Connect(options);
 });
-
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve;
+    });
+builder.Services.AddScoped<IDiscountRepository, DiscountRepository>();
+builder.Services.AddScoped<IBookService, BookService>();
+builder.Services.AddScoped<IDiscountService, DiscountService>();
 builder.Services.AddScoped<IAuthorRepository, AuthorRepository>();
 builder.Services.AddScoped<IBookRepository, BookRepository>();
 builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();

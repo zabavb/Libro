@@ -68,8 +68,156 @@
     //======================= Subscription entity =======================
 
     //======================================= BookAPI =======================================
-
-
+    //======================= Book entity =======================
+    {
+      "DownstreamPathTemplate": "/api/books",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7084
+        }
+      ],
+      "UpstreamPathTemplate": "/gateway/books",
+      "UpstreamHttpMethod": [ "GET", "POST" ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/books/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7084
+        }
+      ],
+      "UpstreamPathTemplate": "/gateway/books/{id}",
+      "UpstreamHttpMethod": [ "GET", "DELETE", "PUT" ]
+    },
+    //======================= Author entity =======================
+    {
+      "DownstreamPathTemplate": "/api/authors",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7084
+        }
+      ],
+      "UpstreamPathTemplate": "/gateway/authors",
+      "UpstreamHttpMethod": [ "GET", "POST" ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/authors/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7084
+        }
+      ],
+      "UpstreamPathTemplate": "/gateway/authors/{id}",
+      "UpstreamHttpMethod": [ "GET", "DELETE", "PUT" ]
+    },
+    //======================= Category entity =======================
+    {
+      "DownstreamPathTemplate": "/api/categories",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7084
+        }
+      ],
+      "UpstreamPathTemplate": "/gateway/categories",
+      "UpstreamHttpMethod": [ "GET", "POST" ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/categories/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7084
+        }
+      ],
+      "UpstreamPathTemplate": "/gateway/categories/{id}",
+      "UpstreamHttpMethod": [ "GET", "DELETE", "PUT" ]
+    },
+    //======================= Feedback entity =======================
+    {
+      "DownstreamPathTemplate": "/api/feedbacks",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7084
+        }
+      ],
+      "UpstreamPathTemplate": "/gateway/feedbacks",
+      "UpstreamHttpMethod": [ "GET", "POST" ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/feedbacks/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7084
+        }
+      ],
+      "UpstreamPathTemplate": "/gateway/feedbacks/{id}",
+      "UpstreamHttpMethod": [ "GET", "DELETE", "PUT" ]
+    },
+    //======================= Publisher entity =======================
+    {
+      "DownstreamPathTemplate": "/api/publishers",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7084
+        }
+      ],
+      "UpstreamPathTemplate": "/gateway/publishers",
+      "UpstreamHttpMethod": [ "GET", "POST" ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/publishers/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7084
+        }
+      ],
+      "UpstreamPathTemplate": "/gateway/publishers/{id}",
+      "UpstreamHttpMethod": [ "GET", "DELETE", "PUT" ]
+    },
+    //======================= SubCategory entity =======================
+    {
+      "DownstreamPathTemplate": "/api/subcategories",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7084
+        }
+      ],
+      "UpstreamPathTemplate": "/gateway/subcategories",
+      "UpstreamHttpMethod": [ "GET", "POST" ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/subcategories/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7084
+        }
+      ],
+      "UpstreamPathTemplate": "/gateway/subcategories/{id}",
+      "UpstreamHttpMethod": [ "GET", "DELETE", "PUT" ]
+    },
     //======================================= OrderAPI =======================================
     //======================= Order entity =======================
     {
@@ -82,7 +230,7 @@
         }
       ],
       "UpstreamPathTemplate": "/gateway/orders",
-      "UpstreamHttpMethod": [ "GET", "POST", "PUT" ]
+      "UpstreamHttpMethod": [ "GET", "POST" ]
     },
     {
       "DownstreamPathTemplate": "/api/orders/{id}",
@@ -94,7 +242,7 @@
         }
       ],
       "UpstreamPathTemplate": "/gateway/orders/{id}",
-      "UpstreamHttpMethod": [ "GET", "DELETE" ]
+      "UpstreamHttpMethod": [ "GET", "DELETE", "PUT" ]
     },
     //======================= Delivery type entity =======================
     {

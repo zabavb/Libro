@@ -99,7 +99,7 @@ namespace BookAPI.Controllers
         /// <response code="201">Book successfully created.</response>
         /// <response code="400">Invalid input data.</response>
         [HttpPost]
-        public async Task<ActionResult<BookDto>> CreateBook([FromBody] BookDto bookDto)
+        public async Task<ActionResult<BookDto>> CreateBook([FromForm] BookDto bookDto, IFormFile? imageFile)
         {
             if (bookDto == null)
             {
@@ -109,7 +109,7 @@ namespace BookAPI.Controllers
 
             try
             {
-                var createdBook = await _bookService.CreateBookAsync(bookDto);
+                var createdBook = await _bookService.CreateBookAsync(bookDto, imageFile);
                 var createdDiscount = await _discountService.AddAsync(new DiscountDTO { BookId = createdBook.BookId, DiscountRate = 0 });
                 return CreatedAtAction(nameof(GetBookById), new { id = createdBook.BookId }, createdBook);
             }
@@ -130,7 +130,7 @@ namespace BookAPI.Controllers
         /// <response code="400">Invalid input data.</response>
         /// <response code="404">Book not found.</response>
         [HttpPut("{id}")]
-        public async Task<ActionResult<BookDto>> UpdateBook(Guid id, [FromBody] UpdateBookRequest request)
+        public async Task<ActionResult<BookDto>> UpdateBook(Guid id, [FromBody] UpdateBookRequest request, IFormFile? imageFile)
         {
             var bookDto = request.Book;
             var discount = request.Discount;
@@ -142,7 +142,7 @@ namespace BookAPI.Controllers
 
             try
             {
-                var updatedBook = await _bookService.UpdateBookAsync(id, bookDto);
+                var updatedBook = await _bookService.UpdateBookAsync(id, bookDto, imageFile);
 
                 if (updatedBook == null)
                 {

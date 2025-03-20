@@ -10,6 +10,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 using StackExchange.Redis;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using IDatabase = StackExchange.Redis.IDatabase;
 
 namespace BookAPI.Repositories
@@ -28,6 +29,12 @@ namespace BookAPI.Repositories
             _redisDatabase = redis.GetDatabase();
             _logger = logger;
         }
+        public BookRepository(BookDbContext context, IDatabase redisDatabase, ILogger<BookRepository> logger)
+        {
+            _context = context;
+            _redisDatabase = redisDatabase;
+            _logger = logger;
+        }
 
         public async Task<PaginatedResult<Book>> GetAllAsync(
             int pageNumber,
@@ -36,53 +43,125 @@ namespace BookAPI.Repositories
             BookFilter? filter,
             BookSort? sort)
         {
-            IQueryable<Book> books;
-            string cacheKey = $"{_cacheKeyPrefix}All";
+            var options = new JsonSerializerOptions
+            {
+                ReferenceHandler = ReferenceHandler.Preserve,
+                WriteIndented = true
+            };
+            string cacheKey = $"Books:Page:{pageNumber}:Size:{pageSize}:Search:{searchTerm}";
             var cachedBooks = await _redisDatabase.HashGetAllAsync(cacheKey);
 
             if (cachedBooks.Length > 0)
             {
-                books = (IQueryable<Book>)cachedBooks.Select(entry => JsonSerializer.Deserialize<Book>(entry.Value!)!);
                 _logger.LogInformation("Fetched from CACHE.");
-            }
-            else
-            {
-                books = (IQueryable<Book>)await _context.Books
-                    .Include(x => x.Subcategories)
-                    .Include(x => x.Feedbacks)
-                    .AsNoTracking()
-                    .ToListAsync();
-                _logger.LogInformation("Fetched from DB.");
+                var bookList = cachedBooks
+                    .Select(entry => JsonSerializer.Deserialize<Book>(entry.Value!, options)!)
+                    .ToList();
+                ICollection<Book> bookCollection = bookList;
 
-                var hashEntries = books.ToDictionary(
-                    book => book.Id.ToString(),
-                    book => JsonSerializer.Serialize(book)
-                );
-
-                await _redisDatabase.HashSetAsync(
-                    cacheKey,
-                    [.. hashEntries.Select(kvp => new HashEntry(kvp.Key, kvp.Value))]
-                );
-                await _redisDatabase.KeyExpireAsync(cacheKey, _cacheExpiration);
-                _logger.LogInformation("Set to CACHE.");
+                return new PaginatedResult<Book>
+                {
+                    Items = bookCollection,
+                    TotalCount = bookList.Count,
+                    PageNumber = pageNumber,
+                    PageSize = pageSize
+                };
             }
 
-            if (books.Any() && !string.IsNullOrWhiteSpace(searchTerm))
-                books = books.Search(searchTerm, b => b.Title, b => b.Author.Name);
-            books = filter?.Apply(books.AsQueryable()) ?? books;
-            books = sort?.Apply(books.AsQueryable()) ?? books;
+            var booksQuery = _context.Books
+                .Include(x => x.Subcategories)
+                .Include(x => x.Feedbacks)
+                .AsNoTracking();
 
-            var totalBooks = books.Count();
-            books = books.Skip((pageNumber - 1) * pageSize).Take(pageSize);
+            if (!string.IsNullOrWhiteSpace(searchTerm))
+                booksQuery = booksQuery.Search(searchTerm, b => b.Title, b => b.Author.Name);
+
+            if (filter != null)
+                booksQuery = filter.Apply(booksQuery);
+
+            if (sort != null)
+                booksQuery = sort.Apply(booksQuery);
+
+            var totalBooks = await booksQuery.CountAsync();
+            var pagedBooks = await booksQuery
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            _logger.LogInformation("Fetched from DB.");
+            
+            var hashEntries = pagedBooks.ToDictionary(
+                book => book.Id.ToString(),
+                book => JsonSerializer.Serialize(book,options)
+            );
+
+            await _redisDatabase.HashSetAsync(cacheKey, [.. hashEntries.Select(kvp => new HashEntry(kvp.Key, kvp.Value))]);
+            await _redisDatabase.KeyExpireAsync(cacheKey, TimeSpan.FromMinutes(10));
 
             return new PaginatedResult<Book>
             {
-                Items = books.ToList(),
+                Items = pagedBooks,
                 TotalCount = totalBooks,
                 PageNumber = pageNumber,
                 PageSize = pageSize
             };
         }
+       
+        
+        //public async Task<PaginatedResult<Book>> GetAllAsync(
+        //    int pageNumber,
+        //    int pageSize,
+        //    string searchTerm,
+        //    BookFilter? filter,
+        //    BookSort? sort)
+        //{
+        //    IQueryable<Book> books;
+        //    string cacheKey = $"{_cacheKeyPrefix}All";
+        //    var cachedBooks = await _redisDatabase.HashGetAllAsync(cacheKey);
+
+        //    if (cachedBooks.Length > 0)
+        //    {
+        //        books = (IQueryable<Book>)cachedBooks.Select(entry => JsonSerializer.Deserialize<Book>(entry.Value!)!);
+        //        _logger.LogInformation("Fetched from CACHE.");
+        //    }
+        //    else
+        //    {
+        //        books = (IQueryable<Book>)await _context.Books
+        //            .Include(x => x.Subcategories)
+        //            .Include(x => x.Feedbacks)
+        //            .AsNoTracking()
+        //            .ToListAsync();
+        //        _logger.LogInformation("Fetched from DB.");
+
+        //        var hashEntries = books.ToDictionary(
+        //            book => book.Id.ToString(),
+        //            book => JsonSerializer.Serialize(book)
+        //        );
+
+        //        await _redisDatabase.HashSetAsync(
+        //            cacheKey,
+        //            [.. hashEntries.Select(kvp => new HashEntry(kvp.Key, kvp.Value))]
+        //        );
+        //        await _redisDatabase.KeyExpireAsync(cacheKey, _cacheExpiration);
+        //        _logger.LogInformation("Set to CACHE.");
+        //    }
+
+        //    if (books.Any() && !string.IsNullOrWhiteSpace(searchTerm))
+        //        books = books.Search(searchTerm, b => b.Title, b => b.Author.Name);
+        //    books = filter?.Apply(books.AsQueryable()) ?? books;
+        //    books = sort?.Apply(books.AsQueryable()) ?? books;
+
+        //    var totalBooks = books.Count();
+        //    books = books.Skip((pageNumber - 1) * pageSize).Take(pageSize);
+
+        //    return new PaginatedResult<Book>
+        //    {
+        //        Items = books.ToList(),
+        //        TotalCount = totalBooks,
+        //        PageNumber = pageNumber,
+        //        PageSize = pageSize
+        //    };
+        //}
 
         public async Task<Book?> GetByIdAsync(Guid id)
         {

@@ -72,7 +72,7 @@ const OrderFormContainer: React.FC<OrderFormContainerProps> = ({ orderId }) => {
             )
             dispatch(resetOrderOperationStatus())
         }
-    }, [operationStatus, existingOrder, error, dispatch, navigate, deliveryTypes, books, page])
+    }, [operationStatus, existingOrder, error, dispatch, navigate, deliveryTypes, books, page, pageSize])
 
     return (
         <OrderForm
