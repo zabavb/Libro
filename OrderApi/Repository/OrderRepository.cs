@@ -102,6 +102,9 @@ namespace OrderApi.Repository
             if (filter.DeliveryId.HasValue)
                 orders = orders.Where(o => o.DeliveryTypeId == filter.DeliveryId);
 
+            if (filter.UserId.HasValue)
+                orders = orders.Where(o => o.UserId == filter.UserId);
+
             return await Task.FromResult(orders.ToList());
         }
 

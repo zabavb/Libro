@@ -28,6 +28,7 @@ import OrderListPage from './pages/admin/orderRelated/orders/OrdersListPage';
 import DeliveriesListPage from './pages/admin/orderRelated/deliveries/DeliveriesListPage';
 import UserBasketPage from './pages/admin/userRelated/users/UserBasketPage';
 import UserCheckoutPage from './pages/main/UserCheckoutPage';
+import UserOrdersPage from './pages/main/UserOrdersPage';
 
 
 const AppRoutes = () => (
@@ -44,8 +45,9 @@ const AppRoutes = () => (
         <Route path='/register' element={<RegisterPage />} />
         {/* Main */}
         <Route path='/' element={<MainPage />} />
-        <Route path='/Basket' element={<UserBasketPage />}/>
-        <Route path='/Basket/Checkout' element={<UserCheckoutPage />}/>
+        <Route path='/orders' element={<UserOrdersPage/>}/>
+        <Route path='/basket' element={<UserBasketPage />}/>
+        <Route path='/basket/checkout' element={<UserCheckoutPage />}/>
         <Route element={<PrivateRoute />}>
           {/* Admin */}
           <Route path='/admin' element={<AdminLayout />}>
