@@ -3,7 +3,7 @@ using Moq;
 using System;
 using System.Threading.Tasks;
 using UserAPI.Controllers;
-using UserAPI.Services;
+using UserAPI.Services.Interfaces;
 using Xunit;
 
 namespace UserAPI.Tests.Controllers

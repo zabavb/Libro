@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Google.Apis.Auth;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
@@ -6,7 +6,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using UserAPI.Models.Auth;
-using UserAPI.Services;
+using UserAPI.Services.Interfaces;
 
 namespace UserAPI.Controllers
 {
@@ -21,12 +21,14 @@ namespace UserAPI.Controllers
     /// </remarks>
     /// <param name="authService">Service responsible for authentication and user management.</param>
     /// <param name="jwtOptions">JWT settings for token generation.</param>
+    /// <param name="config">Application configuration settings.</param>
     [ApiController]
     [Route("api/[controller]")]
-    public class AuthController(IAuthService authService, IOptions<JwtSettings> jwtOptions) : ControllerBase
+    public class AuthController(IAuthService authService, IOptions<JwtSettings> jwtOptions, IConfiguration config) : ControllerBase
     {
         private readonly IAuthService _authService = authService;
         private readonly JwtSettings _jwtSettings = jwtOptions.Value;
+        private readonly IConfiguration _config = config;
 
         /// <summary>
         /// Authenticates a user and generates a JWT token upon successful authentication.
@@ -54,7 +56,7 @@ namespace UserAPI.Controllers
             return Ok(new
             {
                 Token = token,
-                ExpiresIn = _jwtSettings.ExpiresInMinutes,
+                ExpiresIn = _jwtSettings.ExpiresInDays,
                 User = new
                 {
                     user.Id,
@@ -103,34 +105,42 @@ namespace UserAPI.Controllers
         }
 
         /// <summary>
-        /// Retrieves the currently authenticated user's details.
+        /// Authenticates an existing user and generates a JWT token upon successful authentication. Otherwise retrieves data from Google's account for registration a new user.
         /// </summary>
+        /// <param name="request">Request containing JWT token with Google's account details about user.</param>
         /// <returns>
-        /// - <c>200 OK</c>: Returns the authenticated user's information.<br/>
-        /// - <c>401 Unauthorized</c>: If the token is invalid or missing.<br/>
-        /// - <c>404 Not Found</c>: If the user is not found.<br/>
+        /// - <c>201 Created</c>: If registration is successful.<br/>
+        /// - <c>400 Bad Request</c>: If the request data is invalid.<br/>
         /// - <c>500 Internal Server Error</c>: If an unexpected error occurs.
         /// </returns>
-        /// <response code="200">Returns the authenticated user's details.</response>
-        /// <response code="401">If the request is unauthorized due to an invalid or missing token.</response>
-        /// <response code="404">If the user does not exist.</response>
-        /// <response code="500">If an unexpected error occurs.</response>
-        [Authorize]
-        [HttpGet("me")]
-        public async Task<IActionResult> Me()
+        /// <response code="200">Returns JWT token with user details for existing user or data about new user.</response>
+        /// <response code="400">If the provided registration data is invalid.</response>
+        [HttpPost("oauth")]
+        public async Task<IActionResult> OAuth([FromBody] OAuthRequest request)
         {
             try
             {
-                var idClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
-                if (string.IsNullOrEmpty(idClaim) || !Guid.TryParse(idClaim, out Guid userId))
-                    return Unauthorized("Invalid token.");
+                var settings = new GoogleJsonWebSignature.ValidationSettings
+                {
+                    Audience = [_config["OAuth:ClientId"]]
+                };
 
-                var user = await _authService.Me(userId);
-                return user != null ? Ok(user) : NotFound("User not found.");
+                var user = await _authService.OAuthAsync(request.Token, settings);
+                
+                if (user.Id.Equals(Guid.Empty))
+                    return Ok(user);
+
+                var token = GenerateJwtToken(user);
+                return Ok(new
+                {
+                    Token = token,
+                    ExpiresIn = _jwtSettings.ExpiresInDays,
+                    User = user
+                });
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+                return BadRequest("Invalid Google authentication.");
             }
         }
 
@@ -164,7 +174,7 @@ namespace UserAPI.Controllers
                 issuer: _jwtSettings.Issuer,
                 audience: _jwtSettings.Audience,
                 claims: claims,
-                expires: DateTime.UtcNow.AddMinutes(_jwtSettings.ExpiresInMinutes),
+                expires: DateTime.UtcNow.AddDays(_jwtSettings.ExpiresInDays),
                 signingCredentials: creds
             );
 

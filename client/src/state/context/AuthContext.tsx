@@ -1,5 +1,5 @@
 import { createContext, useContext, useState } from 'react';
-import { loginService, registerService } from '../../services';
+import { loginService, oAuthService, registerService } from '../../services';
 import { JwtResponse, NotificationData, User } from '../../types';
 import { LoginFormData, RegisterFormData } from '../../utils';
 
@@ -8,6 +8,7 @@ interface AuthContextProps {
   token: string | null;
   login: (data: LoginFormData) => Promise<NotificationData>;
   register: (data: RegisterFormData) => Promise<NotificationData>;
+  oAuth: (credential: string | undefined) => Promise<NotificationData | User>;
   logout: () => void;
 }
 
@@ -52,6 +53,27 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
   };
 
+  const oAuth = async (
+    token: string | undefined,
+  ): Promise<NotificationData | User> => {
+    try {
+      const data = await oAuthService(token as string);
+
+      // If it is new user
+      const user = data as User;
+      if (user.id === '00000000-0000-0000-0000-000000000000') return user;
+
+      authenticate(data as JwtResponse);
+      return { type: 'success', message: 'Login successful!' };
+    } catch (error) {
+      console.error('Google authentication failed:', error);
+      return {
+        type: 'error',
+        message: 'Google authentication failed.',
+      };
+    }
+  };
+
   const logout = async () => {
     localStorage.removeItem('token');
     localStorage.removeItem('token_expiry');
@@ -73,7 +95,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, token, login, register, logout }}>
+    <AuthContext.Provider
+      value={{ user, token, login, register, oAuth, logout }}
+    >
       {children}
     </AuthContext.Provider>
   );

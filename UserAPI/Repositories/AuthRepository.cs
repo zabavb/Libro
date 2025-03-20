@@ -12,7 +12,6 @@ namespace UserAPI.Repositories
 
         public async Task<User?> GetUserByEmailAsync(LoginRequest request)
         {
-            
             var user = await _context.Users
                 .AsNoTracking().FirstOrDefaultAsync(user => user.Email == request.Identifier);
 

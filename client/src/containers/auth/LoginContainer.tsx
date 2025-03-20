@@ -6,12 +6,23 @@ import { useCallback } from 'react';
 import { addNotification } from '../../state/redux/slices/notificationSlice';
 import Login from '../../components/auth/Login';
 import { LoginFormData } from '../../utils';
-import { NotificationData } from '../../types';
+import { NotificationData, User } from '../../types';
 
 const LoginContainer: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const { login } = useAuth();
+  const { oAuth, login } = useAuth();
   const navigate = useNavigate();
+
+  const handleOAuth = async (token: string | undefined) => {
+    const data = await oAuth(token);
+
+    // If it is new user
+    if (data as User) navigate('/register', { state: { user: data as User } });
+
+    if ((data as NotificationData).type === 'success')
+      handleSuccess({ type: 'success', message: 'Login successful!' });
+    else handleError(data as NotificationData);
+  };
 
   const handleSubmit = async (userData: LoginFormData) => {
     const data = await login(userData);
@@ -32,7 +43,7 @@ const LoginContainer: React.FC = () => {
     [dispatch],
   );
 
-  return <Login onSubmit={handleSubmit} />;
+  return <Login onOAuth={handleOAuth} onSubmit={handleSubmit} />;
 };
 
 export default LoginContainer;

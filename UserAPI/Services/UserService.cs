@@ -3,6 +3,7 @@ using Library.AWS;
 using Library.Extensions;
 using UserAPI.Models;
 using UserAPI.Repositories;
+using UserAPI.Services.Interfaces;
 
 namespace UserAPI.Services
 {

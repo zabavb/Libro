@@ -2,6 +2,7 @@
 using AutoMapper;
 using UserAPI.Models;
 using Library.Extensions;
+using UserAPI.Services.Interfaces;
 
 namespace UserAPI.Services
 {

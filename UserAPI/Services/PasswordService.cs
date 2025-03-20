@@ -2,6 +2,7 @@ using AutoMapper;
 using Microsoft.Extensions.Logging;
 using UserAPI.Models;
 using UserAPI.Repositories;
+using UserAPI.Services.Interfaces;
 
 namespace UserAPI.Services
 {

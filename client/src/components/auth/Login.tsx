@@ -2,12 +2,14 @@ import React from 'react';
 import { LoginFormData, loginSchema } from '../../utils';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { GoogleLogin, GoogleOAuthProvider } from '@react-oauth/google';
 
 interface LoginProps {
+  onOAuth: (token: string | undefined) => Promise<void>;
   onSubmit: (userData: LoginFormData) => Promise<void>;
 }
 
-const Login: React.FC<LoginProps> = ({ onSubmit }) => {
+const Login: React.FC<LoginProps> = ({ onOAuth, onSubmit }) => {
   const {
     register,
     handleSubmit,
@@ -15,10 +17,21 @@ const Login: React.FC<LoginProps> = ({ onSubmit }) => {
   } = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
   });
+  const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 
   return (
     <div>
       <h2>Login</h2>
+      <GoogleOAuthProvider clientId={clientId}>
+        <GoogleLogin
+          onSuccess={async (credentialResponse) =>
+            onOAuth(credentialResponse.credential)
+          }
+        />
+      </GoogleOAuthProvider>
+
+      <hr />
+
       <form onSubmit={handleSubmit(onSubmit)}>
         <div>
           <input

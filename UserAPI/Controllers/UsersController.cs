@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using UserAPI.Services;
+using UserAPI.Services.Interfaces;
 
 namespace UserAPI.Controllers
 {
@@ -18,8 +18,8 @@ namespace UserAPI.Controllers
     /// </remarks>
     /// <param name="userService">Service for user operations.</param>
     /// <param name="logger">Logger for tracking operations.</param>
-    [ApiController]
     [Route("api/[controller]")]
+    [ApiController]
     public class UsersController(IUserService userService, ILogger<UsersController> logger) : ControllerBase
     {
         private readonly IUserService _userService = userService;
@@ -38,7 +38,7 @@ namespace UserAPI.Controllers
         /// <response code="200">Returns the paginated list of users.</response>
         /// <response code="401">If request is unauthorized</response>
         /// <response code="500">If an unexpected error occurs.</response>
-        [Authorize(Roles = "Admin, Moderator")]
+        [Authorize(Roles = "ADMIN, MODERATOR")]
         [HttpGet]
         public async Task<IActionResult> GetAll([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10, [FromQuery] string? searchTerm = null, [FromQuery] Filter? filter = null, [FromQuery] Sort? sort = null)
         {
@@ -64,7 +64,7 @@ namespace UserAPI.Controllers
         /// <response code="401">If request is unauthorized</response>
         /// <response code="404">If the user with the specified ID is not found or ID was not specified.</response>
         /// <response code="500">If an unexpected error occurs.</response>
-        [Authorize(Roles = "Admin, Moderator")]
+        [Authorize(Roles = "ADMIN, MODERATOR")]
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(Guid id)
         {
@@ -134,7 +134,7 @@ namespace UserAPI.Controllers
         /// <response code="401">If request is unauthorized</response>
         /// <response code="404">If the user to be updated does not exist.</response>
         /// <response code="500">If an unexpected error occurs.</response>
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "ADMIN")]
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(Guid id, [FromForm] UserDto user)
         {
@@ -178,7 +178,7 @@ namespace UserAPI.Controllers
         /// <response code="401">If request is unauthorized</response>
         /// <response code="404">If the user to be deleted does not exist.</response>
         /// <response code="500">If an unexpected error occurs.</response>
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "ADMIN")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id, [FromQuery] string imageUrl)
         {
