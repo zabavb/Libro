@@ -24,7 +24,7 @@ import DeliveryTypeFormPage from './pages/admin/OrderRelated/Deliveries/Delivery
 import BookListContainer from './containers/books/BookListContainer';
 
 import NotFoundPage from './pages/common/NotFoundPage';
-import UserOrdersPage from './pages/Admin/UserRelated/Users/UserOrdersPage';
+import UserOrdersPage from './pages/Main/UserOrdersPage';
 
 const AppRoutes = () => (
   <AuthProvider>
