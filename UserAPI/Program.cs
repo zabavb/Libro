@@ -13,6 +13,7 @@ using UserAPI.Models.Auth;
 using UserAPI.Profiles;
 using UserAPI.Repositories;
 using UserAPI.Services;
+using UserAPI.Services.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -126,7 +127,6 @@ if (app.Environment.IsDevelopment())
         options.SwaggerEndpoint("/swagger/v1/swagger.json", "UserAPI");
     });
 }
-
 
 app.UseHttpsRedirection();
 

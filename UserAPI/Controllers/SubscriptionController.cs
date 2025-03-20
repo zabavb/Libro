@@ -1,11 +1,11 @@
 using Microsoft.AspNetCore.Mvc;
 using UserAPI.Models;
-using UserAPI.Services;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System;
 using Microsoft.Extensions.Logging;
 using Library.Extensions;
+using UserAPI.Services.Interfaces;
 
 namespace UserAPI.Controllers
 {
