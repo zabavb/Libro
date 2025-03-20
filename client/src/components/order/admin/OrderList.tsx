@@ -1,9 +1,9 @@
-import OrderAdminCardContainter from "../../containers/order/OrderAdminCardContainer";
-import { Order } from "../../types";
-import Pagination from "../common/Pagination";
-import Search from "../common/Search";
-import OrderFilter from "./OrderFilter";
-import OrderSort from "./OrderSort";
+import OrderAdminCardContainter from "../../../containers/order/OrderAdminCardContainer";
+import { Order } from "../../../types";
+import Pagination from "../../common/Pagination";
+import Search from "../../common/Search";
+import OrderFilter from "../OrderFilter";
+import OrderSort from "../OrderSort";
 
 
 interface OrderListProps {
