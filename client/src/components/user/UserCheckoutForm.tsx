@@ -37,7 +37,6 @@ const UserCheckoutForm: React.FC<UserCheckoutFormProps> = ({books, price, delive
     })  
 
     const onSubmit = (data: OrderFormData) => {
-        console.log(price)
         const order: Order = {
             id: "00000000-0000-0000-0000-000000000000",
             userId: data.userId,
@@ -54,7 +53,6 @@ const UserCheckoutForm: React.FC<UserCheckoutFormProps> = ({books, price, delive
         }
 
         onAddOrder(order)
-        console.log("Order place")
     }
     
     

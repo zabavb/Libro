@@ -1,17 +1,17 @@
 import { useNavigate } from "react-router-dom";
-import useBasket from "../../state/context/useBasket"
+import useCart from "../../state/context/useCart";
 
-const UserBasket = () => {
+const UserCart = () => {
 
-    const { basket, addItem, removeItem, clearBasket, clearItem } = useBasket();
+    const { cart, addItem, removeItem, clearCart, clearItem } = useCart();
     const navigate = useNavigate()
     return (
         <div>
-            {basket.length === 0 ? (
-                <p>Your basket is empty.</p>
+            {cart.length === 0 ? (
+                <p>Your cart is empty.</p>
             ) : (
                 <ul>
-                    {basket.map((item) => (
+                    {cart.map((item) => (
                         <li key={item.bookId}>
                             {item.name} x ({item.amount})
                             <div>
@@ -32,7 +32,7 @@ const UserBasket = () => {
                 </ul>
             )}
             <div>
-                <button onClick={clearBasket}>Clear Basket</button>
+                <button onClick={clearCart}>Clear Basket</button>
             </div>
             <div>
                 {/* If price isn't calculating during test, replace the bookId with one that is in BookAPI database */}
@@ -41,10 +41,10 @@ const UserBasket = () => {
                     Add sample</button>
             </div>
             <div>
-                <button onClick={() => navigate("/basket/checkout")}>Checkout</button>
+                <button onClick={() => navigate("/cart/checkout")}>Checkout</button>
             </div>
         </div>
     )
 }
 
-export default UserBasket
+export default UserCart

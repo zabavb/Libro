@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom';
-import UserBasket from '../../../../components/user/UserBasket';
+import UserCart from '../../components/user/UserCart';
 
-const UserBasketPage = () => {
+const UserCartPage = () => {
   const navigate = useNavigate();
 
   const handleGoBack = () => {
@@ -11,14 +11,14 @@ const UserBasketPage = () => {
   return (
     <div>
       <header>
-        <h1>Basket</h1>
+        <h1>Cart</h1>
         <button onClick={handleGoBack}>Back</button>
       </header>
       <main>
-        <UserBasket />
+        <UserCart />
       </main>
     </div>
   );
 };
 
-export default UserBasketPage;
+export default UserCartPage;

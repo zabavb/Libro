@@ -11,7 +11,7 @@ const MainPage: React.FC = () => {
         <button onClick={() => navigate("/admin")}>Admin dashboard</button>
       </div>
       <div>
-        <button onClick={() => navigate("/basket")}>Basket</button>
+        <button onClick={() => navigate("/cart")}>Cart</button>
       </div>
     </div>
   );
