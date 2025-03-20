@@ -3,8 +3,6 @@ import UserOrdersContainer from '../../../../containers/user/UserOrdersListConta
 
 const UserOrdersPage = () => {
   const navigate = useNavigate();
-  // Temporary
-  const { userId } = useParams<{userId: string}>()
 
   return (
     <div>
@@ -15,8 +13,7 @@ const UserOrdersPage = () => {
         </button>
       </header>
       <main>
-        <UserOrdersContainer
-            userId={userId != undefined ? userId : ""} />
+        <UserOrdersContainer />
       </main>
     </div>
   );

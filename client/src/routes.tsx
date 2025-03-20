@@ -24,6 +24,7 @@ import DeliveryTypeFormPage from './pages/admin/OrderRelated/Deliveries/Delivery
 import BookListContainer from './containers/books/BookListContainer';
 
 import NotFoundPage from './pages/common/NotFoundPage';
+import UserOrdersPage from './pages/Admin/UserRelated/Users/UserOrdersPage';
 
 const AppRoutes = () => (
   <AuthProvider>
@@ -39,6 +40,7 @@ const AppRoutes = () => (
         <Route path='/register' element={<RegisterPage />} />
         {/* Main */}
         <Route path='/' element={<MainPage />} />
+        <Route path='/orders' element={<UserOrdersPage />} />
         <Route element={<PrivateRoute />}>
           {/* Admin */}
           <Route path='/admin' element={<AdminLayout />}>

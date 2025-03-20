@@ -2,16 +2,12 @@ import { useNavigate } from "react-router-dom"
 import { AppDispatch, fetchOrders, RootState } from "../../state/redux"
 import { useSelector } from "react-redux"
 import { useDispatch } from "react-redux"
-import React, { useEffect } from "react"
+import { useEffect, useState } from "react"
 import { OrderFilter, OrderSort } from "../../types"
 import { setOrderFilters, setOrderSearchTerm, setOrderSort } from "../../state/redux/slices/orderSlice"
 import UserOrdersList from "../../components/user/userOrderList/UserOrdersList"
 
-interface UserOrdersContainerProps {
-    userId: string
-}
-
-const UserOrdersContainer: React.FC<UserOrdersContainerProps> = ({ userId }) => {
+const UserOrdersContainer = () => {
     const dispatch = useDispatch<AppDispatch>()
     const {
         data: orders,
@@ -23,8 +19,20 @@ const UserOrdersContainer: React.FC<UserOrdersContainerProps> = ({ userId }) => 
         sort
     } = useSelector((state: RootState) => state.orders)
     const navigate = useNavigate()
+    const [userId, setUserId] = useState<string>("");
+
 
     useEffect(() => {
+        const json = localStorage.getItem('user');
+        if(json != null){
+            // add some verification in the future
+            const user = JSON.parse(json)
+            setUserId(user.id)
+        }
+        else{
+            navigate('/login')
+        }
+
         const filter: OrderFilter = {userId:userId};
 
         dispatch(
@@ -36,7 +44,7 @@ const UserOrdersContainer: React.FC<UserOrdersContainerProps> = ({ userId }) => 
                 sort,
             })
         )
-    }, [dispatch, pagination.pageNumber, pagination.pageSize, searchTerm, filters, sort, userId])
+    }, [dispatch, pagination.pageNumber, pagination.pageSize, searchTerm, filters, sort,navigate,userId])
 
     const handleNavigate = (path: string) => {
         navigate(path)
