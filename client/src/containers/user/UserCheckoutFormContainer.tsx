@@ -8,7 +8,7 @@ import { addNotification } from "../../state/redux/slices/notificationSlice"
 import { fetchDeliveryTypes } from "../../state/redux/slices/deliveryTypeSlice"
 import { Order } from "../../types"
 import UserCheckoutForm from "../../components/user/UserCheckoutForm"
-import useBasket from "../../state/context/useBasket"
+import useCart from "../../state/context/useCart"
 
 
 const UserCheckoutFormContainer: React.FC = () => {
@@ -18,7 +18,7 @@ const UserCheckoutFormContainer: React.FC = () => {
     const {data: books} = useSelector((state: RootState) => state.books) 
     const booksObjs = useMemo(() => ({} as Record<string, number>), []);
     const [price, setPrice] = useState<number>(0)
-    const {basket, clearBasket } = useBasket();
+    const {cart, clearCart } = useCart();
     const navigate = useNavigate()
 
     const handleAddOrder = (order: Order) => {
@@ -28,7 +28,7 @@ const UserCheckoutFormContainer: React.FC = () => {
 
     useEffect(() => {
         let newPrice = 0;
-        for (const book of basket) {
+        for (const book of cart) {
             booksObjs[book.bookId] = book.amount;
             newPrice += book.amount * book.price
         }
@@ -39,7 +39,6 @@ const UserCheckoutFormContainer: React.FC = () => {
 
     useEffect(() => {
         // Forcing delivery types to be loaded into Store if they weren't
-
         if(deliveryTypes.length === 0){
             dispatch(fetchDeliveryTypes({pageNumber:1,pageSize:10}))
         }
@@ -51,7 +50,7 @@ const UserCheckoutFormContainer: React.FC = () => {
                 })
             )
             dispatch(resetOrderOperationStatus())
-            clearBasket()
+            clearCart()
             navigate("/")
         } else if (operationStatus === "error") {
             dispatch(
@@ -62,7 +61,7 @@ const UserCheckoutFormContainer: React.FC = () => {
             )
             dispatch(resetOrderOperationStatus())
         }
-    }, [operationStatus, error, dispatch, navigate, deliveryTypes, clearBasket, basket, booksObjs, price, books])
+    }, [operationStatus, error, dispatch, navigate, deliveryTypes, clearCart, cart, booksObjs, price, books])
 
     return (
         <UserCheckoutForm

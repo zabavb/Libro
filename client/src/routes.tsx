@@ -26,7 +26,7 @@ import BookListContainer from './containers/books/BookListContainer';
 import NotFoundPage from './pages/common/NotFoundPage';
 import OrderListPage from './pages/admin/orderRelated/orders/OrdersListPage';
 import DeliveriesListPage from './pages/admin/orderRelated/deliveries/DeliveriesListPage';
-import UserBasketPage from './pages/admin/userRelated/users/UserBasketPage';
+import UserCartPage from './pages/Main/UserCartPage';
 import UserCheckoutPage from './pages/main/UserCheckoutPage';
 
 
@@ -44,8 +44,8 @@ const AppRoutes = () => (
         <Route path='/register' element={<RegisterPage />} />
         {/* Main */}
         <Route path='/' element={<MainPage />} />
-        <Route path='/Basket' element={<UserBasketPage />}/>
-        <Route path='/Basket/Checkout' element={<UserCheckoutPage />}/>
+        <Route path='/cart' element={<UserCartPage />}/>
+        <Route path='/cart/checkout' element={<UserCheckoutPage />}/>
         <Route element={<PrivateRoute />}>
           {/* Admin */}
           <Route path='/admin' element={<AdminLayout />}>
