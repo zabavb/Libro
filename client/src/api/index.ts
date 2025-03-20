@@ -4,7 +4,7 @@ import { API_ROUTES } from "./config/apiConfig"
 
 export const LOGIN = API_ROUTES.AUTH.LOGIN
 export const REGISTER = API_ROUTES.AUTH.REGISTER
-export const ME = API_ROUTES.AUTH.ME
+export const OAUTH = API_ROUTES.AUTH.OAUTH;
 
 // ================= USER =================
 

@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { LOGIN, REGISTER, ME } from '../api/index';
+import { LOGIN, OAUTH, REGISTER } from '../api/index';
 import { JwtResponse } from '../types';
 import { LoginFormData, RegisterFormData } from '../utils';
 
@@ -43,15 +43,6 @@ export const registerService = async (data: RegisterFormData): Promise<void> =>
 	return await apiCall("get", ME, undefined, token)
 }
  */
-export const getMeService = async (token?: string) => {
-  return await apiCall('get', ME, undefined, token);
-  /* try {
-		const response = await axios.get(ME, {
-			headers: { Authorization: `Bearer ${token}` },
-		})
-		return response.data
-	} catch (error) {
-		console.error(`getMeService: Failed to fetch current user`, error)
-		throw new Error(`Failed to load your data. Please try again later.`)
-	} */
-};
+export const oAuthService = async (
+  token: string,
+): Promise<JwtResponse | User> => await apiCall('post', OAUTH, { token });

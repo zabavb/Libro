@@ -7,6 +7,7 @@ export const API_ROUTES = {
 		ME: `${AUTH}/me`,
 		LOGIN: `${AUTH}/login`,
 		REGISTER: `${AUTH}/register`,
+OAUTH: `${AUTH}/callback`,
 	},
 	USERS: {
 		BASE: USERS,
