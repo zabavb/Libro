@@ -63,7 +63,7 @@ const OrderForm: React.FC<OrderFormProps> = ({page, books, existingOrder, onEdit
             setValue("deliveryTypeId", existingOrder.deliveryTypeId)
             setValue("status", statusNumberToEnum(existingOrder.status))
         }
-    }, [existingOrder, setValue, bookObjs,navigate])
+    }, [existingOrder, setValue,navigate])
 
     const onSubmit = (data: OrderFormData) => {
         const order: Order = {
@@ -91,7 +91,6 @@ const OrderForm: React.FC<OrderFormProps> = ({page, books, existingOrder, onEdit
     }
     
     const handleBookAdd = (bookId: string) => {
-        console.log("Book added")
         setBookObjs((prev) => ({
             ...prev,
             [bookId]: (prev?.[bookId] || 0) + 1
