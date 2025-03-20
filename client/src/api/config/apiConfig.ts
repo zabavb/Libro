@@ -18,21 +18,21 @@ export const API_ROUTES = {
     BY_ID: (id: string) => `${USERS}/${id}`,
   },
   ORDERS: {
-    BASE: `${GATEWAY}/orders`,
+    BASE: ORDERS,
     PAGINATED: (pageNumber: number, pageSize: number) =>
-      `${GATEWAY}/orders?pageNumber=${pageNumber}&pageSize=${pageSize}`,
-    BY_ID: (id: string) => `${GATEWAY}/orders/${id}`,
+      `${ORDERS}?pageNumber=${pageNumber}&pageSize=${pageSize}`,
+    BY_ID: (id: string) => `${ORDERS}/${id}`,
   },
   DELIVERY: {
-    BASE: `${GATEWAY}/deliverytypes`,
+    BASE: DELIVERY,
     PAGINATED: (pageNumber: number, pageSize: number) =>
-      `${GATEWAY}/deliverytypes?pageNumber=${pageNumber}&pageSize=${pageSize}`,
-    BY_ID: (id: string) => `${GATEWAY}/deliverytypes/${id}`,
+      `${DELIVERY}?pageNumber=${pageNumber}&pageSize=${pageSize}`,
+    BY_ID: (id: string) => `${DELIVERY}/${id}`,
   },
   BOOKS: {
-    BASE: `${GATEWAY}/books`,
+    BASE: BOOKS,
     PAGINATED: (pageNumber: number, pageSize: number) =>
-      `${GATEWAY}/books?pageNumber=${pageNumber}&pageSize=${pageSize}`,
-    BY_ID: (id: string) => `${GATEWAY}/books/${id}`,
+      `${BOOKS}?pageNumber=${pageNumber}&pageSize=${pageSize}`,
+    BY_ID: (id: string) => `${BOOKS}/${id}`,
   },
 };
