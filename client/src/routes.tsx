@@ -9,21 +9,26 @@ import MainPage from './pages/main/MainPage';
 import { AuthProvider } from './state/context/AuthContext';
 import PrivateRoute from './privateRoute';
 
-import AdminLayout from './components/layouts/AdminLayout';
 import AdminPage from './pages/admin/AdminPage';
 
-import UserListPage from './pages/admin/UserRelated/users/UsersListPage';
-import UserFormPage from './pages/admin/UserRelated/users/UserFormPage';
+import AdminLayout from './components/layouts/AdminLayout';
 
-import OrderListContainer from './containers/order/OrderListContainer';
-import OrderFormPage from './pages/admin/OrderRelated/Orders/OrderFormPage';
+import UserListPage from './pages/admin/userRelated/users/UsersListPage';
+import UserFormPage from './pages/admin/userRelated/users/UserFormPage';
 
-import DeliveryTypeListContainer from './containers/order/DeliveryTypeListContainer';
-import DeliveryTypeFormPage from './pages/admin/OrderRelated/Deliveries/DeliveryFormPage';
+import OrderFormPage from './pages/admin/orderRelated/orders/OrderFormPage';
+
+import DeliveryTypeFormPage from './pages/admin/orderRelated/deliveries/DeliveryFormPage';
+
 
 import BookListContainer from './containers/books/BookListContainer';
 
 import NotFoundPage from './pages/common/NotFoundPage';
+import OrderListPage from './pages/admin/orderRelated/orders/OrdersListPage';
+import DeliveriesListPage from './pages/admin/orderRelated/deliveries/DeliveriesListPage';
+import UserBasketPage from './pages/admin/userRelated/users/UserBasketPage';
+import UserCheckoutPage from './pages/main/UserCheckoutPage';
+
 
 const AppRoutes = () => (
   <AuthProvider>
@@ -39,6 +44,8 @@ const AppRoutes = () => (
         <Route path='/register' element={<RegisterPage />} />
         {/* Main */}
         <Route path='/' element={<MainPage />} />
+        <Route path='/Basket' element={<UserBasketPage />}/>
+        <Route path='/Basket/Checkout' element={<UserCheckoutPage />}/>
         <Route element={<PrivateRoute />}>
           {/* Admin */}
           <Route path='/admin' element={<AdminLayout />}>
@@ -48,13 +55,13 @@ const AppRoutes = () => (
             <Route path='/admin/users/add' element={<UserFormPage />} />
             <Route path='/admin/users/:userId' element={<UserFormPage />} />
             {/* Order */}
-            <Route path='/admin/orders' element={<OrderListContainer />} />
+            <Route path='/admin/orders' element={<OrderListPage />} />
             <Route path='/admin/orders/add' element={<OrderFormPage />} />
             <Route path='/admin/orders/:orderId' element={<OrderFormPage />} />
             {/* Delivery Types */}
             <Route
               path='/admin/deliverytypes'
-              element={<DeliveryTypeListContainer />}
+              element={<DeliveriesListPage />}
             />
             <Route
               path='/admin/deliverytypes/add'
@@ -72,7 +79,7 @@ const AppRoutes = () => (
         </Route>
       </Routes>
     </BrowserRouter>
-  </AuthProvider>
+    </AuthProvider>
 );
 
 export default AppRoutes;
