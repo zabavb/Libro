@@ -1,9 +1,10 @@
 import { useForm } from "react-hook-form";
 import { DeliveryType, Order, Status } from "../../types";
 import { zodResolver } from "@hookform/resolvers/zod";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { statusEnumToNumber } from "../../api/adapters/orderAdapters";
 import { OrderFormData, orderSchema } from "../../utils";
+import { useNavigate } from "react-router-dom";
 
 interface UserCheckoutFormProps {
     books: Record<string,number>
@@ -13,6 +14,21 @@ interface UserCheckoutFormProps {
 }
 
 const UserCheckoutForm: React.FC<UserCheckoutFormProps> = ({books, price, deliveryTypes, onAddOrder }) => {
+
+    const [userId, setUserId] = useState<string>("");
+    const navigate = useNavigate()
+    
+    useEffect(() => {
+        const json = localStorage.getItem('user');
+        if(json != null){
+            const user = JSON.parse(json)
+            setUserId(user.id)
+        }
+        else{
+            navigate('/login')
+        }
+    },[navigate])
+
     const {
         register,
         handleSubmit,
@@ -21,8 +37,7 @@ const UserCheckoutForm: React.FC<UserCheckoutFormProps> = ({books, price, delive
         resolver: zodResolver(orderSchema),
         defaultValues:
         {
-            // To be implemented, currently a placeholder
-            userId: "EDD77D2A-56EE-4A21-9EAA-64E5D620C84B",
+            userId: "",
             books: {},
             address: "",
             region: "",
@@ -63,6 +78,8 @@ const UserCheckoutForm: React.FC<UserCheckoutFormProps> = ({books, price, delive
             <hr/>
             <p>Total Price: {price}</p>
             {/* Hidden data, can't be set by user */}
+            <input type="hidden" {...register("userId")} value={userId}/>
+
             <input type="hidden" {...register("orderDate")}/>
             <p>{errors.orderDate?.message}</p>
             <input type="hidden" {...register("deliveryDate")}/>
