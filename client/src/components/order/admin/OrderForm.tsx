@@ -1,5 +1,5 @@
 import { useForm } from "react-hook-form";
-import { Book, DeliveryType, Order, Status } from "../../../types";
+import { Book, Order, Status } from "../../../types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { dateToString } from "../../../api/adapters/commonAdapters";
 import React, { useEffect, useState } from "react";
@@ -7,20 +7,19 @@ import { statusEnumToNumber, statusNumberToEnum } from "../../../api/adapters/or
 import { OrderFormData, orderSchema } from "../../../utils";
 import OrderFormBookSearch from "./OrderFormBookSearch";
 import OrderFormBookList from "./OrderFormBookList";
+import { useNavigate } from "react-router-dom";
 
 interface OrderFormProps {
     page: number
     books?: Book[]
-    deliveryTypes?: DeliveryType[]
-    existingOrder?: Order
-    onAddOrder: (order: Order) => void
+    existingOrder: Order
     onEditOrder: (id: string, updatedOrder: Order) => void
     onPageChange: (page: number) => void
 }
 
-const OrderForm: React.FC<OrderFormProps> = ({page, books, deliveryTypes, existingOrder, onAddOrder, onEditOrder, onPageChange }) => {
+const OrderForm: React.FC<OrderFormProps> = ({page, books, existingOrder, onEditOrder, onPageChange }) => {
     const [bookObjs, setBookObjs] = useState<Record<string,number>>({})
-   
+    const navigate = useNavigate();
     const {
         register,
         handleSubmit,
@@ -46,6 +45,12 @@ const OrderForm: React.FC<OrderFormProps> = ({page, books, deliveryTypes, existi
 
     useEffect(() => {
         if(existingOrder) {
+            setBookObjs(existingOrder.books)
+        }
+    },[existingOrder])
+
+    useEffect(() => {
+        if(existingOrder) {
             setValue("userId", existingOrder.userId)
             setValue("books", existingOrder.books);
             setValue("region", existingOrder.region)
@@ -58,11 +63,11 @@ const OrderForm: React.FC<OrderFormProps> = ({page, books, deliveryTypes, existi
             setValue("deliveryTypeId", existingOrder.deliveryTypeId)
             setValue("status", statusNumberToEnum(existingOrder.status))
         }
-    }, [existingOrder, setValue, bookObjs])
+    }, [existingOrder, setValue,navigate])
 
     const onSubmit = (data: OrderFormData) => {
         const order: Order = {
-            id: existingOrder ? existingOrder.id : "00000000-0000-0000-0000-000000000000",
+            id: existingOrder.id,
             userId: data.userId,
             books: bookObjs,
             region: data.region,
@@ -81,13 +86,11 @@ const OrderForm: React.FC<OrderFormProps> = ({page, books, deliveryTypes, existi
             console.log("Order edited")
         }
         else{
-            onAddOrder(order)
-            console.log("Order add")
+            console.log("Order Does not exist")
         } 
     }
     
     const handleBookAdd = (bookId: string) => {
-        console.log("Book added")
         setBookObjs((prev) => ({
             ...prev,
             [bookId]: (prev?.[bookId] || 0) + 1
@@ -112,10 +115,20 @@ const OrderForm: React.FC<OrderFormProps> = ({page, books, deliveryTypes, existi
     
     return (
         <form onSubmit={handleSubmit(onSubmit)}>
-            {/* manual for now, will be rewritten in the future */}
-            <input {...register("userId")}
-            placeholder="User ID" />
+            {/* Hidden values, cannot be edited */}
+
+            <input type="hidden" {...register("userId")}/>
             <p>{errors.userId?.message}</p>
+
+            <input type="hidden" {...register("deliveryTypeId")}/>
+            <p>{errors.deliveryTypeId?.message}</p>
+
+            <input type="hidden" {...register("price")}/>
+            <p>{errors.price?.message}</p>
+
+            <input type="hidden" {...register("deliveryPrice")}/>
+            <p>{errors.deliveryPrice?.message}</p>
+
 
             <OrderFormBookSearch
                 page={page}
@@ -155,29 +168,6 @@ const OrderForm: React.FC<OrderFormProps> = ({page, books, deliveryTypes, existi
             placeholder="Delivery Date" />
             <p>{errors.deliveryDate?.message}</p>
 
-            <select {...register("deliveryTypeId")}>
-            <option value="">Select Delivery Type</option>
-                {deliveryTypes?.map((delivery) => (
-                    <option
-                        value={delivery.id}>
-                        {delivery.serviceName}
-                    </option>
-                ))}
-            </select>
-            <p>{errors.deliveryTypeId?.message}</p>
-            <input
-                type="text"
-                {...register("price")}
-                placeholder="Price"
-            />
-            <p>{errors.price?.message}</p>
-
-            <input
-                type="text"
-                {...register("deliveryPrice")}
-                placeholder="Delivery Price"
-            />
-            <p>{errors.deliveryPrice?.message}</p>
 
             <select {...register("status")}>
                 <option value="">Select Status</option>
@@ -190,8 +180,11 @@ const OrderForm: React.FC<OrderFormProps> = ({page, books, deliveryTypes, existi
                 ))}
             </select>
             <p>{errors.status?.message}</p>
-
-            <button type="submit">{existingOrder ? "Update Order" : "Add Order"}</button>
+            
+            <div style={{display:"flex"}}>
+                <button type="submit">Update Order</button>
+                <p style={{cursor:"pointer"}} onClick={() => navigate('/admin/orders')}>Cancel</p>
+            </div>
         </form>
     )
 }

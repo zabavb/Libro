@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom"
 import { useEffect } from "react"
 import { setOrderFilters, setOrderSearchTerm, setOrderSort } from "../../state/redux/slices/orderSlice"
 import { OrderFilter, OrderSort } from "../../types"
-import OrderList from "../../components/order/OrderList"
+import OrderList from "../../components/order/admin/OrderList"
 
 
 const OrderListContainer = () => {

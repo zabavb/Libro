@@ -58,7 +58,6 @@ const AppRoutes = () => (
             <Route path='/admin/users/:userId' element={<UserFormPage />} />
             {/* Order */}
             <Route path='/admin/orders' element={<OrderListPage />} />
-            <Route path='/admin/orders/add' element={<OrderFormPage />} />
             <Route path='/admin/orders/:orderId' element={<OrderFormPage />} />
             {/* Delivery Types */}
             <Route

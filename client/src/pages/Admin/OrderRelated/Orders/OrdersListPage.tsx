@@ -13,9 +13,6 @@ const OrderListPage = () => {
         </button>
       </header>
       <main>
-        <div>
-          <button onClick={() => navigate('/admin/orders/add')}>Add Order</button>
-        </div>
         <OrderListContainer />
       </main>
     </div>
