@@ -62,6 +62,23 @@ namespace BookAPI.Services
             }
         }
 
+        public async Task<DiscountDTO?> GetByBookIdAsync(Guid id)
+        {
+            try
+            {
+                _logger.LogInformation("Fetching discount with BookId {BookId}", id);
+                var discount = await _repository.GetByBookIdAsync(id);
+                return _mapper.Map<DiscountDTO>(discount);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error fetching discount with BookId {BookId}", id);
+                return null;
+            }
+        }
+
+
+
         public async Task<List<DiscountDTO>> GetAllAsync()
         {
             try

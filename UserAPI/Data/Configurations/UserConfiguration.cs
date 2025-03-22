@@ -21,7 +21,6 @@ namespace UserAPI.Data.Configurations
                 .HasColumnType("nvarchar(50)");
 
             builder.Property(u => u.DateOfBirth)
-                .IsRequired()
                 .HasColumnType("datetime");
 
             builder.Property(u => u.Email)
@@ -33,7 +32,6 @@ namespace UserAPI.Data.Configurations
                 .IsUnique();
 
             builder.Property(u => u.PhoneNumber)
-                .IsRequired()
                 .HasMaxLength(15)
                 .HasColumnType("nvarchar(15)");
 

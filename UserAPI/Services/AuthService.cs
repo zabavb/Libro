@@ -1,7 +1,9 @@
 ﻿using AutoMapper;
+using Google.Apis.Auth;
 using UserAPI.Models;
 using UserAPI.Models.Auth;
 using UserAPI.Repositories;
+using UserAPI.Services.Interfaces;
 
 namespace UserAPI.Services
 {
@@ -14,28 +16,13 @@ namespace UserAPI.Services
         private readonly ILogger<IAuthService> _logger = logger;
         private string _message = string.Empty;
 
-        public async Task<User?> Me(Guid id)
-        {
-            try
-            {
-                return await _userRepository.GetByIdAsync(id);
-            }
-            catch (Exception ex)
-            {
-                _message = $"Error occurred while fetching user data.";
-                _logger.LogError(_message);
-                throw new InvalidOperationException(_message, ex);
-            }
-        }
-
         public async Task<UserDto?> AuthenticateAsync(LoginRequest request)
         {
-            
             var user = request.Identifier.Contains('@') ?
-                _mapper.Map<UserDto>(await _authRepository.GetUserByEmailAsync(request)) :
-                _mapper.Map<UserDto>(await _authRepository.GetUserByPhoneNumberAsync(request));
+                await _authRepository.GetUserByEmailAsync(request) :
+                await _authRepository.GetUserByPhoneNumberAsync(request);
 
-            return await IsRightPassword(_mapper.Map<User>(user), request.Password) ? user : null;
+            return await IsRightPasswordAsync(user!, request.Password) ? _mapper.Map<UserDto>(user) : null;
         }
 
         public async Task RegisterAsync(RegisterRequest request)
@@ -47,23 +34,26 @@ namespace UserAPI.Services
                 throw new ArgumentNullException(null, _message);
             }
 
-            User user = new User()
+            var passwordId = Guid.NewGuid();
+            var password = request.Password;
+
+            User user = new()
             {
-                UserId = new Guid(),
+                UserId = Guid.NewGuid(),
                 FirstName = request.FirstName,
                 LastName = request.LastName,
                 Email = request.Email,
                 PhoneNumber = request.PhoneNumber,
-            };
-
-            var password = request.Password;    
+                Role = Library.DTOs.User.RoleType.USER,
+                PasswordId = passwordId
+            }; 
             
             try
             {
+                await _passwordRepository.AddAsync(passwordId, password, user);
                 await _userRepository.CreateAsync(user);
-                await _passwordRepository.AddAsync(password, user);
                 _message = "Successful user registration in UserAPI.Services.AuthService.RegisterAsync";
-                _logger.LogError(_message);
+                _logger.LogInformation(_message);
             }
             catch (Exception ex)
             {
@@ -73,7 +63,24 @@ namespace UserAPI.Services
             }
         }
 
-        private async Task<bool> IsRightPassword(User user, string password)
+        public async Task<UserDto> OAuthAsync(string token, GoogleJsonWebSignature.ValidationSettings settings)
+        {
+            var payload = await GoogleJsonWebSignature.ValidateAsync(token, settings);
+
+            var user = _mapper.Map<UserDto>(await _userRepository.GetByEmailAsync(payload.Email)) ?? new UserDto
+                {
+                    FirstName = payload.GivenName,
+                    LastName = payload.FamilyName,
+                    Email = payload.Email,
+                    Role = Library.DTOs.User.RoleType.USER,
+                };
+
+            _logger.LogInformation("OAuthAsync() => return {user}", user);
+
+            return user;
+        }
+
+        private async Task<bool> IsRightPasswordAsync(User user, string password)
         {
             try
             {

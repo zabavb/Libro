@@ -1,7 +1,7 @@
 ﻿using Library.Extensions;
 using Library.Interfaces;
 
-namespace UserAPI.Services
+namespace UserAPI.Services.Interfaces
 {
     public interface ISubscriptionService : IManagable<SubscriptionDto>
     {

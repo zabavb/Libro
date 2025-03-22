@@ -6,12 +6,14 @@ using Microsoft.OpenApi.Models;
 using Serilog;
 using StackExchange.Redis;
 using System.Reflection;
+using System.Security.Claims;
 using System.Text;
 using UserAPI.Data;
 using UserAPI.Models.Auth;
 using UserAPI.Profiles;
 using UserAPI.Repositories;
 using UserAPI.Services;
+using UserAPI.Services.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -44,7 +46,8 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidateIssuerSigningKey = true,
             ValidIssuer = builder.Configuration["JwtSettings:Issuer"],
             ValidAudience = builder.Configuration["JwtSettings:Audience"],
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JwtSettings:SecretKey"]!))
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JwtSettings:SecretKey"]!)),
+            RoleClaimType = ClaimTypes.Role
         };
     });
 
@@ -124,7 +127,6 @@ if (app.Environment.IsDevelopment())
         options.SwaggerEndpoint("/swagger/v1/swagger.json", "UserAPI");
     });
 }
-
 
 app.UseHttpsRedirection();
 

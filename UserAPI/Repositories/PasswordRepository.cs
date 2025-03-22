@@ -76,14 +76,14 @@ namespace UserAPI.Repositories
             return hashedInput == passwordEntity.PasswordHash;
         }
 
-        public async Task<bool> AddAsync(string password, User user)
+        public async Task<bool> AddAsync(Guid id, string password, User user)
         {
             var salt = GenerateSalt();
             var hash = HashPassword(password, salt);
 
             var passwordEntity = new Password
             {
-                PasswordId = Guid.NewGuid(),
+                PasswordId = id,
                 PasswordHash = hash,
                 PasswordSalt = salt,
                 User = user,

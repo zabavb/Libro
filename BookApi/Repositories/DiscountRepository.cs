@@ -16,7 +16,7 @@ namespace BookAPI.Repositories
             _logger = logger;
         }
 
-        public async Task<Discount> GetByIdAsync(Guid discountId)
+        public async Task<Discount?> GetByIdAsync(Guid discountId)
         {
             var res = await _context.Discounts.FirstOrDefaultAsync(p => p.DiscountId == discountId);
             if (res == null) {
@@ -25,6 +25,20 @@ namespace BookAPI.Repositories
             else
             {
                 _logger.LogInformation($"Discount found by id {discountId}");
+            }
+            return res;
+        }
+
+        public async Task<Discount?> GetByBookIdAsync(Guid id)
+        {
+            var res = await _context.Discounts.FirstOrDefaultAsync(p => p.BookId == id);
+            if (res == null)
+            {
+                _logger.LogInformation($"Discount not found by BookId {id}");
+            }
+            else
+            {
+                _logger.LogInformation($"Discount found by BookId {id}");
             }
             return res;
         }

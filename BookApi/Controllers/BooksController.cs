@@ -4,6 +4,7 @@ using BookAPI.Models.Filters;
 using BookAPI.Models.Sortings;
 using BookAPI.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using Library.DTOs.Book;
 
 namespace BookAPI.Controllers
 {
@@ -18,13 +19,15 @@ namespace BookAPI.Controllers
     public class BooksController : ControllerBase
     {
         private readonly IBookService _bookService;
+        private readonly IDiscountService _discountService;
         private readonly ILogger<BooksController> _logger;
 
 
-        public BooksController(IBookService bookService, ILogger<BooksController> logger)
+        public BooksController(IBookService bookService, ILogger<BooksController> logger, IDiscountService discountService)
         {
             _bookService = bookService;
             _logger = logger;
+            _discountService = discountService;
         }
 
         /// <summary>
@@ -96,7 +99,7 @@ namespace BookAPI.Controllers
         /// <response code="201">Book successfully created.</response>
         /// <response code="400">Invalid input data.</response>
         [HttpPost]
-        public async Task<ActionResult<BookDto>> CreateBook([FromBody] BookDto bookDto)
+        public async Task<ActionResult<BookDto>> CreateBook([FromForm] BookDto bookDto, IFormFile? imageFile)
         {
             if (bookDto == null)
             {
@@ -106,7 +109,8 @@ namespace BookAPI.Controllers
 
             try
             {
-                var createdBook = await _bookService.CreateBookAsync(bookDto);
+                var createdBook = await _bookService.CreateBookAsync(bookDto, imageFile);
+                var createdDiscount = await _discountService.AddAsync(new DiscountDTO { BookId = createdBook.BookId, DiscountRate = 0 });
                 return CreatedAtAction(nameof(GetBookById), new { id = createdBook.BookId }, createdBook);
             }
             catch (Exception ex)
@@ -126,8 +130,10 @@ namespace BookAPI.Controllers
         /// <response code="400">Invalid input data.</response>
         /// <response code="404">Book not found.</response>
         [HttpPut("{id}")]
-        public async Task<ActionResult<BookDto>> UpdateBook(Guid id, [FromBody] BookDto bookDto)
+        public async Task<ActionResult<BookDto>> UpdateBook(Guid id, [FromBody] UpdateBookRequest request, IFormFile? imageFile)
         {
+            var bookDto = request.Book;
+            var discount = request.Discount;
             if (bookDto == null)
             {
                 _logger.LogWarning("Invalid book data provided for update.");
@@ -136,11 +142,18 @@ namespace BookAPI.Controllers
 
             try
             {
-                var updatedBook = await _bookService.UpdateBookAsync(id, bookDto);
+                var updatedBook = await _bookService.UpdateBookAsync(id, bookDto, imageFile);
 
                 if (updatedBook == null)
                 {
                     return NotFound($"Book with id {id} not found.");
+                }
+
+                //discount.BookId = updatedBook.BookId;
+
+                if (discount != null)
+                {
+                    _ = await _discountService.UpdateAsync(discount);
                 }
 
                 return Ok(updatedBook);
@@ -170,6 +183,19 @@ namespace BookAPI.Controllers
                 {
                     return NotFound($"Book with id {id} not found.");
                 }
+
+                var discount = await _discountService.GetByBookIdAsync(id);
+                if (discount == null)
+                {
+                    return NotFound($"Discount with id {id} not found.");
+                }
+                var isDeletedDiscount = await _discountService.DeleteAsync(id);
+
+                if (!isDeletedDiscount)
+                {
+                    return NotFound($"Discount with id {discount.BookId} was not deleted.");
+                }
+
                 return NoContent();
             }
             catch (Exception ex)

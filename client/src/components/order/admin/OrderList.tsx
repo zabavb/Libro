@@ -1,9 +1,9 @@
-import OrderAdminCardContainter from "../../containers/order/OrderAdminCardContainer";
-import { Order } from "../../types";
-import Pagination from "../common/Pagination";
-import Search from "../common/Search";
-import OrderFilter from "./OrderFilter";
-import OrderSort from "./OrderSort";
+import OrderAdminCardContainter from "../../../containers/order/OrderAdminCardContainer";
+import { Order } from "../../../types";
+import Pagination from "../../common/Pagination";
+import Search from "../../common/Search";
+import OrderFilter from "../OrderFilter";
+import OrderSort from "../OrderSort";
 
 
 interface OrderListProps {
@@ -33,15 +33,11 @@ const OrderList: React.FC<OrderListProps> = ({
 	onFilterChange,
 	sort,
 	onSortChange,
-	onNavigate,
 }) => {
     if (loading) return <p>Loading...</p>
     if (error) return <p>Error: {error}</p>
     return(
         <div>
-            <p onClick={() => onNavigate("/admin")}>Back to Admin Dashboard</p>
-            <p onClick={() => onNavigate("/admin/orders/add")}>Add Order</p>
-            <h1>Order List</h1>
 
             <Search 
                 searchTerm={searchTerm}

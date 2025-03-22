@@ -1,4 +1,4 @@
-﻿namespace UserAPI.Services
+﻿namespace UserAPI.Services.Interfaces
 {
     public interface IPasswordService
     {

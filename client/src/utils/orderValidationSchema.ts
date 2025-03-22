@@ -2,9 +2,6 @@ import { z } from "zod"
 import { Status } from "../types"
 
 
-const today = new Date()
-
-
 export const orderSchema = z.
     object({
         userId: z
@@ -33,7 +30,12 @@ export const orderSchema = z.
         orderDate: z
             .string()
             .refine((val) => !isNaN(Date.parse(val)),"Invalid date")
-            .refine((val) => new Date(val).getDate() <= today.getDate(), "Order cannot be placed in the future"),
+            .refine((val) => {
+                const orderDate = new Date(val).toISOString().split("T")[0]; // Extract YYYY-MM-DD
+                const todayDate = new Date().toISOString().split("T")[0];
+
+                return orderDate <= todayDate;
+            }, "Order cannot be placed in the future"),
         deliveryDate: z
             .string()
             .refine((val) => !isNaN(Date.parse(val)),"Invalid date"),

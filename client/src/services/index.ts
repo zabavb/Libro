@@ -1,25 +1,25 @@
-export {
-	fetchUsersService,
-	fetchUserByIdService,
-	addUserService,
-	editUserService,
-	removeUserService,
-} from "./userService"
+export { loginService, registerService, oAuthService } from './authService';
 
 export {
-	fetchOrdersService,
-	fetchOrderByIdService,
-	addOrderService,
-	editOrderService,
-	removeOrderService,
-} from "./orderService"
+  fetchUsersService,
+  fetchUserByIdService,
+  addUserService,
+  editUserService,
+  removeUserService,
+} from './userService';
 
 export {
-	fetchDeliveryTypesService,
-	fetchDeliveryTypeByIdService,
-	addDeliveryTypeService,
-	editDeliveryTypeService,
-	removeDeliveryTypeService
-} from "./deliveryTypeService"
+  fetchOrdersService,
+  fetchOrderByIdService,
+  addOrderService,
+  editOrderService,
+  removeOrderService,
+} from './orderService';
 
-export { loginService, registerService, getMeService } from "./authService"
+export {
+  fetchDeliveryTypesService,
+  fetchDeliveryTypeByIdService,
+  addDeliveryTypeService,
+  editDeliveryTypeService,
+  removeDeliveryTypeService,
+} from './deliveryTypeService';

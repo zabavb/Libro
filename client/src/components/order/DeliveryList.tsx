@@ -24,7 +24,6 @@ const DeliveryTypeList: React.FC<DeliveryTypeListProps> = ({
     error,
     pagination,
     onPageChange,
-    onNavigate,
     searchTerm,
     onSearchTermChange,
     sort,
@@ -34,10 +33,6 @@ const DeliveryTypeList: React.FC<DeliveryTypeListProps> = ({
     if (error) return <p>Error: {error}</p>
     return (
         <div>
-             <p onClick={() => onNavigate("/admin")}>Back to Admin Dashboard</p>
-             <p onClick={() => onNavigate("/admin/deliverytypes/add")}>Add Delivery Type</p>
-            <h1>Delivery type list</h1>
-
             <Search
                 searchTerm={searchTerm}
                 onSearchTermChange={onSearchTermChange}/>
