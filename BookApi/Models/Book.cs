@@ -15,12 +15,14 @@ namespace BookAPI.Models
         public string Description { get; set; } = null!;
         public CoverType Cover { get; set; }
         public bool IsAvaliable { get; set; } = true; 
+        public Discount DiscountId { get; set; }
 
         public Category Category { get; set; } = null!;
         public Publisher Publisher { get; set; } = null!;
         public Author Author { get; set; } = null!;
         public List<Feedback> Feedbacks { get; set; } = new();
-        public List<SubCategory> Subcategories { get; set; } = new(); 
+        public List<SubCategory> Subcategories { get; set; } = new();
+        public Discount Discount { get; set; } = null!;
 
         public Book()
         {
