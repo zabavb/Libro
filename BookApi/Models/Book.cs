@@ -17,7 +17,7 @@ namespace BookAPI.Models
         public CoverType Cover { get; set; }
 <<<<<<< HEAD
         public bool IsAvaliable { get; set; } = true; 
-        public Discount DiscountId { get; set; }
+        public Guid DiscountId { get; set; }
 
 =======
         public bool IsAvaliable { get; set; } = true;
