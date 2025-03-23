@@ -1,34 +1,34 @@
 import { Route, Routes } from 'react-router-dom';
 import { BrowserRouter } from 'react-router-dom';
 
-import LoginPage from './pages/auth/LoginPage';
-import RegisterPage from './pages/auth/RegisterPage';
+import LoginPage from './pages/Auth/LoginPage';
+import RegisterPage from './pages/Auth/RegisterPage';
 
-import MainPage from './pages/main/MainPage';
+import MainPage from './pages/Main/MainPage';
 
 import { AuthProvider } from './state/context/AuthContext';
 import PrivateRoute from './privateRoute';
 
-import AdminPage from './pages/admin/AdminPage';
+import AdminPage from './pages/Admin/AdminPage';
 
 import AdminLayout from './components/layouts/AdminLayout';
 
-import UserListPage from './pages/admin/userRelated/users/UsersListPage';
-import UserFormPage from './pages/admin/userRelated/users/UserFormPage';
+import UserListPage from './pages/Admin/UserRelated/Users/UsersListPage';
+import UserFormPage from './pages/Admin/UserRelated/Users/UserFormPage';
 
-import OrderFormPage from './pages/admin/orderRelated/orders/OrderFormPage';
+import OrderFormPage from './pages/Admin/OrderRelated/Orders/OrderFormPage';
 
-import DeliveryTypeFormPage from './pages/admin/orderRelated/deliveries/DeliveryFormPage';
+import DeliveryTypeFormPage from './pages/Admin/OrderRelated/Deliveries/DeliveryFormPage';
 
 
 import BookListContainer from './containers/books/BookListContainer';
 
-import NotFoundPage from './pages/common/NotFoundPage';
-import OrderListPage from './pages/admin/orderRelated/orders/OrdersListPage';
-import DeliveriesListPage from './pages/admin/orderRelated/deliveries/DeliveriesListPage';
+import NotFoundPage from './pages/common/NotFoundPage'; 
+import OrderListPage from './pages/Admin/OrderRelated/Orders/OrdersListPage';
+import DeliveriesListPage from './pages/Admin/OrderRelated/Deliveries/DeliveriesListPage';
 import UserCartPage from './pages/Main/UserCartPage';
-import UserCheckoutPage from './pages/main/UserCheckoutPage';
-import UserOrdersPage from './pages/main/UserOrdersPage';
+import UserCheckoutPage from './pages/Main/UserCheckoutPage';
+import UserOrdersPage from './pages/Main/UserOrdersPage';
 
 
 const AppRoutes = () => (
