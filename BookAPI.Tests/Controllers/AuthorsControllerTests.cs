@@ -9,9 +9,8 @@ using Microsoft.Extensions.Logging;
 using Moq;
 using Xunit;
 using AuthorDto = Library.DTOs.Book.Author;
-
-using Library.Extensions;
 using BookAPI.Services.Interfaces;
+using Library.Common;
 
 namespace BookAPI.Tests.Controllers
 {

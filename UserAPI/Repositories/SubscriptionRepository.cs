@@ -1,4 +1,4 @@
-﻿using Library.Extensions;
+﻿using Library.Common;
 using Microsoft.EntityFrameworkCore;
 using UserAPI.Data;
 using UserAPI.Models;

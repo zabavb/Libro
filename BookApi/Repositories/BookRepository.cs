@@ -4,7 +4,7 @@ using BookAPI.Models.Extensions;
 using BookAPI.Models.Filters;
 using BookAPI.Models.Sortings;
 using BookAPI.Repositories.Interfaces;
-using Library.Extensions;
+using Library.Common;
 using Library.Sortings;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;

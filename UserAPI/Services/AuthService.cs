@@ -3,6 +3,7 @@ using Google.Apis.Auth;
 using UserAPI.Models;
 using UserAPI.Models.Auth;
 using UserAPI.Repositories;
+using UserAPI.Repositories.Interfaces;
 using UserAPI.Services.Interfaces;
 
 namespace UserAPI.Services
@@ -16,13 +17,13 @@ namespace UserAPI.Services
         private readonly ILogger<IAuthService> _logger = logger;
         private string _message = string.Empty;
 
-        public async Task<UserDto?> AuthenticateAsync(LoginRequest request)
+        public async Task<Dto?> AuthenticateAsync(LoginRequest request)
         {
             var user = request.Identifier.Contains('@') ?
                 await _authRepository.GetUserByEmailAsync(request) :
                 await _authRepository.GetUserByPhoneNumberAsync(request);
 
-            return await IsRightPasswordAsync(user!, request.Password) ? _mapper.Map<UserDto>(user) : null;
+            return await IsRightPasswordAsync(user!, request.Password) ? _mapper.Map<Dto>(user) : null;
         }
 
         public async Task RegisterAsync(RegisterRequest request)
@@ -63,11 +64,11 @@ namespace UserAPI.Services
             }
         }
 
-        public async Task<UserDto> OAuthAsync(string token, GoogleJsonWebSignature.ValidationSettings settings)
+        public async Task<Dto> OAuthAsync(string token, GoogleJsonWebSignature.ValidationSettings settings)
         {
             var payload = await GoogleJsonWebSignature.ValidateAsync(token, settings);
 
-            var user = _mapper.Map<UserDto>(await _userRepository.GetByEmailAsync(payload.Email)) ?? new UserDto
+            var user = _mapper.Map<Dto>(await _userRepository.GetByEmailAsync(payload.Email)) ?? new Dto
                 {
                     FirstName = payload.GivenName,
                     LastName = payload.FamilyName,

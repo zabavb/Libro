@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using BookAPI;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using UserAPI.Services.Interfaces;
 
@@ -40,8 +41,13 @@ namespace UserAPI.Controllers
         /// <response code="500">If an unexpected error occurs.</response>
         [Authorize(Roles = "ADMIN, MODERATOR")]
         [HttpGet]
-        public async Task<IActionResult> GetAll([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10, [FromQuery] string? searchTerm = null, [FromQuery] Filter? filter = null, [FromQuery] Sort? sort = null)
-        {
+        public async Task<IActionResult> GetAll(
+            [FromQuery] int pageNumber = GlobalConstants.DefaultPageNumber,
+            [FromQuery] int pageSize = GlobalConstants.DefaultPageSize,
+            [FromQuery] string? searchTerm = null,
+            [FromQuery] Filter? filter = null,
+            [FromQuery] Sort? sort = null
+        ) {
             try
             {
                 var users = await _userService.GetAllAsync(pageNumber, pageSize, searchTerm, filter, sort);
@@ -68,15 +74,16 @@ namespace UserAPI.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(Guid id)
         {
+            if (id.Equals(Guid.Empty))
+            {
+                _message = $"User ID [{id}] was not provided.";
+                _logger.LogError(_message);
+                return NotFound(_message);
+            }
+
             try
             {
                 var user = await _userService.GetByIdAsync(id);
-                if (id.Equals(Guid.Empty))
-                {
-                    _message = $"User ID [{id}] was not provided.";
-                    _logger.LogError(_message);
-                    return NotFound(_message);
-                }
 
                 _logger.LogInformation($"User with ID [{id}] successfully fetched.");
                 return Ok(user);
@@ -103,7 +110,7 @@ namespace UserAPI.Controllers
         /// <response code="500">If an unexpected error occurs.</response>
         [AllowAnonymous]
         [HttpPost]
-        public async Task<IActionResult> Create([FromForm] UserDto user)
+        public async Task<IActionResult> Create([FromBody] Dto user)
         {
             try
             {
@@ -136,7 +143,7 @@ namespace UserAPI.Controllers
         /// <response code="500">If an unexpected error occurs.</response>
         [Authorize(Roles = "ADMIN")]
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(Guid id, [FromForm] UserDto user)
+        public async Task<IActionResult> Update(Guid id, [FromBody] Dto user)
         {
             if (user != null && id != user.Id)
             {
@@ -180,11 +187,11 @@ namespace UserAPI.Controllers
         /// <response code="500">If an unexpected error occurs.</response>
         [Authorize(Roles = "ADMIN")]
         [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(Guid id, [FromQuery] string imageUrl)
+        public async Task<IActionResult> Delete(Guid id)
         {
             try
             {
-                await _userService.DeleteAsync(id, imageUrl);
+                await _userService.DeleteAsync(id);
                 _logger.LogInformation($"User with ID [{id}] successfully deleted.");
                 return NoContent();
             }

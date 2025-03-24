@@ -1,11 +1,11 @@
 ﻿using BookAPI.Models;
 using BookAPI.Models.Sortings;
-using Library.Extensions;
+using Library.Common;
 using Library.Interfaces;
 
 namespace BookAPI.Repositories.Interfaces
 {
-    public interface IPublisherRepository : IManagable<Publisher>
+    public interface IPublisherRepository : IManageable<Publisher>
     {
         Task<PaginatedResult<Publisher>> GetAllAsync(int pageNumber, int pageSize, string searchTerm, PublisherSort? sort);
         Task DeleteAsync(Guid id);
