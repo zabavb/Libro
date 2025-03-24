@@ -1,14 +1,26 @@
 ﻿using Library.DTOs.User;
+using Library.Interfaces;
 
 namespace UserAPI.Models.Filters
 {
-    public class UserFilter
+    public class UserFilter : IFilter<User>
     {
-        public DateTime? DateOfBirthStart { get; set; }
-        public DateTime? DateOfBirthEnd { get; set; }
-        public string? Email { get; set; }
-        public string? PhoneNumber { get; set; }
+        public EmailDomen? Email { get; set; }
         public RoleType? Role { get; set; }
-        public bool HasSubscription { get; set; }
+        public string Subscription { get; set; }
+
+        public IQueryable<User> Apply(IQueryable<User> users)
+        {
+            if (Email.HasValue)
+                users = users.Where(u => u.Email!.Equals(Email));
+                
+            if (Role.HasValue)   
+                users = users.Where(u => u.Role.Equals(Role));
+            
+            if (!string.IsNullOrEmpty(Subscription))
+                users = users.Where(u => u.Equals(Subscription));
+
+            return users;
+        }
     }
 }
