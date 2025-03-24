@@ -17,24 +17,29 @@ namespace Library.AWS
             Amazon.RegionEndpoint.GetBySystemName(configuration["AWS:Region"])
         );
 
-        public async Task<string> UploadAsync(IFormFile file, Guid id)
+        public async Task<string> UploadAsync(IFormFile file, string folder, Guid id)
         {
-            string fileName = $"{id}{Path.GetExtension(file.FileName)}";
+            string fileKey = $"{folder}{id}{Path.GetExtension(file.FileName)}";
             using var fs = file.OpenReadStream();
+            
             try
             {
                 var uploadRequest = new TransferUtilityUploadRequest
                 {
                     InputStream = fs,
-                    Key = fileName,
+                    Key = fileKey,
                     BucketName = _bucketName,
                     ContentType = file.ContentType,
-                    CannedACL = S3CannedACL.Private
+                    // Set the ACL based on the folder
+                    CannedACL = folder.StartsWith("book/audios") || folder.StartsWith("book/e-books")
+                        ? S3CannedACL.Private
+                        : S3CannedACL.PublicRead
                 };
 
                 var transferUtility = new TransferUtility(_s3Client);
                 await transferUtility.UploadAsync(uploadRequest);
-                return $"https://{_bucketName}.s3.{_region}.amazonaws.com/{fileName}";
+
+                return $"https://{_bucketName}.s3.{_region}.amazonaws.com/{fileKey}";
             }
             catch (Exception)
             {
@@ -42,17 +47,14 @@ namespace Library.AWS
             }
         }
 
-        public async Task DeleteAsync(string fileUrl)
+        public async Task DeleteAsync(string fileKey)
         {
             try
             {
-                var uri = new Uri(fileUrl);
-                string key = uri.AbsolutePath.TrimStart('/');
-
                 var deleteRequest = new DeleteObjectRequest
                 {
                     BucketName = _bucketName,
-                    Key = key
+                    Key = fileKey
                 };
 
                 await _s3Client.DeleteObjectAsync(deleteRequest);
