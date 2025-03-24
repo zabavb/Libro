@@ -1,4 +1,5 @@
 ﻿using BookAPI.Models;
+using Library.Interfaces;
 
 namespace BookAPI.Models.Filters
 {

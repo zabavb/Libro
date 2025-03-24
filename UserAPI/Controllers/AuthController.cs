@@ -157,7 +157,7 @@ namespace UserAPI.Controllers
         /// - User role (`Role`)
         /// </remarks>
         [NonAction]
-        private string GenerateJwtToken(UserDto user)
+        private string GenerateJwtToken(Dto user)
         {
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSettings.SecretKey));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);

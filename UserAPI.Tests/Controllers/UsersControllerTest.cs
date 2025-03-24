@@ -2,11 +2,11 @@
 using Microsoft.Extensions.Logging;
 using UserAPI.Controllers;
 using Microsoft.AspNetCore.Mvc;
-using Library.Extensions;
 using Library.DTOs.User;
 using UserAPI.Models.Sorts;
 using UserAPI.Models.Filters;
 using UserAPI.Services.Interfaces;
+using Library.Common;
 
 namespace UserAPI.Tests.Controllers
 {

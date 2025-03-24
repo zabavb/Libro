@@ -1,6 +1,6 @@
 ﻿using BookAPI.Models.Filters;
 using BookAPI.Models.Sortings;
-using Library.Extensions;
+using Library.Common;
 
 namespace BookAPI.Services.Interfaces
 {
