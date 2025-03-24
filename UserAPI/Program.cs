@@ -1,4 +1,5 @@
 using Library.AWS;
+using Library.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -12,6 +13,7 @@ using UserAPI.Data;
 using UserAPI.Models.Auth;
 using UserAPI.Profiles;
 using UserAPI.Repositories;
+using UserAPI.Repositories.Interfaces;
 using UserAPI.Services;
 using UserAPI.Services.Interfaces;
 
@@ -55,7 +57,8 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 builder.Services.AddAutoMapper(typeof(UserProfile));
 //builder.Services.AddAutoMapper(typeof(SubscriptionProfile));
 
-builder.Services.AddScoped<S3StorageService>();
+builder.Services.AddScoped<AvatarService>();
+builder.Services.AddScoped<IS3StorageService, S3StorageService>();
 
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IUserService, UserService>();
