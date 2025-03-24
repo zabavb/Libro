@@ -6,10 +6,6 @@ namespace BookAPI.Models
     public class Book
     {
         public Guid Id { get; set; }
-        public Guid CategoryId { get; set; }
-        public Guid DiscountId { get; set; }
-        public Guid AuthorId { get; set; }
-        public Guid PublisherId { get; set; }
         public string Title { get; set; } = null!;
         public float Price { get; set; }
         public Language Language { get; set; }
@@ -21,12 +17,16 @@ namespace BookAPI.Models
         public string? AudioFileUrl { get; set; }
         [NotMapped]
         public bool HasAudio => !string.IsNullOrEmpty(AudioFileUrl);
+        public Guid CategoryId { get; set; }
         public Category Category { get; set; } = null!;
+        public Guid PublisherId { get; set; }
         public Publisher Publisher { get; set; } = null!;
+        public Guid AuthorId { get; set; }
         public Author Author { get; set; } = null!;
+        public Guid DiscountId { get; set; }
+        public Discount Discount { get; set; } = null!;
         public List<Feedback> Feedbacks { get; set; } = new();
         public List<SubCategory> Subcategories { get; set; } = new();
-        public Discount Discount { get; set; } = null!;
 
         public Book()
         {
