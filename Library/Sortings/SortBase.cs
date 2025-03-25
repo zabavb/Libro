@@ -1,8 +1,6 @@
-﻿using Library.Sortings;
-using System.Collections.Generic;
-using System.Linq.Expressions;
+﻿using System.Linq.Expressions;
 
-namespace BookAPI.Models.Sortings
+namespace Library.Sortings
 {
     public abstract class SortBase<T>
     {

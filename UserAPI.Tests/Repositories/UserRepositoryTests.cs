@@ -7,6 +7,7 @@ using UserAPI.Repositories;
 using System.Text.Json;
 using UserAPI.Models;
 using FluentAssertions;
+using UserAPI.Repositories.Interfaces;
 
 namespace UserAPI.Tests.Repositories
 {

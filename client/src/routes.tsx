@@ -20,16 +20,14 @@ import OrderFormPage from './pages/Admin/OrderRelated/Orders/OrderFormPage';
 
 import DeliveryTypeFormPage from './pages/Admin/OrderRelated/Deliveries/DeliveryFormPage';
 
-
 import BookListContainer from './containers/books/BookListContainer';
 
-import NotFoundPage from './pages/common/NotFoundPage'; 
-import OrderListPage from './pages/Admin/OrderRelated/Orders/OrdersListPage';
-import DeliveriesListPage from './pages/Admin/OrderRelated/Deliveries/DeliveriesListPage';
-import UserCartPage from './pages/Main/UserCartPage';
-import UserCheckoutPage from './pages/Main/UserCheckoutPage';
-import UserOrdersPage from './pages/Main/UserOrdersPage';
-
+import NotFoundPage from './pages/common/NotFoundPage';
+import OrderListPage from './pages/admin/orderRelated/orders/OrdersListPage';
+import DeliveriesListPage from './pages/admin/orderRelated/deliveries/DeliveriesListPage';
+import UserCartPage from './pages/main/UserCartPage';
+import UserCheckoutPage from './pages/main/UserCheckoutPage';
+import UserOrdersPage from './pages/main/UserOrdersPage';
 
 const AppRoutes = () => (
   <AuthProvider>
@@ -45,9 +43,9 @@ const AppRoutes = () => (
         <Route path='/register' element={<RegisterPage />} />
         {/* Main */}
         <Route path='/' element={<MainPage />} />
-        <Route path='/cart' element={<UserCartPage />}/>
-        <Route path='/cart/checkout' element={<UserCheckoutPage />}/>
-        <Route path='/orders' element={<UserOrdersPage/>}/>
+        <Route path='/cart' element={<UserCartPage />} />
+        <Route path='/cart/checkout' element={<UserCheckoutPage />} />
+        <Route path='/orders' element={<UserOrdersPage />} />
         <Route element={<PrivateRoute />}>
           {/* Admin */}
           <Route path='/admin' element={<AdminLayout />}>
@@ -80,7 +78,7 @@ const AppRoutes = () => (
         </Route>
       </Routes>
     </BrowserRouter>
-    </AuthProvider>
+  </AuthProvider>
 );
 
 export default AppRoutes;

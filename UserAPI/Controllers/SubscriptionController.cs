@@ -4,8 +4,8 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using System;
 using Microsoft.Extensions.Logging;
-using Library.Extensions;
 using UserAPI.Services.Interfaces;
+using Library.Common;
 
 namespace UserAPI.Controllers
 {

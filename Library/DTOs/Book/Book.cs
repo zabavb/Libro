@@ -11,6 +11,7 @@ namespace Library.DTOs.Book
         public Guid AuthorId { get; set; }
         public Guid PublisherId { get; set; }
         public Guid CategoryId { get; set; }
+        public Guid DiscountId { get; set; }
         public float Price { get; set; }
         public Language Language { get; set; }
         public DateTime Year { get; set; }

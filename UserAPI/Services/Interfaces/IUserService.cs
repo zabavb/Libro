@@ -1,12 +1,16 @@
-﻿using Library.Extensions;
+﻿using Library.Common;
 using Library.Interfaces;
 
 namespace UserAPI.Services.Interfaces
 {
-    public interface IUserService : IManagable<UserDto>
+    public interface IUserService : IManageable<Dto, DetailsDto> 
     {
-        Task<PaginatedResult<UserDto>> GetAllAsync(int pageNumber, int pageSize, string? searchTerm, Filter? filter, Sort? sort);
-
-        Task DeleteAsync(Guid id, string imageUrl);
+        Task<PaginatedResult<CardDto>> GetAllAsync(
+            int pageNumber,
+            int pageSize,
+            string? searchTerm,
+            Filter? filter,
+            Sort? sort
+        );
     }
 }

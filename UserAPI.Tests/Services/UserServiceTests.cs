@@ -1,12 +1,12 @@
 ﻿using AutoMapper;
 using FluentAssertions;
+using Library.Common;
 using Library.DTOs.User;
-using Library.Extensions;
 using Microsoft.Extensions.Logging;
 using Moq;
 using UserAPI.Models.Filters;
 using UserAPI.Models.Sorts;
-using UserAPI.Repositories;
+using UserAPI.Repositories.Interfaces;
 using UserAPI.Services;
 
 namespace UserAPI.Tests.Services
