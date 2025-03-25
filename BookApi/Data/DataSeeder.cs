@@ -189,6 +189,14 @@ namespace BookAPI.Data
     {
         public static async Task Seed(ModelBuilder modelBuilder, S3StorageService storageService)
         {
+            var bookIds = new List<Guid>
+            {
+                Guid.NewGuid(), // Id для "Місто зі скла"
+                Guid.NewGuid(), // Id для "Тіні минулого"
+                Guid.NewGuid()  // Id для "Емоційний інтелект"
+            };
+
+
             var imagePaths = new Dictionary<string, string>
             {
                 { "Місто зі скла", "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTJSVPcBg9gdzf2mit382PYIbFkkDbn-JB7jA&s" },
@@ -265,12 +273,27 @@ namespace BookAPI.Data
                 new Author { Id = Guid.NewGuid(), Name = "Олександр Мельник", Biography = "Філософ, автор книг про етику та мораль." }
             };
             modelBuilder.Entity<Author>().HasData(authors);
-            var bookIds = new List<Guid>
+
+            // Creation of discounts
+
+            var discountsIds = new List<Guid>
             {
-                Guid.NewGuid(), // Id для "Місто зі скла"
-                Guid.NewGuid(), // Id для "Тіні минулого"
-                Guid.NewGuid()  // Id для "Емоційний інтелект"
+                Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid()
             };
+
+            var random = new Random();
+            var discounts = bookIds.Select(bookId => new Discount
+            {
+                DiscountId = Guid.NewGuid(),
+                BookId = bookId,
+                DiscountRate = random.Next(0, 36),
+                StartDate = DateTime.UtcNow,
+                EndDate = DateTime.UtcNow.AddMonths(1)
+            }).ToList();
+            var id = discountsIds[0];
+
+
+
             var books = new List<Book>
             {
                 new Book
@@ -287,7 +310,8 @@ namespace BookAPI.Data
                     Cover = CoverType.HARDCOVER,
                     IsAvaliable = true,
                     AudioFileUrl = await UploadAudioAsync(storageService, audios[0], bookIds[0]), 
-                    ImageUrl = await UploadImageAsync(storageService, imagePaths["Місто зі скла"], bookIds[0])
+                    ImageUrl = await UploadImageAsync(storageService, imagePaths["Місто зі скла"], bookIds[0]),
+                    DiscountId = discountsIds[0]
                 },
                 new Book
                 {
@@ -322,6 +346,7 @@ namespace BookAPI.Data
             };
             modelBuilder.Entity<Book>().HasData(books);
 
+         
             modelBuilder.Entity("BookSubCategory").HasData(
                 new { BookId = books[0].Id, SubCategoryId = subCategories[0].Id }, 
                 new { BookId = books[1].Id, SubCategoryId = subCategories[3].Id }, 
