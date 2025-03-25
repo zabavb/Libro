@@ -150,7 +150,7 @@ namespace BookAPI.Services
 
             try
             {
-                return await _storageService.UploadAsync(imageFile, id);
+                return await _storageService.UploadAsync(imageFile,"book/images/", id);
             }
             catch (Exception ex)
             {
