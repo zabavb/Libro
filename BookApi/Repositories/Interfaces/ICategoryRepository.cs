@@ -5,7 +5,7 @@ using Library.Interfaces;
 
 namespace BookAPI.Repositories.Interfaces
 {
-    public interface ICategoryRepository : IManageable<Category>
+    public interface ICategoryRepository : IManageable<Category,Category>
     {
         Task<PaginatedResult<Category>> GetAllAsync(int pageNumber, int pageSize, string? searchTerm, CategorySort? sort);
         Task DeleteAsync(Guid id);

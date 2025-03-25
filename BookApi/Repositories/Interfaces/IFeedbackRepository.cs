@@ -6,7 +6,7 @@ using Library.Interfaces;
 
 namespace BookAPI.Repositories.Interfaces
 {
-    public interface IFeedbackRepository : IManageable<Feedback>
+    public interface IFeedbackRepository : IManageable<Feedback,Feedback>
     {
         Task<PaginatedResult<Feedback>> GetAllAsync(int pageNumber, int pageSize, FeedbackFilter? filter, FeedbackSort? sort);
         Task DeleteAsync(Guid id);
