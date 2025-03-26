@@ -8,7 +8,9 @@ export type { DeliveryType } from './types/delivery/DeliveryType';
 export type { Book } from './objects/Book';
 
 // View types
-export type { UserView } from './types/user/UserView';
+export type { UserCard } from './types/user/UserCard';
+export type { UserForm } from './types/user/UserForm';
+
 export type { BookView } from './objects/BookView';
 export type { OrderView } from './types/order/OrderView';
 
@@ -24,6 +26,6 @@ export type { BookSort } from './sortings/BookSort';
 
 // Subtypes
 export type { PaginatedResponse } from './subTypes/PaginatedResponse';
-export { Role } from './subTypes/Role';
+export { Role } from './subTypes/user/Role';
 export { Status } from './subTypes/Status';
 export type { Notification, NotificationData } from './subTypes/Notification';

@@ -1,11 +1,10 @@
 export interface User {
-	id: string
-	firstName: string
-	lastName: string
-	dateOfBirth: Date
-	email: string
-	phoneNumber: string
-	role: number
-	image: File
-	imageUrl: string
+  id: string;
+  lastName: string | null;
+  firstName: string;
+  email: string | null;
+  phoneNumber: string | null;
+  dateOfBirth: Date | null;
+  role: number;
+  imageUrl: string;
 }
