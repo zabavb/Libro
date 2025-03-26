@@ -32,7 +32,9 @@ namespace Library.AWS
                     // Set the ACL based on the folder
                     CannedACL = folder.StartsWith("book/audios") || folder.StartsWith("book/e-books")
                         ? S3CannedACL.Private
-                        : S3CannedACL.PublicRead
+                        // Temporary change
+                        //: S3CannedACL.PublicRead
+                        : S3CannedACL.Private
                 };
 
                 var transferUtility = new TransferUtility(_s3Client);

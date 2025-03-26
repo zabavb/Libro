@@ -23,8 +23,8 @@ namespace BookAPI.Models
         public Publisher Publisher { get; set; } = null!;
         public Guid AuthorId { get; set; }
         public Author Author { get; set; } = null!;
-        public Guid DiscountId { get; set; }
-        public Discount Discount { get; set; } = null!;
+        public Guid? DiscountId { get; set; }
+        public Discount? Discount { get; set; }
         public List<Feedback> Feedbacks { get; set; } = new();
         public List<SubCategory> Subcategories { get; set; } = new();
 
