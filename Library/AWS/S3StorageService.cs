@@ -9,7 +9,6 @@ namespace Library.AWS
 {
     public class S3StorageService(IConfiguration configuration) : IS3StorageService
     {
-        private readonly string _bucketName = configuration["AWS:BucketName"]!;
         private readonly string _region = configuration["AWS:Region"]!;
         private readonly IAmazonS3 _s3Client = new AmazonS3Client(
             configuration["AWS:AccessKey"],
@@ -17,7 +16,7 @@ namespace Library.AWS
             Amazon.RegionEndpoint.GetBySystemName(configuration["AWS:Region"])
         );
 
-        public async Task<string> UploadAsync(IFormFile file, string folder, Guid id)
+        public async Task<string> UploadAsync(string bucketName, IFormFile file, string folder, Guid id)
         {
             string fileKey = $"{folder}{id}{Path.GetExtension(file.FileName)}";
             using var fs = file.OpenReadStream();
@@ -28,7 +27,7 @@ namespace Library.AWS
                 {
                     InputStream = fs,
                     Key = fileKey,
-                    BucketName = _bucketName,
+                    BucketName = bucketName,
                     ContentType = file.ContentType,
                     // Set the ACL based on the folder
                     CannedACL = folder.StartsWith("book/audios") || folder.StartsWith("book/e-books")
@@ -39,7 +38,7 @@ namespace Library.AWS
                 var transferUtility = new TransferUtility(_s3Client);
                 await transferUtility.UploadAsync(uploadRequest);
 
-                return $"https://{_bucketName}.s3.{_region}.amazonaws.com/{fileKey}";
+                return $"https://{bucketName}.s3.{_region}.amazonaws.com/{fileKey}";
             }
             catch (Exception)
             {
@@ -47,13 +46,13 @@ namespace Library.AWS
             }
         }
 
-        public async Task DeleteAsync(string fileKey)
+        public async Task DeleteAsync(string bucketName, string fileKey)
         {
             try
             {
                 var deleteRequest = new DeleteObjectRequest
                 {
-                    BucketName = _bucketName,
+                    BucketName = bucketName,
                     Key = fileKey
                 };
 
@@ -65,13 +64,13 @@ namespace Library.AWS
             }
         }
 
-        public string GenerateSignedUrl(string fileKey, int expirationMinutes = 20)
+        public string GenerateSignedUrl(string bucketName, string fileKey, int expirationMinutes = 20)
         {
             try
             {
                 var request = new GetPreSignedUrlRequest
                 {
-                    BucketName = _bucketName,
+                    BucketName = bucketName,
                     Key = fileKey,
                     Expires = DateTime.UtcNow.AddMinutes(expirationMinutes)
                 };

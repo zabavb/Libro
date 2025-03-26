@@ -18,7 +18,9 @@ namespace UserAPI.Services
         IPasswordRepository passwordRepository,
 
         AvatarService avatarService,
+        IConfiguration configuration,
         S3StorageService storageService,
+        
         IMapper mapper,
         ILogger<IUserService> logger
         ) : IUserService
@@ -30,10 +32,11 @@ namespace UserAPI.Services
         private readonly IPasswordRepository _passwordRepository = passwordRepository;
 
         private readonly AvatarService _avatarService = avatarService;
-        private readonly IMapper _mapper = mapper;
-        
+        private readonly string _bucketName = configuration["AWS:BucketName"]!;
         private readonly S3StorageService _storageService = storageService;
         private readonly string _folder = "user/images/";
+        
+        private readonly IMapper _mapper = mapper;
         
         private readonly ILogger<IUserService> _logger = logger;
         private string _message = string.Empty;
@@ -216,7 +219,7 @@ namespace UserAPI.Services
 
             try
             {
-                return await _storageService.UploadAsync(image, folder, id);
+                return await _storageService.UploadAsync(_bucketName, image, folder, id);
             }
             catch (Exception ex)
             {
@@ -240,7 +243,7 @@ namespace UserAPI.Services
 
                 await _passwordRepository.DeleteAsync(user.PasswordId);
                 string fileKey = $"{_folder}{id}.png";
-                await _storageService.DeleteAsync(fileKey);
+                await _storageService.DeleteAsync(_bucketName, fileKey);
             }
             catch (Exception ex)
             {

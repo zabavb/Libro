@@ -1,108 +1,93 @@
-import { useEffect, useCallback, useMemo } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { RootState, AppDispatch, fetchUsers } from '../../state/redux/index';
+import { useEffect, useState, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import UserList from '../../components/user/UserList';
-import { UserFilter, UserSort } from '../../types';
-import {
-  setFilters,
-  setSearchTerm,
-  setSort,
-} from '../../state/redux/slices/userSlice';
+import { UserCard, UserFilter, UserSort } from '../../types';
+import { fetchUsersService } from '../../services/userService';
+import { useDispatch } from 'react-redux';
+import { AppDispatch } from '../../state/redux';
 import { addNotification } from '../../state/redux/slices/notificationSlice';
 
 const UserListContainer = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const {
-    data: users,
-    operationStatus,
-    loading,
-    error,
-    pagination,
-    searchTerm,
-    filters,
-    sort,
-  } = useSelector((state: RootState) => state.users);
   const navigate = useNavigate();
 
-  const paginationMemo = useMemo(
-    () => ({
-      pageNumber: pagination.pageNumber,
-      pageSize: pagination.pageSize,
-    }),
-    [pagination.pageNumber, pagination.pageSize],
-  );
+  const [users, setUsers] = useState<UserCard[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [searchTerm, setSearchTerm] = useState<string>('');
+  const [filters, setFilters] = useState<UserFilter>({});
+  const [sort, setSort] = useState<UserSort>({});
+  const [pagination, setPagination] = useState({
+    pageNumber: 1,
+    pageSize: 10,
+    totalCount: 0,
+  });
 
-  const fetchUserList = useCallback(() => {
-    dispatch(
-      fetchUsers({
-        ...paginationMemo,
+  const paginationMemo = useMemo(() => ({ ...pagination }), [pagination]);
+
+  const fetchUserList = useCallback(async () => {
+    setLoading(true);
+    try {
+      const response = await fetchUsersService(
+        paginationMemo.pageNumber,
+        paginationMemo.pageSize,
         searchTerm,
         filters,
         sort,
-      }),
-    );
-  }, [dispatch, paginationMemo, searchTerm, filters, sort]);
+      );
 
-  useEffect(() => {
-    fetchUserList();
+      if (response.error)
+        dispatch(
+          addNotification({
+            message: response.error,
+            type: 'error',
+          }),
+        );
 
-    if (operationStatus === 'error')
+      if (response && response.data) {
+        const paginatedData = response.data;
+
+        setUsers(paginatedData.items);
+        setPagination({
+          pageNumber: paginatedData.pageNumber,
+          pageSize: paginatedData.pageSize,
+          totalCount: paginatedData.totalCount,
+        });
+      } else throw new Error('Invalid response structure');
+    } catch (error) {
       dispatch(
         addNotification({
-          message: error,
+          message: error instanceof Error ? error.message : String(error),
           type: 'error',
         }),
       );
-  }, [fetchUserList, dispatch, operationStatus, error]);
+      setUsers([]);
+    }
+    setLoading(false);
+  }, [paginationMemo, searchTerm, filters, sort, dispatch]);
 
-  const handleNavigate = (path: string) => {
-    navigate(path);
-  };
+  useEffect(() => {
+    fetchUserList();
+  }, [fetchUserList]);
+
+  const handleNavigate = (path: string) => navigate(path);
 
   const handleSearchTermChange = (newSearchTerm: string) => {
-    dispatch(setSearchTerm(newSearchTerm));
-    dispatch(
-      fetchUsers({
-        pageNumber: 1,
-        pageSize: pagination.pageSize,
-        searchTerm: newSearchTerm,
-        filters,
-        sort,
-      }),
-    );
+    setSearchTerm(newSearchTerm);
+    setPagination((prev) => ({ ...prev, pageNumber: 1 }));
   };
 
   const handleFilterChange = (newFilters: UserFilter) => {
-    dispatch(setFilters(newFilters));
-    dispatch(
-      fetchUsers({
-        pageNumber: 1,
-        pageSize: pagination.pageSize,
-        searchTerm,
-        filters: newFilters,
-        sort,
-      }),
-    );
+    setFilters(newFilters);
+    setPagination((prev) => ({ ...prev, pageNumber: 1 }));
   };
 
   const handleSortChange = (field: keyof UserSort) => {
-    dispatch(setSort(field));
-    dispatch(
-      fetchUsers({
-        pageNumber: 1,
-        pageSize: pagination.pageSize,
-        searchTerm,
-        filters,
-        sort: { [field]: true },
-      }),
-    );
+    setSort({ [field]: true });
+    setPagination((prev) => ({ ...prev, pageNumber: 1 }));
   };
 
   const handlePageChange = (pageNumber: number) => {
-    dispatch(
-      fetchUsers({ pageNumber, pageSize: pagination.pageSize, filters, sort }),
-    );
+    setPagination((prev) => ({ ...prev, pageNumber }));
   };
 
   return (

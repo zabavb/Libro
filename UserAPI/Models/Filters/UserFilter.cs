@@ -7,7 +7,7 @@ namespace UserAPI.Models.Filters
     {
         public EmailDomen? Email { get; set; }
         public RoleType? Role { get; set; }
-        public string Subscription { get; set; }
+        // public string Subscription { get; set; }
 
         public IQueryable<User> Apply(IQueryable<User> users)
         {
@@ -17,8 +17,8 @@ namespace UserAPI.Models.Filters
             if (Role.HasValue)   
                 users = users.Where(u => u.Role.Equals(Role));
             
-            if (!string.IsNullOrEmpty(Subscription))
-                users = users.Where(u => u.Equals(Subscription));
+            /* if (!string.IsNullOrEmpty(Subscription))
+                users = users.Where(u => u.Equals(Subscription)); */
 
             return users;
         }
