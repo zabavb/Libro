@@ -25,6 +25,7 @@ export type { OrderSort } from './sortings/OrderSort';
 export type { BookSort } from './sortings/BookSort';
 
 // Subtypes
+export type { ServiceResponse } from './subTypes/ServiceResponse';
 export type { PaginatedResponse } from './subTypes/PaginatedResponse';
 export { Role } from './subTypes/user/Role';
 export { Status } from './subTypes/Status';
