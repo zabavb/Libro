@@ -1,62 +1,38 @@
-import React from "react"
-import { UserView } from "../../types"
-import { LazyLoadImage } from "react-lazy-load-image-component"
-import "react-lazy-load-image-component/src/effects/blur.css"
+import React from 'react';
+import { UserCard as UserCardType } from '../../types';
 
-interface UserAdminCardProps {
-	user: UserView
-	onNavigate: () => void
-	onDelete: (e: React.MouseEvent) => void
+interface UserCardProps {
+  user: UserCardType;
+  onNavigate: () => void;
+  onDelete: (e: React.MouseEvent) => void;
 }
 
-const UserCard: React.FC<UserAdminCardProps> = ({ user, onNavigate, onDelete }) => {
-	return (
-		<>
-			<hr />
-			<li
-				onClick={(e) => {
-					e.stopPropagation()
-					onNavigate()
-				}}>
-				<div>
-					<p>
-						<LazyLoadImage
-							src={user.imageUrl}
-							alt={`${user.firstName} ${user.lastName}`}
-							effect="opacity"
-							height="100"
-							width="100"
-						/>
-					</p>
-					<p>
-						<strong>First Name:</strong> {user.firstName}
-					</p>
-					<p>
-						<strong>Last Name:</strong> {user.lastName}
-					</p>
-					<p>
-						<strong>Date of Birth:</strong> {user.dateOfBirth}
-					</p>
-					<p>
-						<strong>Email:</strong> {user.email}
-					</p>
-					<p>
-						<strong>Phone Number:</strong> {user.phoneNumber}
-					</p>
-					<p>
-						<strong>Role:</strong> {user.role}
-					</p>
-				</div>
-				<button
-					onClick={(e) => {
-						e.stopPropagation()
-						onDelete(e)
-					}}>
-					Delete
-				</button>
-			</li>
-		</>
-	)
-}
+const UserCard: React.FC<UserCardProps> = ({ user, onNavigate, onDelete }) => {
+  return (
+    <>
+      <hr />
+      <li
+        onClick={(e) => {
+          e.stopPropagation();
+          onNavigate();
+        }}
+      >
+        <div>{user.fullName}</div>
+        <div>{user.email}</div>
+        <div>{user.phoneNumber}</div>
+        <div>{user.role}</div>
+        <div>Edit</div>
+        <div
+          onClick={(e) => {
+            e.stopPropagation();
+            onDelete(e);
+          }}
+        >
+          Remove
+        </div>
+      </li>
+    </>
+  );
+};
 
-export default UserCard
+export default UserCard;

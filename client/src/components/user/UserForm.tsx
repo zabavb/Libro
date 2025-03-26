@@ -1,151 +1,174 @@
-import React, { useEffect, useState } from "react"
-import { useForm } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { UserFormData, userSchema } from "../../utils"
-import { User, Role } from "../../types"
-import { dateToString } from "../../api/adapters/commonAdapters"
-import { roleNumberToEnum } from "../../api/adapters/userAdapter"
+import React, { useEffect } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { UserFormData, userSchema } from '../../utils';
+import { Role, UserForm as UserFormType } from '../../types';
+import { dateToString } from '../../api/adapters/commonAdapters';
+import { roleNumberToEnum } from '../../api/adapters/userAdapter';
 
 interface UserFormProps {
-	existingUser?: User
-	onAddUser: (user: FormData) => void
-	onEditUser: (id: string, updatedUser: FormData) => void
+  existingUser?: UserFormType;
+  onAddUser: (user: UserFormData) => Promise<void>;
+  onEditUser: (
+    existingUser: UserFormType,
+    updatedUser: UserFormData,
+  ) => Promise<void>;
+  loading: boolean;
 }
 
-const UserForm: React.FC<UserFormProps> = ({ existingUser, onAddUser, onEditUser }) => {
-	const {
-		register,
-		handleSubmit,
-		setValue,
-		formState: { errors },
-	} = useForm<UserFormData>({
-		resolver: zodResolver(userSchema),
-		defaultValues: {
-			firstName: "",
-			lastName: "",
-			dateOfBirth: dateToString(new Date(new Date().getFullYear() - 18)),
-			email: "",
-			phoneNumber: "",
-			role: Role.USER,
-		},
-	})
+const UserForm: React.FC<UserFormProps> = ({
+  existingUser,
+  onAddUser,
+  onEditUser,
+  loading,
+}) => {
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    formState: { errors },
+  } = useForm<UserFormData>({
+    resolver: zodResolver(userSchema),
+    defaultValues: {
+      firstName: '',
+      lastName: '',
+      dateOfBirth: dateToString(new Date(new Date().getFullYear() - 18)),
+      email: '',
+      phoneNumber: '',
+      role: Role.USER,
+    },
+  });
 
-	const [imagePreview, setImagePreview] = useState<string | null>(null)
+  useEffect(() => {
+    if (existingUser) {
+      setValue('lastName', existingUser.lastName ?? undefined);
+      setValue('firstName', existingUser.firstName);
+      setValue('email', existingUser.email ?? undefined);
+      setValue('phoneNumber', existingUser.phoneNumber ?? undefined);
+      setValue(
+        'dateOfBirth',
+        existingUser.dateOfBirth ? dateToString(existingUser.dateOfBirth) : '',
+      );
+      setValue('role', roleNumberToEnum(existingUser.role));
+    }
+  }, [existingUser, setValue]);
 
-	useEffect(() => {
-		if (existingUser) {
-			setValue("firstName", existingUser.firstName)
-			setValue("lastName", existingUser.lastName)
-			setValue("dateOfBirth", dateToString(existingUser.dateOfBirth))
-			setValue("email", existingUser.email)
-			setValue("phoneNumber", existingUser.phoneNumber)
-			setValue("role", roleNumberToEnum(existingUser.role))
-			setImagePreview(existingUser.imageUrl)
-		}
-	}, [existingUser, setValue])
+  const onSubmit = (data: UserFormData) => {
+    if (existingUser) onEditUser(existingUser, data);
+    else onAddUser(data);
+  };
 
-	const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-		const file = event.target.files?.[0]
-		if (file) {
-			const imageUrl = URL.createObjectURL(file)
-			setImagePreview(imageUrl)
-			setValue("image", file)
-		}
-	}
+  const feedbacksHandler = (isExtend: boolean) => {
+    if (isExtend) {
+      const skipFirst = existingUser?.feedbacks.slice(1);
+      if (skipFirst) {
+        skipFirst.map((feedback) => (
+          <div>
+            <div>{feedback.headLabel}</div>
+            <div>{feedback.rating}</div>
+            <div>{feedback.comment}</div>
+            <div>{dateToString(feedback.date)}</div>
+          </div>
+        ));
+        <input onClick={() => feedbacksHandler}>Less</input>;
+      }
+    } else <input onClick={() => feedbacksHandler(true)}>More</input>;
+  };
 
-	const onSubmit = (data: UserFormData) => {
-		const formData = new FormData()
-		formData.append("id", existingUser?.id ?? "00000000-0000-0000-0000-000000000000")
-		formData.append("firstName", data.firstName)
-		formData.append("lastName", data.lastName || "")
-		formData.append("dateOfBirth", data.dateOfBirth)
-		formData.append("email", data.email || "")
-		formData.append("phoneNumber", data.phoneNumber || "")
-		formData.append("role", data.role)
-		formData.append("image", data.image ?? "")
-		formData.append("imageUrl", existingUser?.imageUrl ?? "")
+  return (
+    <>
+      {existingUser && (
+        <div>
+          <img src={existingUser.imageUrl ?? ''} alt={existingUser.firstName} />
+          {existingUser.lastName} {existingUser.firstName}
+        </div>
+      )}
 
-		if (existingUser) onEditUser(existingUser.id, formData)
-		else onAddUser(formData)
-	}
+      <div>
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <input {...register('lastName')} placeholder='Last Name' />
+          <p>{errors.lastName?.message}</p>
 
-	return (
-		<form onSubmit={handleSubmit(onSubmit)}>
-			<label
-				htmlFor="imageUpload"
-				style={{
-					display: "flex",
-					alignItems: "center",
-					justifyContent: "center",
-					width: "150px",
-					height: "150px",
-					border: "2px dashed #ccc",
-					borderRadius: "10px",
-					cursor: "pointer",
-					overflow: "hidden",
-					backgroundSize: "cover",
-					backgroundPosition: "center",
-					backgroundImage: imagePreview ? `url(${imagePreview})` : "none",
-				}}>
-				{!imagePreview && <span>Click to Upload</span>}
-			</label>
-			<input
-				id="imageUpload"
-				type="file"
-				accept="image/*"
-				style={{ display: "none" }}
-				onChange={handleImageChange}
-			/>
-			<p>{errors.image?.message}</p>
+          <input {...register('firstName')} placeholder='First Name' />
+          <p>{errors.firstName?.message}</p>
 
-			<input
-				{...register("firstName")}
-				placeholder="First Name"
-			/>
-			<p>{errors.firstName?.message}</p>
+          <input type='email' {...register('email')} placeholder='Email' />
+          <p>{errors.email?.message}</p>
 
-			<input
-				{...register("lastName")}
-				placeholder="Last Name"
-			/>
-			<p>{errors.lastName?.message}</p>
+          <input
+            type='tel'
+            {...register('phoneNumber')}
+            placeholder='Phone Number'
+          />
+          <p>{errors.phoneNumber?.message}</p>
 
-			<input
-				type="date"
-				{...register("dateOfBirth")}
-				placeholder="Date of Birth"
-			/>
-			<p>{errors.dateOfBirth?.message}</p>
+          <input
+            type='date'
+            {...register('dateOfBirth')}
+            placeholder='Date of Birth'
+          />
+          <p>{errors.dateOfBirth?.message}</p>
 
-			<input
-				type="email"
-				{...register("email")}
-				placeholder="Email"
-			/>
-			<p>{errors.email?.message}</p>
+          <select {...register('role')}>
+            <option value=''>Select Role</option>
+            {Object.entries(Role).map(([key, value]) => (
+              <option key={key} value={value}>
+                {value}
+              </option>
+            ))}
+          </select>
+          <p>{errors.role?.message}</p>
 
-			<input
-				type="tel"
-				{...register("phoneNumber")}
-				placeholder="Phone Number"
-			/>
-			<p>{errors.phoneNumber?.message}</p>
+          <button type='submit' disabled={loading}>
+            {existingUser ? 'Update User' : 'Add User'}
+          </button>
+        </form>
+      </div>
 
-			<select {...register("role")}>
-				<option value="">Select Role</option>
-				{Object.entries(Role).map(([key, value]) => (
-					<option
-						key={key}
-						value={value}>
-						{value}
-					</option>
-				))}
-			</select>
-			<p>{errors.role?.message}</p>
+      {existingUser && (
+        <>
+          <p>All orders</p>
+          <div>
+            {existingUser.orders ? (
+              existingUser.orders.map((order) => (
+                <div>
+                  <div>{order.bookNames}</div>
+                  <div>{order.orderUiId}</div>
+                  <div>{order.price}</div>
+                </div>
+              ))
+            ) : (
+              <p>No orders yet...</p>
+            )}
+          </div>
+        </>
+      )}
 
-			<button type="submit">{existingUser ? "Update User" : "Add User"}</button>
-		</form>
-	)
-}
+      {existingUser && (
+        <div>
+          {existingUser.feedbacksCount === 0 ? (
+            <p>No feedbacks yet...</p>
+          ) : (
+            <>
+              <p>Feedbacks ({existingUser.feedbacksCount})</p>
+              <div>
+                {existingUser.feedbacksCount === 1 ? (
+                  <>
+                    <div>{existingUser.feedbacks[0].rating}</div>
+                    <div>{existingUser.feedbacks[0].comment}</div>
+                    <div>{existingUser.feedbacks[0].headLabel}</div>
+                    <div>{dateToString(existingUser.feedbacks[0].date)}</div>
+                  </>
+                ) : (
+                  <>{feedbacksHandler}</>
+                )}
+              </div>
+            </>
+          )}
+        </div>
+      )}
+    </>
+  );
+};
 
-export default UserForm
+export default UserForm;

@@ -1,6 +1,6 @@
 import React from 'react';
 import { FixedSizeList as List } from 'react-window';
-import { User } from '../../types';
+import { UserCard } from '../../types';
 import UserCardContainer from '../../containers/user/UserCardContainer';
 import UserFilter from './UserFilter';
 import UserSort from './UserSort';
@@ -9,7 +9,7 @@ import Search from '../common/Search';
 import Loading from '../common/Loading';
 
 interface UserListProps {
-  users?: User[];
+  users?: UserCard[];
   loading: boolean;
   pagination: { pageNumber: number; pageSize: number; totalCount: number };
   onPageChange: (pageNumber: number) => void;
@@ -56,8 +56,8 @@ const UserList: React.FC<UserListProps> = ({
       <Search searchTerm={searchTerm} onSearchTermChange={onSearchTermChange} />
       <UserFilter filters={filters} onFilterChange={onFilterChange} />
       <UserSort sort={sort} onSortChange={onSortChange} />
-      
-			{loading ? (
+
+      {loading ? (
         <Loading />
       ) : users.length > 0 ? (
         <List
