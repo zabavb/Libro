@@ -4,10 +4,11 @@ using Amazon.S3.Transfer;
 using Library.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 
-namespace Library.AWS
+namespace Library.Common
 {
-    public class S3StorageService(IConfiguration configuration) : IS3StorageService
+    public class S3StorageService(IConfiguration configuration, ILogger<IS3StorageService> logger) : IS3StorageService
     {
         private readonly string _region = configuration["AWS:Region"]!;
         private readonly IAmazonS3 _s3Client = new AmazonS3Client(
@@ -15,6 +16,7 @@ namespace Library.AWS
             configuration["AWS:SecretKey"],
             Amazon.RegionEndpoint.GetBySystemName(configuration["AWS:Region"])
         );
+        private readonly ILogger<IS3StorageService> _logger = logger;
 
         public async Task<string> UploadAsync(string bucketName, IFormFile file, string folder, Guid id)
         {
@@ -42,9 +44,11 @@ namespace Library.AWS
 
                 return $"https://{bucketName}.s3.{_region}.amazonaws.com/{fileKey}";
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                throw;  
+                string message = "An unexpected database error occurred for user's avatar uploading.";
+                _logger.LogError(message);
+                throw new InvalidOperationException(message, ex);
             }
         }
 
@@ -60,10 +64,13 @@ namespace Library.AWS
 
                 await _s3Client.DeleteObjectAsync(deleteRequest);
             }
-            catch (AmazonS3Exception)
+            catch (AmazonS3Exception ex)
             {
-                throw;
+                string message = $"An unexpected database error occurred while removing user's avatar from storage.";
+                _logger.LogError(message);
+                throw new InvalidOperationException(message, ex);
             }
+
         }
 
         public string GenerateSignedUrl(string bucketName, string fileKey, int expirationMinutes = 20)

@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
 using BookAPI.Repositories.Interfaces;
-using Library.AWS;
 using Library.Common;
 using Library.DTOs.UserRelated.User;
 using UserAPI.Models;
@@ -37,9 +36,7 @@ namespace UserAPI.Services
         private readonly string _folder = "user/images/";
         
         private readonly IMapper _mapper = mapper;
-        
         private readonly ILogger<IUserService> _logger = logger;
-        private string _message = string.Empty;
 
         public async Task<PaginatedResult<CardDto>> GetAllAsync(
             int pageNumber,
@@ -49,12 +46,9 @@ namespace UserAPI.Services
             Sort? sort
         ) {
             var users = await _repository.GetAllAsync(pageNumber, pageSize, searchTerm!, filter, sort);
-            if (users == null)
-            {
-                _message = "Failed to fetch users.";
-                _logger.LogError(_message);
-                throw new InvalidOperationException(_message);
-            }
+            
+            if (!users.Items.Any())
+                throw new KeyNotFoundException("No users found.");
             _logger.LogInformation("Successfully fetched paginated users.");
 
             var cards = await MergeForCardAsync(users.Items);
@@ -68,32 +62,11 @@ namespace UserAPI.Services
             };
         }
 
-        private async Task<ICollection<CardDto>> MergeForCardAsync(ICollection<User> users)
-        {
-            List<CardDto> cards = [];
-            
-            foreach (var user in users)
-            {
-                // GetCardSnippetByUserId(int Id) returns Library/DTOs/UserRelated/User/UserCardDto/OrderCardSnippet
-                var orderSnippet = await _orderRepository.GetCardSnippetByUserId(user.UserId);
-                _logger.LogInformation("Successfully fetched paginated users.");
-                cards.Add(_mapper.Map<CardDto>((user, orderSnippet)));
-            }
-
-            return cards;
-        }
-
         public async Task<UserDetailsDto?> GetByIdAsync(Guid id)
         {
-            var user = await _repository.GetByIdAsync(id);
-            
-            if (user == null)
-            {
-                _message = $"User with ID [{id}] not found.";
-                _logger.LogError(_message);
-                throw new KeyNotFoundException(_message);
-            }
-            _logger.LogInformation($"User with ID [{id}] successfully fetched.");
+            var user = await _repository.GetByIdAsync(id) ??
+                throw new KeyNotFoundException($"User with ID [{id}] not found.");
+            _logger.LogInformation("User with ID [{id}] successfully fetched.", id);
 
             // GetAllByUserId(int id) returns IEnumerable<OrderDetailsSnippet>
             var ordersSnippet = await _orderRepository.GetAllByUserId(id);
@@ -108,11 +81,7 @@ namespace UserAPI.Services
         public async Task CreateAsync(Dto dto)
         {
             if (dto == null)
-            {
-                _message = "User was not provided for creation.";
-                _logger.LogError(_message);
-                throw new ArgumentNullException(nameof(dto), _message);
-            }
+                throw new ArgumentException("User data mast be provided.", nameof(dto));
 
             Guid id = Guid.NewGuid();
 
@@ -121,59 +90,60 @@ namespace UserAPI.Services
             
             var user = _mapper.Map<User>(dto);
             user.UserId = id;
-
-            try
+            /*try
+            {*/
+            await _repository.CreateAsync(user);
+            _logger.LogInformation("User successfully created.");
+            /*}
+            catch (InvalidOperationException ex)
             {
-                await _repository.CreateAsync(user);
-                _logger.LogInformation("User successfully created.");
-            }
-            catch (Exception ex)
-            {
-                _message = $"Error occurred while adding a new user.";
+                _message = $"Data violates a business rule for user's creation.";
                 _logger.LogError(_message);
                 throw new InvalidOperationException(_message, ex);
             }
+            catch (Exception ex)
+            {
+                _message = $"An unexpected database error occurred for user's creation.";
+                _logger.LogError(_message);
+                throw new InvalidOperationException(_message, ex);
+            }*/
         }
 
         public async Task UpdateAsync(Dto dto)
         {
             if (dto == null)
-            {
-                _message = "User was not provided for update.";
-                _logger.LogError(_message);
-                throw new ArgumentNullException(nameof(dto), _message);
-            }
+                throw new ArgumentException("User data mast be provided.", nameof(dto));
 
             var user = _mapper.Map<User>(dto);
-            
-            try
-            {
+            /*try
+            {*/
                 await _repository.UpdateAsync(user);
-                _logger.LogInformation($"User with ID [{dto.Id}] successfully updated.");
-            }
+                _logger.LogInformation("User with ID [{id}] successfully updated.", dto.Id);
+            /*}
             catch (InvalidOperationException)
             {
-                _message = $"User with ID [{dto.Id}] not found for update.";
+                _message = $"User was not found by ID [{user.UserId}] or" +
+                    $"data violates a business rule for user's update.";
                 _logger.LogError(_message);
                 throw new KeyNotFoundException(_message);
             }
             catch (Exception ex)
             {
-                _message = $"Error occurred while updating the user with ID [{dto.Id}].";
+                _message = $"An unexpected database error occurred for user's update.";
                 _logger.LogError(_message);
                 throw new InvalidOperationException(_message, ex);
-            }
+            }*/
         }
 
         public async Task DeleteAsync(Guid id)
         {
-            await DeleteAvatarAsync(id);
-
-            try
-            {
-                await _repository.DeleteAsync(id);
-                _logger.LogInformation($"User with ID [{id}] successfully deleted.");
-            }
+            var user = await DeleteAvatarAsync(id);
+            await _passwordRepository.DeleteAsync(user.PasswordId);
+            /*try
+            {*/
+            await _repository.DeleteAsync(id);
+            _logger.LogInformation($"User with ID [{id}] successfully deleted.");
+            /*}
             catch (KeyNotFoundException)
             {
                 _message = $"User with ID [{id}] not found for deletion.";
@@ -182,10 +152,24 @@ namespace UserAPI.Services
             }
             catch (Exception ex)
             {
-                _message = $"Error occurred while deleting the user with ID [{id}].";
+                _message = $"An unexpected database error occurred for user's deletion.";
                 _logger.LogError(_message);
                 throw new InvalidOperationException(_message, ex);
+            }*/
+        }
+
+        private async Task<ICollection<CardDto>> MergeForCardAsync(ICollection<User> users)
+        {
+            List<CardDto> cards = [];
+
+            foreach (var user in users)
+            {
+                // GetCardSnippetByUserId(int Id) returns Library/DTOs/UserRelated/User/UserCardDto/OrderCardSnippet
+                var orderSnippet = await _orderRepository.GetCardSnippetByUserId(user.UserId);
+                cards.Add(_mapper.Map<CardDto>((user, orderSnippet)));
             }
+
+            return cards;
         }
 
         private async Task<IFormFile?> GenerateAvatarAsync(string? lastName, string firstName)
@@ -193,64 +177,35 @@ namespace UserAPI.Services
             try
             {
                 byte[] avatarImage = await _avatarService.GenerateAvatarAsync(firstName, lastName);
-
                 var stream = new MemoryStream(avatarImage);
-
                 IFormFile formFile = new FormFile(stream, 0, avatarImage.Length, "file", "avatar.png")
                 {
                     Headers = new HeaderDictionary(),
                     ContentType = "image/png"
                 };
-
+                
                 return formFile;
             }
             catch (Exception ex)
             {
-                string message = "Error occurred while generating user's image.";
-                _logger.LogError(message);
-                throw new InvalidOperationException(message, ex);
+                throw new InvalidOperationException("Database error for user's avatar generation.", ex);
             }
         }
 
-        private async Task<string> UploadAvatarAsync(IFormFile? image, string folder, Guid id)
+        private async Task<string> UploadAvatarAsync(IFormFile? image, string folder, Guid id) =>
+            image != null && image.Length > 0
+                ? await _storageService.UploadAsync(_bucketName, image, folder, id)
+                : string.Empty;
+
+        private async Task<User> DeleteAvatarAsync(Guid id)
         {
-            if (image == null || image.Length == 0)
-                return null!;
+            var user = await _repository.GetByIdAsync(id) ??
+                throw new KeyNotFoundException($"User with ID [{id}] not found for deletion.");
+            
+            string fileKey = $"{_folder}{id}.png";
+            await _storageService.DeleteAsync(_bucketName, fileKey);
 
-            try
-            {
-                return await _storageService.UploadAsync(_bucketName, image, folder, id);
-            }
-            catch (Exception ex)
-            {
-                string message = "Error occurred while uploading user's image.";
-                _logger.LogError(message);
-                throw new InvalidOperationException(message, ex);
-            }
-        }
-
-        private async Task DeleteAvatarAsync(Guid id)
-        {
-            try
-            {
-                var user = await _repository.GetByIdAsync(id);
-                if (user == null)
-                {
-                    _message = $"User with ID [{id}] not found for deletion.";
-                    _logger.LogError(_message);
-                    throw new KeyNotFoundException(_message);
-                }
-
-                await _passwordRepository.DeleteAsync(user.PasswordId);
-                string fileKey = $"{_folder}{id}.png";
-                await _storageService.DeleteAsync(_bucketName, fileKey);
-            }
-            catch (Exception ex)
-            {
-                _message = $"Error occurred while removing user's image from storage.";
-                _logger.LogError(_message);
-                throw new InvalidOperationException(_message, ex);
-            }
+            return user;
         }
     }
 }

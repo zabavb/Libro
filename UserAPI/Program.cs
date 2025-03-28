@@ -1,4 +1,4 @@
-using Library.AWS;
+using Library.Common;
 using Library.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -16,6 +16,7 @@ using UserAPI.Repositories;
 using UserAPI.Repositories.Interfaces;
 using UserAPI.Services;
 using UserAPI.Services.Interfaces;
+using Library.Common.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -132,12 +133,12 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
 app.UseCors("AllowReactApp");
 
 app.UseAuthentication();
 app.UseAuthorization();
 
+app.UseExceptionMiddleware();
 app.MapControllers();
 
 app.Run();

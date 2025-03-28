@@ -5,7 +5,6 @@ using BookAPI.Models.Sortings;
 using BookAPI.Repositories.Interfaces;
 using BookAPI.Services.Interfaces;
 using Humanizer;
-using Library.AWS;
 using Library.Common;
 using System;
 using System.Collections.Generic;
