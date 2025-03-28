@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Library.Common.Middleware;
+using Microsoft.EntityFrameworkCore;
 using UserAPI.Data;
 using UserAPI.Models;
 using UserAPI.Models.Auth;
@@ -12,24 +13,38 @@ namespace UserAPI.Repositories
 
         public async Task<User?> GetUserByEmailAsync(LoginRequest request)
         {
-            var user = await _context.Users
-                .AsNoTracking().FirstOrDefaultAsync(user => user.Email == request.Identifier);
+            try
+            {
+                var user = await _context.Users
+                    .AsNoTracking().FirstOrDefaultAsync(user => user.Email == request.Identifier);
 
-            if (user == null)
-                _logger.LogError($"User with email [{request.Identifier}] not found.");
+                if (user == null)
+                    _logger.LogError($"User not found by email [{request.Identifier}].");
 
-            return user;
+                return user;
+            }
+            catch (Exception ex)
+            {
+                throw new RepositoryException($"Failed to retrieve user by email [{request.Identifier}].", ex);
+            }
         }
 
         public async Task<User?> GetUserByPhoneNumberAsync(LoginRequest request)
         {
-            var user = await _context.Users
-                .AsNoTracking().FirstOrDefaultAsync(user => user.PhoneNumber == request.Identifier);
+            try
+            {
+                var user = await _context.Users
+                    .AsNoTracking().FirstOrDefaultAsync(user => user.PhoneNumber == request.Identifier);
 
-            if (user == null)
-                _logger.LogError($"User with phone number [{request.Identifier}] not found.");
+                if (user == null)
+                    _logger.LogError($"User not found by phone number [{request.Identifier}].");
 
-            return user;
+                return user;
+            }
+            catch (Exception ex)
+            {
+                throw new RepositoryException($"Failed to retrieve user by phone number [{request.Identifier}].", ex);
+            }
         }
     }
 }
