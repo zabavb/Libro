@@ -19,13 +19,13 @@ namespace UserAPI.Repositories
                     .AsNoTracking().FirstOrDefaultAsync(user => user.Email == request.Identifier);
 
                 if (user == null)
-                    _logger.LogError($"User not found by email [{request.Identifier}].");
+                    _logger.LogError($"User not found by email.");
 
                 return user;
             }
             catch (Exception ex)
             {
-                throw new RepositoryException($"Failed to retrieve user by email [{request.Identifier}].", ex);
+                throw new RepositoryException($"Failed to retrieve user by email.", ex);
             }
         }
 
@@ -37,13 +37,13 @@ namespace UserAPI.Repositories
                     .AsNoTracking().FirstOrDefaultAsync(user => user.PhoneNumber == request.Identifier);
 
                 if (user == null)
-                    _logger.LogError($"User not found by phone number [{request.Identifier}].");
+                    _logger.LogError($"User not found by phone number.");
 
                 return user;
             }
             catch (Exception ex)
             {
-                throw new RepositoryException($"Failed to retrieve user by phone number [{request.Identifier}].", ex);
+                throw new RepositoryException($"Failed to retrieve user by phone number.", ex);
             }
         }
     }
