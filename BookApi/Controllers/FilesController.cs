@@ -22,7 +22,7 @@ namespace BookAPI.Controllers
             //return await _storageService.UploadAsync(_bucketName, image, folder, id);
             try
             {
-                var signedUrl = _storageService.GenerateSignedUrl("libro-book",fileKey);
+                var signedUrl = _storageService.GenerateSignedUrl(GlobalConstants.bucketName,fileKey);
                 return Ok(new { SignedUrl = signedUrl });
             }
             catch (Exception ex)

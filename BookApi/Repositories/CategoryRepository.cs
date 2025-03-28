@@ -17,7 +17,7 @@ namespace BookAPI.Repositories
         private readonly IDatabase _redisDatabase;
         private readonly ILogger<ICategoryRepository> _logger;
         private readonly string _cacheKeyPrefix = "Category_";
-        private readonly TimeSpan _cacheExpiration = TimeSpan.FromMinutes(10);
+        private readonly TimeSpan _cacheExpiration = TimeSpan.FromMinutes(GlobalConstants.DefaultCacheExpirationTime);
 
         public CategoryRepository(BookDbContext context, IConnectionMultiplexer redis, ILogger<ICategoryRepository> logger)
         {

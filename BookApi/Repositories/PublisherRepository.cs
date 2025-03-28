@@ -17,7 +17,7 @@ namespace BookAPI.Repositories
         private readonly IDatabase _redisDatabase;
         private readonly ILogger<PublisherRepository> _logger;
         private readonly string _cacheKeyPrefix = "Publisher_";
-        private readonly TimeSpan _cacheExpiration = TimeSpan.FromMinutes(10);
+        private readonly TimeSpan _cacheExpiration = TimeSpan.FromMinutes(GlobalConstants.DefaultCacheExpirationTime);
 
         public PublisherRepository(BookDbContext context, IConnectionMultiplexer redis, ILogger<PublisherRepository> logger)
         {
