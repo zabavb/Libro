@@ -98,8 +98,7 @@ namespace UserAPI.Repositories
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error occurred while fetching users.");
-                throw new RepositoryException("An unexpected error occurred while fetching users.", ex);
+                throw new RepositoryException("Error while fetching users.", ex);
             }
         }
 
@@ -141,8 +140,7 @@ namespace UserAPI.Repositories
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Database error while fetching user by ID [{Id}].", id);
-                throw new RepositoryException($"An unexpected error occurred while fetching the user with ID [{id}].", ex);
+                throw new RepositoryException($"Database error while fetching user by ID [{id}].", ex);
             }
         }
 
@@ -185,8 +183,7 @@ namespace UserAPI.Repositories
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Database error while fetching user by email [{email}].", email);
-                throw new RepositoryException($"An unexpected error occurred while fetching the user by email [{email}].", ex);
+                throw new RepositoryException($"Database error while fetching user by email [{email}].", ex);
             }
         }
 
@@ -200,13 +197,11 @@ namespace UserAPI.Repositories
             }
             catch (DbUpdateException ex)
             {
-                _logger.LogError(ex, "Database update error while creating user.");
                 throw new RepositoryException("Database update error while creating user.", ex);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error occurred while creating user.");
-                throw new RepositoryException("An unexpected error occurred while creating user.", ex);
+                throw new RepositoryException("Error occurred while creating user.", ex);
             }
         }
 
@@ -222,8 +217,7 @@ namespace UserAPI.Repositories
             }
             catch (DbUpdateException ex)
             {
-                _logger.LogError(ex, "Database error while updating user [{UserId}].", user.UserId);
-                throw new RepositoryException($"An error occurred while updating user [{user.UserId}].", ex);
+                throw new RepositoryException($"Database error while updating user [{user.UserId}].", ex);
             }
         }
 
@@ -238,8 +232,7 @@ namespace UserAPI.Repositories
             }
             catch (DbUpdateException ex)
             {
-                _logger.LogError(ex, "Database error while deleting user [{UserId}].", id);
-                throw new RepositoryException($"An error occurred while deleting user [{id}].", ex);
+                throw new RepositoryException($"Database error while deleting user with ID [{id}].", ex);
             }
         }
     }

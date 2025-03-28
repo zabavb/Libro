@@ -1,12 +1,14 @@
 ﻿using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
 using System.Net;
 using System.Text.Json;
 
 namespace Library.Common.Middleware
 {
-    public class ExceptionMiddleware(RequestDelegate next)
+    public class ExceptionMiddleware(RequestDelegate next, ILogger<ExceptionMiddleware> logger)
     {
         private readonly RequestDelegate _next = next;
+        private readonly ILogger<ExceptionMiddleware> _logger = logger;
 
         public async Task Invoke(HttpContext context)
         {
@@ -20,7 +22,7 @@ namespace Library.Common.Middleware
             }
         }
 
-        private static async Task HandleExceptionAsync(HttpContext context, Exception ex)
+        private async Task HandleExceptionAsync(HttpContext context, Exception ex)
         {
             var statusCode = ex switch
             {
@@ -31,13 +33,14 @@ namespace Library.Common.Middleware
                 _ => (int)HttpStatusCode.InternalServerError
             };
 
-
             var errorResponse = new ErrorResponse
             {
                 StatusCode = statusCode,
                 Message = ex.Message,
                 Details = ex.InnerException?.Message
             };
+
+            _logger.LogError(ex, "An error occurred: {Message}", ex.Message);
 
             context.Response.ContentType = "application/json";
             context.Response.StatusCode = statusCode;

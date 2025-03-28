@@ -188,9 +188,7 @@ namespace UserAPI.Services
             }
             catch (Exception ex)
             {
-                string message = "An unexpected database error occurred for user's avatar generation.";
-                _logger.LogError(message);
-                throw new InvalidOperationException(message, ex);
+                throw new InvalidOperationException("Database error for user's avatar generation.", ex);
             }
         }
 
