@@ -17,7 +17,7 @@ namespace BookAPI.Repositories
         private readonly IDatabase _redisDatabase;
         private readonly ILogger<IFeedbackRepository> _logger;
         private readonly string _cacheKeyPrefix = "Feedback_";
-        private readonly TimeSpan _cacheExpiration = TimeSpan.FromMinutes(10);
+        private readonly TimeSpan _cacheExpiration = TimeSpan.FromMinutes(GlobalConstants.DefaultCacheExpirationTime);
 
         public FeedbackRepository(BookDbContext context, IConnectionMultiplexer redis, ILogger<IFeedbackRepository> logger)
         {

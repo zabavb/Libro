@@ -416,7 +416,7 @@ namespace BookAPI.Data
                 };
 
                 // Завантажуємо на S3
-                return await storageService.UploadAsync(file,"book/images/", bookId);
+                return await storageService.UploadAsync(GlobalConstants.bucketName,file,"book/images/", bookId);
             }
             catch (Exception ex)
             {
@@ -444,7 +444,7 @@ namespace BookAPI.Data
                     ContentType = response.Content.Headers.ContentType?.ToString() ?? "audio/mpeg"
                 };
 
-                return await storageService.UploadAsync(file, "book/audios/", bookId);
+                return await storageService.UploadAsync(GlobalConstants.bucketName, file, "book/audios/", bookId);
             }
             catch (Exception ex)
             {

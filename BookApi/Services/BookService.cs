@@ -96,7 +96,7 @@ namespace BookAPI.Services
             {
                 if (!string.IsNullOrEmpty(existingBook.ImageUrl))
                 {
-                    await _storageService.DeleteAsync(existingBook.ImageUrl);
+                    await _storageService.DeleteAsync(GlobalConstants.bucketName,existingBook.ImageUrl);
                 }
 
                 if (imageFile != null)
@@ -130,7 +130,7 @@ namespace BookAPI.Services
             {
                 if (!string.IsNullOrEmpty(book.ImageUrl))
                 {
-                    await _storageService.DeleteAsync(book.ImageUrl);
+                    await _storageService.DeleteAsync(GlobalConstants.bucketName,book.ImageUrl);
                 }
 
                 await _bookRepository.DeleteAsync(id);
@@ -150,7 +150,7 @@ namespace BookAPI.Services
 
             try
             {
-                return await _storageService.UploadAsync(imageFile,"book/images/", id);
+                return await _storageService.UploadAsync(GlobalConstants.bucketName,imageFile,"book/images/", id);
             }
             catch (Exception ex)
             {

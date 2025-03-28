@@ -21,7 +21,7 @@ namespace BookAPI.Repositories
         private readonly IDatabase _redisDatabase;
         private readonly ILogger<IBookRepository> _logger;
         private readonly string _cacheKeyPrefix = "Book_";
-        private readonly TimeSpan _cacheExpiration = TimeSpan.FromMinutes(10);
+        private readonly TimeSpan _cacheExpiration = TimeSpan.FromMinutes(GlobalConstants.DefaultCacheExpirationTime);
 
         public BookRepository(BookDbContext context, IConnectionMultiplexer redis, ILogger<IBookRepository> logger)
         {
