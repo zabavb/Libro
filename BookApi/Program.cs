@@ -17,7 +17,7 @@ using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using StackExchange.Redis;
-using Library.AWS;
+using Library.Common;
 
 var builder = WebApplication.CreateBuilder(args);
 
