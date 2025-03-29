@@ -8,80 +8,103 @@ using StackExchange.Redis;
 using System.Text.Json;
 using Microsoft.Extensions.Logging;
 using Library.Common;
+using BookAPI.Data.CachHelper;
 
 namespace BookAPI.Repositories
 {
     public class FeedbackRepository : IFeedbackRepository
     {
         private readonly BookDbContext _context;
-        private readonly IDatabase _redisDatabase;
-        private readonly ILogger<IFeedbackRepository> _logger;
+        private readonly ICacheService _cacheService;
+        private readonly ILogger<FeedbackRepository> _logger;
         private readonly string _cacheKeyPrefix = "Feedback_";
         private readonly TimeSpan _cacheExpiration = TimeSpan.FromMinutes(GlobalConstants.DefaultCacheExpirationTime);
 
-        public FeedbackRepository(BookDbContext context, IConnectionMultiplexer redis, ILogger<IFeedbackRepository> logger)
+        public FeedbackRepository(BookDbContext context, ICacheService cacheService, ILogger<FeedbackRepository> logger)
         {
             _context = context;
-            _redisDatabase = redis.GetDatabase();
+            _cacheService = cacheService;
             _logger = logger;
         }
 
         public async Task CreateAsync(Feedback entity)
         {
             ArgumentNullException.ThrowIfNull(entity);
-            entity.Id = Guid.NewGuid();
+
             _context.Feedbacks.Add(entity);
             await _context.SaveChangesAsync();
+
+            string cacheKey = $"{_cacheKeyPrefix}{entity.Id}";
+            await _cacheService.SetAsync(cacheKey, entity, _cacheExpiration);
+
+            string allFeedbacksCacheKey = $"{_cacheKeyPrefix}All";
+            var cachedFeedbacks = await _cacheService.GetAsync<List<Feedback>>(allFeedbacksCacheKey) ?? new List<Feedback>();
+
+            cachedFeedbacks.Add(entity);
+            await _cacheService.SetAsync(allFeedbacksCacheKey, cachedFeedbacks, _cacheExpiration);
+
+            _logger.LogInformation("New Feedback added to DB and cached.");
         }
 
         public async Task DeleteAsync(Guid id)
         {
             if (id == Guid.Empty)
                 throw new ArgumentException("Id cannot be empty.", nameof(id));
+
             var feedback = await _context.Feedbacks.FirstOrDefaultAsync(a => a.Id == id) ?? throw new KeyNotFoundException("Feedback not found");
             _context.Feedbacks.Remove(feedback);
             await _context.SaveChangesAsync();
-            await _redisDatabase.KeyDeleteAsync($"{_cacheKeyPrefix}{id}");
+
+            await _cacheService.RemoveAsync($"{_cacheKeyPrefix}{id}");
+
+            string allFeedbacksCacheKey = $"{_cacheKeyPrefix}All";
+            var cachedFeedbacks = await _cacheService.GetAsync<List<Feedback>>(allFeedbacksCacheKey);
+
+            if (cachedFeedbacks != null)
+            {
+                await _cacheService.UpdateListAsync(allFeedbacksCacheKey, default(Feedback), id, _cacheExpiration);
+            }
         }
+
 
         public async Task<PaginatedResult<Feedback>> GetAllAsync(int pageNumber, int pageSize, FeedbackFilter? filter, FeedbackSort? sort)
         {
-            IQueryable<Feedback> feedbacks;
+            List<Feedback> feedbacks;
             string cacheKey = $"{_cacheKeyPrefix}All";
-            var cachedFeedbacks = await _redisDatabase.HashGetAllAsync(cacheKey);
+            var cachedFeedbacks = await _cacheService.GetAsync<List<Feedback>>(cacheKey);
 
-            if (cachedFeedbacks.Length > 0)
+            if (cachedFeedbacks != null && cachedFeedbacks.Count > 0)
             {
-                feedbacks = cachedFeedbacks.Select(entry => JsonSerializer.Deserialize<Feedback>(entry.Value!)!).AsQueryable();
+                feedbacks = cachedFeedbacks;
                 _logger.LogInformation("Fetched from CACHE.");
             }
             else
             {
-                feedbacks = _context.Feedbacks.AsQueryable();
+                feedbacks = await _context.Feedbacks.ToListAsync();
                 _logger.LogInformation("Fetched from DB.");
 
-                var hashEntries = feedbacks.ToDictionary(
-                    feedback => feedback.Id.ToString(),
-                    feedback => JsonSerializer.Serialize(feedback)
-                );
-
-                await _redisDatabase.HashSetAsync(
-                    cacheKey,
-                    [.. hashEntries.Select(kvp => new HashEntry(kvp.Key, kvp.Value))]
-                );
-                await _redisDatabase.KeyExpireAsync(cacheKey, _cacheExpiration);
+                await _cacheService.SetAsync(cacheKey, feedbacks, _cacheExpiration);
                 _logger.LogInformation("Set to CACHE.");
             }
 
-            feedbacks = filter?.Apply(feedbacks) ?? feedbacks;
-            feedbacks = sort?.Apply(feedbacks) ?? feedbacks;
+            IQueryable<Feedback> feedbackQuery = feedbacks.AsQueryable();
 
-            var totalFeedbacks = feedbacks.Count();
-            feedbacks = feedbacks.Skip((pageNumber - 1) * pageSize).Take(pageSize);
+            if (filter != null)
+            {
+                feedbackQuery = filter.Apply(feedbackQuery);
+            }
+
+            if (sort != null)
+            {
+                feedbackQuery = sort.Apply(feedbackQuery);
+            }
+
+            var totalFeedbacks = feedbackQuery.Count();
+            var paginatedFeedbacks = feedbackQuery.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList();
 
             return new PaginatedResult<Feedback>
             {
-                Items = feedbacks.ToList(),
+                Items = paginatedFeedbacks,
                 TotalCount = totalFeedbacks,
                 PageNumber = pageNumber,
                 PageSize = pageSize
@@ -94,26 +117,24 @@ namespace BookAPI.Repositories
                 throw new ArgumentException("UserId cannot be empty.", nameof(userId));
 
             string cacheKey = $"{_cacheKeyPrefix}User_{userId}";
-            var cachedFeedbacks = await _redisDatabase.StringGetAsync(cacheKey);
+            var cachedFeedbacks = await _cacheService.GetAsync<List<Feedback>>(cacheKey);
 
-            if (!cachedFeedbacks.IsNullOrEmpty)
+            if (cachedFeedbacks != null)
             {
                 _logger.LogInformation("Fetched from CACHE.");
-                return JsonSerializer.Deserialize<List<Feedback>>(cachedFeedbacks!)!;
+                return cachedFeedbacks;
             }
 
             _logger.LogInformation("Fetched from DB.");
             var feedbacks = await _context.Feedbacks.Where(f => f.UserId == userId).ToListAsync();
 
-            if (feedbacks.Any())
+            if (feedbacks.Count != 0)
             {
-                _logger.LogInformation("Set to CACHE.");
-                await _redisDatabase.StringSetAsync(cacheKey, JsonSerializer.Serialize(feedbacks), _cacheExpiration);
+                await _cacheService.SetAsync(cacheKey, feedbacks, _cacheExpiration);
             }
 
             return feedbacks;
         }
-
 
         public async Task<Feedback?> GetByIdAsync(Guid id)
         {
@@ -121,12 +142,12 @@ namespace BookAPI.Repositories
                 throw new ArgumentException("Id cannot be empty.", nameof(id));
 
             string cacheKey = $"{_cacheKeyPrefix}{id}";
-            var cachedFeedback = await _redisDatabase.StringGetAsync(cacheKey);
+            var cachedFeedback = await _cacheService.GetAsync<Feedback>(cacheKey);
 
-            if (!cachedFeedback.IsNullOrEmpty)
+            if (cachedFeedback != null)
             {
                 _logger.LogInformation("Fetched from CACHE.");
-                return JsonSerializer.Deserialize<Feedback>(cachedFeedback!);
+                return cachedFeedback;
             }
 
             _logger.LogInformation("Fetched from DB.");
@@ -134,8 +155,7 @@ namespace BookAPI.Repositories
 
             if (feedback != null)
             {
-                _logger.LogInformation("Set to CACHE.");
-                await _redisDatabase.StringSetAsync(cacheKey, JsonSerializer.Serialize(feedback), _cacheExpiration);
+                await _cacheService.SetAsync(cacheKey, feedback, _cacheExpiration);
             }
 
             return feedback;
@@ -147,7 +167,20 @@ namespace BookAPI.Repositories
             _context.Entry(feedbackToUpdate).CurrentValues.SetValues(entity);
             await _context.SaveChangesAsync();
 
-            await _redisDatabase.StringSetAsync($"{_cacheKeyPrefix}{entity.Id}", JsonSerializer.Serialize(entity), _cacheExpiration);
+            await _cacheService.SetAsync($"{_cacheKeyPrefix}{entity.Id}", entity, _cacheExpiration);
+
+            string allFeedbacksCacheKey = $"{_cacheKeyPrefix}All";
+            var cachedFeedbacks = await _cacheService.GetAsync<List<Feedback>>(allFeedbacksCacheKey);
+
+            if (cachedFeedbacks != null)
+            {
+                await _cacheService.UpdateListAsync(allFeedbacksCacheKey, entity, null, _cacheExpiration);
+            }
+
+            _logger.LogInformation("Feedback updated in DB and cached.");
         }
+
     }
 }
+
+
