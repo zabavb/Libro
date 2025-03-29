@@ -20,6 +20,7 @@ using StackExchange.Redis;
 using Library.Common;
 using System.Text.Json;
 using Microsoft.AspNetCore.Mvc;
+using BookAPI.Data.CachHelper;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -55,6 +56,7 @@ builder.Services.Configure<JsonOptions>(options =>
 
 builder.Services.AddScoped<IDiscountRepository, DiscountRepository>();
 builder.Services.AddScoped<IBookService, BookService>();
+builder.Services.AddScoped<ICacheService, CacheService>();
 builder.Services.AddScoped<IDiscountService, DiscountService>();
 builder.Services.AddScoped<IAuthorRepository, AuthorRepository>();
 builder.Services.AddScoped<IBookRepository, BookRepository>();
