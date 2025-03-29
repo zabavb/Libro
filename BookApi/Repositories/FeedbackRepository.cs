@@ -88,6 +88,33 @@ namespace BookAPI.Repositories
             };
         }
 
+        public async Task<IEnumerable<Feedback>> GetAllByUserId(Guid userId)
+        {
+            if (userId == Guid.Empty)
+                throw new ArgumentException("UserId cannot be empty.", nameof(userId));
+
+            string cacheKey = $"{_cacheKeyPrefix}User_{userId}";
+            var cachedFeedbacks = await _redisDatabase.StringGetAsync(cacheKey);
+
+            if (!cachedFeedbacks.IsNullOrEmpty)
+            {
+                _logger.LogInformation("Fetched from CACHE.");
+                return JsonSerializer.Deserialize<List<Feedback>>(cachedFeedbacks!)!;
+            }
+
+            _logger.LogInformation("Fetched from DB.");
+            var feedbacks = await _context.Feedbacks.Where(f => f.UserId == userId).ToListAsync();
+
+            if (feedbacks.Any())
+            {
+                _logger.LogInformation("Set to CACHE.");
+                await _redisDatabase.StringSetAsync(cacheKey, JsonSerializer.Serialize(feedbacks), _cacheExpiration);
+            }
+
+            return feedbacks;
+        }
+
+
         public async Task<Feedback?> GetByIdAsync(Guid id)
         {
             if (id == Guid.Empty)

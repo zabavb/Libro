@@ -191,9 +191,9 @@ namespace BookAPI.Data
         {
             var bookIds = new List<Guid>
             {
-                Guid.NewGuid(), // Id для "Місто зі скла"
-                Guid.NewGuid(), // Id для "Тіні минулого"
-                Guid.NewGuid()  // Id для "Емоційний інтелект"
+                Guid.NewGuid(),
+                Guid.NewGuid(), 
+                Guid.NewGuid() 
             };
 
 
@@ -309,8 +309,7 @@ namespace BookAPI.Data
                     Description = "Фантастичний роман про місто, побудоване зі скла.",
                     Cover = CoverType.HARDCOVER,
                     IsAvaliable = true,
-                    AudioFileUrl = await UploadAudioAsync(storageService, audios[0], bookIds[0]), 
-                    ImageUrl = await UploadImageAsync(storageService, imagePaths["Місто зі скла"], bookIds[0]),
+                    //ImageUrl = await UploadImageAsync(storageService, imagePaths["Місто зі скла"], bookIds[0]),
                     DiscountId = discountsIds[0]
                 },
                 new Book
@@ -326,7 +325,7 @@ namespace BookAPI.Data
                     Description = "Детективний роман з несподіваною розв'язкою.",
                     Cover = CoverType.SOFT_COVER,
                     IsAvaliable = true,
-                    ImageUrl = await UploadImageAsync(storageService, imagePaths["Тіні минулого"], bookIds[1]) 
+                    //ImageUrl = await UploadImageAsync(storageService, imagePaths["Тіні минулого"], bookIds[1]) 
                 },
                 new Book
                 {
@@ -341,7 +340,7 @@ namespace BookAPI.Data
                     Description = "Книга про те, як розвивати емоційний інтелект.",
                     Cover = CoverType.HARDCOVER,
                     IsAvaliable = true,
-                    ImageUrl = await UploadImageAsync(storageService, imagePaths["Емоційний інтелект"], bookIds[2]) 
+                    //ImageUrl = await UploadImageAsync(storageService, imagePaths["Емоційний інтелект"], bookIds[2]) 
                 }
             };
             modelBuilder.Entity<Book>().HasData(books);
@@ -359,32 +358,37 @@ namespace BookAPI.Data
                 new Feedback
                 {
                     Id = Guid.NewGuid(),
-                    ReviewerName = "Іван",
                     Comment = "Чудова книга! Захоплюючий сюжет.",
                     Rating = 5,
                     Date = DateTime.UtcNow,
                     IsPurchased = true,
-                    BookId = books[0].Id
+                    BookId = books[0].Id,
+                    UserId = new Guid("69be6ab0-0ad0-4ac9-bcce-096ebfa9bb4c")
+
+
                 },
                 new Feedback
                 {
                     Id = Guid.NewGuid(),
-                    ReviewerName = "Ольга",
                     Comment = "Цікава книга, але кінець трохи розчарував.",
                     Rating = 4,
                     Date = DateTime.UtcNow,
                     IsPurchased = true,
-                    BookId = books[1].Id
+                    BookId = books[1].Id,
+                    UserId = new Guid("69be6ab0-0ad0-4ac9-bcce-096ebfa9bb4c")
+
+
                 },
                 new Feedback
                 {
                     Id = Guid.NewGuid(),
-                    ReviewerName = "Марія",
                     Comment = "Дуже корисна книга для саморозвитку.",
                     Rating = 5,
                     Date = DateTime.UtcNow,
                     IsPurchased = true,
-                    BookId = books[2].Id
+                    BookId = books[2].Id,
+                    UserId = new Guid("69be6ab0-0ad0-4ac9-bcce-096ebfa9bb4c")
+
                 }
             };
             modelBuilder.Entity<Feedback>().HasData(feedbacks);
@@ -396,19 +400,14 @@ namespace BookAPI.Data
 
             try
             {
-                // Завантажуємо зображення з інтернету
                 var response = await httpClient.GetAsync(imageUrl);
-
-                // Перевіряємо, чи успішно завантажено
                 if (!response.IsSuccessStatusCode)
                 {
                     throw new Exception($"Failed to download image from {imageUrl}. Status code: {response.StatusCode}");
                 }
 
-                // Отримуємо потік даних зображення
                 var stream = await response.Content.ReadAsStreamAsync();
 
-                // Створюємо об'єкт IFormFile для завантаження на S3
                 var file = new FormFile(stream, 0, stream.Length, null, Path.GetFileName(imageUrl))
                 {
                     Headers = new HeaderDictionary(),
