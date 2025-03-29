@@ -11,6 +11,8 @@ namespace BookAPI.Services.Interfaces
         Task<FeedbackDto> CreateFeedbackAsync(FeedbackDto FeedbackDto);
         Task<FeedbackDto> UpdateFeedbackAsync(Guid id, FeedbackDto FeedbackDto);
         Task<bool> DeleteFeedbackAsync(Guid id);
+        Task<IEnumerable<FeedbackDto>> GetAllByUserId(Guid userId);
+
 
 
     }
