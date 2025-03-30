@@ -1,12 +1,11 @@
 import { useDispatch } from "react-redux"
-import { addDeliveryType, AppDispatch, editDeliveryType, RootState } from "../../state/redux"
-import { useSelector } from "react-redux"
+import { AppDispatch } from "../../state/redux"
 import { useNavigate } from "react-router-dom"
-import { DeliveryType } from "../../types"
-import { useEffect } from "react"
+import { DeliveryType, ServiceResponse } from "../../types"
+import { useCallback, useEffect, useState } from "react"
 import { addNotification } from "../../state/redux/slices/notificationSlice"
-import { resetDeliveryTypeOperationStatus } from "../../state/redux/slices/deliveryTypeSlice"
 import DeliveryTypeForm from "../../components/order/admin/DeliveryTypeForm"
+import { addDeliveryTypeService, editDeliveryTypeService, fetchDeliveryTypeByIdService } from "../../services"
 
 interface DeliveryTypeFormContainerProps{
     deliveryTypeId: string
@@ -14,49 +13,73 @@ interface DeliveryTypeFormContainerProps{
 
 const DeliveryTypeFormContainer: React.FC<DeliveryTypeFormContainerProps> = ({deliveryTypeId}) => {
     const dispatch = useDispatch<AppDispatch>()
-    const {data: deliveryTypes, operationStatus, error} = useSelector((state: RootState) => state.deliveryTypes)
     const navigate = useNavigate()
 
-    const existingDeliveryType = deliveryTypes.find((deliveryType) => deliveryType.id == deliveryTypeId) ?? undefined
-
-
-    const handleAddDeliveryType = (deliveryType: DeliveryType) => {
-        console.log("Adding Delivery Type:", deliveryType)
-        dispatch(addDeliveryType(deliveryType))
-    }
-
-    const handleEditDeliveryType = (id: string, deliveryType: DeliveryType) => {
-        console.log("Editing Delivery Type:", id, deliveryType)
-        dispatch(editDeliveryType({id,deliveryType}))
-    }
+    // const existingDeliveryType = deliveryTypes.find((deliveryType) => deliveryType.id == deliveryTypeId) ?? undefined
+    const [serviceResponse, setServiceResponse] = useState<
+    ServiceResponse<DeliveryType>
+    >({
+        data:null,
+        loading: !!deliveryTypeId,
+        error: null
+    })
 
     useEffect(() => {
-        if(operationStatus === "success"){
-            dispatch(
-                addNotification({
-                    message: existingDeliveryType ? "Delivery Type updated successfully!" :  "Delivery Type created successfully!",
-                    type: "success",
-                })
-            )
-            dispatch(resetDeliveryTypeOperationStatus())
-            navigate("/admin/deliverytypes")
-        } else if (operationStatus === "error"){
-            dispatch(
-                addNotification({
-                    message: error,
-                    type: "error",
-                })
-            )
-            dispatch(resetDeliveryTypeOperationStatus())
-        }
 
-    }, [operationStatus, existingDeliveryType, error, dispatch, navigate])
+        (async () => {
+            const response = await fetchDeliveryTypeByIdService(deliveryTypeId);
+            setServiceResponse(response);
+
+            if(response.error)
+                dispatch(addNotification({message:response.error, type:'error'}))
+        })();
+    }, [deliveryTypeId, dispatch])
+
+    const handleMessage = useCallback(
+        (message: string, type: 'success' | 'error') => {
+            dispatch(addNotification({message,type}));
+        },
+        [dispatch],
+    );
+
+    const handleNavigate = useCallback(
+        (route: string) => navigate(route),
+        [navigate],
+    );
+
+    const handleAddDeliveryType = useCallback (
+        async(deliveryType: DeliveryType) => {
+            const response = await addDeliveryTypeService(deliveryType);
+
+            if(response.error) handleMessage(response.error,'error');
+            else {
+                handleMessage('Delivery type created successfully!', 'success')
+                handleNavigate('/admin/deliveryTypes');
+            }
+        },
+        [handleMessage, handleNavigate]
+    )
+
+    const handleEditDeliveryType = useCallback(
+        async (existingDelivery: DeliveryType) => {
+            if (!deliveryTypeId) return;
+
+            const response = await editDeliveryTypeService(deliveryTypeId, existingDelivery);
+            if (response.error) handleMessage(response.error, 'error');
+            else {
+                handleMessage('Delivery type updated successfully!', 'success');
+                handleNavigate('/admin/deliveryTypes');
+            }
+        },
+        [deliveryTypeId, handleMessage, handleNavigate]
+    )
 
     return (
         <DeliveryTypeForm
-            existingDeliveryType={existingDeliveryType}
+            existingDeliveryType={serviceResponse.data ?? undefined}
             onAddDeliveryType={handleAddDeliveryType}
             onEditDeliveryType={handleEditDeliveryType}
+            loading={serviceResponse.loading}
         />
     )
 }
