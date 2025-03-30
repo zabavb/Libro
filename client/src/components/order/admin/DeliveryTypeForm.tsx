@@ -6,8 +6,9 @@ import { useForm } from "react-hook-form";
 
 interface DeliveryTypeFormProps {
     existingDeliveryType?: DeliveryType
-    onAddDeliveryType: (deliveryType :DeliveryType) => void
-    onEditDeliveryType: (id: string, updatedDeliveryType: DeliveryType) => void
+    onAddDeliveryType: (deliveryType :DeliveryType) => Promise<void>;
+    onEditDeliveryType: (existingDeliveryType: DeliveryType)=> Promise<void>;
+    loading: boolean;
 }
 
 const DeliveryTypeForm: React.FC<DeliveryTypeFormProps> = ({existingDeliveryType, onAddDeliveryType, onEditDeliveryType}) => {
@@ -37,15 +38,13 @@ const DeliveryTypeForm: React.FC<DeliveryTypeFormProps> = ({existingDeliveryType
         }
 
         if(existingDeliveryType){
-            onEditDeliveryType(existingDeliveryType.id, deliveryType)
-            console.log("Delivery type edited")
+            onEditDeliveryType(deliveryType)
         }
         else{
             onAddDeliveryType(deliveryType)
-            console.log("Delivery type add")
         }
     }
-    
+
     return (
         <form onSubmit={handleSubmit(onSubmit)}>
             <input {...register("serviceName")} 
