@@ -12,7 +12,7 @@ const DeliveryTypeFormPage = () => {
     return (
         <div>
             <header>
-                <h1>{deliveryTypeId ? "Edit Delivery Type" : "Add Delivery Type"}</h1>
+                <h1>{deliveryTypeId == undefined ? "Add Delivery Type" : "Edit Delivery Type"}</h1>
                 <button onClick={handleGoBack}>Back to Delivery Type List</button>
             </header>
             <main>
