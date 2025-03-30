@@ -23,6 +23,9 @@ const BookSort: React.FC<BookSortProps> = ({ onSortChange, sort }) => {
             <button onClick={() => onSortChange("feedBack")}> 
                 Reviews {sort.feedBack === true ? "↑" : sort.feedBack === false ? "↓" : ""} 
             </button>
+            <button onClick={() => onSortChange("biggestDiscount")}>
+                Biggest Discount {sort.biggestDiscount ? "↑" : ""}
+            </button>
         </div>
     )
 }

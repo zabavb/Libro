@@ -11,5 +11,8 @@ export interface Book {
 	cover: number
 	isAvailable: boolean
 	feedbackIds: string[]
+	discountRate: number;
+	startDate: Date;
+	endDate: Date;
 	//subCategoryIds: string[]
 }

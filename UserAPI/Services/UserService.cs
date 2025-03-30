@@ -13,7 +13,7 @@ namespace UserAPI.Services
         IUserRepository repository,
         IOrderRepository orderRepository,
         IFeedbackRepository feedbackRepository,
-        /*ISubscriptionRepository subscriptionRepository,*/
+        ISubscriptionRepository subscriptionRepository,
         IPasswordRepository passwordRepository,
 
         AvatarService avatarService,
@@ -27,7 +27,7 @@ namespace UserAPI.Services
         private readonly IUserRepository _repository = repository;
         private readonly IOrderRepository _orderRepository = orderRepository;
         private readonly IFeedbackRepository _feedbackRepository = feedbackRepository;
-        // private readonly ISubscriptionRepository _subscriptionRepository = subscriptionRepository;
+        private readonly ISubscriptionRepository _subscriptionRepository = subscriptionRepository;
         private readonly IPasswordRepository _passwordRepository = passwordRepository;
 
         private readonly AvatarService _avatarService = avatarService;
@@ -73,7 +73,7 @@ namespace UserAPI.Services
             // GetAllByUserId(int id) returns IEnumerable<FeedbackDetailsSnippet>
             var feedbacksSnippet = await _feedbackRepository.GetAllByUserId(id);
             // GetAllByUserId(int id) returns IEnumerable<SubscriptionDetailsSnippet>
-            // var subscriptionSnippet = await _subscriptionRepository.GetAllByUserId(id);
+            var subscriptionSnippet = await _subscriptionRepository.GetAllByUserId(id);
 
             return user == null ? null : _mapper.Map<UserDetailsDto>((user, ordersSnippet, feedbacksSnippet/*, subscriptionSnippet*/));
         }

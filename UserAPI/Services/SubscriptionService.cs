@@ -45,6 +45,7 @@ namespace UserAPI.Services
         public async Task<SubscriptionDto?> GetByIdAsync(Guid id)
         {
             var subscription = await _repository.GetByIdAsync(id);
+            
 
             if (subscription == null)
             {
