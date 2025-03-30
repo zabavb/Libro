@@ -1,4 +1,5 @@
 ﻿using Library.DTOs.User;
+using Library.DTOs.UserRelated.User;
 
 namespace UserAPI
 

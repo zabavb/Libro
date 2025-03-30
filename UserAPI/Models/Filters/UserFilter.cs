@@ -1,4 +1,5 @@
 ﻿using Library.DTOs.User;
+using Library.DTOs.UserRelated.User;
 using Library.Interfaces;
 
 namespace UserAPI.Models.Filters

@@ -1,13 +1,13 @@
-﻿using Microsoft.EntityFrameworkCore;
-using System.Linq.Expressions;
+﻿using System.Linq.Expressions;
+using Microsoft.EntityFrameworkCore;
 
-namespace UserAPI.Models.Searches
+namespace Library.Common
 {
-    public static class UserSearch
+    public static class Search
     {
-        public static IQueryable<T> Search<T>(this IQueryable<T> query, string searchTerm, params Expression<Func<T, string>>[] searchFields)
+        public static IQueryable<T> SearchBy<T>(this IQueryable<T> query, string searchTerm,
+            params Expression<Func<T, string>>[] searchFields)
         {
-
             if (string.IsNullOrWhiteSpace(searchTerm) || searchFields.Length == 0)
                 return query;
 
@@ -21,12 +21,15 @@ namespace UserAPI.Models.Searches
             {
                 var property = Expression.Invoke(field, parameter);
                 var toLowerMethod = typeof(string).GetMethod("ToLower", Type.EmptyTypes);
-                var containsMethod = typeof(DbFunctionsExtensions).GetMethod("Like", [typeof(DbFunctions), typeof(string), typeof(string)]);
+                var containsMethod =
+                    typeof(DbFunctionsExtensions).GetMethod("Like",
+                        [typeof(DbFunctions), typeof(string), typeof(string)]);
 
                 if (toLowerMethod != null && containsMethod != null)
                 {
                     var toLowerExpression = Expression.Call(property, toLowerMethod);
-                    var likeExpression = Expression.Call(null, containsMethod, Expression.Constant(EF.Functions), toLowerExpression, Expression.Constant(searchTerm));
+                    var likeExpression = Expression.Call(null, containsMethod, Expression.Constant(EF.Functions),
+                        toLowerExpression, Expression.Constant(searchTerm));
 
                     predicate = predicate == null ? likeExpression : Expression.OrElse(predicate, likeExpression);
                 }

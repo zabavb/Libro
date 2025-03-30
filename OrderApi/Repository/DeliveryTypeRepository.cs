@@ -1,5 +1,4 @@
 ﻿using Library.Common;
-using Library.Sortings;
 using Microsoft.EntityFrameworkCore;
 using OrderApi.Data;
 using OrderApi.Models;
@@ -7,6 +6,7 @@ using OrderAPI;
 using OrderAPI.Repository;
 using StackExchange.Redis;
 using System.Text.Json;
+using Library.Sorts;
 
 namespace OrderApi.Repository
 {
