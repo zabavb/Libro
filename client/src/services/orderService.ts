@@ -1,6 +1,6 @@
 import { statusEnumToNumber } from "../api/adapters/orderAdapters";
 import { createOrder, deleteOrder, getAllOrders, getOrderById, updateOrder } from "../api/repositories/orderRepository";
-import { Order, OrderFilter, OrderSort, PaginatedResponse } from "../types";
+import { Order, OrderFilter, OrderSort, PaginatedResponse, ServiceResponse } from "../types";
 
 
 export const fetchOrdersService = async (
@@ -9,53 +9,116 @@ export const fetchOrdersService = async (
     searchTerm?: string,
     filters?: OrderFilter,
     sort?: OrderSort
-): Promise<PaginatedResponse<Order>> => {
-    const formattedSort = Object.fromEntries(
-        Object.entries(sort || {}).map(([key, value]) => [key, value ? 1 : 2])
-    )
+): Promise<ServiceResponse<PaginatedResponse<Order>>> => {
+    const response: ServiceResponse<PaginatedResponse<Order>> = {
+        data: null,
+        loading: true,
+        error: null,
+    };
 
-    const params = {
-        searchTerm,
-        ...filters,
-        status: filters?.status !== undefined ? statusEnumToNumber(filters.status).toString() : undefined,
-        ...formattedSort,
+    try{
+        const formattedSort = Object.fromEntries(
+            Object.entries(sort || {}).map(([key, value]) => [key, value ? 1 : 2])
+        )
+    
+        const params = {
+            searchTerm,
+            ...filters,
+            status: filters?.status !== undefined ? statusEnumToNumber(filters.status).toString() : undefined,
+            ...formattedSort,
+        }
+
+        response.data = await getAllOrders(pageNumber, pageSize, params)
+    }
+    catch(error) {
+        console.error('Failed to fetch orders', error);
+        response.error =
+            'An error occurred while fetching orders. Please try again later.';
+    } finally {
+        response.loading = false;
     }
 
-    try {
-        return await getAllOrders(pageNumber, pageSize, params)
-    } catch (error){
-        throw new Error(`Error fetching orders: ${error}`)
-    }
+    return response;
+
 }
 
-export const fetchOrderByIdService = async (id: string) : Promise<Order> => {
+export const fetchOrderByIdService = async (id: string) : Promise<ServiceResponse<Order>> => {
+    const response: ServiceResponse<Order> = {
+        data:null,
+        loading:true,
+        error: null,
+    };
+
     try { 
-        return await getOrderById(id)
-    } catch (error) {
-        throw new Error(`Error fetching order by ID: ${error}`)
+        response.data = await getOrderById(id);
+    } catch(error){
+        console.error(`Failed to fetch order ID [${id}]`, error);
+        response.error =
+            'An error occurred while fetching order. Please try again later.';
+    } finally{
+        response.loading = false;
     }
+    return response;
 } 
 
-export const addOrderService = async (order:Partial<Order>): Promise<Order> => {
+export const addOrderService = async (order:Partial<Order>): Promise<ServiceResponse<Order>> => {
+    const response: ServiceResponse<Order> = {
+        data:null,
+        loading: true,
+        error: null
+    };
+
     try {
-        return await createOrder(order)
-    } catch(error) {
-        throw new Error(`Error adding order: ${error}`)
+        response.data = await createOrder(order);
+    }catch (error){
+        console.error('Failed to create order', error);
+        response.error = 
+            'An error occurred while adding the order. Please try again later.';
+    } finally {
+        response.loading = false;
     }
+    return response;
 }
 
-export const editOrderService = async (id: string, order: Partial<Order>): Promise<Order> => {
-    try {
-        return await updateOrder(id, order)
-    } catch (error){
-        throw new Error(`Error updating order: ${error}`)
+export const editOrderService = async (
+    id: string,
+    order: Partial<Order>
+): Promise<ServiceResponse<Order>> => {
+    const response: ServiceResponse<Order> = {
+        data:null,
+        loading: true,
+        error: null,
     }
+
+    try {
+        response.data = await updateOrder(id, order);
+    } catch (error) {
+        console.error(`Failed to update order ID [${id}]`, error);
+        response.error =
+            'An error occurred while updating the order. Please try again later.';
+    } finally {
+        response.loading = false;
+    }
+
+    return response
 }
 
-export const removeOrderService = async (id: string): Promise<void> => {
-    try{
-        await deleteOrder(id)
-    } catch (error){
-        throw new Error(`Error deleting order: ${error}`)
+export const removeOrderService = async (id: string): Promise<ServiceResponse<string>> => {
+    const response: ServiceResponse<string> = {
+        data: null,
+        loading: true,
+        error: null
+    };
+
+    try {
+        await deleteOrder(id);
+        response.data = id;
+    } catch (error) {
+        console.error(`Failed to delete order ID [${id}]`, error);
+        response.error =
+            'An error occurred while deleting the order. Please try again later.';
+    } finally {
+        response.loading = false;
     }
+    return response;
 }
