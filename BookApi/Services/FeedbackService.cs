@@ -131,6 +131,21 @@ namespace FeedbackApi.Services
                 return false;
             }
         }
+        public async Task<IEnumerable<FeedbackDto>> GetAllByUserId(Guid userId)
+        {
+            var feedbacks = await _feedbackRepository.GetAllByUserId(userId);
+
+            if (feedbacks == null || !feedbacks.Any())
+            {
+                _logger.LogWarning($"No feedback found for user {userId}");
+                return new List<FeedbackDto>();
+            }
+
+            _logger.LogInformation($"Successfully found feedback for user {userId}");
+            return _mapper.Map<IEnumerable<FeedbackDto>>(feedbacks);
+        }
+
+
 
     }
 
