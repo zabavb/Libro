@@ -39,8 +39,4 @@
     <ProjectReference Include="..\OrderAPI\OrderAPI.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Models\Searches\" />
-  </ItemGroup>
-
 </Project>
