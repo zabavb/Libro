@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Library.DTOs.UserRelated.User;
+using Microsoft.EntityFrameworkCore;
 using UserAPI.Models;
 using UserAPI.Repositories;
 
@@ -61,7 +62,7 @@ namespace UserAPI.Data
                 DateOfBirth = new DateTime(1990, 1, 1),
                 Email = "john.doe@example.com",
                 PhoneNumber = "123-456-7890",
-                Role = Library.DTOs.User.RoleType.ADMIN
+                Role = RoleType.ADMIN
             };
 
             var sub1 = new Subscription
@@ -95,7 +96,7 @@ namespace UserAPI.Data
                 DateOfBirth = new DateTime(1985, 5, 15),
                 Email = "jane.smith@example.com",
                 PhoneNumber = "987-654-3210",
-                Role = Library.DTOs.User.RoleType.MODERATOR
+                Role = RoleType.MODERATOR
             };
 
             var sub2 = new Subscription
@@ -141,7 +142,7 @@ namespace UserAPI.Data
                     DateOfBirth = dob,
                     Email = $"{firstName.ToLower()}.{lastName.ToLower()}@example.com",
                     PhoneNumber = phone,
-                    Role = Library.DTOs.User.RoleType.USER,
+                    Role = RoleType.USER,
                 };
                 var salt = PasswordRepository.GenerateSalt();
                 var hash = PasswordRepository.HashPassword(passwordString, salt);

@@ -1,4 +1,6 @@
-﻿using Library.DTOs.User;
+﻿using System.Collections;
+using Library.DTOs.User;
+using Library.DTOs.UserRelated.User;
 
 namespace UserAPI.Models
 {
@@ -14,8 +16,8 @@ namespace UserAPI.Models
         public string ImageUrl { get; set; }
         public Guid PasswordId { get; set; }
         public Password Password { get; set; }
-        public Guid? SubscriptionId { get; set; }
-        public Subscription? Subscription { get; set; }
+        public ICollection<Guid>? SubscriptionIds { get; set; }
+        public ICollection<Subscription>? Subscriptions { get; set; }
 
         public User()
         {

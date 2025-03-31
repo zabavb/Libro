@@ -3,16 +3,22 @@ using BookAPI.Repositories.Interfaces;
 using Library.Common;
 using Library.DTOs.Order;
 using Library.DTOs.UserRelated.User;
-using Library.Sortings;
 using Microsoft.EntityFrameworkCore;
 using OrderApi.Data;
 using OrderAPI;
 using StackExchange.Redis;
 using System.Text.Json;
+using Library.Interfaces;
+using Library.Sorts;
 using Order = OrderApi.Models.Order;
+
 namespace OrderApi.Repository
 {
-    public class OrderRepository(OrderDbContext context, IConnectionMultiplexer redis, ILogger<IOrderRepository> logger, IBookRepository bookRepository) : IOrderRepository
+    public class OrderRepository(
+        OrderDbContext context,
+        IConnectionMultiplexer redis,
+        ILogger<IOrderRepository> logger,
+        IBookRepository bookRepository) : IOrderRepository
     {
         private readonly OrderDbContext _context = context;
         private readonly IDatabase _redisDatabase = redis.GetDatabase();
@@ -21,7 +27,8 @@ namespace OrderApi.Repository
         private readonly ILogger<IOrderRepository> _logger = logger;
         private readonly IBookRepository _bookRepository = bookRepository;
 
-        public async Task<PaginatedResult<Order>> GetAllPaginatedAsync(int pageNumber, int pageSize, string? searchTerm, Filter? filter, Sort? sort)
+        public async Task<PaginatedResult<Order>> GetAllPaginatedAsync(int pageNumber, int pageSize, string? searchTerm,
+            Filter? filter, Sort? sort)
         {
             IEnumerable<Order> orders;
 
@@ -76,15 +83,15 @@ namespace OrderApi.Repository
                 return await _context.Orders
                     .AsNoTracking()
                     .Where(o => o.Address.Contains(searchTerm) ||
-                           o.Region.Contains(searchTerm) ||
-                           o.City.Contains(searchTerm))
-                .ToListAsync();
+                                o.Region.Contains(searchTerm) ||
+                                o.City.Contains(searchTerm))
+                    .ToListAsync();
             }
 
             return await Task.FromResult(
-                    data.Where(o => o.Address.Contains(searchTerm) ||
-                               o.Region.Contains(searchTerm) ||
-                               o.City.Contains(searchTerm)));
+                data.Where(o => o.Address.Contains(searchTerm) ||
+                                o.Region.Contains(searchTerm) ||
+                                o.City.Contains(searchTerm)));
         }
 
         public async Task<IEnumerable<Order>> FilterEntitiesAsync(IEnumerable<Order> orders, Filter filter)
@@ -173,7 +180,7 @@ namespace OrderApi.Repository
                     cacheKey,
                     fieldKey,
                     JsonSerializer.Serialize(order)
-                    );
+                );
 
                 await _redisDatabase.KeyExpireAsync(cacheKey, _cacheExpiration);
             }
@@ -205,60 +212,74 @@ namespace OrderApi.Repository
         }
 
         // =============== MERGE FUNCTIONS ====================
-        public async Task<IEnumerable<OrderDetailsSnippet>?> GetAllByUserId(Guid Id)
+        public async Task<CollectionSnippet<OrderDetailsSnippet>> GetAllByUserIdAsync(Guid id)
         {
-            IEnumerable<Order> orders = _context.Orders.AsNoTracking();
-            IEnumerable<OrderDetailsSnippet>? orderDetailsSnippets = new List<OrderDetailsSnippet>();
-
-            OrderFilter filter = new OrderFilter() { UserId = Id };
-
-            orders = await FilterEntitiesAsync(orders, filter);
-
-            foreach (var order in orders)
+            try
             {
-                IEnumerable<string> bookNames = new List<string>();
+                var ordersQuery = _context.Orders.AsNoTracking();
+                var filter = new OrderFilter { UserId = id };
 
-                foreach (var book in order.Books)
+                var orders = await FilterEntitiesAsync(ordersQuery, filter);
+                var orderDetailsSnippets = new List<OrderDetailsSnippet>();
+
+                foreach (var order in orders)
                 {
-                    Book? bookObject = await _bookRepository.GetByIdAsync(book.Key);
-                    bookNames.Append(bookObject?.Title);
+                    var bookNames = new List<string>();
+
+                    foreach (var book in order.Books)
+                    {
+                        var bookObject = await _bookRepository.GetByIdAsync(book.Key);
+                        if (bookObject != null)
+                            bookNames.Add(bookObject.Title);
+                    }
+
+                    orderDetailsSnippets.Add(new OrderDetailsSnippet
+                    {
+                        OrderUiId = order.OrderId.ToString().Split('-')[4],
+                        Price = order.Price + order.DeliveryPrice,
+                        BookNames = bookNames
+                    });
                 }
 
-                OrderDetailsSnippet snippet = new OrderDetailsSnippet()
-                {
-                    OrderUiId = order.OrderId.ToString().Split('-')[4],
-                    Price = order.Price + order.DeliveryPrice,
-                    BookNames = bookNames
-                };
-
-                orderDetailsSnippets.Append(snippet);
+                return new CollectionSnippet<OrderDetailsSnippet>(false, orderDetailsSnippets);
             }
-
-            return orderDetailsSnippets.Count() > 0 ? orderDetailsSnippets : new List<OrderDetailsSnippet>();
+            catch
+            {
+                return new CollectionSnippet<OrderDetailsSnippet>(true, new List<OrderDetailsSnippet>());
+            }
         }
 
-        public async Task<OrderCardSnippet?> GetCardSnippetByUserId(Guid Id)
+        public async Task<SingleSnippet<OrderCardSnippet>> GetCardSnippetByUserIdAsync(Guid id)
         {
-            IEnumerable<Order> orders = _context.Orders.AsNoTracking();
+            try
+            {
+                IEnumerable<Order> orders = _context.Orders.AsNoTracking();
 
-            OrderFilter filter = new OrderFilter() { UserId = Id };
-            OrderSort sort = new OrderSort() { OrderDate = Bool.DESCENDING };
+                OrderFilter filter = new OrderFilter() { UserId = id };
+                OrderSort sort = new OrderSort() { OrderDate = Bool.DESCENDING };
 
-            orders = await FilterEntitiesAsync(orders, filter);
-            orders = await SortAsync(orders, sort);
+                orders = await FilterEntitiesAsync(orders, filter);
+                orders = await SortAsync(orders, sort);
 
-            var totalOrders = await Task.FromResult(orders.Count());
+                var totalOrders = await Task.FromResult(orders.Count());
 
-            return totalOrders > 0 ?
-                new OrderCardSnippet()
+                var orderSnippet = new OrderCardSnippet();
+
+                if (totalOrders > 0)
                 {
-                    LastOrder = orders.First().OrderId.ToString().Split('-')[4],
-                    OrdersCount = totalOrders
+                    orderSnippet = new OrderCardSnippet
+                    {
+                        LastOrder = orders.First().OrderId.ToString().Split('-')[4],
+                        OrdersCount = totalOrders
+                    };
                 }
-                :
-                new OrderCardSnippet();
+
+                return new SingleSnippet<OrderCardSnippet>(false, orderSnippet);
+            }
+            catch
+            {
+                return new SingleSnippet<OrderCardSnippet>(true, new OrderCardSnippet());
+            }
         }
-
     }
-
 }

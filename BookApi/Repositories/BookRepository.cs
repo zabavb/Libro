@@ -1,11 +1,9 @@
 ﻿using BookAPI.Data;
 using BookAPI.Models;
-using BookAPI.Models.Extensions;
 using BookAPI.Models.Filters;
 using BookAPI.Models.Sortings;
 using BookAPI.Repositories.Interfaces;
 using Library.Common;
-using Library.Sortings;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 using StackExchange.Redis;
@@ -74,7 +72,7 @@ namespace BookAPI.Repositories
                 .AsNoTracking();
 
             if (!string.IsNullOrWhiteSpace(searchTerm))
-                booksQuery = booksQuery.Search(searchTerm, b => b.Title, b => b.Author.Name);
+                booksQuery = booksQuery.SearchBy(searchTerm, b => b.Title, b => b.Author.Name);
 
             if (filter != null)
                 booksQuery = filter.Apply(booksQuery);

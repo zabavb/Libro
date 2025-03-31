@@ -1,4 +1,4 @@
-﻿namespace Library.Sortings
+﻿namespace Library.Sorts
 {
     public enum Bool
     {

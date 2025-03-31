@@ -1,4 +1,4 @@
-﻿using Library.DTOs.User;
+﻿using Library.Interfaces;
 
 namespace Library.DTOs.UserRelated.User
 {
@@ -12,10 +12,10 @@ namespace Library.DTOs.UserRelated.User
         public DateTime? DateOfBirth { get; set; }
         public RoleType Role { get; set; }
 
-        public IEnumerable<OrderDetailsSnippet>? Orders { get; set; }
+        public CollectionSnippet<OrderDetailsSnippet> Orders { get; set; }
         public int? FeedbacksCount { get; set; }
-        public IEnumerable<FeedbackDetailsSnippet>? Feedbacks { get; set; }
-        // public IEnumerable<SubscriptionDetailsSnippet> Subscriptions { get; set; }
+        public CollectionSnippet<FeedbackDetailsSnippet>? Feedbacks { get; set; }
+        public CollectionSnippet<SubscriptionDetailsSnippet>? Subscriptions { get; set; }
 
         public UserDetailsDto()
         {
@@ -24,16 +24,13 @@ namespace Library.DTOs.UserRelated.User
             Email = string.Empty;
             PhoneNumber = string.Empty;
             DateOfBirth = DateTime.Today;
-            Orders = [];
-            Feedbacks = [];
-            // Subscriptions = [];
         }
     }
 
     public class OrderDetailsSnippet
     {
-        public string OrderUiId { get; set; }   // UiId - means the shortened Id for view (after last "-")
-        public IEnumerable<string> BookNames { get; set; }
+        public string OrderUiId { get; set; } // UiId - means the shortened ID for view (after last "-")
+        public ICollection<string> BookNames { get; set; }
         public float Price { get; set; }
 
         public OrderDetailsSnippet()
@@ -57,17 +54,16 @@ namespace Library.DTOs.UserRelated.User
         }
     }
 
-    /*public class SubscriptionDetailsSnippet
+    public class SubscriptionDetailsSnippet
     {
         public string Title { get; set; }
-        public string Description { get; set; }
+        public string? Description { get; set; }
         public string ImageUrl { get; set; }
 
         public SubscriptionDetailsSnippet()
         {
             Title = string.Empty;
-            Description = string.Empty;
             ImageUrl = string.Empty;
         }
-    }*/
+    }
 }

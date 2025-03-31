@@ -1,6 +1,5 @@
 ﻿using BookAPI.Data;
 using BookAPI.Models;
-using BookAPI.Models.Extensions;
 using BookAPI.Models.Filters;
 using BookAPI.Models.Sortings;
 using BookAPI.Repositories.Interfaces;
@@ -50,7 +49,7 @@ namespace BookAPI.Repositories
                 .Include(sc => sc.Books);
             if (!string.IsNullOrWhiteSpace(searchTerm))
             {
-                subcategories = subcategories.Search(searchTerm, p => p.Name);
+                subcategories = subcategories.SearchBy(searchTerm, p => p.Name);
             }
             subcategories = filter?.Apply(subcategories) ?? subcategories;
             subcategories = sort?.Apply(subcategories) ?? subcategories;

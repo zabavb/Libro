@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Google.Apis.Auth;
 using Library.DTOs.User;
+using Library.DTOs.UserRelated.User;
 using UserAPI.Models;
 using UserAPI.Models.Auth;
 using UserAPI.Repositories;

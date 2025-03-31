@@ -1,4 +1,4 @@
-﻿namespace Library.DTOs.User
+﻿namespace Library.DTOs.UserRelated.User
 {
     public enum RoleType
     {
