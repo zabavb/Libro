@@ -68,6 +68,7 @@ const OrderListContainer = () => {
 
     useEffect(() => {
         fetchOrderList();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     },[])
 
     const handleNavigate = (path: string) => navigate(path);

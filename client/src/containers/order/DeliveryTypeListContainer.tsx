@@ -64,6 +64,7 @@ const DeliveryTypeListContainer = () => {
 
     useEffect(() => {
         fetchDeliveryTypeList();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     },[])
 
     const handleNavigate = (path: string) => navigate(path)
