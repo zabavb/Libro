@@ -21,7 +21,9 @@ namespace BookAPI.Repositories
         private readonly string _cacheKeyPrefix = "Author_";
         private readonly TimeSpan _cacheExpiration = TimeSpan.FromMinutes(GlobalConstants.DefaultCacheExpirationTime);
 
-        public AuthorRepository(BookDbContext context, ICacheService cacheService, ILogger<AuthorRepository> logger)
+        public AuthorRepository(
+            BookDbContext context, 
+            ICacheService cacheService, ILogger<AuthorRepository> logger)
         {
             _context = context;
             _cacheService = cacheService;
