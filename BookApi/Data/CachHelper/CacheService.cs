@@ -14,7 +14,7 @@ namespace BookAPI.Data.CachHelper
             _logger = logger;
         }
 
-        public async Task<T?> GetAsync<T>(string key)
+        public async Task<T?> GetAsync<T>(string key, JsonSerializerOptions? jsonOptions = null)
         {
             var cachedValue = await _redisDatabase.StringGetAsync(key);
             if (cachedValue.IsNullOrEmpty)
@@ -24,12 +24,12 @@ namespace BookAPI.Data.CachHelper
             }
 
             _logger.LogInformation($"Cache hit for key {key}");
-            return JsonSerializer.Deserialize<T>(cachedValue);
+            return JsonSerializer.Deserialize<T>(cachedValue, jsonOptions ?? new JsonSerializerOptions());
         }
 
-        public async Task SetAsync<T>(string key, T value, TimeSpan expiration)
+        public async Task SetAsync<T>(string key, T value, TimeSpan expiration, JsonSerializerOptions? jsonOptions = null)
         {
-            var serializedValue = JsonSerializer.Serialize(value);
+            var serializedValue = JsonSerializer.Serialize(value, jsonOptions ?? new JsonSerializerOptions());
             await _redisDatabase.StringSetAsync(key, serializedValue, expiration);
             _logger.LogInformation($"Set value in cache for key {key}");
         }
@@ -40,9 +40,9 @@ namespace BookAPI.Data.CachHelper
             _logger.LogInformation($"Removed key {key} from cache");
         }
 
-        public async Task UpdateListAsync<T>(string key, T item, Guid? idToRemove = null, TimeSpan expiration = default)
+        public async Task UpdateListAsync<T>(string key, T item, Guid? idToRemove = null, TimeSpan expiration = default, JsonSerializerOptions? jsonOptions = null)
         {
-            var list = await GetAsync<List<T>>(key) ?? new List<T>();
+            var list = await GetAsync<List<T>>(key, jsonOptions) ?? new List<T>();
 
             if (idToRemove != null)
             {
@@ -59,7 +59,7 @@ namespace BookAPI.Data.CachHelper
                 var existingItem = list.FirstOrDefault(i => (i as dynamic).Id == (item as dynamic).Id);
                 if (existingItem != null)
                 {
-                    list.Remove(existingItem); 
+                    list.Remove(existingItem);
                     _logger.LogInformation($"Updated item with Id {(item as dynamic).Id} in list");
                 }
 
@@ -67,8 +67,7 @@ namespace BookAPI.Data.CachHelper
                 _logger.LogInformation($"Added/Updated item with Id {(item as dynamic).Id} to list in cache");
             }
 
-            await SetAsync(key, list, expiration);
+            await SetAsync(key, list, expiration, jsonOptions);
         }
-
     }
 }
