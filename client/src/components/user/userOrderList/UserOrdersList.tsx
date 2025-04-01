@@ -9,7 +9,6 @@ import UserOrdersListSort from "./UserOrdersListSort";
 interface OrderListProps {
     orders?: Order[]
     loading: boolean
-    error: string | null | undefined
     pagination: {pageNumber: number; pageSize: number; totalCount: number}
     onPageChange: (pageNumber: number) => void
     onNavigate: (path: string) => void
@@ -24,7 +23,6 @@ interface OrderListProps {
 const UserOrdersList: React.FC<OrderListProps> = ({
     orders = [],
 	loading,
-	error,
 	pagination,
 	onPageChange,
 	searchTerm,
@@ -36,7 +34,6 @@ const UserOrdersList: React.FC<OrderListProps> = ({
 	onNavigate,
 }) => {
     if (loading) return <p>Loading...</p>
-    if (error) return <p>Error: {error}</p>
     return(
         <div>
             <p onClick={() => onNavigate("/")}>Go Back</p>
