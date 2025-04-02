@@ -17,15 +17,15 @@ namespace OrderApi.Repository
     public class OrderRepository(
         OrderDbContext context,
         IConnectionMultiplexer redis,
-        ILogger<IOrderRepository> logger,
-        IBookRepository bookRepository) : IOrderRepository
+        ILogger<IOrderRepository> logger
+        ) : IOrderRepository
     {
         private readonly OrderDbContext _context = context;
         private readonly IDatabase _redisDatabase = redis.GetDatabase();
         public readonly string _cacheKeyPrefix = "Order_";
         public readonly TimeSpan _cacheExpiration = TimeSpan.FromMinutes(10);
         private readonly ILogger<IOrderRepository> _logger = logger;
-        private readonly IBookRepository _bookRepository = bookRepository;
+        
 
         public async Task<PaginatedResult<Order>> GetAllPaginatedAsync(int pageNumber, int pageSize, string? searchTerm,
             Filter? filter, Sort? sort)
@@ -212,74 +212,8 @@ namespace OrderApi.Repository
         }
 
         // =============== MERGE FUNCTIONS ====================
-        public async Task<CollectionSnippet<OrderDetailsSnippet>> GetAllByUserIdAsync(Guid id)
-        {
-            try
-            {
-                var ordersQuery = _context.Orders.AsNoTracking();
-                var filter = new OrderFilter { UserId = id };
 
-                var orders = await FilterEntitiesAsync(ordersQuery, filter);
-                var orderDetailsSnippets = new List<OrderDetailsSnippet>();
 
-                foreach (var order in orders)
-                {
-                    var bookNames = new List<string>();
 
-                    foreach (var book in order.Books)
-                    {
-                        var bookObject = await _bookRepository.GetByIdAsync(book.Key);
-                        if (bookObject != null)
-                            bookNames.Add(bookObject.Title);
-                    }
-
-                    orderDetailsSnippets.Add(new OrderDetailsSnippet
-                    {
-                        OrderUiId = order.OrderId.ToString().Split('-')[4],
-                        Price = order.Price + order.DeliveryPrice,
-                        BookNames = bookNames
-                    });
-                }
-
-                return new CollectionSnippet<OrderDetailsSnippet>(false, orderDetailsSnippets);
-            }
-            catch
-            {
-                return new CollectionSnippet<OrderDetailsSnippet>(true, new List<OrderDetailsSnippet>());
-            }
-        }
-
-        public async Task<SingleSnippet<OrderCardSnippet>> GetCardSnippetByUserIdAsync(Guid id)
-        {
-            try
-            {
-                IEnumerable<Order> orders = _context.Orders.AsNoTracking();
-
-                OrderFilter filter = new OrderFilter() { UserId = id };
-                OrderSort sort = new OrderSort() { OrderDate = Bool.DESCENDING };
-
-                orders = await FilterEntitiesAsync(orders, filter);
-                orders = await SortAsync(orders, sort);
-
-                var totalOrders = await Task.FromResult(orders.Count());
-
-                var orderSnippet = new OrderCardSnippet();
-
-                if (totalOrders > 0)
-                {
-                    orderSnippet = new OrderCardSnippet
-                    {
-                        LastOrder = orders.First().OrderId.ToString().Split('-')[4],
-                        OrdersCount = totalOrders
-                    };
-                }
-
-                return new SingleSnippet<OrderCardSnippet>(false, orderSnippet);
-            }
-            catch
-            {
-                return new SingleSnippet<OrderCardSnippet>(true, new OrderCardSnippet());
-            }
-        }
     }
 }
