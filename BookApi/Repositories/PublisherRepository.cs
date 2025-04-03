@@ -5,23 +5,25 @@ using BookAPI.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using StackExchange.Redis;
 using System.Text.Json;
-using Microsoft.Extensions.Logging;
 using Library.Common;
+using BookAPI.Data.CachHelper;
 
 namespace BookAPI.Repositories
 {
     public class PublisherRepository : IPublisherRepository
     {
         private readonly BookDbContext _context;
-        private readonly IDatabase _redisDatabase;
         private readonly ILogger<PublisherRepository> _logger;
         private readonly string _cacheKeyPrefix = "Publisher_";
         private readonly TimeSpan _cacheExpiration = TimeSpan.FromMinutes(GlobalConstants.DefaultCacheExpirationTime);
+        private readonly ICacheService _cacheService;
 
-        public PublisherRepository(BookDbContext context, IConnectionMultiplexer redis, ILogger<PublisherRepository> logger)
+        public PublisherRepository(
+            BookDbContext context,
+            ICacheService cacheService, ILogger<PublisherRepository> logger)
         {
             _context = context;
-            _redisDatabase = redis.GetDatabase();
+            _cacheService = cacheService;
             _logger = logger;
         }
 
@@ -31,7 +33,17 @@ namespace BookAPI.Repositories
             entity.Id = Guid.NewGuid();
             _context.Publishers.Add(entity);
             await _context.SaveChangesAsync();
-            await _redisDatabase.HashSetAsync(_cacheKeyPrefix + entity.Id, entity.Id.ToString(), JsonSerializer.Serialize(entity));
+
+            string cacheKey = $"{_cacheKeyPrefix}{entity.Id}";
+            await _cacheService.SetAsync(cacheKey, entity, _cacheExpiration);
+
+            string allPublishersCacheKey = $"{_cacheKeyPrefix}All";
+            var cachedPublishers = await _cacheService.GetAsync<List<Publisher>>(allPublishersCacheKey) ?? new List<Publisher>();
+
+            cachedPublishers.Add(entity);
+            await _cacheService.SetAsync(allPublishersCacheKey, cachedPublishers, _cacheExpiration);
+
+            _logger.LogInformation("New Publisher added to DB and cached.");
         }
 
         public async Task DeleteAsync(Guid id)
@@ -39,27 +51,56 @@ namespace BookAPI.Repositories
             if (id == Guid.Empty)
                 throw new ArgumentException("Id cannot be empty.", nameof(id));
 
-            var publisher = await _context.Publishers.FirstOrDefaultAsync(a => a.Id == id) ?? throw new KeyNotFoundException("Publisher not found");
+            var publisher = await _context.Publishers.FirstOrDefaultAsync(p => p.Id == id) ?? throw new KeyNotFoundException("Publisher not found");
             _context.Publishers.Remove(publisher);
             await _context.SaveChangesAsync();
-            await _redisDatabase.KeyDeleteAsync(_cacheKeyPrefix + id);
+
+            await _cacheService.RemoveAsync($"{_cacheKeyPrefix}{id}");
+
+            string allPublishersCacheKey = $"{_cacheKeyPrefix}All";
+            var cachedPublishers = await _cacheService.GetAsync<List<Publisher>>(allPublishersCacheKey);
+
+            if (cachedPublishers != null)
+            {
+                await _cacheService.UpdateListAsync(allPublishersCacheKey, default(Publisher), id, _cacheExpiration);
+            }
         }
 
-        public async Task<PaginatedResult<Publisher>> GetAllAsync(int pageNumber, int pageSize, string searchTerm, PublisherSort? sort)
+        public async Task<PaginatedResult<Publisher>> GetAllAsync(int pageNumber, int pageSize, string? searchTerm,  PublisherSort? sort)
         {
-            IQueryable<Publisher> publishers = _context.Publishers.AsQueryable();
-            if (!string.IsNullOrWhiteSpace(searchTerm))
-            {
-                publishers = publishers.SearchBy(searchTerm, p => p.Name);
-            }
-            publishers = sort?.Apply(publishers) ?? publishers;
+            List<Publisher> publishers;
+            string cacheKey = $"{_cacheKeyPrefix}All";
+            var cachedPublishers = await _cacheService.GetAsync<List<Publisher>>(cacheKey);
 
-            var totalPublishers = await publishers.CountAsync();
-            var resultPublishers = await publishers.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToListAsync();
+            if (cachedPublishers != null && cachedPublishers.Count > 0)
+            {
+                publishers = cachedPublishers;
+                _logger.LogInformation("Fetched from CACHE.");
+            }
+            else
+            {
+                publishers = await _context.Publishers.ToListAsync();
+                _logger.LogInformation("Fetched from DB.");
+
+                await _cacheService.SetAsync(cacheKey, publishers, _cacheExpiration);
+                _logger.LogInformation("Set to CACHE.");
+            }
+
+            IQueryable<Publisher> publisherQuery = publishers.AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(searchTerm))
+                publisherQuery = publisherQuery.SearchBy(searchTerm, p => p.Name);
+
+
+            if (sort != null)
+                publisherQuery = sort.Apply(publisherQuery);
+
+            var totalPublishers = publisherQuery.Count();
+            var paginatedPublishers = publisherQuery.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList();
 
             return new PaginatedResult<Publisher>
             {
-                Items = resultPublishers,
+                Items = paginatedPublishers,
                 TotalCount = totalPublishers,
                 PageNumber = pageNumber,
                 PageSize = pageSize
@@ -71,21 +112,21 @@ namespace BookAPI.Repositories
             if (id == Guid.Empty)
                 throw new ArgumentException("Id cannot be empty.", nameof(id));
 
-            string cacheKey = _cacheKeyPrefix + id;
-            var cachedPublisher = await _redisDatabase.HashGetAsync(cacheKey, id.ToString());
+            string cacheKey = $"{_cacheKeyPrefix}{id}";
+            var cachedPublisher = await _cacheService.GetAsync<Publisher>(cacheKey);
 
-            if (!cachedPublisher.IsNullOrEmpty)
+            if (cachedPublisher != null)
             {
                 _logger.LogInformation("Fetched from CACHE.");
-                return JsonSerializer.Deserialize<Publisher>(cachedPublisher!);
+                return cachedPublisher;
             }
 
-            var publisher = await _context.Publishers.FirstOrDefaultAsync(a => a.Id == id);
+            _logger.LogInformation("Fetched from DB.");
+            var publisher = await _context.Publishers.FirstOrDefaultAsync(p => p.Id == id);
+
             if (publisher != null)
             {
-                _logger.LogInformation("Fetched from DB and stored in CACHE.");
-                await _redisDatabase.HashSetAsync(cacheKey, id.ToString(), JsonSerializer.Serialize(publisher));
-                await _redisDatabase.KeyExpireAsync(cacheKey, _cacheExpiration);
+                await _cacheService.SetAsync(cacheKey, publisher, _cacheExpiration);
             }
 
             return publisher;
@@ -93,16 +134,23 @@ namespace BookAPI.Repositories
 
         public async Task UpdateAsync(Publisher entity)
         {
-            if (entity == null)
-                throw new ArgumentNullException(nameof(entity));
+            var existingPublisher = await _context.Publishers.FirstOrDefaultAsync(p => p.Id == entity.Id)
+                                 ?? throw new KeyNotFoundException("Publisher not found");
 
-            if (entity.Id == Guid.Empty)
-                throw new ArgumentException("Id cannot be empty.", nameof(entity.Id));
-
-            var existingPublisher = await _context.Publishers.FirstOrDefaultAsync(a => a.Id == entity.Id) ?? throw new KeyNotFoundException("Publisher not found");
             _context.Entry(existingPublisher).CurrentValues.SetValues(entity);
             await _context.SaveChangesAsync();
-            await _redisDatabase.HashSetAsync(_cacheKeyPrefix + entity.Id, entity.Id.ToString(), JsonSerializer.Serialize(entity));
+
+            await _cacheService.SetAsync($"{_cacheKeyPrefix}{entity.Id}", entity, _cacheExpiration);
+
+            string allPublishersCacheKey = $"{_cacheKeyPrefix}All";
+            var cachedPublishers = await _cacheService.GetAsync<List<Publisher>>(allPublishersCacheKey);
+
+            if (cachedPublishers != null)
+            {
+                await _cacheService.UpdateListAsync(allPublishersCacheKey, entity, null, _cacheExpiration);
+            }
+
+            _logger.LogInformation("Publisher updated in DB and cached.");
         }
     }
 }

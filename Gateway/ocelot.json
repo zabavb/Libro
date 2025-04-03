@@ -255,7 +255,7 @@
         }
       ],
       "UpstreamPathTemplate": "/gateway/deliverytypes",
-      "UpstreamHttpMethod": [ "GET", "POST", "PUT" ]
+      "UpstreamHttpMethod": [ "GET", "POST" ]
     },
     {
       "DownstreamPathTemplate": "/api/deliverytypes/{id}",
@@ -267,7 +267,7 @@
         }
       ],
       "UpstreamPathTemplate": "/gateway/deliverytypes/{id}",
-      "UpstreamHttpMethod": [ "GET", "DELETE" ]
+      "UpstreamHttpMethod": [ "GET", "DELETE","PUT" ]
     },
     //======================= Status update =======================
     {

@@ -9,7 +9,6 @@ import OrderSort from "../OrderSort";
 interface OrderListProps {
     orders?: Order[]
     loading: boolean
-    error: string | null | undefined
     pagination: {pageNumber: number; pageSize: number; totalCount: number}
     onPageChange: (pageNumber: number) => void
     onNavigate: (path: string) => void
@@ -24,7 +23,6 @@ interface OrderListProps {
 const OrderList: React.FC<OrderListProps> = ({
     orders = [],
 	loading,
-	error,
 	pagination,
 	onPageChange,
 	searchTerm,
@@ -35,7 +33,6 @@ const OrderList: React.FC<OrderListProps> = ({
 	onSortChange,
 }) => {
     if (loading) return <p>Loading...</p>
-    if (error) return <p>Error: {error}</p>
     return(
         <div>
 

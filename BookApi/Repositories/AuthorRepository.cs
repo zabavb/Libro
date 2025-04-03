@@ -8,21 +8,24 @@ using StackExchange.Redis;
 using System.Text.Json;
 using Microsoft.Extensions.Logging;
 using Library.Common;
+using BookAPI.Data.CachHelper;
 
 namespace BookAPI.Repositories
 {
     public class AuthorRepository : IAuthorRepository
     {
         private readonly BookDbContext _context;
-        private readonly IDatabase _redisDatabase;
-        private readonly ILogger<IAuthorRepository> _logger;
+        private readonly ICacheService _cacheService;
+        private readonly ILogger<AuthorRepository> _logger;
         private readonly string _cacheKeyPrefix = "Author_";
         private readonly TimeSpan _cacheExpiration = TimeSpan.FromMinutes(GlobalConstants.DefaultCacheExpirationTime);
 
-        public AuthorRepository(BookDbContext context, IConnectionMultiplexer redis, ILogger<IAuthorRepository> logger)
+        public AuthorRepository(
+            BookDbContext context, 
+            ICacheService cacheService, ILogger<AuthorRepository> logger)
         {
             _context = context;
-            _redisDatabase = redis.GetDatabase();
+            _cacheService = cacheService;
             _logger = logger;
         }
 
@@ -32,59 +35,76 @@ namespace BookAPI.Repositories
             entity.Id = Guid.NewGuid();
             _context.Authors.Add(entity);
             await _context.SaveChangesAsync();
+
+            string cacheKey = $"{_cacheKeyPrefix}{entity.Id}";
+            await _cacheService.SetAsync(cacheKey, entity, _cacheExpiration);
+
+            string allAuthorsCacheKey = $"{_cacheKeyPrefix}All";
+            var cachedAuthors = await _cacheService.GetAsync<List<Author>>(allAuthorsCacheKey) ?? new List<Author>();
+
+            cachedAuthors.Add(entity);
+            await _cacheService.SetAsync(allAuthorsCacheKey, cachedAuthors, _cacheExpiration);
+
+            _logger.LogInformation("New Author added to DB and cached.");
         }
 
         public async Task DeleteAsync(Guid id)
         {
             if (id == Guid.Empty)
                 throw new ArgumentException("Id cannot be empty.", nameof(id));
-            var author = await _context.Authors.FirstOrDefaultAsync(a => a.Id == id)
-                          ?? throw new KeyNotFoundException("Author not found");
+
+            var author = await _context.Authors.FirstOrDefaultAsync(a => a.Id == id) ?? throw new KeyNotFoundException("Author not found");
             _context.Authors.Remove(author);
             await _context.SaveChangesAsync();
-            await _redisDatabase.KeyDeleteAsync($"{_cacheKeyPrefix}{id}");
+
+            await _cacheService.RemoveAsync($"{_cacheKeyPrefix}{id}");
+
+            string allAuthorsCacheKey = $"{_cacheKeyPrefix}All";
+            var cachedAuthors = await _cacheService.GetAsync<List<Author>>(allAuthorsCacheKey);
+
+            if (cachedAuthors != null)
+            {
+                await _cacheService.UpdateListAsync(allAuthorsCacheKey, default(Author), id, _cacheExpiration);
+            }
         }
 
         public async Task<PaginatedResult<Author>> GetAllAsync(int pageNumber, int pageSize, string? searchTerm, AuthorFilter? filter, AuthorSort? sort)
         {
-            IQueryable<Author> authors;
+            List<Author> authors;
             string cacheKey = $"{_cacheKeyPrefix}All";
-            var cachedAuthors = await _redisDatabase.HashGetAllAsync(cacheKey);
+            var cachedAuthors = await _cacheService.GetAsync<List<Author>>(cacheKey);
 
-            if (cachedAuthors.Length > 0)
+            if (cachedAuthors != null && cachedAuthors.Count > 0)
             {
-                authors = cachedAuthors.Select(entry => JsonSerializer.Deserialize<Author>(entry.Value!)!).AsQueryable();
+                authors = cachedAuthors;
                 _logger.LogInformation("Fetched from CACHE.");
             }
             else
             {
-                authors = _context.Authors.AsQueryable();
+                authors = await _context.Authors.ToListAsync();
                 _logger.LogInformation("Fetched from DB.");
 
-                var hashEntries = authors.ToDictionary(
-                    author => author.Id.ToString(),
-                    author => JsonSerializer.Serialize(author)
-                );
-
-                await _redisDatabase.HashSetAsync(
-                    cacheKey,
-                    [.. hashEntries.Select(kvp => new HashEntry(kvp.Key, kvp.Value))]
-                );
-                await _redisDatabase.KeyExpireAsync(cacheKey, _cacheExpiration);
+                await _cacheService.SetAsync(cacheKey, authors, _cacheExpiration);
                 _logger.LogInformation("Set to CACHE.");
             }
 
-            if (!string.IsNullOrWhiteSpace(searchTerm))
-                authors = authors.SearchBy(searchTerm, p => p.Name);
-            authors = filter?.Apply(authors) ?? authors;
-            authors = sort?.Apply(authors) ?? authors;
+            IQueryable<Author> authorQuery = authors.AsQueryable();
 
-            var totalAuthors = authors.Count();
-            authors = authors.Skip((pageNumber - 1) * pageSize).Take(pageSize);
+            if (!string.IsNullOrWhiteSpace(searchTerm))
+                authorQuery = authorQuery.SearchBy(searchTerm, p => p.Name);
+
+            if (filter != null)
+                authorQuery = filter.Apply(authorQuery);
+
+            if (sort != null)
+                authorQuery = sort.Apply(authorQuery);
+
+            var totalAuthors = authorQuery.Count();
+            var paginatedAuthors = authorQuery.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList();
 
             return new PaginatedResult<Author>
             {
-                Items = authors.ToList(),
+                Items = paginatedAuthors,
                 TotalCount = totalAuthors,
                 PageNumber = pageNumber,
                 PageSize = pageSize
@@ -97,12 +117,12 @@ namespace BookAPI.Repositories
                 throw new ArgumentException("Id cannot be empty.", nameof(id));
 
             string cacheKey = $"{_cacheKeyPrefix}{id}";
-            var cachedAuthor = await _redisDatabase.StringGetAsync(cacheKey);
+            var cachedAuthor = await _cacheService.GetAsync<Author>(cacheKey);
 
-            if (!cachedAuthor.IsNullOrEmpty)
+            if (cachedAuthor != null)
             {
                 _logger.LogInformation("Fetched from CACHE.");
-                return JsonSerializer.Deserialize<Author>(cachedAuthor!);
+                return cachedAuthor;
             }
 
             _logger.LogInformation("Fetched from DB.");
@@ -110,8 +130,7 @@ namespace BookAPI.Repositories
 
             if (author != null)
             {
-                _logger.LogInformation("Set to CACHE.");
-                await _redisDatabase.StringSetAsync(cacheKey, JsonSerializer.Serialize(author), _cacheExpiration);
+                await _cacheService.SetAsync(cacheKey, author, _cacheExpiration);
             }
 
             return author;
@@ -121,10 +140,22 @@ namespace BookAPI.Repositories
         {
             var existingAuthor = await _context.Authors.FirstOrDefaultAsync(a => a.Id == entity.Id)
                                  ?? throw new KeyNotFoundException("Author not found");
+
             _context.Entry(existingAuthor).CurrentValues.SetValues(entity);
             await _context.SaveChangesAsync();
 
-            await _redisDatabase.StringSetAsync($"{_cacheKeyPrefix}{entity.Id}", JsonSerializer.Serialize(entity), _cacheExpiration);
+            await _cacheService.SetAsync($"{_cacheKeyPrefix}{entity.Id}", entity, _cacheExpiration);
+
+            string allAuthorsCacheKey = $"{_cacheKeyPrefix}All";
+            var cachedAuthors = await _cacheService.GetAsync<List<Author>>(allAuthorsCacheKey);
+
+            if (cachedAuthors != null)
+            {
+                await _cacheService.UpdateListAsync(allAuthorsCacheKey, entity, null, _cacheExpiration);
+            }
+
+            _logger.LogInformation("Author updated in DB and cached.");
         }
     }
+
 }

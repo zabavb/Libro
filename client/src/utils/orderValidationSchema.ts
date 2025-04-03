@@ -12,9 +12,6 @@ export const orderSchema = z.
                 z.string(),
                 z.number().positive()
         ),
-            // Temporary removed
-            // .array(z.string().min(1))
-            // .nonempty("There must be at least a single book in order"),
         address: z
             .string()
             .min(2,"Address must be at least 2 characters")

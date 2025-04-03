@@ -14,7 +14,7 @@ const DeliveriesListPage = () => {
       </header>
       <main>
         <div>
-          <button onClick={() => navigate('/admin/orders/add')}>Add Delivery Type</button>
+          <button onClick={() => navigate('/admin/deliverytypes/add')}>Add Delivery Type</button>
         </div>
         <DeliveryTypeListContainer />
       </main>
