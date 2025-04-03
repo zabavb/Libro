@@ -8,7 +8,6 @@ import DeliverySort from "./DeliverySort";
 interface DeliveryTypeListProps {
     deliveryTypes?: DeliveryType[]
     loading: boolean
-    error: string | null
     pagination: {pageNumber: number; pageSize: number; totalCount: number}
     onPageChange: (pageNumber: number) => void
     onNavigate: (path: string) => void
@@ -21,7 +20,6 @@ interface DeliveryTypeListProps {
 const DeliveryTypeList: React.FC<DeliveryTypeListProps> = ({
     deliveryTypes = [],
     loading,
-    error,
     pagination,
     onPageChange,
     searchTerm,
@@ -30,7 +28,6 @@ const DeliveryTypeList: React.FC<DeliveryTypeListProps> = ({
     onSortChange
 }) => {
     if (loading) return <p>Loading...</p>
-    if (error) return <p>Error: {error}</p>
     return (
         <div>
             <Search

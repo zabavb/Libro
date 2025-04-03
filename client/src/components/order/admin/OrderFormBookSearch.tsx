@@ -12,7 +12,7 @@ const OrderFormBookSearch: React.FC<OrderFormBookSearchProps> = ({ page, books, 
     const [search, setSearch] = useState<string>()
     const [searchFocus, setSearchFocus] = useState<boolean>()
     const timeoutRef = useRef<NodeJS.Timeout | null>()
-
+    const bookList = books && "$values" in books ? (books.$values as Book[]) : [];
     const handleBookIdSubmit = () => {
         if(search != undefined){
             handleBookAdd(search)
@@ -56,7 +56,7 @@ const OrderFormBookSearch: React.FC<OrderFormBookSearchProps> = ({ page, books, 
                 (
                     <div style={{ cursor: "pointer" }} onFocus={() => handleFocus(true)} onBlur={() => handleFocus(false)}> {/* Book selection container*/}
                         <div> 
-                            {books?.map((book) => (
+                            {bookList.map((book)=> (
                                 <div onClick={() => handleBookAdd(book.bookId)}>
                                     <p>{book.title}</p>
                                 </div>

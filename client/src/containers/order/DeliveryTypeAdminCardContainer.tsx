@@ -1,12 +1,10 @@
 import { useDispatch } from "react-redux";
 import { DeliveryType } from "../../types";
-import { AppDispatch, removeDeliveryType, RootState } from "../../state/redux";
-import { useSelector } from "react-redux";
+import { AppDispatch } from "../../state/redux";
 import { useNavigate } from "react-router-dom";
-import { useEffect } from "react";
 import { addNotification } from "../../state/redux/slices/notificationSlice";
-import { resetDeliveryTypeOperationStatus } from "../../state/redux/slices/deliveryTypeSlice";
 import DeliveryTypeAdminCard from "../../components/order/admin/DeliveryTypeAdminCard";
+import { removeDeliveryTypeService } from "../../services";
 
 interface DeliveryAdminCardContainerProps{
     deliveryType: DeliveryType
@@ -14,36 +12,27 @@ interface DeliveryAdminCardContainerProps{
 
 const DeliveryTypeAdminCardContainer: React.FC<DeliveryAdminCardContainerProps> = ({deliveryType}) => {
     const dispatch = useDispatch<AppDispatch>()
-    const {operationStatus, error} = useSelector((state: RootState) => state.deliveryTypes)
     const navigate = useNavigate()
 
-    const handleDelete = (e: React.MouseEvent) => {
+    const handleDelete = async (e: React.MouseEvent) => {
         e.stopPropagation()
-        dispatch(removeDeliveryType(deliveryType.id))
+        const response = await removeDeliveryTypeService(deliveryType.id)
+        dispatch(
+              response.error
+                ? addNotification({
+                    message: response.error,
+                    type: 'error',
+                  })
+                : addNotification({
+                    message: 'Order successfully deleted.',
+                    type: 'success',
+                  }),
+            );
     }
 
     const handleNavigate = () => {
         navigate(`/admin/deliverytypes/${deliveryType.id}`)
     }
-
-    useEffect(() => {
-        if (operationStatus === "success")
-        {
-            addNotification({
-                message: "Delivery type removed successfully.",
-                type: "success"
-            })
-            dispatch(resetDeliveryTypeOperationStatus())
-        } else if(operationStatus === "error"){
-            dispatch(
-                addNotification({
-                    message: error,
-                    type:"error"
-                })
-            )
-            dispatch(resetDeliveryTypeOperationStatus())
-        }
-    }, [operationStatus, error, dispatch])
 
     return (
         <DeliveryTypeAdminCard 

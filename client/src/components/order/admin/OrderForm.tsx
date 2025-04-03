@@ -10,11 +10,13 @@ import OrderFormBookList from "./OrderFormBookList";
 import { useNavigate } from "react-router-dom";
 
 interface OrderFormProps {
-    page: number
-    books?: Book[]
-    existingOrder: Order
-    onEditOrder: (id: string, updatedOrder: Order) => void
-    onPageChange: (page: number) => void
+    page: number;
+    books?: Book[];
+    existingOrder?: Order;
+    onAddOrder: (order: Order) => Promise<void>;
+    onEditOrder: (existingOrder: Order) => Promise<void>;
+    onPageChange: (page: number) => void;
+    loading: boolean;
 }
 
 const OrderForm: React.FC<OrderFormProps> = ({page, books, existingOrder, onEditOrder, onPageChange }) => {
@@ -66,8 +68,10 @@ const OrderForm: React.FC<OrderFormProps> = ({page, books, existingOrder, onEdit
     }, [existingOrder, setValue,navigate])
 
     const onSubmit = (data: OrderFormData) => {
+        const id = existingOrder?.id ?? "";
+
         const order: Order = {
-            id: existingOrder.id,
+            id: id,
             userId: data.userId,
             books: bookObjs,
             region: data.region,
@@ -82,7 +86,7 @@ const OrderForm: React.FC<OrderFormProps> = ({page, books, existingOrder, onEdit
         }
 
         if (existingOrder){ 
-            onEditOrder(existingOrder.id, order)
+            onEditOrder(order)
             console.log("Order edited")
         }
         else{
