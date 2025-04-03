@@ -16,8 +16,8 @@
             Rating = 0;
             Date = DateTime.MinValue;
             IsPurchased = false;
-            Book = null!;
             UserId = Guid.Empty;
+            BookId = Guid.Empty;
         }
     }
 }

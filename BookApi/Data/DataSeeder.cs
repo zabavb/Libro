@@ -180,7 +180,6 @@ using System.IO;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Amazon.Runtime.Internal.Transform;
-using Library.Interfaces;
 using Library.Common;
 
 namespace BookAPI.Data
@@ -394,62 +393,62 @@ namespace BookAPI.Data
             modelBuilder.Entity<Feedback>().HasData(feedbacks);
         }
 
-        private static async Task<string> UploadImageAsync(S3StorageService storageService, string imageUrl, Guid bookId)
-        {
-            using var httpClient = new HttpClient();
+        //private static async Task<string> UploadImageAsync(S3StorageService storageService, string imageUrl, Guid bookId)
+        //{
+        //    using var httpClient = new HttpClient();
 
-            try
-            {
-                var response = await httpClient.GetAsync(imageUrl);
-                if (!response.IsSuccessStatusCode)
-                {
-                    throw new Exception($"Failed to download image from {imageUrl}. Status code: {response.StatusCode}");
-                }
+        //    try
+        //    {
+        //        var response = await httpClient.GetAsync(imageUrl);
+        //        if (!response.IsSuccessStatusCode)
+        //        {
+        //            throw new Exception($"Failed to download image from {imageUrl}. Status code: {response.StatusCode}");
+        //        }
 
-                var stream = await response.Content.ReadAsStreamAsync();
+        //        var stream = await response.Content.ReadAsStreamAsync();
 
-                var file = new FormFile(stream, 0, stream.Length, null, Path.GetFileName(imageUrl))
-                {
-                    Headers = new HeaderDictionary(),
-                    ContentType = response.Content.Headers.ContentType?.ToString() ?? "image/jpeg"
-                };
+        //        var file = new FormFile(stream, 0, stream.Length, null, Path.GetFileName(imageUrl))
+        //        {
+        //            Headers = new HeaderDictionary(),
+        //            ContentType = response.Content.Headers.ContentType?.ToString() ?? "image/jpeg"
+        //        };
 
-                // Завантажуємо на S3
-                return await storageService.UploadAsync(GlobalConstants.bucketName,file,"book/images/", bookId);
-            }
-            catch (Exception ex)
-            {
-                throw new Exception($"Failed to upload image from URL: {imageUrl}", ex);
-            }
-        }
+        //        // Завантажуємо на S3
+        //        return await storageService.UploadAsync(GlobalConstants.bucketName,file,"book/images/", bookId);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        throw new Exception($"Failed to upload image from URL: {imageUrl}", ex);
+        //    }
+        //}
 
-        public static async Task<string> UploadAudioAsync(IS3StorageService storageService, string audioUrl, Guid bookId)
-        {
-            using var httpClient = new HttpClient();
+        //public static async Task<string> UploadAudioAsync(IS3StorageService storageService, string audioUrl, Guid bookId)
+        //{
+        //    using var httpClient = new HttpClient();
 
-            try
-            {
-                var response = await httpClient.GetAsync(audioUrl);
-                if (!response.IsSuccessStatusCode)
-                {
-                    throw new Exception($"Failed to download audio from {audioUrl}. Status code: {response.StatusCode}");
-                }
+        //    try
+        //    {
+        //        var response = await httpClient.GetAsync(audioUrl);
+        //        if (!response.IsSuccessStatusCode)
+        //        {
+        //            throw new Exception($"Failed to download audio from {audioUrl}. Status code: {response.StatusCode}");
+        //        }
 
-                var stream = await response.Content.ReadAsStreamAsync();
+        //        var stream = await response.Content.ReadAsStreamAsync();
 
-                var file = new FormFile(stream, 0, stream.Length, null, Path.GetFileName(audioUrl))
-                {
-                    Headers = new HeaderDictionary(),
-                    ContentType = response.Content.Headers.ContentType?.ToString() ?? "audio/mpeg"
-                };
+        //        var file = new FormFile(stream, 0, stream.Length, null, Path.GetFileName(audioUrl))
+        //        {
+        //            Headers = new HeaderDictionary(),
+        //            ContentType = response.Content.Headers.ContentType?.ToString() ?? "audio/mpeg"
+        //        };
 
-                return await storageService.UploadAsync(GlobalConstants.bucketName, file, "book/audios/", bookId);
-            }
-            catch (Exception ex)
-            {
-                throw new Exception($"Failed to upload audio from URL: {audioUrl}", ex);
-            }
-        }
+        //        return await storageService.UploadAsync(GlobalConstants.bucketName, file, "book/audios/", bookId);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        throw new Exception($"Failed to upload audio from URL: {audioUrl}", ex);
+        //    }
+        //}
 
     }
 }
