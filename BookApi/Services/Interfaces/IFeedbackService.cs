@@ -1,6 +1,8 @@
 ﻿using BookAPI.Models.Filters;
 using BookAPI.Models.Sortings;
 using Library.Common;
+using Library.DTOs.UserRelated.User;
+using Library.Interfaces;
 
 namespace BookAPI.Services.Interfaces
 {
@@ -11,9 +13,7 @@ namespace BookAPI.Services.Interfaces
         Task<FeedbackDto> CreateFeedbackAsync(FeedbackDto FeedbackDto);
         Task<FeedbackDto> UpdateFeedbackAsync(Guid id, FeedbackDto FeedbackDto);
         Task<bool> DeleteFeedbackAsync(Guid id);
-        Task<IEnumerable<FeedbackDto>> GetAllByUserId(Guid userId);
-
-
+        Task<CollectionSnippet<FeedbackDetailsSnippet>> GetAllByUserId(Guid id, int pageNumber = 1);
 
     }
 }

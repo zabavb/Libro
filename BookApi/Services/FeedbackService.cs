@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using BookAPI;
 using BookAPI.Data;
 using BookAPI.Models;
 using BookAPI.Models.Filters;
@@ -6,6 +7,8 @@ using BookAPI.Models.Sortings;
 using BookAPI.Repositories.Interfaces;
 using BookAPI.Services.Interfaces;
 using Library.Common;
+using Library.DTOs.UserRelated.User;
+using Library.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 
@@ -16,12 +19,14 @@ namespace FeedbackApi.Services
         private readonly IMapper _mapper;
         private readonly IFeedbackRepository _feedbackRepository;
         private readonly ILogger<FeedbackService> _logger;
+        private readonly IBookService _bookService;
 
-        public FeedbackService(IMapper mapper, IFeedbackRepository feedbackRepository, ILogger<FeedbackService> logger)
+        public FeedbackService(IMapper mapper, IFeedbackRepository feedbackRepository, ILogger<FeedbackService> logger, IBookService bookService)
         {
             _mapper = mapper;
             _feedbackRepository = feedbackRepository;
             _logger = logger;
+            _bookService = bookService;
         }
 
         public async Task<PaginatedResult<FeedbackDto>> GetFeedbacksAsync(
@@ -131,21 +136,42 @@ namespace FeedbackApi.Services
                 return false;
             }
         }
-        public async Task<IEnumerable<FeedbackDto>> GetAllByUserId(Guid userId)
-        {
-            var feedbacks = await _feedbackRepository.GetAllByUserId(userId);
 
-            if (feedbacks == null || !feedbacks.Any())
+        public async Task<CollectionSnippet<FeedbackDetailsSnippet>> GetAllByUserId(Guid id, int pageNumber)
+        {
+            try
             {
-                _logger.LogWarning($"No feedback found for user {userId}");
-                return new List<FeedbackDto>();
+                var feedbackFilter = new FeedbackFilter { userId = id };
+                var feedbacks = await _feedbackRepository.GetAllAsync(pageNumber, GlobalConstants.DefaultPageSize, feedbackFilter, null);
+
+                var snippets = new List<FeedbackDetailsSnippet>();
+                foreach (var feedback in feedbacks.Items)
+                {
+                    var book = await _bookService.GetBookByIdAsync(feedback.BookId);
+
+                    var detailsSnippet = new FeedbackDetailsSnippet
+                    {
+                        HeadLabel = $"{book.Title} - {feedback.Id.ToString().Split('-')[4]}",
+                        Comment = feedback.Comment,
+                        Date = feedback.Date,
+                        Rating = feedback.Rating,
+                    };
+                    snippets.Add(detailsSnippet);
+                }
+
+                return new CollectionSnippet<FeedbackDetailsSnippet>(false, snippets);
+            }
+            catch
+            {
+                return new CollectionSnippet<FeedbackDetailsSnippet>(true, new List<FeedbackDetailsSnippet>());
             }
 
-            _logger.LogInformation($"Successfully found feedback for user {userId}");
-            return _mapper.Map<IEnumerable<FeedbackDto>>(feedbacks);
-        }
+                /*                    public string HeadLabel { get; set; }
+                        public int Rating { get; set; }
+                        public string Comment { get; set; }
+                        public DateTime Date { get; set; }*/
 
-
+            }
 
     }
 
