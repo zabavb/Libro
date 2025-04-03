@@ -1,6 +1,5 @@
 ﻿using BookAPI.Data;
 using BookAPI.Models;
-using BookAPI.Models.Extensions;
 using BookAPI.Models.Sortings;
 using BookAPI.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -8,6 +7,7 @@ using StackExchange.Redis;
 using System.Text.Json;
 using Microsoft.Extensions.Logging;
 using Library.Common;
+using System.Text.Json.Serialization;
 
 namespace BookAPI.Repositories
 {
@@ -18,6 +18,12 @@ namespace BookAPI.Repositories
         private readonly ILogger<ICategoryRepository> _logger;
         private readonly string _cacheKeyPrefix = "Category_";
         private readonly TimeSpan _cacheExpiration = TimeSpan.FromMinutes(GlobalConstants.DefaultCacheExpirationTime);
+
+        private readonly JsonSerializerOptions _jsonSerializerOptions = new JsonSerializerOptions
+        {
+            ReferenceHandler = ReferenceHandler.Preserve,
+            DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull
+        };
 
         public CategoryRepository(BookDbContext context, IConnectionMultiplexer redis, ILogger<ICategoryRepository> logger)
         {
@@ -36,13 +42,14 @@ namespace BookAPI.Repositories
         public async Task DeleteAsync(Guid id)
         {
             var category = await _context.Categories.FirstOrDefaultAsync(a => a.Id == id)
-                              ?? throw new KeyNotFoundException("Category not found");
+                           ?? throw new KeyNotFoundException("Category not found");
             _context.Categories.Remove(category);
             await _context.SaveChangesAsync();
             await _redisDatabase.KeyDeleteAsync($"{_cacheKeyPrefix}{id}");
         }
 
-        public async Task<PaginatedResult<Category>> GetAllAsync(int pageNumber, int pageSize, string? searchTerm, CategorySort? sort)
+        public async Task<PaginatedResult<Category>> GetAllAsync(int pageNumber, int pageSize, string? searchTerm,
+            CategorySort? sort)
         {
             IQueryable<Category> categories;
             string cacheKey = $"{_cacheKeyPrefix}All";
@@ -50,7 +57,8 @@ namespace BookAPI.Repositories
 
             if (cachedCategories.Length > 0)
             {
-                categories = cachedCategories.Select(entry => JsonSerializer.Deserialize<Category>(entry.Value!)!).AsQueryable();
+                categories = cachedCategories.Select(entry => JsonSerializer.Deserialize<Category>(entry.Value!, _jsonSerializerOptions)!)
+                                             .AsQueryable();
                 _logger.LogInformation("Fetched from CACHE.");
             }
             else
@@ -60,19 +68,19 @@ namespace BookAPI.Repositories
 
                 var hashEntries = categories.ToDictionary(
                     category => category.Id.ToString(),
-                    category => JsonSerializer.Serialize(category)
+                    category => JsonSerializer.Serialize(category, _jsonSerializerOptions)
                 );
 
                 await _redisDatabase.HashSetAsync(
                     cacheKey,
-                    [.. hashEntries.Select(kvp => new HashEntry(kvp.Key, kvp.Value))]
+                    hashEntries.Select(kvp => new HashEntry(kvp.Key, kvp.Value)).ToArray()
                 );
                 await _redisDatabase.KeyExpireAsync(cacheKey, _cacheExpiration);
                 _logger.LogInformation("Set to CACHE.");
             }
 
             if (!string.IsNullOrWhiteSpace(searchTerm))
-                categories = categories.Search(searchTerm, b => b.Name);
+                categories = categories.SearchBy(searchTerm, b => b.Name);
             categories = sort?.Apply(categories) ?? categories;
 
             var totalCategories = categories.Count();
@@ -95,7 +103,7 @@ namespace BookAPI.Repositories
             if (!cachedCategory.IsNullOrEmpty)
             {
                 _logger.LogInformation("Fetched from CACHE.");
-                return JsonSerializer.Deserialize<Category>(cachedCategory!);
+                return JsonSerializer.Deserialize<Category>(cachedCategory!, _jsonSerializerOptions);
             }
 
             _logger.LogInformation("Fetched from DB.");
@@ -104,7 +112,7 @@ namespace BookAPI.Repositories
             if (category != null)
             {
                 _logger.LogInformation("Set to CACHE.");
-                await _redisDatabase.StringSetAsync(cacheKey, JsonSerializer.Serialize(category), _cacheExpiration);
+                await _redisDatabase.StringSetAsync(cacheKey, JsonSerializer.Serialize(category, _jsonSerializerOptions), _cacheExpiration);
             }
 
             return category;
@@ -113,11 +121,11 @@ namespace BookAPI.Repositories
         public async Task UpdateAsync(Category entity)
         {
             var existingCategory = await _context.Categories.FirstOrDefaultAsync(a => a.Id == entity.Id)
-                                    ?? throw new KeyNotFoundException("Category not found");
+                                   ?? throw new KeyNotFoundException("Category not found");
             _context.Entry(existingCategory).CurrentValues.SetValues(entity);
             await _context.SaveChangesAsync();
 
-            await _redisDatabase.StringSetAsync($"{_cacheKeyPrefix}{entity.Id}", JsonSerializer.Serialize(entity), _cacheExpiration);
+            await _redisDatabase.StringSetAsync($"{_cacheKeyPrefix}{entity.Id}", JsonSerializer.Serialize(entity, _jsonSerializerOptions), _cacheExpiration);
         }
     }
 }

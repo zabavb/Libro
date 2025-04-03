@@ -7,7 +7,6 @@ using Order = OrderApi.Models.Order;
 using Library.Filters;
 using FluentAssertions;
 using Library.DTOs.Order;
-using Library.Sortings;
 using Library.Common;
 
 namespace OrderAPI.Tests.Services

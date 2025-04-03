@@ -1,6 +1,5 @@
 ﻿using BookAPI.Data;
 using BookAPI.Models;
-using BookAPI.Models.Extensions;
 using BookAPI.Models.Filters;
 using BookAPI.Models.Sortings;
 using BookAPI.Repositories.Interfaces;
@@ -76,7 +75,7 @@ namespace BookAPI.Repositories
             }
 
             if (!string.IsNullOrWhiteSpace(searchTerm))
-                authors = authors.Search(searchTerm, p => p.Name);
+                authors = authors.SearchBy(searchTerm, p => p.Name);
             authors = filter?.Apply(authors) ?? authors;
             authors = sort?.Apply(authors) ?? authors;
 

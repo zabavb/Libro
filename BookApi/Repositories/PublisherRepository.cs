@@ -3,7 +3,6 @@ using BookAPI.Models;
 using BookAPI.Models.Sortings;
 using BookAPI.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using BookAPI.Models.Extensions;
 using StackExchange.Redis;
 using System.Text.Json;
 using Microsoft.Extensions.Logging;
@@ -51,7 +50,7 @@ namespace BookAPI.Repositories
             IQueryable<Publisher> publishers = _context.Publishers.AsQueryable();
             if (!string.IsNullOrWhiteSpace(searchTerm))
             {
-                publishers = publishers.Search(searchTerm, p => p.Name);
+                publishers = publishers.SearchBy(searchTerm, p => p.Name);
             }
             publishers = sort?.Apply(publishers) ?? publishers;
 

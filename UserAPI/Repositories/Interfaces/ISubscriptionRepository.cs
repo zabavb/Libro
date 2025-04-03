@@ -2,13 +2,10 @@
 using Library.Interfaces;
 using UserAPI.Models;
 
-namespace UserAPI.Repositories
+namespace UserAPI.Repositories.Interfaces
 {
-    public interface ISubscriptionRepository : IManageable<Subscription>
+    public interface ISubscriptionRepository : IManageable<Subscription, Subscription>
     {
         Task<PaginatedResult<Subscription>> GetAllAsync(int pageNumber, int pageSize, string searchTerm);
-        Task<IEnumerable<Subscription>> SearchAsync(string searchTerm);
-        Task<Subscription?> GetByIdAsync(Guid id);
-        Task DeleteAsync(Guid id);
     }
 }

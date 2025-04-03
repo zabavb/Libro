@@ -6,17 +6,17 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using UserAPI.Data;
 using UserAPI.Models;
-using UserAPI.Models.Searches;
 using UserAPI.Repositories.Interfaces;
 
 namespace UserAPI.Repositories
 {
-    public class UserRepository(UserDbContext context, IConnectionMultiplexer redis, ILogger<IUserRepository> logger) : IUserRepository
+    public class UserRepository(UserDbContext context, IConnectionMultiplexer redis, ILogger<IUserRepository> logger)
+        : IUserRepository
     {
         private readonly UserDbContext _context = context;
         private readonly IDatabase _redisDatabase = redis.GetDatabase();
-        public readonly string _cacheKeyPrefix = "User_";
-        public readonly TimeSpan _cacheExpiration = TimeSpan.FromMinutes(GlobalDefaults.DefaultCacheExpirationTime);
+        private const string CacheKeyPrefix = "User_";
+        private readonly TimeSpan _cacheExpiration = TimeSpan.FromMinutes(GlobalDefaults.cacheExpirationTime);
         private readonly ILogger<IUserRepository> _logger = logger;
 
         public async Task<PaginatedResult<User>> GetAllAsync(
@@ -25,7 +25,8 @@ namespace UserAPI.Repositories
             string? searchTerm,
             Filter? filter,
             Sort? sort
-        ) {
+        )
+        {
             try
             {
                 var options = new JsonSerializerOptions
@@ -34,11 +35,10 @@ namespace UserAPI.Repositories
                     WriteIndented = true
                 };
 
-                string cacheKey = $"{_cacheKeyPrefix}All_Page:{pageNumber}_Size:{pageSize}_Search:{searchTerm}";
+                string cacheKey = $"{CacheKeyPrefix}All_Page:{pageNumber}_Size:{pageSize}_Search:{searchTerm}";
                 var cachedUsers = await _redisDatabase.HashGetAllAsync(cacheKey);
 
                 IQueryable<User> users;
-
                 if (cachedUsers.Length > 0)
                 {
                     users = cachedUsers
@@ -50,11 +50,8 @@ namespace UserAPI.Repositories
                 }
                 else
                 {
-                    users = _context.Users
-                        .AsNoTracking()
-                        .Include(u => u.Subscription);
+                    users = _context.Users.AsNoTracking();
                     _logger.LogInformation("Fetched from DB.");
-
                     var hashEntries = users.ToDictionary(
                         user => user.UserId.ToString(),
                         user => JsonSerializer.Serialize(user, options)
@@ -69,7 +66,7 @@ namespace UserAPI.Repositories
                 }
 
                 if (users.Any() && !string.IsNullOrWhiteSpace(searchTerm))
-                    users = users.Search(searchTerm,
+                    users = users.SearchBy(searchTerm,
                         u => u.FirstName,
                         u => u.LastName!,
                         u => u.Email!,
@@ -106,7 +103,7 @@ namespace UserAPI.Repositories
         {
             try
             {
-                string cacheKey = $"{_cacheKeyPrefix}{id}";
+                string cacheKey = $"{CacheKeyPrefix}{id}";
                 string fieldKey = id.ToString();
 
                 var cachedUser = await _redisDatabase.HashGetAsync(cacheKey, fieldKey);
@@ -120,7 +117,7 @@ namespace UserAPI.Repositories
 
                 var user = await _context.Users
                     .AsNoTracking()
-                    .Include(u => u.Subscription)
+                    .Include(u => u.Subscriptions)
                     .FirstOrDefaultAsync(u => u.UserId.Equals(id));
                 _logger.LogInformation("Fetched from DB.");
 
@@ -148,7 +145,7 @@ namespace UserAPI.Repositories
         {
             try
             {
-                string cacheKey = $"{_cacheKeyPrefix}{email}";
+                string cacheKey = $"{CacheKeyPrefix}{email}";
                 string fieldKey = email;
 
                 var cachedUser = await _redisDatabase.HashGetAsync(cacheKey, fieldKey);
@@ -160,12 +157,12 @@ namespace UserAPI.Repositories
                 }
 
                 User? user = null;
-                
+
                 user = await _context.Users
                     .AsNoTracking()
                     .FirstOrDefaultAsync(u => u.Email!.Equals(email));
                 _logger.LogInformation("Fetched from DB.");
-                
+
 
                 if (user != null)
                 {
@@ -210,8 +207,8 @@ namespace UserAPI.Repositories
             try
             {
                 var existingUser = await _context.Users.FindAsync(user.UserId) ??
-                    throw new KeyNotFoundException($"User with ID [{user.UserId}] not found.");
-                
+                                   throw new KeyNotFoundException($"User with ID [{user.UserId}] not found.");
+
                 _context.Entry(existingUser).CurrentValues.SetValues(user);
                 await _context.SaveChangesAsync();
             }
@@ -225,8 +222,9 @@ namespace UserAPI.Repositories
         {
             try
             {
-                var user = await _context.Users.FindAsync(id) ?? throw new KeyNotFoundException($"User with ID [{id}] not found.");
-                
+                var user = await _context.Users.FindAsync(id)
+                           ?? throw new KeyNotFoundException($"User with ID [{id}] not found.");
+
                 _context.Users.Remove(user);
                 await _context.SaveChangesAsync();
             }

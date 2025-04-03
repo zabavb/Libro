@@ -1,4 +1,5 @@
 ﻿using Library.DTOs.User;
+using Library.Interfaces;
 
 namespace Library.DTOs.UserRelated.User
 {
@@ -10,6 +11,7 @@ namespace Library.DTOs.UserRelated.User
         public string? PhoneNumber { get; set; }
         public RoleType Role { get; set; }
 
+        public SingleSnippet<OrderCardSnippet> Order { get; set; }
         public int OrdersCount { get; set; }
         public string LastOrder { get; set; }
 

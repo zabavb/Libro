@@ -13,9 +13,11 @@ namespace UserAPI.Models.Auth
         public string? LastName { get; set; }
 
         [EmailAddress(ErrorMessage = "Invalid email address format.")]
+        [StringLength(100, ErrorMessage = "Email address cannot exceed 100 characters.")]
         public string? Email { get; set; }
 
         [Phone(ErrorMessage = "Invalid phone number format.")]
+        [StringLength(15, ErrorMessage = "Email address cannot exceed 15 characters.")]
         public string? PhoneNumber { get; set; }
 
         [Required(ErrorMessage = "Password is required.")]

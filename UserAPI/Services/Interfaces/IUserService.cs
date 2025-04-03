@@ -3,7 +3,7 @@ using Library.Interfaces;
 
 namespace UserAPI.Services.Interfaces
 {
-    public interface IUserService : IManageable<Dto, DetailsDto> 
+    public interface IUserService : IManageable<Dto, DetailsDto>
     {
         Task<PaginatedResult<CardDto>> GetAllAsync(
             int pageNumber,

@@ -1,4 +1,4 @@
-﻿using Library.Sortings;
+﻿using Library.Sorts;
 
 namespace OrderAPI
 {

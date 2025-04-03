@@ -1,4 +1,4 @@
-﻿using Library.Sortings;
+﻿using Library.Sorts;
 
 namespace BookAPI.Models.Sortings
 {
