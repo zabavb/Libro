@@ -195,34 +195,5 @@ namespace BookAPI.Controllers
             }
         }
 
-        /// <summary>
-        /// Retrieves all feedbacks for a specific user.
-        /// </summary>
-        /// <param name="userId">The ID of the user whose feedbacks are to be retrieved.</param>
-        /// <returns>A list of feedbacks for the specified user.</returns>
-        /// <response code="200">Returns the list of feedbacks.</response>
-        /// <response code="404">Returns an error if no feedbacks are found for the user.</response>
-        /// <response code="500">Returns an internal server error if an exception occurs.</response>
-        [HttpGet("user/{userId}")]
-        public async Task<ActionResult<IEnumerable<FeedbackDto>>> GetFeedbacksByUserId(Guid userId)
-        {
-            try
-            {
-                var feedbacks = await _feedbackService.GetAllByUserId(userId);
-
-                if (feedbacks == null || !feedbacks.Any())
-                {
-                    return NotFound($"No feedbacks found for user with id {userId}.");
-                }
-
-                return Ok(feedbacks);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"Error occurred while retrieving feedbacks for user with id {userId}.");
-                return StatusCode(500, $"Internal server error: {ex.Message}");
-            }
-        }
-
     }
 }

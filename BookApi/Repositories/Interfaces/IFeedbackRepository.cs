@@ -10,6 +10,5 @@ namespace BookAPI.Repositories.Interfaces
     {
         Task<PaginatedResult<Feedback>> GetAllAsync(int pageNumber, int pageSize, FeedbackFilter? filter, FeedbackSort? sort);
         Task DeleteAsync(Guid id);
-        Task<IEnumerable<Feedback>> GetAllByUserId(Guid userId);
     }
 }

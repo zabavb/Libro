@@ -19,12 +19,14 @@ namespace FeedbackApi.Services
         private readonly IMapper _mapper;
         private readonly IFeedbackRepository _feedbackRepository;
         private readonly ILogger<FeedbackService> _logger;
+        private readonly IBookService _bookService;
 
-        public FeedbackService(IMapper mapper, IFeedbackRepository feedbackRepository, ILogger<FeedbackService> logger)
+        public FeedbackService(IMapper mapper, IFeedbackRepository feedbackRepository, ILogger<FeedbackService> logger, IBookService bookService)
         {
             _mapper = mapper;
             _feedbackRepository = feedbackRepository;
             _logger = logger;
+            _bookService = bookService;
         }
 
         public async Task<PaginatedResult<FeedbackDto>> GetFeedbacksAsync(
@@ -134,19 +136,6 @@ namespace FeedbackApi.Services
                 return false;
             }
         }
-        public async Task<IEnumerable<FeedbackDto>> GetAllByUserId(Guid userId)
-        {
-            var feedbacks = await _feedbackRepository.GetAllByUserId(userId);
-
-            if (feedbacks == null || !feedbacks.Any())
-            {
-                _logger.LogWarning($"No feedback found for user {userId}");
-                return new List<FeedbackDto>();
-            }
-
-            _logger.LogInformation($"Successfully found feedback for user {userId}");
-            return _mapper.Map<IEnumerable<FeedbackDto>>(feedbacks);
-        }
 
         public async Task<CollectionSnippet<FeedbackDetailsSnippet>> GetAllByUserId(Guid id, int pageNumber)
         {
@@ -158,9 +147,11 @@ namespace FeedbackApi.Services
                 var snippets = new List<FeedbackDetailsSnippet>();
                 foreach (var feedback in feedbacks.Items)
                 {
+                    var book = await _bookService.GetBookByIdAsync(feedback.BookId);
+
                     var detailsSnippet = new FeedbackDetailsSnippet
                     {
-                        HeadLabel = $"{feedback.Book.Title} - {feedback.Id.ToString().Split('-')[4]}",
+                        HeadLabel = $"{book.Title} - {feedback.Id.ToString().Split('-')[4]}",
                         Comment = feedback.Comment,
                         Date = feedback.Date,
                         Rating = feedback.Rating,
