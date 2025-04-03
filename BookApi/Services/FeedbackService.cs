@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using BookAPI;
 using BookAPI.Data;
 using BookAPI.Models;
 using BookAPI.Models.Filters;
@@ -6,6 +7,8 @@ using BookAPI.Models.Sortings;
 using BookAPI.Repositories.Interfaces;
 using BookAPI.Services.Interfaces;
 using Library.Common;
+using Library.DTOs.UserRelated.User;
+using Library.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 
@@ -145,7 +148,39 @@ namespace FeedbackApi.Services
             return _mapper.Map<IEnumerable<FeedbackDto>>(feedbacks);
         }
 
+        public async Task<CollectionSnippet<FeedbackDetailsSnippet>> GetAllByUserId(Guid id, int pageNumber)
+        {
+            try
+            {
+                var feedbackFilter = new FeedbackFilter { userId = id };
+                var feedbacks = await _feedbackRepository.GetAllAsync(pageNumber, GlobalConstants.DefaultPageSize, feedbackFilter, null);
 
+                var snippets = new List<FeedbackDetailsSnippet>();
+                foreach (var feedback in feedbacks.Items)
+                {
+                    var detailsSnippet = new FeedbackDetailsSnippet
+                    {
+                        HeadLabel = $"{feedback.Book.Title} - {feedback.Id.ToString().Split('-')[4]}",
+                        Comment = feedback.Comment,
+                        Date = feedback.Date,
+                        Rating = feedback.Rating,
+                    };
+                    snippets.Add(detailsSnippet);
+                }
+
+                return new CollectionSnippet<FeedbackDetailsSnippet>(false, snippets);
+            }
+            catch
+            {
+                return new CollectionSnippet<FeedbackDetailsSnippet>(true, new List<FeedbackDetailsSnippet>());
+            }
+
+                /*                    public string HeadLabel { get; set; }
+                        public int Rating { get; set; }
+                        public string Comment { get; set; }
+                        public DateTime Date { get; set; }*/
+
+            }
 
     }
 
