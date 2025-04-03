@@ -164,13 +164,13 @@ namespace OrderApi.Services
             }
         }
 
-        public async Task<CollectionSnippet<OrderDetailsSnippet>> GetAllByUserIdAsync(Guid id)
+        public async Task<CollectionSnippet<OrderDetailsSnippet>> GetAllByUserIdAsync(Guid id, int pageNumber)
         {
             try
             {
                 var filter = new OrderFilter { UserId = id };
 
-                var orders = await _repository.GetAllPaginatedAsync(GlobalConstants.DefaultPageNumber, GlobalConstants.DefaultPageSize, "", filter,null);
+                var orders = await _repository.GetAllPaginatedAsync(pageNumber, GlobalConstants.DefaultPageSize, "", filter,null);
                 var orderDetailsSnippets = new List<OrderDetailsSnippet>();
 
                 foreach (var order in orders.Items)

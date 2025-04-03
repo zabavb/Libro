@@ -9,6 +9,6 @@ namespace OrderApi.Services
         Task<PaginatedResult<OrderDto>> GetAllAsync(int pageNumber, int pageSize, string searchTerm, Filter? filter, Sort? sort);
         Task DeleteAsync(Guid id);
         Task<SingleSnippet<OrderCardSnippet>> GetCardSnippetByUserIdAsync(Guid id);
-        Task<CollectionSnippet<OrderDetailsSnippet>> GetAllByUserIdAsync(Guid id);
+        Task<CollectionSnippet<OrderDetailsSnippet>> GetAllByUserIdAsync(Guid id, int pageNumber = 1);
     }
 }
