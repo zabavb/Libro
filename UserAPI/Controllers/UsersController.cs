@@ -1,4 +1,5 @@
 ﻿using BookAPI;
+using Library.Common;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using UserAPI.Services.Interfaces;
@@ -17,12 +18,12 @@ namespace UserAPI.Controllers
     /// <remarks>
     /// Initializes a new instance of the <see cref="UsersController"/> class.
     /// </remarks>
-    /// <param name="userService">Service for user operations.</param>
+    /// <param name="service">Service for user operations.</param>
     [Route("api/[controller]")]
     [ApiController]
-    public class UsersController(IUserService userService) : ControllerBase
+    public class UsersController(IUserService service) : ControllerBase
     {
-        private readonly IUserService _userService = userService;
+        private readonly IUserService _service = service;
 
         /// <summary>
         /// Retrieves a paginated list of users with optional search and filtering.
@@ -39,14 +40,15 @@ namespace UserAPI.Controllers
         /// <response code="500">If an unexpected error occurs.</response>
         [Authorize(Roles = "ADMIN, MODERATOR")]
         [HttpGet]
-        public async Task<IActionResult> GetAll(
+        public async Task<ActionResult<PaginatedResult<CardDto>>> GetAll(
             [FromQuery] int pageNumber = GlobalConstants.DefaultPageNumber,
             [FromQuery] int pageSize = GlobalConstants.DefaultPageSize,
             [FromQuery] string? searchTerm = null,
             [FromQuery] Filter? filter = null,
             [FromQuery] Sort? sort = null
-        ) {
-            var users = await _userService.GetAllAsync(pageNumber, pageSize, searchTerm, filter, sort);
+        )
+        {
+            var users = await _service.GetAllAsync(pageNumber, pageSize, searchTerm, filter, sort);
             return Ok(users);
         }
 
@@ -61,12 +63,12 @@ namespace UserAPI.Controllers
         /// <response code="500">If an unexpected error occurs.</response>
         [Authorize(Roles = "ADMIN, MODERATOR")]
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetById(Guid id)
+        public async Task<ActionResult<DetailsDto>> GetById(Guid id)
         {
             if (id.Equals(Guid.Empty))
                 return NotFound($"User ID [{id}] was not provided.");
 
-            var user = await _userService.GetByIdAsync(id);
+            var user = await _service.GetByIdAsync(id);
             return Ok(user);
         }
 
@@ -82,7 +84,10 @@ namespace UserAPI.Controllers
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] Dto user)
         {
-            await _userService.CreateAsync(user);
+            if (ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            await _service.CreateAsync(user);
             return CreatedAtAction(nameof(GetById), new { id = user.Id }, user);
         }
 
@@ -102,10 +107,12 @@ namespace UserAPI.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(Guid id, [FromBody] Dto user)
         {
-            if (user != null && id != user.Id)
+            if (ModelState.IsValid)
+                return BadRequest(ModelState);
+            if (id != user.Id)
                 return BadRequest("User ID in the URL does not match the ID in the body.");
 
-            await _userService.UpdateAsync(user!);
+            await _service.UpdateAsync(user);
             return NoContent();
         }
 
@@ -120,9 +127,9 @@ namespace UserAPI.Controllers
         /// <response code="500">If an unexpected error occurs.</response>
         [Authorize(Roles = "ADMIN")]
         [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(Guid id)
+        public async Task<NoContentResult> Delete(Guid id)
         {
-            await _userService.DeleteAsync(id);
+            await _service.DeleteAsync(id);
             return NoContent();
         }
     }

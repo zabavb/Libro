@@ -13,5 +13,8 @@ export interface BookView {
   cover: CoverType;
   isAvailable: boolean;
   feedbackIds: string[];
+  discountRate: number;
+  startDate: Date;
+  endDate: Date;
   //subcategoryIds: string[]
 }

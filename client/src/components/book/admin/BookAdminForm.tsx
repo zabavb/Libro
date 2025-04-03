@@ -15,6 +15,9 @@ const BookAdminForm: React.FC<BookAdminFormProps> = ({ book, onSubmit }) => {
     const [price, setPrice] = useState<number>(book ? book.price : 0);
     const [language, setLanguage] = useState<Language>(book ? book.language : Language.ENGLISH); 
     const [isAvailable, setIsAvailable] = useState(book ? book.isAvailable : false);
+    const [startDate, setStartDate] = useState(book ? book.startDate : null);
+    const [endDate, setEndDate] = useState(book ? book.endDate : null);
+    const [discountRate, setDiscountRate] = useState(book ? book.discountRate : 0);
 
     useEffect(() => {
         if (book) {
@@ -24,6 +27,9 @@ const BookAdminForm: React.FC<BookAdminFormProps> = ({ book, onSubmit }) => {
             setPrice(book.price);
             setLanguage(book.language);
             setIsAvailable(book.isAvailable);
+            setStartDate(book.startDate);
+            setEndDate(book.endDate);
+            setDiscountRate(book.discountRate);
         }
     }, [book]);
 
@@ -40,6 +46,9 @@ const BookAdminForm: React.FC<BookAdminFormProps> = ({ book, onSubmit }) => {
             price,
             language,
             isAvailable,
+            startDate,
+            endDate,
+            discountRate
         };
         onSubmit(newBook);
     };
@@ -73,6 +82,18 @@ const BookAdminForm: React.FC<BookAdminFormProps> = ({ book, onSubmit }) => {
                 <label>
                     Price:
                     <input type="number" value={price} onChange={(e) => setPrice(Number(e.target.value))} required />
+                </label>
+                <label>
+                    Discount rate:
+                    <input type="number" value={discountRate} onChange={(e) => setDiscountRate(Number(e.target.value))}/>
+                </label>
+                <label>
+                    Start date:
+                    <input type="date" value={startDate ? startDate.toISOString().split("T")[0] : ""} onChange={(e) => setStartDate(new Date(e.target.value))}/>
+                </label>
+                <label>
+                    End date:
+                    <input type="date" value={endDate ? endDate.toISOString().split("T")[0] : ""} onChange={(e) => setEndDate(new Date(e.target.value))}/>
                 </label>
             </div>
             <div>

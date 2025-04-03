@@ -1,9 +1,20 @@
 ﻿namespace UserAPI
 {
-    public class GlobalDefaults
+    public static class GlobalDefaults
     {
-        public const int DefaultPageNumber = 1;
-        public const int DefaultPageSize = 10;
-        public const int DefaultCacheExpirationTime = 10;
+        public const int pageNumber = 1;
+        public const int pageSize = 10;
+        public const int cacheExpirationTime = 10;
+        public static readonly string BucketName;
+
+        static GlobalDefaults()
+        {
+            var config = new ConfigurationBuilder()
+                .AddJsonFile("appsettings.json")
+                .Build();
+
+            BucketName = config["AWS:BucketName"] ??
+                         throw new Exception("BucketName is not set in appsettings.json");
+        }
     }
 }

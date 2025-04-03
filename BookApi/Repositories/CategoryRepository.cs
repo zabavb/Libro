@@ -1,6 +1,5 @@
 ﻿using BookAPI.Data;
 using BookAPI.Models;
-using BookAPI.Models.Extensions;
 using BookAPI.Models.Sortings;
 using BookAPI.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -62,6 +61,7 @@ namespace BookAPI.Repositories
                 throw new ArgumentException("Id cannot be empty.", nameof(id));
 
             var category = await _context.Categories.FirstOrDefaultAsync(c => c.Id == id) ?? throw new KeyNotFoundException("Category not found");
+            
             _context.Categories.Remove(category);
             await _context.SaveChangesAsync();
 
@@ -75,7 +75,6 @@ namespace BookAPI.Repositories
                 await _cacheService.UpdateListAsync(allCategoriesCacheKey, default(Category), id, _cacheExpiration);
             }
         }
-
 
         public async Task<PaginatedResult<Category>> GetAllAsync(int pageNumber, int pageSize, string? searchTerm, CategorySort? sort)
         {
@@ -102,7 +101,7 @@ namespace BookAPI.Repositories
 
 
             if (!string.IsNullOrWhiteSpace(searchTerm))
-                categoriesQuery = categoriesQuery.Search(searchTerm, b => b.Name);
+                categoriesQuery = categoriesQuery.SearchBy(searchTerm, b => b.Name);
             if (sort != null)
                 categoriesQuery = sort.Apply(categoriesQuery);
 
@@ -147,7 +146,7 @@ namespace BookAPI.Repositories
         {
             var existingCategory = await _context.Categories.FirstOrDefaultAsync(c => c.Id == entity.Id)
                                     ?? throw new KeyNotFoundException("Category not found");
-
+            
             _context.Entry(existingCategory).CurrentValues.SetValues(entity);
             await _context.SaveChangesAsync();
 

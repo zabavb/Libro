@@ -9,7 +9,6 @@ using Microsoft.Extensions.Logging;
 using Moq;
 using Xunit;
 using Library.Filters;
-using Library.Sortings;
 using PublisherDto = Library.DTOs.Book.Publisher;
 using BookAPI.Services.Interfaces;
 using Library.Common;

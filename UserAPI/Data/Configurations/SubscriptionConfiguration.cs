@@ -16,18 +16,21 @@ namespace UserAPI.Data.Configurations
                 .HasMaxLength(50)
                 .HasColumnType("nvarchar(50)");
 
-            builder.Property(s => s.Description)
-                .HasMaxLength(1000)
-                .HasColumnType("nvarchar(1000)");
+            builder.Property(s => s.ExpirationDays)
+                .IsRequired();
 
-            builder.Property(s => s.EndDate)
+            builder.Property(s => s.Price)
                 .IsRequired()
-                .HasColumnType("datetime")
-                .HasDefaultValueSql("GETDATE() + 1");
+                .HasColumnType("money");
 
-            /*builder.HasMany(s => s.Users)
-                .WithOne(u => u.Subscription)
-                .HasForeignKey(u => u.SubscriptionId);*/
+            builder.Property(s => s.Description)
+                .HasMaxLength(500)
+                .HasColumnType("nvarchar(500)");
+
+            builder.HasOne(u => u.User)
+                .WithOne()
+                .HasForeignKey<User>(u => u.SubscriptionId)
+                .IsRequired();
         }
     }
 }

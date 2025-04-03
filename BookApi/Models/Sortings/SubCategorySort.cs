@@ -1,6 +1,6 @@
 ﻿using BookAPI.Models;
-using Library.Sortings;
 using System.Linq.Expressions;
+using Library.Sorts;
 
 namespace BookAPI.Models.Sortings
 {

@@ -1,6 +1,5 @@
 ﻿using BookAPI.Data;
 using BookAPI.Models;
-using BookAPI.Models.Extensions;
 using BookAPI.Models.Filters;
 using BookAPI.Models.Sortings;
 using BookAPI.Repositories.Interfaces;
@@ -97,7 +96,7 @@ namespace BookAPI.Repositories
             IQueryable<SubCategory> subcategoryQuery = subcategories.AsQueryable();
 
             if (!string.IsNullOrWhiteSpace(searchTerm))
-                subcategoryQuery = subcategoryQuery.Search(searchTerm, p => p.Name);
+                subcategoryQuery = subcategoryQuery.SearchBy(searchTerm, p => p.Name);
 
             if (filter != null)
                 subcategoryQuery = filter.Apply(subcategoryQuery);

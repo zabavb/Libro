@@ -4,4 +4,5 @@ export interface BookSort{
     price?: boolean;
     year?: boolean;
     feedBack?: boolean;
+    discountRate?: boolean;
 }

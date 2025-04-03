@@ -1,6 +1,5 @@
 ﻿using BookAPI.Data;
 using BookAPI.Models;
-using BookAPI.Models.Extensions;
 using BookAPI.Models.Filters;
 using BookAPI.Models.Sortings;
 using BookAPI.Repositories.Interfaces;
@@ -92,7 +91,7 @@ namespace BookAPI.Repositories
             IQueryable<Author> authorQuery = authors.AsQueryable();
 
             if (!string.IsNullOrWhiteSpace(searchTerm))
-                authorQuery = authorQuery.Search(searchTerm, p => p.Name);
+                authorQuery = authorQuery.SearchBy(searchTerm, p => p.Name);
 
             if (filter != null)
                 authorQuery = filter.Apply(authorQuery);
