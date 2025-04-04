@@ -3,8 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.13.35507.96
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DeadAspClient", "DeadAspClient\DeadAspClient.csproj", "{B60E8519-EA22-4CCC-9987-5E64B9FF1783}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Library", "Library\Library.csproj", "{EF80AD98-3273-42AA-AE7E-9A408E348474}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BookAPI", "BookAPI\BookAPI.csproj", "{62B979E1-B71F-4712-813C-5B3A824D937A}"
@@ -35,10 +33,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{B60E8519-EA22-4CCC-9987-5E64B9FF1783}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B60E8519-EA22-4CCC-9987-5E64B9FF1783}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{B60E8519-EA22-4CCC-9987-5E64B9FF1783}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{B60E8519-EA22-4CCC-9987-5E64B9FF1783}.Release|Any CPU.Build.0 = Release|Any CPU
 		{EF80AD98-3273-42AA-AE7E-9A408E348474}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{EF80AD98-3273-42AA-AE7E-9A408E348474}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EF80AD98-3273-42AA-AE7E-9A408E348474}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -82,7 +76,6 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{B60E8519-EA22-4CCC-9987-5E64B9FF1783} = {F58F0DB2-1522-446F-B5BE-5854EF1CE7A6}
 		{62B979E1-B71F-4712-813C-5B3A824D937A} = {BB07D1E1-EE7C-4719-B45F-526F4217F8BB}
 		{64289E2D-A6BD-4E60-9A02-B8729978266E} = {BB07D1E1-EE7C-4719-B45F-526F4217F8BB}
 		{77F81EA8-BC7F-4B38-A896-BBB406B61AB5} = {BB07D1E1-EE7C-4719-B45F-526F4217F8BB}
