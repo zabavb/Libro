@@ -44,6 +44,14 @@ const BookAdminForm: React.FC<BookAdminFormProps> = ({ book, onSubmit }) => {
         onSubmit(newBook);
     };
 
+    const renderEnumOptions = (enumObj: any) => {
+        return Object.entries(enumObj).map(([key, value]) => (
+            <option key={key} value={value as string | number}>
+                {value as string | number}
+            </option>
+        ));
+    };
+
     return (
         <form onSubmit={handleSubmit}>
             <div>
@@ -62,10 +70,7 @@ const BookAdminForm: React.FC<BookAdminFormProps> = ({ book, onSubmit }) => {
                 <label>
                     Cover:
                     <select value={cover} onChange={(e) => setCover(e.target.value as CoverType)} required>
-                        <option value="defaultCoverType">Default Cover</option>
-                        <option value="hardcover">Hardcover</option>
-                        <option value="paperback">Paperback</option>
-                        <option value="ebook">Ebook</option>
+                        {renderEnumOptions(CoverType)}
                     </select>
                 </label>
             </div>
@@ -79,11 +84,7 @@ const BookAdminForm: React.FC<BookAdminFormProps> = ({ book, onSubmit }) => {
                 <label>
                     Language:
                     <select value={language} onChange={(e) => setLanguage(e.target.value as Language)} required>
-                        <option value="defaultLanguage">Default Language</option>
-                        <option value="english">English</option>
-                        <option value="spanish">Spanish</option>
-                        <option value="french">French</option>
-                        <option value="german">German</option>
+                        {renderEnumOptions(Language)}
                     </select>
                 </label>
             </div>
