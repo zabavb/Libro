@@ -1,7 +1,7 @@
 import React from "react"
 import { FixedSizeList as List } from "react-window"
 import { Book } from "../../types/objects/Book"
-import BookCardContainer from "../../containers/books/BookCardContainer"
+import BookCardContainer from "../../containers/books/BookAdminCardContainer"
 import Pagination from "../common/Pagination"
 import Loading from "../common/Loading"
 
