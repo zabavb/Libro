@@ -12,6 +12,7 @@ export const getAllOrders = async (
         DeliveryDateStart?: string
         DeliveryDateEnd?: string
         DeliveryId?: string
+        UserId?: string
         searchTerm: string | undefined
     }
 ): Promise<PaginatedResponse<Order>> => {
