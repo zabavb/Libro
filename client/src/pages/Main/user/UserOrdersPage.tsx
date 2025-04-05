@@ -1,5 +1,5 @@
+import UserOrdersContainer from '@/containers/user/UserOrdersListContainer';
 import { useNavigate } from 'react-router-dom';
-import UserOrdersContainer from '../../containers/user/UserOrdersListContainer';
 
 const UserOrdersPage = () => {
   const navigate = useNavigate();
