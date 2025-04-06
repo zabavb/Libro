@@ -1,29 +1,50 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="ef86f6ed-a2e9-4907-b909-6765d9759a44" name="Changes" comment="" />
+    <list default="true" id="ef86f6ed-a2e9-4907-b909-6765d9759a44" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/../UserAPI/Models/UserSubscription.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../BookApi/Repositories/BookRepository.cs" beforeDir="false" afterPath="$PROJECT_DIR$/../BookApi/Repositories/BookRepository.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../BookApi/Services/FeedbackService.cs" beforeDir="false" afterPath="$PROJECT_DIR$/../BookApi/Services/FeedbackService.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../BookApi/Services/Interfaces/IFeedbackService.cs" beforeDir="false" afterPath="$PROJECT_DIR$/../BookApi/Services/Interfaces/IFeedbackService.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Library/DTOs/UserRelated/Subscription/SubscriptionDto.cs" beforeDir="false" afterPath="$PROJECT_DIR$/../Library/DTOs/UserRelated/Subscription/SubscriptionDto.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../OrderApi/Program.cs" beforeDir="false" afterPath="$PROJECT_DIR$/../OrderApi/Program.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../UserAPI/Controllers/PasswordController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/../UserAPI/Controllers/PasswordController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../UserAPI/Controllers/SubscriptionsController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/../UserAPI/Controllers/SubscriptionsController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../UserAPI/Data/Configurations/SubscriptionConfiguration.cs" beforeDir="false" afterPath="$PROJECT_DIR$/../UserAPI/Data/Configurations/SubscriptionConfiguration.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../UserAPI/Data/Configurations/UserConfiguration.cs" beforeDir="false" afterPath="$PROJECT_DIR$/../UserAPI/Data/Configurations/UserConfiguration.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../UserAPI/Data/UserDbContext.cs" beforeDir="false" afterPath="$PROJECT_DIR$/../UserAPI/Data/UserDbContext.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../UserAPI/Models/Subscription.cs" beforeDir="false" afterPath="$PROJECT_DIR$/../UserAPI/Models/Subscription.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../UserAPI/Models/User.cs" beforeDir="false" afterPath="$PROJECT_DIR$/../UserAPI/Models/User.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../UserAPI/Profiles/UserProfile.cs" beforeDir="false" afterPath="$PROJECT_DIR$/../UserAPI/Profiles/UserProfile.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../UserAPI/Repositories/Interfaces/ISubscriptionRepository.cs" beforeDir="false" afterPath="$PROJECT_DIR$/../UserAPI/Repositories/Interfaces/ISubscriptionRepository.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../UserAPI/Repositories/SubscriptionRepository.cs" beforeDir="false" afterPath="$PROJECT_DIR$/../UserAPI/Repositories/SubscriptionRepository.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../UserAPI/Repositories/UserRepository.cs" beforeDir="false" afterPath="$PROJECT_DIR$/../UserAPI/Repositories/UserRepository.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../UserAPI/Services/Interfaces/IPasswordService.cs" beforeDir="false" afterPath="$PROJECT_DIR$/../UserAPI/Services/Interfaces/IPasswordService.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../UserAPI/Services/PasswordService.cs" beforeDir="false" afterPath="$PROJECT_DIR$/../UserAPI/Services/PasswordService.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../UserAPI/Services/UserService.cs" beforeDir="false" afterPath="$PROJECT_DIR$/../UserAPI/Services/UserService.cs" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
-  <component name="ProjectColorInfo"><![CDATA[{
-  "associatedIndex": 1
-}]]></component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 1
+}</component>
   <component name="ProjectId" id="2ux2gUmnxN61xBUyKCc8wSjcAL9" />
   <component name="ProjectViewState">
     <option name="autoscrollFromSource" value="true" />
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "nodejs_package_manager_path": "npm",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
@@ -33,6 +54,7 @@
       <option name="presentableId" value="Default" />
       <updated>1743176016095</updated>
       <workItem from="1743176017526" duration="6000" />
+      <workItem from="1743694723246" duration="3000" />
     </task>
     <servers />
   </component>
