@@ -1,4 +1,4 @@
-﻿namespace UserAPI.Models
+﻿namespace UserAPI.Models.Subscription
 {
     public class Subscription
     {
@@ -9,15 +9,13 @@
         public string? Description { get; set; }
         public string ImageUrl { get; set; }
 
-        public Guid UserId { get; set; }
-        public User User { get; set; }
+        public ICollection<UserSubscription>? UserSubscriptions { get; set; }
 
         public Subscription()
         {
             SubscriptionId = Guid.NewGuid();
             Title = string.Empty;
             ImageUrl = string.Empty;
-            User = null!;
         }
     }
 }

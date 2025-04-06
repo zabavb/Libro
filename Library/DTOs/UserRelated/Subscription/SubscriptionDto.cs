@@ -12,7 +12,7 @@ namespace Library.DTOs.UserRelated.Subscription
         [StringLength(50, ErrorMessage = "Title cannot exceed 50 characters.")]
         public string Title { get; set; }
 
-        [Required(ErrorMessage = "Expiration days are required.")]
+        [Required(ErrorMessage = "Expiration date are required.")]
         public int ExpirationDays { get; set; }
 
         [Required(ErrorMessage = "Price is required.")]
@@ -21,9 +21,7 @@ namespace Library.DTOs.UserRelated.Subscription
         [StringLength(500, ErrorMessage = "Description cannot exceed 500 characters.")]
         public string? Description { get; set; }
 
-        [Required(ErrorMessage = "Image url is required.")]
-        public string ImageUrl { get; set; }
-
+        public string? ImageUrl { get; set; }
         public IFormFile? Image { get; set; }
 
         public SubscriptionDto()
