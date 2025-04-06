@@ -11,8 +11,10 @@ namespace UserAPI.Services
 {
     public class SubscriptionService(
         ISubscriptionRepository repository,
+        
         IS3StorageService storageService,
         IMapper mapper,
+        
         ILogger<ISubscriptionService> logger
     ) : ISubscriptionService
     {
@@ -91,7 +93,7 @@ namespace UserAPI.Services
             var subscription = _mapper.Map<Subscription>(dto);
 
             await _repository.UpdateAsync(subscription);
-            _logger.LogInformation("User with ID [{id}] successfully updated.", dto.Id);
+            _logger.LogInformation("Subscription with ID [{id}] successfully updated.", dto.Id);
         }
 
         public async Task DeleteAsync(Guid id)
@@ -100,7 +102,7 @@ namespace UserAPI.Services
                                        throw new KeyNotFoundException($"Subscription with ID [{id}] not found.");
 
             if (!string.IsNullOrEmpty(existingSubscription.ImageUrl))
-                await DeleteImageAsync(existingSubscription.ImageUrl);
+                await _storageService.DeleteAsync(GlobalDefaults.BucketName, existingSubscription.ImageUrl);
 
             await _repository.DeleteAsync(id);
             _logger.LogInformation($"Subscription with ID [{id}] successfully deleted.");
