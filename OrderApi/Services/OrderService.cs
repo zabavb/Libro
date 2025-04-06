@@ -2,6 +2,7 @@
 using BookAPI;
 using BookAPI.Repositories;
 using BookAPI.Repositories.Interfaces;
+using BookAPI.Services.Interfaces;
 using Library.Common;
 using Library.DTOs.UserRelated.User;
 using Library.Interfaces;
@@ -12,14 +13,15 @@ using OrderAPI;
 
 namespace OrderApi.Services
 {
-    public class OrderService(IOrderRepository repository, IMapper mapper, ILogger<IOrderService> logger, IBookRepository bookRepository) : IOrderService
+    public class OrderService(IOrderRepository repository, IMapper mapper, ILogger<IOrderService> logger, IBookService bookService, IDeliveryTypeService deliveryService) : IOrderService
     {
         private readonly IOrderRepository _repository = repository;
         private readonly IMapper _mapper = mapper;
         private readonly ILogger<IOrderService> _logger = logger;
         private string _message = string.Empty;
-        private readonly IBookRepository _bookRepository = bookRepository;
-        public async Task<PaginatedResult<OrderDto>> GetAllAsync(int pageNumber, int pageSize, string searchTerm, Filter? filter, Sort? sort)
+        private readonly IBookService _bookService = bookService;
+        private readonly IDeliveryTypeService _deliveryService = deliveryService;
+        public async Task<PaginatedResult<OrderCardDto>> GetAllAsync(int pageNumber, int pageSize, string searchTerm, Filter? filter, Sort? sort)
         {
             var paginatedOrders = await _repository.GetAllPaginatedAsync(pageNumber, pageSize, searchTerm, filter, sort);
 
@@ -32,9 +34,11 @@ namespace OrderApi.Services
 
             _logger.LogInformation("Successfully fetched [{Count}] orders.", paginatedOrders.Items.Count);
 
-            return new PaginatedResult<OrderDto>
+            var cards = await MergeForCardAsync(paginatedOrders.Items);
+
+            return new PaginatedResult<OrderCardDto>
             {
-                Items = _mapper.Map<ICollection<OrderDto>>(paginatedOrders.Items),
+                Items = cards,
                 TotalCount = paginatedOrders.TotalCount,
                 PageNumber = paginatedOrders.PageNumber,
                 PageSize = paginatedOrders.PageSize
@@ -133,6 +137,46 @@ namespace OrderApi.Services
             }
         }
 
+        #region Merge Function
+
+        private async Task<ICollection<OrderCardDto>> MergeForCardAsync(ICollection<Order> orders)
+        {
+            ICollection<OrderCardDto> result = new List<OrderCardDto>();
+            foreach (var order in orders)
+            {
+                var booksSnippetTask = _bookService.GetAllByIdAsync(order.Books);
+                var deliverySnippetTask = _deliveryService.GetSnippetByIdAsync(order.DeliveryTypeId);
+
+                await Task.WhenAll(booksSnippetTask, deliverySnippetTask);
+
+                var booksSnippet = await booksSnippetTask;
+                var deliverySnippet = await deliverySnippetTask;
+
+                if (booksSnippet.IsFailedToFetch && deliverySnippet.IsFailedToFetch)
+                {
+                    result.Add(_mapper.Map<OrderCardDto>(order));
+                    continue;
+                }
+
+                if (booksSnippet.IsFailedToFetch)
+                {
+                    result.Add(_mapper.Map<OrderCardDto>((order, deliverySnippet)));
+                    continue;
+                }
+
+                if (deliverySnippet.IsFailedToFetch)
+                {
+                    result.Add(_mapper.Map<OrderCardDto>((order, booksSnippet)));
+                    continue;
+                }
+
+                result.Add(_mapper.Map<OrderCardDto>((order, booksSnippet, deliverySnippet)));
+
+            }
+            return result;
+
+        }
+
         public async Task<SingleSnippet<OrderCardSnippet>> GetCardSnippetByUserIdAsync(Guid id)
         {
             try
@@ -179,7 +223,7 @@ namespace OrderApi.Services
 
                     foreach (var book in order.Books)
                     {
-                        var bookObject = await _bookRepository.GetByIdAsync(book.Key);
+                        var bookObject = await _bookService.GetBookByIdAsync(book.Key);
                         if (bookObject != null)
                             bookNames.Add(bookObject.Title);
                     }
@@ -199,5 +243,6 @@ namespace OrderApi.Services
                 return new CollectionSnippet<OrderDetailsSnippet>(true, new List<OrderDetailsSnippet>());
             }
         }
+        #endregion
     }
 }
