@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Library.Common;
+using Library.Interfaces;
 using OrderApi.Models;
 using OrderAPI;
 using OrderAPI.Repository;
@@ -130,6 +131,26 @@ namespace OrderApi.Services
                 _message = $"Error occurred while deleting the delivery type with ID [{id}].";
                 _logger.LogError(_message);
                 throw new InvalidOperationException(_message, ex);
+            }
+        }
+
+        public async Task<SingleSnippet<DeliveryCardSnippet>> GetSnippetByIdAsync(Guid id)
+        {
+            try
+            {
+                var delivery = await GetByIdAsync(id);
+
+                var snippet = new DeliveryCardSnippet()
+                {
+                    DeliveryId = delivery.Id,
+                    ServiceName = delivery.ServiceName,
+                };
+
+                return new SingleSnippet<DeliveryCardSnippet>(false, snippet);
+            }
+            catch 
+            {
+                return new SingleSnippet<DeliveryCardSnippet>(true, new DeliveryCardSnippet());
             }
         }
     }
