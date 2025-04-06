@@ -13,7 +13,7 @@ namespace BookAPI.Services.Interfaces
         Task<FeedbackDto> CreateFeedbackAsync(FeedbackDto FeedbackDto);
         Task<FeedbackDto> UpdateFeedbackAsync(Guid id, FeedbackDto FeedbackDto);
         Task<bool> DeleteFeedbackAsync(Guid id);
-        Task<CollectionSnippet<FeedbackDetailsSnippet>> GetAllByUserId(Guid id, int pageNumber = 1);
+        Task<CollectionSnippet<FeedbackDetailsSnippet>> GetAllByUserIdAsync(Guid id, int pageNumber = 1);
 
     }
 }

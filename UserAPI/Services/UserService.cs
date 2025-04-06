@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using BookAPI.Repositories.Interfaces;
 using BookAPI.Services.Interfaces;
 using Library.Common;
 using Library.DTOs.UserRelated.User;
@@ -84,23 +83,8 @@ namespace UserAPI.Services
 
             var user = _mapper.Map<User>(dto);
             user.UserId = id;
-            /*try
-            {*/
             await _repository.CreateAsync(user);
             _logger.LogInformation("User successfully created.");
-            /*}
-            catch (InvalidOperationException ex)
-            {
-                _message = $"Data violates a business rule for user's creation.";
-                _logger.LogError(_message);
-                throw new InvalidOperationException(_message, ex);
-            }
-            catch (Exception ex)
-            {
-                _message = $"An unexpected database error occurred for user's creation.";
-                _logger.LogError(_message);
-                throw new InvalidOperationException(_message, ex);
-            }*/
         }
 
         public async Task UpdateAsync(Dto dto)
@@ -109,47 +93,16 @@ namespace UserAPI.Services
                 throw new ArgumentException("User data mast be provided.", nameof(dto));
 
             var user = _mapper.Map<User>(dto);
-            /*try
-            {*/
             await _repository.UpdateAsync(user);
             _logger.LogInformation("User with ID [{id}] successfully updated.", dto.Id);
-            /*}
-            catch (InvalidOperationException)
-            {
-                _message = $"User was not found by ID [{user.UserId}] or" +
-                    $"data violates a business rule for user's update.";
-                _logger.LogError(_message);
-                throw new KeyNotFoundException(_message);
-            }
-            catch (Exception ex)
-            {
-                _message = $"An unexpected database error occurred for user's update.";
-                _logger.LogError(_message);
-                throw new InvalidOperationException(_message, ex);
-            }*/
         }
 
         public async Task DeleteAsync(Guid id)
         {
             var user = await DeleteAvatarAsync(id);
             await _passwordRepository.DeleteAsync(user.PasswordId);
-            /*try
-            {*/
             await _repository.DeleteAsync(id);
             _logger.LogInformation($"User with ID [{id}] successfully deleted.");
-            /*}
-            catch (KeyNotFoundException)
-            {
-                _message = $"User with ID [{id}] not found for deletion.";
-                _logger.LogError(_message);
-                throw new KeyNotFoundException(_message);
-            }
-            catch (Exception ex)
-            {
-                _message = $"An unexpected database error occurred for user's deletion.";
-                _logger.LogError(_message);
-                throw new InvalidOperationException(_message, ex);
-            }*/
         }
 
         private async Task<ICollection<CardDto>> MergeForCardAsync(ICollection<User> users)

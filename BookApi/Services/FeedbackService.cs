@@ -137,7 +137,7 @@ namespace FeedbackApi.Services
             }
         }
 
-        public async Task<CollectionSnippet<FeedbackDetailsSnippet>> GetAllByUserId(Guid id, int pageNumber)
+        public async Task<CollectionSnippet<FeedbackDetailsSnippet>> GetAllByUserIdAsync(Guid id, int pageNumber)
         {
             try
             {

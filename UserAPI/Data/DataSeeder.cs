@@ -12,7 +12,7 @@ namespace UserAPI.Data
         public static void Seed(ModelBuilder modelBuilder)
         {
 
-            var userData = new[]
+            /*var userData = new[]
                 {
                     ("Alice", "Smith", new DateTime(1992, 5, 14), "123-456-0001", "A!ice123"),
                     ("Bob", "Johnson", new DateTime(1985, 8, 23), "123-456-0002", "B@b1985!"),
@@ -109,7 +109,7 @@ namespace UserAPI.Data
             };
 
             user2.SubscriptionId = sub2.SubscriptionId;
-            
+
             var salt2 = PasswordRepository.GenerateSalt();
             var hash2 = PasswordRepository.HashPassword("abcdefg123@", salt2);
 
@@ -172,6 +172,7 @@ namespace UserAPI.Data
             modelBuilder.Entity<User>().HasData(users);
             modelBuilder.Entity<Subscription>().HasData(subscriptions);
             modelBuilder.Entity<Password>().HasData(passwords);
+        }*/
         }
     }
 }

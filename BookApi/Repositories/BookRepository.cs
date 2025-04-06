@@ -70,7 +70,7 @@ namespace BookAPI.Repositories
             IQueryable<Book> bookQuery = books.AsQueryable();
 
             if (!string.IsNullOrWhiteSpace(searchTerm))
-                booksQuery = booksQuery.SearchBy(searchTerm, b => b.Title, b => b.Author.Name);
+                bookQuery = bookQuery.SearchBy(searchTerm, b => b.Title, b => b.Author.Name);
 
             if (filter != null)
                 bookQuery = filter.Apply(bookQuery);
