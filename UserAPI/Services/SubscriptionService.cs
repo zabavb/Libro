@@ -5,6 +5,7 @@ using UserAPI.Services.Interfaces;
 using Library.Common;
 using Library.DTOs.UserRelated.Subscription;
 using Library.Interfaces;
+using UserAPI.Models.Subscription;
 using UserAPI.Repositories.Interfaces;
 
 namespace UserAPI.Services
@@ -108,14 +109,18 @@ namespace UserAPI.Services
             _logger.LogInformation($"Subscription with ID [{id}] successfully deleted.");
         }
 
-        private async Task DeleteImageAsync(string imageUrl)
+        public async Task SubscribeAsync(SubscribeRequest request)
         {
-            // Extracting only right part of url that includes folder and id data
-            string prefix = ".com/";
-            int index = imageUrl.IndexOf(prefix, StringComparison.Ordinal);
-            string fileKey = (index != -1) ? imageUrl[(index + prefix.Length)..] : imageUrl;
+            await _repository.SubscribeAsync(request.SubscriptionId, request.UserId);
+            _logger.LogInformation("User with ID [{id}] successfully subscribed for ID [{id}].", request.UserId,
+                request.SubscriptionId);
+        }
 
-            await _storageService.DeleteAsync(GlobalDefaults.BucketName, fileKey);
+        public async Task UnsubscribeAsync(SubscribeRequest request)
+        {
+            await _repository.UnsubscribeAsync(request.SubscriptionId, request.UserId);
+            _logger.LogInformation("User with ID [{id}] successfully UNsubscribed from ID [{id}].", request.UserId,
+                request.SubscriptionId);
         }
     }
 }
