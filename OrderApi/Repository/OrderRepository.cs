@@ -32,7 +32,7 @@ namespace OrderApi.Repository
         {
             IEnumerable<Order> orders;
 
-            string cacheKey = $"{_cacheKeyPrefix}All";
+            string cacheKey = $"{_cacheKeyPrefix}All_Page:{pageNumber}_Size:{pageSize}_Search:{searchTerm}";
             var cachedOrders = await _redisDatabase.HashGetAllAsync(cacheKey);
             if (cachedOrders.Length > 0)
             {

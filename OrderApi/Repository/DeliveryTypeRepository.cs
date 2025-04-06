@@ -23,7 +23,7 @@ namespace OrderApi.Repository
         {
             IEnumerable<DeliveryType> deliveryTypes;
 
-            string cacheKey = $"{_cacheKeyPrefix}All";
+            string cacheKey = $"{_cacheKeyPrefix}All_Page:{pageNumber}_Size:{pageSize}_Search:{searchTerm}";
             var cachedDeliveryTypes = await _redisDatabase.HashGetAllAsync(cacheKey);
             if (cachedDeliveryTypes.Length > 0)
             {
