@@ -92,3 +92,22 @@ export const updateBookDiscountService = async (
         throw new Error("An error occurred while updating the book discount. Please try again later.");
     }
 };
+
+export const deleteBookDiscountService = async (
+    bookId: string,
+    discountRate: number,
+    endDate: Date
+): Promise<Book> => {
+    try {
+        const updatedFields = {
+            discountRate: 0,
+            startDate: new Date(), // Set to current time
+            endDate: new Date()
+        };
+
+        return await updateBook(bookId, updatedFields);
+    } catch (error) {
+        console.error(`updateBookDiscountService: Failed to update discount for book ID ${bookId}`, error);
+        throw new Error("An error occurred while updating the book discount. Please try again later.");
+    }
+};
