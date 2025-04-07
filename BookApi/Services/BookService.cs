@@ -175,7 +175,7 @@ namespace BookAPI.Services
                         var snippet = new BookCardSnippet()
                         {
                             BookId = book.BookId,
-                            Title = book.Title,
+                            Title = $"{book.Title} (x{keyValuePair.Value})",
                         };
 
                         snippets.Add(snippet);
@@ -183,7 +183,7 @@ namespace BookAPI.Services
                     }
                     else
                     {
-                        return new CollectionSnippet<BookCardSnippet>(true, new List<BookCardSnippet>());
+                        snippets.Add(new BookCardSnippet());
                     }
                 }
 
