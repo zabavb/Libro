@@ -9,11 +9,13 @@ using OrderApi.Profiles;
 using StackExchange.Redis;
 using OrderAPI.Repository;
 using BookAPI.Data;
-using Library.AWS;
 using BookAPI.Repositories.Interfaces;
 using BookAPI.Repositories;
 using BookAPI.Services.Interfaces;
 using BookAPI.Services;
+using Library.Common;
+using BookAPI.Data.CachHelper;
+using BookAPI.Profiles;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -43,10 +45,12 @@ builder.Services.AddSingleton<IConnectionMultiplexer>(sp =>
 });
 
 
-builder.Services.AddAutoMapper(typeof(OrderProfile));
-builder.Services.AddAutoMapper(typeof(DeliveryTypeProfile));
+builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
 builder.Services.AddScoped<IBookRepository, BookRepository>();
+builder.Services.AddScoped<IBookService, BookService>();
+
+builder.Services.AddScoped<ICacheService, CacheService>();
 
 builder.Services.AddScoped<IOrderRepository, OrderRepository>();
 builder.Services.AddScoped<IOrderService, OrderService>();
