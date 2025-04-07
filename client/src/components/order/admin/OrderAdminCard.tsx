@@ -3,65 +3,49 @@ import { OrderView } from "../../../types/types/order/OrderView";
 
 interface OrderAdminCardProps {
     order: OrderView
-    onDelete: (e: React.MouseEvent ) => void
+    onDelete: (e: React.MouseEvent) => void
     onNavigate: () => void
 }
 
-const OrderAdminCard: React.FC<OrderAdminCardProps> = ({order, onDelete, onNavigate}) => {
-    return(
+function cutFloat(num: number): number {
+    const parts = num.toString().split('.');
+    if (parts.length === 1) return num; // no decimal part
+    const decimal = parts[1].slice(0, 3);
+    return parseFloat(`${parts[0]}.${decimal}`);
+  }
+
+const OrderAdminCard: React.FC<OrderAdminCardProps> = ({ order, onDelete, onNavigate }) => {
+    const orderUid = order.id.split('-')[4];
+    return (
         <>
-            <hr/>
-            <li
+            <link rel="stylesheet" href="/src/styles/statusDisplay.css"/>
+            <tr
                 onClick={(e) => {
                     e.stopPropagation()
                     onNavigate()
-                }}>
-                <div>
-                    {/* To be implemented */}
-                    <p>
-                        <strong>Books:</strong>
-                        {Object.entries(order.books).map(([book, count]) => (
-                            <p>{book} (x{count})</p>
-                        ))
-                    }
-                    </p>
-                    <p>
-                        <strong>Region:</strong> {order.region}
-                    </p>
-                    <p>
-                        <strong>City:</strong> {order.city}
-                    </p>
-                    <p>
-                        <strong>Address:</strong> {order.address}
-                    </p>
-                    <p>
-                        <strong>Price:</strong> {order.price}
-                    </p>
-                    <p>
-                        <strong>Delivery Price:</strong> {order.deliveryPrice}
-                    </p>
-                    <p>
-                        <strong>Order Date:</strong> {order.orderDate}
-                    </p>
-                    <p>
-                        <strong>Delivery Date:</strong> {order.deliveryDate}
-                    </p>
-                    <p>
-                        <strong>Status:</strong> {order.status}
-                    </p>
-                    {/* To be implemented */}
-                    <p>
-                        <strong>Delivery Type:</strong> 
-                    </p>
+                }} style={{textAlign:"center"}}>
+                <td>
+                    (to be implemented)
+                </td>
+                <td>
+                    {orderUid}
+                </td>
+                <td>
+                    {cutFloat(order.price + order.deliveryPrice)}
+                </td>
+                <td>
+                    <div className={`status ${order.status.toLowerCase()}`}>{order.status}</div>
+                </td>
+                <td>
                     <button
                         onClick={(e) => {
                             e.stopPropagation()
                             onDelete(e)
                         }}>
-                        Delete
+                        <img width="25" height="25" src="https://img.icons8.com/ios-filled/50/trash.png" alt="delete"/>
                     </button>
-                </div>
-            </li>
+                </td>
+            </tr>
         </>
     )
 }
