@@ -1,3 +1,4 @@
+import { OrderCard } from "@/types/types/order/OrderCard";
 import { statusEnumToNumber } from "../api/adapters/orderAdapters";
 import { createOrder, deleteOrder, getAllOrders, getOrderById, updateOrder } from "../api/repositories/orderRepository";
 import { Order, OrderFilter, OrderSort, PaginatedResponse, ServiceResponse } from "../types";
@@ -9,8 +10,8 @@ export const fetchOrdersService = async (
     searchTerm?: string,
     filters?: OrderFilter,
     sort?: OrderSort
-): Promise<ServiceResponse<PaginatedResponse<Order>>> => {
-    const response: ServiceResponse<PaginatedResponse<Order>> = {
+): Promise<ServiceResponse<PaginatedResponse<OrderCard>>> => {
+    const response: ServiceResponse<PaginatedResponse<OrderCard>> = {
         data: null,
         loading: true,
         error: null,

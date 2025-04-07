@@ -1,13 +1,15 @@
 import React from "react";
-import { OrderView } from "../../../types/types/order/OrderView";
+import { OrderCard } from "@/types/types/order/OrderCard";
+import { dateToString } from "@/api/adapters/commonAdapters";
 
 interface OrderAdminCardProps {
-    order: OrderView
+    order: OrderCard
     onDelete: (e: React.MouseEvent ) => void
     onNavigate: () => void
 }
 
 const OrderAdminCard: React.FC<OrderAdminCardProps> = ({order, onDelete, onNavigate}) => {
+    console.log(order.books)
     return(
         <>
             <hr/>
@@ -17,14 +19,12 @@ const OrderAdminCard: React.FC<OrderAdminCardProps> = ({order, onDelete, onNavig
                     onNavigate()
                 }}>
                 <div>
-                    {/* To be implemented */}
-                    <p>
+                    <div>
                         <strong>Books:</strong>
-                        {Object.entries(order.books).map(([book, count]) => (
-                            <p>{book} (x{count})</p>
-                        ))
-                    }
-                    </p>
+                        {order.books != null ?  order.books.items.map(book => (
+                            <p>{book.title}</p>
+                        )) : (<p>Failed to fetch books</p>)}
+                    </div>
                     <p>
                         <strong>Region:</strong> {order.region}
                     </p>
@@ -35,23 +35,19 @@ const OrderAdminCard: React.FC<OrderAdminCardProps> = ({order, onDelete, onNavig
                         <strong>Address:</strong> {order.address}
                     </p>
                     <p>
-                        <strong>Price:</strong> {order.price}
+                        <strong>Price:</strong> {order.fullPrice}
                     </p>
                     <p>
-                        <strong>Delivery Price:</strong> {order.deliveryPrice}
+                        <strong>Order Date:</strong> {dateToString(order.orderDate)}
                     </p>
                     <p>
-                        <strong>Order Date:</strong> {order.orderDate}
-                    </p>
-                    <p>
-                        <strong>Delivery Date:</strong> {order.deliveryDate}
+                        <strong>Delivery Date:</strong> {dateToString(order.deliveryDate)}
                     </p>
                     <p>
                         <strong>Status:</strong> {order.status}
                     </p>
-                    {/* To be implemented */}
                     <p>
-                        <strong>Delivery Type:</strong> 
+                        <strong>Delivery Type:</strong>  {order.delivery.item.serviceName}
                     </p>
                     <button
                         onClick={(e) => {

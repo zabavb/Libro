@@ -1,26 +1,23 @@
 import { useDispatch } from "react-redux";
-import { Order } from "../../types";
 import { AppDispatch } from "../../state/redux";
 import { useNavigate } from "react-router-dom";
 import OrderAdminCard from "../../components/order/admin/OrderAdminCard";
-import { OrderToOrderView } from "../../api/adapters/orderAdapters";
 import { removeOrderService } from "../../services";
 import { addNotification } from "../../state/redux/slices/notificationSlice";
+import { OrderCard } from "@/types/types/order/OrderCard";
 
 interface OrderAdminCardContainerProps {
-    order: Order
+    order: OrderCard
 }
 
 const OrderAdminCardContainter: React.FC<OrderAdminCardContainerProps> = ({ order }) => {
     const dispatch = useDispatch<AppDispatch>()
     const navigate = useNavigate()
 
-    const orderView = OrderToOrderView(order)
-
 
     const handleDelete = async (e: React.MouseEvent) => {
         e.stopPropagation()
-        const response = await removeOrderService(order.id)
+        const response = await removeOrderService(order.orderId)
         dispatch(
               response.error
                 ? addNotification({
@@ -35,12 +32,12 @@ const OrderAdminCardContainter: React.FC<OrderAdminCardContainerProps> = ({ orde
     }
 
     const handleNavigate = () => {
-        navigate(`/admin/orders/${order.id}`)
+        navigate(`/admin/orders/${order.orderId}`)
     }
 
     return (
         <OrderAdminCard
-            order={orderView}
+            order={order}
             onDelete={handleDelete}
             onNavigate={handleNavigate}/>
     )

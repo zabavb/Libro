@@ -1,5 +1,5 @@
+import { OrderCard } from "@/types/types/order/OrderCard";
 import OrderAdminCardContainter from "../../../containers/order/OrderAdminCardContainer";
-import { Order } from "../../../types";
 import Pagination from "../../common/Pagination";
 import Search from "../../common/Search";
 import OrderFilter from "../OrderFilter";
@@ -7,7 +7,7 @@ import OrderSort from "../OrderSort";
 
 
 interface OrderListProps {
-    orders?: Order[]
+    orders?: OrderCard[]
     loading: boolean
     pagination: {pageNumber: number; pageSize: number; totalCount: number}
     onPageChange: (pageNumber: number) => void
@@ -52,7 +52,7 @@ const OrderList: React.FC<OrderListProps> = ({
             {loading ? (<>tmp</>) : orders.length > 0 ? (
                 orders.map((order) => (
                     <OrderAdminCardContainter
-                        key={order.id}
+                        key={order.orderId}
                         order={order}
                     />
                 ))

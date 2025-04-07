@@ -1,6 +1,7 @@
 import axios from "axios";
 import { ORDERS_PAGINATED, ORDERS, ORDER_BY_ID } from "..";
 import { Order, PaginatedResponse } from "../../types";
+import { OrderCard } from "@/types/types/order/OrderCard";
 
 export const getAllOrders = async (
     pageNumber: number = 1,
@@ -14,9 +15,9 @@ export const getAllOrders = async (
         DeliveryId?: string
         searchTerm: string | undefined
     }
-): Promise<PaginatedResponse<Order>> => {
+): Promise<PaginatedResponse<OrderCard>> => {
     const url = ORDERS_PAGINATED(pageNumber,pageSize)
-    const response = await axios.get<PaginatedResponse<Order>>(url, {params})
+    const response = await axios.get<PaginatedResponse<OrderCard>>(url, {params})
     return response.data
 }
 
