@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using Library.DTOs.UserRelated.Subscription;
-using UserAPI.Models;
+using UserAPI.Models.Subscription;
 
 namespace UserAPI.Profiles
 {

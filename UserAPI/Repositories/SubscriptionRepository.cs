@@ -2,10 +2,13 @@
 using System.Text.Json.Serialization;
 using Library.Common;
 using Library.Common.Middleware;
+using Library.DTOs.UserRelated.User;
+using Library.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using StackExchange.Redis;
 using UserAPI.Data;
 using UserAPI.Models;
+using UserAPI.Models.Subscription;
 using UserAPI.Repositories.Interfaces;
 
 namespace UserAPI.Repositories
@@ -126,11 +129,34 @@ namespace UserAPI.Repositories
             }
         }
 
+        /*public async Task<CollectionSnippet<SubscriptionDetailsSnippet>> GetAllByUserIdAsync(Guid id)
+        {
+            try
+            {
+                var subscriptions = await _context.UserSubscriptions
+                    .AsNoTracking()
+                    .Where(us => us.UserId == id)
+                    .Include(us => us.Subscription)
+                    .Select(us => new SubscriptionDetailsSnippet
+                    {
+                        Title = us.Subscription.Title,
+                        Description = us.Subscription.Description,
+                        ImageUrl = us.Subscription.ImageUrl
+                    })
+                    .ToListAsync();
+
+                return new CollectionSnippet<SubscriptionDetailsSnippet>(false, subscriptions);
+            }
+            catch
+            {
+                return new CollectionSnippet<SubscriptionDetailsSnippet>(true, new List<SubscriptionDetailsSnippet>());
+            }
+        }*/
+
         public async Task CreateAsync(Subscription subscription)
         {
             try
             {
-                subscription.SubscriptionId = Guid.NewGuid();
                 await _context.Subscriptions.AddAsync(subscription);
                 await _context.SaveChangesAsync();
             }
@@ -176,6 +202,68 @@ namespace UserAPI.Repositories
             {
                 throw new RepositoryException($"Database error while deleting subscription with ID [{id}].", ex);
             }
+        }
+
+        public async Task SubscribeAsync(Guid subscriptionId, Guid userId)
+        {
+            try
+            {
+                var (existingSubscription, expirationDays) = await CheckForSubscriptionAsync(subscriptionId, userId);
+                if (existingSubscription != null)
+                    throw new InvalidOperationException(
+                        $"User with ID [{userId}] is already subscribed to this subscription with ID [{subscriptionId}].");
+
+                var expirationDate = DateTime.UtcNow.AddDays(expirationDays);
+                var userSubscription = new UserSubscription
+                {
+                    UserId = userId,
+                    SubscriptionId = subscriptionId,
+                    ExpirationDate = expirationDate
+                };
+
+                await _context.UserSubscriptions.AddAsync(userSubscription);
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateException ex)
+            {
+                throw new RepositoryException(
+                    $"Database error while subscribing user by ID [{userId}] with subscription by ID [{subscriptionId}].");
+            }
+        }
+
+        public async Task UnsubscribeAsync(Guid subscriptionId, Guid userId)
+        {
+            try
+            {
+                var (existingSubscription, expirationDays) = await CheckForSubscriptionAsync(subscriptionId, userId);
+
+                if (existingSubscription == null)
+                    throw new InvalidOperationException(
+                        $"User with ID [{userId}] does not have this subscription, with ID [{subscriptionId}], to unsubscribe.");
+
+                _context.UserSubscriptions.Remove(existingSubscription);
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateException ex)
+            {
+                throw new RepositoryException(
+                    $"Database error while UNsubscribing user, by ID [{userId}], with subscription, by ID [{subscriptionId}].");
+            }
+        }
+
+        private async Task<(UserSubscription? Existing, int ExpirationDays)> CheckForSubscriptionAsync(Guid userId,
+            Guid subscriptionId)
+        {
+            var user = await _context.Users.FindAsync(userId)
+                       ?? throw new KeyNotFoundException($"User with ID [{userId}] not found.");
+
+            var subscription = await _context.Subscriptions.FindAsync(subscriptionId)
+                               ?? throw new KeyNotFoundException($"Subscription with ID [{subscriptionId}] not found.");
+
+            var existingSubscription = await _context.UserSubscriptions
+                .FirstOrDefaultAsync(us => us.UserId == userId && us.SubscriptionId == subscriptionId);
+
+            return (existingSubscription, subscription.ExpirationDays);
         }
     }
 }

@@ -2,9 +2,9 @@ using BookAPI;
 using Microsoft.AspNetCore.Mvc;
 using UserAPI.Services.Interfaces;
 using Library.Common;
-using Library.DTOs.UserRelated;
 using Library.DTOs.UserRelated.Subscription;
 using Microsoft.AspNetCore.Authorization;
+using UserAPI.Models.Subscription;
 
 namespace UserAPI.Controllers
 {
@@ -35,9 +35,9 @@ namespace UserAPI.Controllers
         /// <param name="searchTerm">Optional search term to filter subscriptions.</param>
         /// <returns>A paginated list of subscriptions.</returns>
         /// <response code="200">Returns the paginated list of subscriptions.</response>
-        /// <response code="401">If request is unauthorized</response>
+        /// <response code="401">If request is unauthorized.</response>
         /// <response code="404">If no subscriptions are found.</response>
-        /// <response code="500">If an unexpected error occurs.</response>
+        /// <response code="500">If an unexpected error occurred.</response>
         [Authorize(Roles = "ADMIN, MODERATOR")]
         [HttpGet]
         public async Task<ActionResult<PaginatedResult<SubscriptionDto>>> GetAll(
@@ -56,9 +56,9 @@ namespace UserAPI.Controllers
         /// <param name="id">The unique identifier of the subscription.</param>
         /// <returns>The subscription with the specified ID.</returns>
         /// <response code="200">Returns the subscription if found.</response>
-        /// <response code="401">If request is unauthorized</response>
+        /// <response code="401">If request is unauthorized.</response>
         /// <response code="404">If the subscription with the specified ID is not found or ID was not specified.</response>
-        /// <response code="500">If an unexpected error occurs.</response>
+        /// <response code="500">If an unexpected error occurred.</response>
         [Authorize(Roles = "ADMIN, MODERATOR")]
         [HttpGet("{id}")]
         public async Task<ActionResult<SubscriptionDto>> GetById(Guid id)
@@ -77,13 +77,13 @@ namespace UserAPI.Controllers
         /// <returns>The newly created subscription with its ID.</returns>
         /// <response code="201">Returns the newly created subscription.</response>
         /// <response code="400">If the provided subscription data is invalid.</response>
-        /// <response code="401">If request is unauthorized</response>
-        /// <response code="500">If an unexpected error occurs.</response>
+        /// <response code="401">If request is unauthorized.</response>
+        /// <response code="500">If an unexpected error occurred.</response>
         [Authorize(Roles = "ADMIN, MODERATOR")]
         [HttpPost]
         public async Task<IActionResult> Create([FromForm] SubscriptionDto subscription)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
             await _service.CreateAsync(subscription);
@@ -99,14 +99,14 @@ namespace UserAPI.Controllers
         /// <response code="204">If the subscription is successfully updated.</response>
         /// <response code="400">If the subscription ID in the URL does not match the ID in the request body,
         /// or if the input is invalid, or subscription's data violates a business rule.</response>
-        /// <response code="401">If request is unauthorized</response>
+        /// <response code="401">If request is unauthorized.</response>
         /// <response code="404">If the subscription to be updated does not exist.</response>
-        /// <response code="500">If an unexpected error occurs.</response>
+        /// <response code="500">If an unexpected error occurred.</response>
         [Authorize(Roles = "ADMIN, MODERATOR")]
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(Guid id, [FromForm] SubscriptionDto subscription)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
                 return BadRequest(ModelState);
             if (id != subscription.Id)
                 return BadRequest("Subscription ID in the URL does not match the ID in the body.");
@@ -121,15 +121,55 @@ namespace UserAPI.Controllers
         /// <param name="id">The unique identifier of the subscription to delete.</param>
         /// <returns>No content if the deletion is successful.</returns>
         /// <response code="204">If the subscription is successfully deleted.</response>
-        /// <response code="401">If request is unauthorized</response>
+        /// <response code="401">If request is unauthorized.</response>
         /// <response code="404">If the subscription to be deleted does not exist.</response>
-        /// <response code="500">If an unexpected error occurs.</response>
+        /// <response code="500">If an unexpected error occurred.</response>
         [Authorize(Roles = "ADMIN, MODERATOR")]
         [HttpDelete("{id}")]
         public async Task<NoContentResult> DeleteSubscription(Guid id)
         {
             await _service.DeleteAsync(id);
             return NoContent();
+        }
+
+        /// <summary>
+        /// Subscribes a user to a subscription.
+        /// </summary>
+        /// <param name="request">The request containing the user ID and subscription ID.</param>
+        /// <returns>A confirmation that the user was successfully subscribed.</returns>
+        /// <response code="200">The user was successfully subscribed.</response>
+        /// <response code="400">The request data is invalid.</response>
+        /// <response code="401">The request is unauthorized.</response>
+        /// <response code="500">An unexpected server error occurred.</response>
+        // [Authorize(Roles = "USER")]
+        [HttpPost("[action]")]
+        public async Task<IActionResult> Subscribe([FromBody] SubscribeRequest request)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            await _service.SubscribeAsync(request);
+            return Ok();
+        }
+
+        /// <summary>
+        /// Unsubscribes a user from a subscription.
+        /// </summary>
+        /// <param name="request">The request containing the user ID and subscription ID.</param>
+        /// <returns>A confirmation that the user was successfully unsubscribed.</returns>
+        /// <response code="200">The user was successfully unsubscribed.</response>
+        /// <response code="400">The request data is invalid.</response>
+        /// <response code="401">The request is unauthorized.</response>
+        /// <response code="500">An unexpected server error occurred.</response>
+        // [Authorize(Roles = "USER")]
+        [HttpPost("[action]")]
+        public async Task<IActionResult> Unsubscribe([FromBody] SubscribeRequest request)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            await _service.UnsubscribeAsync(request);
+            return Ok();
         }
     }
 }

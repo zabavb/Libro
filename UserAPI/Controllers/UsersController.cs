@@ -35,9 +35,9 @@ namespace UserAPI.Controllers
         /// <param name="sort">Optional sort criteria for users.</param>
         /// <returns>A paginated list of users.</returns>
         /// <response code="200">Returns the paginated list of users.</response>
-        /// <response code="401">If request is unauthorized</response>
+        /// <response code="401">If request is unauthorized.</response>
         /// <response code="404">If no users are found.</response>
-        /// <response code="500">If an unexpected error occurs.</response>
+        /// <response code="500">If an unexpected error occurred.</response>
         [Authorize(Roles = "ADMIN, MODERATOR")]
         [HttpGet]
         public async Task<ActionResult<PaginatedResult<CardDto>>> GetAll(
@@ -58,9 +58,9 @@ namespace UserAPI.Controllers
         /// <param name="id">The unique identifier of the user.</param>
         /// <returns>The user with the specified ID.</returns>
         /// <response code="200">Returns the user if found.</response>
-        /// <response code="401">If request is unauthorized</response>
+        /// <response code="401">If request is unauthorized.</response>
         /// <response code="404">If the user with the specified ID is not found or ID was not specified.</response>
-        /// <response code="500">If an unexpected error occurs.</response>
+        /// <response code="500">If an unexpected error occurred.</response>
         [Authorize(Roles = "ADMIN, MODERATOR")]
         [HttpGet("{id}")]
         public async Task<ActionResult<DetailsDto>> GetById(Guid id)
@@ -79,7 +79,7 @@ namespace UserAPI.Controllers
         /// <returns>The newly created user with its ID.</returns>
         /// <response code="201">Returns the newly created user.</response>
         /// <response code="400">If the provided user data is invalid or violates a business rule.</response>
-        /// <response code="500">If an unexpected error occurs.</response>
+        /// <response code="500">If an unexpected error occurred.</response>
         [AllowAnonymous]
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] Dto user)
@@ -100,9 +100,9 @@ namespace UserAPI.Controllers
         /// <response code="204">If the user is successfully updated.</response>
         /// <response code="400">If the user ID in the URL does not match the ID in the request body,
         /// or if the input is invalid, or user's data violates a business rule.</response>
-        /// <response code="401">If request is unauthorized</response>
+        /// <response code="401">If request is unauthorized.</response>
         /// <response code="404">If the user to be updated does not exist.</response>
-        /// <response code="500">If an unexpected error occurs.</response>
+        /// <response code="500">If an unexpected error occurred.</response>
         [Authorize(Roles = "ADMIN")]
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(Guid id, [FromBody] Dto user)
@@ -122,9 +122,9 @@ namespace UserAPI.Controllers
         /// <param name="id">The unique identifier of the user to delete.</param>
         /// <returns>No content if the deletion is successful.</returns>
         /// <response code="204">If the user is successfully deleted.</response>
-        /// <response code="401">If request is unauthorized</response>
+        /// <response code="401">If request is unauthorized.</response>
         /// <response code="404">If the user to be deleted does not exist.</response>
-        /// <response code="500">If an unexpected error occurs.</response>
+        /// <response code="500">If an unexpected error occurred.</response>
         [Authorize(Roles = "ADMIN")]
         [HttpDelete("{id}")]
         public async Task<NoContentResult> Delete(Guid id)

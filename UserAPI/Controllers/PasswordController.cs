@@ -15,7 +15,7 @@ namespace UserAPI.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update([FromBody] UserDto user, string oldPassword, string newPassword)
+        public async Task<IActionResult> Update([FromBody] Dto user, string oldPassword, string newPassword)
         {
             if (!ModelState.IsValid)
             {
