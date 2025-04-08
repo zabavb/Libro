@@ -1,5 +1,5 @@
 import { useForm } from "react-hook-form";
-import { Book, Order, Status } from "../../../types";
+import { Order, Status } from "../../../types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { dateToString } from "../../../api/adapters/commonAdapters";
 import React, { useEffect, useState } from "react";
@@ -10,16 +10,12 @@ import OrderFormBookList from "./OrderFormBookList";
 import { useNavigate } from "react-router-dom";
 
 interface OrderFormProps {
-    page: number;
-    books?: Book[];
     existingOrder?: Order;
-    onAddOrder: (order: Order) => Promise<void>;
     onEditOrder: (existingOrder: Order) => Promise<void>;
-    onPageChange: (page: number) => void;
     loading: boolean;
 }
 
-const OrderForm: React.FC<OrderFormProps> = ({page, books, existingOrder, onEditOrder, onPageChange }) => {
+const OrderForm: React.FC<OrderFormProps> = ({existingOrder, onEditOrder }) => {
     const [bookObjs, setBookObjs] = useState<Record<string,number>>({})
     const navigate = useNavigate();
     const {
@@ -135,10 +131,7 @@ const OrderForm: React.FC<OrderFormProps> = ({page, books, existingOrder, onEdit
 
 
             <OrderFormBookSearch
-                page={page}
-                books={books}
                 onBookAdd={handleBookAdd}
-                onPageChange={onPageChange}
                 />
 
             <OrderFormBookList

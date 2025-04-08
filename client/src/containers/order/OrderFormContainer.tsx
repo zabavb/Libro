@@ -1,12 +1,10 @@
 import { useDispatch } from "react-redux"
-import { AppDispatch, fetchBooks, RootState } from "../../state/redux"
-import { useSelector } from "react-redux"
-import { useNavigate } from "react-router-dom"
+import { AppDispatch } from "../../state/redux"
 import { Order, ServiceResponse } from "../../types"
 import React, { useCallback, useEffect, useState } from "react"
 import OrderForm from "../../components/order/admin/OrderForm"
 import { addNotification } from "../../state/redux/slices/notificationSlice"
-import { addOrderService, editOrderService, fetchOrderByIdService } from "../../services"
+import { editOrderService, fetchOrderByIdService } from "../../services"
 
 
 
@@ -16,13 +14,7 @@ interface OrderFormContainerProps {
 
 const OrderFormContainer: React.FC<OrderFormContainerProps> = ({ orderId }) => {
     const dispatch = useDispatch<AppDispatch>()
-    const navigate = useNavigate()
-    const [page, setPage] = useState(1)
-    // old tmp
-    const {data: books} = useSelector((state: RootState) => state.books) 
-    const { pageSize, totalCount } = useSelector(
-        (state: RootState) => state.books.pagination
-      );
+
     const [serviceResponse, setServiceResponse] = useState<
         ServiceResponse<Order>
         >({
@@ -32,9 +24,6 @@ const OrderFormContainer: React.FC<OrderFormContainerProps> = ({ orderId }) => {
         })
 
     useEffect(() => {
-        if(books.length === 0){
-            dispatch(fetchBooks({pageNumber:page,pageSize:pageSize}))
-        }
         if (!orderId) return;
 
         (async () => {
@@ -44,7 +33,7 @@ const OrderFormContainer: React.FC<OrderFormContainerProps> = ({ orderId }) => {
             if(response.error)
                 dispatch(addNotification({message:response.error, type: 'error'}));
         })();
-    }, [orderId, dispatch, books, page, pageSize]);
+    }, [orderId, dispatch]);
 
     const handleMessage = useCallback(
         (message: string, type: 'success' | 'error') => {
@@ -52,31 +41,6 @@ const OrderFormContainer: React.FC<OrderFormContainerProps> = ({ orderId }) => {
         },
         [dispatch],
     );
-
-    const handleNavigate = useCallback(
-        (route: string) => navigate(route),
-        [navigate],
-    );
-
-    const handleAddOrder = useCallback(
-        async(order: Order) => {
-            const response = await addOrderService(order);
-
-            if (response.error) handleMessage(response.error, 'error');
-            else {
-                handleMessage('Order created successfully!', 'success');
-                handleNavigate('/admin/orders');
-            }
-        },
-        [handleMessage, handleNavigate]
-    )
-
-    const handlePageChange = (page: number) =>{
-        if(page > 0 && page <= totalCount / pageSize){
-            setPage(page)
-            dispatch(fetchBooks({pageNumber:page,pageSize:pageSize}))
-        }
-    }
 
     const handleEditOrder = useCallback(
         async (existingOrder: Order) => {
@@ -91,12 +55,8 @@ const OrderFormContainer: React.FC<OrderFormContainerProps> = ({ orderId }) => {
 
     return (
         <OrderForm
-            page={page}
-            books={books ?? []}
             existingOrder={serviceResponse.data ?? undefined}
             onEditOrder={handleEditOrder}
-            onAddOrder={handleAddOrder}
-            onPageChange={handlePageChange}
             loading={serviceResponse.loading}
         />
     )

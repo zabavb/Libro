@@ -65,7 +65,7 @@ const DeliveryTypeListContainer = () => {
     useEffect(() => {
         fetchDeliveryTypeList();
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    },[])
+    },[pagination.pageNumber, pagination.pageSize])
 
     const handleNavigate = (path: string) => navigate(path)
     
