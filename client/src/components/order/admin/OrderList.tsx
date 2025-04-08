@@ -23,30 +23,7 @@ const OrderList: React.FC<OrderListProps> = ({
 }) => {
     return (
         <div>
-            <style>
-                {`
-                    .table-wrapper{
-                        border-radius: 30px;
-                        border: 1px solid black;
-                        padding: 20px;
-                        margin: 1% 5%;
-                    }
-                    table{
-                        width: 100%;
-
-                        border-collapse: separate;
-                        border-spacing: 0;
-
-                        overflow: hidden;
-                    }
-
-                    th, td{
-                        padding: 15px;
-                        border-bottom: 1px solid black;
-                    }
-
-                `}
-            </style>
+            <link rel="stylesheet" href="/src/styles/orderList.css"/>
             <Search
                 searchTerm={searchTerm}
                 onSearchTermChange={onSearchTermChange} />
