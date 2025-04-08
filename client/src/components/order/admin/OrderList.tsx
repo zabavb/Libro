@@ -23,7 +23,7 @@ const OrderList: React.FC<OrderListProps> = ({
 }) => {
     return (
         <div>
-            <link rel="stylesheet" href="/src/styles/orderList.css"/>
+            <link rel="stylesheet" href="/src/styles/orderTableStyles.css"/>
             <Search
                 searchTerm={searchTerm}
                 onSearchTermChange={onSearchTermChange} />

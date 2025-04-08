@@ -9,7 +9,7 @@ const Search: React.FC<SearchProps> = ({ searchTerm, onSearchTermChange }) => {
 	const [inputValue, setInputValue] = useState(searchTerm)
 
 	return (
-		<div>
+		<div style={{alignContent:"center", margin:"0 20px"}}>
 			<input
 				type="text"
 				placeholder="Search..."
