@@ -2,9 +2,6 @@ import OrderAdminCardContainer from "../../../containers/order/OrderAdminCardCon
 import { Order } from "../../../types";
 import Pagination from "../../common/Pagination";
 import Search from "../../common/Search";
-import OrderFilter from "../OrderFilter";
-import OrderSort from "../OrderSort";
-
 
 interface OrderListProps {
     orders?: Order[]
@@ -14,10 +11,6 @@ interface OrderListProps {
     onNavigate: (path: string) => void
     onSearchTermChange: (searchTerm: string) => void
     searchTerm: string
-    onFilterChange: (filters: OrderFilter) => void
-    filters: OrderFilter
-    onSortChange: (field: keyof OrderSort) => void
-    sort: OrderSort
 }
 
 const OrderList: React.FC<OrderListProps> = ({
@@ -28,7 +21,6 @@ const OrderList: React.FC<OrderListProps> = ({
     searchTerm,
     onSearchTermChange,
 }) => {
-    if (loading) return <p>Loading...</p>
     return (
         <div>
             <style>
@@ -58,10 +50,14 @@ const OrderList: React.FC<OrderListProps> = ({
             <Search
                 searchTerm={searchTerm}
                 onSearchTermChange={onSearchTermChange} />
-            {loading ? (<>tmp</>) : orders.length > 0 ? (
+            {orders.length > 0 ? (
                 <div style={{ display: "flex", flexDirection: "column" }}>
                     <div style={{ display: "flex", flexDirection: "row-reverse" }}>
-                        <p style={{ margin: "0 5%" }}>({pagination.totalCount}) orders</p>
+                        <p style={{ margin: "0 5%" }}>
+                            <strong style={{ color: "#ff642e" }}>
+                                ({pagination.totalCount}) orders
+                            </strong>
+                        </p>
                     </div>
                     <div className="table-wrapper">
                         <table>
@@ -74,14 +70,23 @@ const OrderList: React.FC<OrderListProps> = ({
                                     <th style={{ width: "10%" }}></th>
                                 </tr>
                             </thead>
-                            <tbody>
-                                {orders.map((order) => (
-                                    <OrderAdminCardContainer
-                                        key={order.id}
-                                        order={order}
-                                    />
-                                ))}
-                            </tbody>
+                            {loading ? (
+                                    <tr>
+                                        <td colSpan={5} style={{ textAlign: "center", height:`${orders.length * 65}px` }}>
+                                            Loading...
+                                        </td>
+                                    </tr>
+                            )
+                                : (
+                                    <tbody>
+                                        {orders.map((order) => (
+                                            <OrderAdminCardContainer
+                                                key={order.id}
+                                                order={order}
+                                            />
+                                        ))}
+                                    </tbody>
+                                )}
                         </table>
                     </div>
                 </div>
@@ -90,11 +95,11 @@ const OrderList: React.FC<OrderListProps> = ({
             )}
 
 
-            <div style={{float:"right", padding: "0 5%" }}>
-            <Pagination
-                pagination={pagination}
-                onPageChange={onPageChange}
-            />
+            <div style={{ float: "right", padding: "0 5%" }}>
+                <Pagination
+                    pagination={pagination}
+                    onPageChange={onPageChange}
+                />
             </div>
         </div>
     )

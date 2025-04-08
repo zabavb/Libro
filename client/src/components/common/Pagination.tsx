@@ -22,12 +22,12 @@ const Pagination: React.FC<PaginationProps> = ({ pagination, onPageChange }) => 
 				<button onClick={() => onPageChange(pagination.pageNumber - 1)}>&lt;</button>
 			)}
 			{pages.map((page) => (
-				<button onClick={() => onPageChange(page)}>{page}</button>
+				<button onClick={() => onPageChange(page)}>{page == pagination.pageNumber ? (<strong>{page}</strong>) : (page)}</button>
 			))}
 			<p>{pages[pages.length - 1] + 1 < totalPages ? "..." : ""}</p>
 			{pages[pages.length - 1] < totalPages ? (
 				<button onClick={() => onPageChange(totalPages)}>
-					{totalPages}
+					{pagination.pageNumber == totalPages ? (<strong>{totalPages}</strong>) : (totalPages)}
 				</button>
 			) : <></>}
 			{pagination.pageNumber < totalPages && (
