@@ -40,23 +40,17 @@ namespace UserAPI.Profiles
 
                     Subscriptions = new CollectionSnippet<SubscriptionDetailsSnippet>(
                         false,
-                        src.Item1.Subscriptions!.Select(s => new SubscriptionDetailsSnippet
-                        {
-                            Title = s.Title,
-                            Description = s.Description,
-                            ImageUrl = s.ImageUrl
-                        }).ToList()
+                        src.Item1.UserSubscriptions!
+                            .Select(us => us.Subscription)
+                            .Select(s => new SubscriptionDetailsSnippet
+                            {
+                                Title = s.Title,
+                                Description = s.Description,
+                                ImageUrl = s.ImageUrl
+                            })
+                            .ToList()
                     )
                 });
-
-            // Mapping for Snippets (Optional but useful)
-            CreateMap<CollectionSnippet<OrderDetailsSnippet>, CollectionSnippet<OrderDetailsSnippet>>()
-                .ConstructUsing(src =>
-                    new CollectionSnippet<OrderDetailsSnippet>(src.IsFailedToFetch, src.Items.ToList()));
-
-            CreateMap<CollectionSnippet<FeedbackDetailsSnippet>, CollectionSnippet<FeedbackDetailsSnippet>>()
-                .ConstructUsing(src =>
-                    new CollectionSnippet<FeedbackDetailsSnippet>(src.IsFailedToFetch, src.Items.ToList()));
 
             CreateMap<User, UserDetailsDto>()
                 .ConstructUsing(user => new UserDetailsDto
@@ -70,12 +64,15 @@ namespace UserAPI.Profiles
                     Role = user.Role,
                     Subscriptions = new CollectionSnippet<SubscriptionDetailsSnippet>(
                         false,
-                        user.Subscriptions!.Select(s => new SubscriptionDetailsSnippet
-                        {
-                            Title = s.Title,
-                            Description = s.Description,
-                            ImageUrl = s.ImageUrl
-                        }).ToList()
+                        user.UserSubscriptions!
+                            .Select(us => us.Subscription)
+                            .Select(s => new SubscriptionDetailsSnippet
+                            {
+                                Title = s.Title,
+                                Description = s.Description,
+                                ImageUrl = s.ImageUrl
+                            })
+                            .ToList()
                     )
                 });
 

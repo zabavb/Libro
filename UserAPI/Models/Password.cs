@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace UserAPI.Models
+﻿namespace UserAPI.Models
 {
     public class Password
     {

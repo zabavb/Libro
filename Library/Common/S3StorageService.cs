@@ -52,8 +52,10 @@ namespace Library.Common
             }
         }
 
-        public async Task DeleteAsync(string bucketName, string fileKey)
+        public async Task DeleteAsync(string bucketName, string fullFileKey)
         {
+            // Removes first half of path, leaving only the directory path
+            string fileKey = new Uri(fullFileKey).AbsolutePath.TrimStart('/');
             try
             {
                 var deleteRequest = new DeleteObjectRequest
@@ -70,7 +72,6 @@ namespace Library.Common
                 _logger.LogError(message);
                 throw new InvalidOperationException(message, ex);
             }
-
         }
 
         public string GenerateSignedUrl(string bucketName, string fileKey, int expirationMinutes = 20)

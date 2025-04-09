@@ -1,6 +1,4 @@
 using AutoMapper;
-using Microsoft.Extensions.Logging;
-using UserAPI.Models;
 using UserAPI.Repositories;
 using UserAPI.Services.Interfaces;
 
@@ -19,7 +17,7 @@ namespace UserAPI.Services
             _logger = logger;
         }
 
-        public async Task<bool> UpdateAsync(UserDto user, string oldPassword, string newPassword)
+        public async Task<bool> UpdateAsync(Dto user, string oldPassword, string newPassword)
         {
             try
             {

@@ -10,7 +10,7 @@
         static GlobalDefaults()
         {
             var config = new ConfigurationBuilder()
-                .AddJsonFile("appsettings.json")
+                .AddJsonFile("appsettings.Development.json")
                 .Build();
 
             BucketName = config["AWS:BucketName"] ??

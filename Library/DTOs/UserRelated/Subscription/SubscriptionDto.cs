@@ -21,9 +21,7 @@ namespace Library.DTOs.UserRelated.Subscription
         [StringLength(500, ErrorMessage = "Description cannot exceed 500 characters.")]
         public string? Description { get; set; }
 
-        [Required(ErrorMessage = "Image url is required.")]
-        public string ImageUrl { get; set; }
-
+        public string? ImageUrl { get; set; }
         public IFormFile? Image { get; set; }
 
         public SubscriptionDto()

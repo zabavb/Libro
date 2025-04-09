@@ -49,6 +49,7 @@ builder.Services.AddAutoMapper(typeof(DeliveryTypeProfile));
 
 builder.Services.AddScoped<IBookRepository, BookRepository>();
 builder.Services.AddScoped<ICacheService, CacheService>();
+
 builder.Services.AddScoped<IOrderRepository, OrderRepository>();
 builder.Services.AddScoped<IOrderService, OrderService>();
 

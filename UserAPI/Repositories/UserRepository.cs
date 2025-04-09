@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using StackExchange.Redis;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Library.DTOs.UserRelated.User;
 using UserAPI.Data;
 using UserAPI.Models;
 using UserAPI.Repositories.Interfaces;
@@ -114,24 +115,25 @@ namespace UserAPI.Repositories
                     return JsonSerializer.Deserialize<User>(cachedUser!);
                 }
 
-
                 var user = await _context.Users
                     .AsNoTracking()
-                    .Include(u => u.Subscriptions)
-                    .FirstOrDefaultAsync(u => u.UserId.Equals(id));
+                    .Include(u => u.UserSubscriptions)!
+                    .ThenInclude(us => us.Subscription)
+                    .FirstOrDefaultAsync(u => u.UserId == id);
+
+                if (user == null)
+                    return null;
+
                 _logger.LogInformation("Fetched from DB.");
 
-                if (user != null)
-                {
-                    _logger.LogInformation("Set to CACHE.");
-                    await _redisDatabase.HashSetAsync(
-                        cacheKey,
-                        fieldKey,
-                        JsonSerializer.Serialize(user)
-                    );
+                await _redisDatabase.HashSetAsync(
+                    cacheKey,
+                    fieldKey,
+                    JsonSerializer.Serialize(user)
+                );
+                _logger.LogInformation("Set to CACHE.");
 
-                    await _redisDatabase.KeyExpireAsync(cacheKey, _cacheExpiration);
-                }
+                await _redisDatabase.KeyExpireAsync(cacheKey, _cacheExpiration);
 
                 return user;
             }
@@ -160,7 +162,7 @@ namespace UserAPI.Repositories
 
                 user = await _context.Users
                     .AsNoTracking()
-                    .FirstOrDefaultAsync(u => u.Email!.Equals(email));
+                    .FirstOrDefaultAsync(u => u.Email! == email);
                 _logger.LogInformation("Fetched from DB.");
 
 
@@ -219,11 +221,11 @@ namespace UserAPI.Repositories
         }
 
         public async Task DeleteAsync(Guid id)
-        {
+        {   
             try
             {
-                var user = await _context.Users.FindAsync(id)
-                           ?? throw new KeyNotFoundException($"User with ID [{id}] not found.");
+                var user = await _context.Users.FindAsync(id) ??
+                           throw new KeyNotFoundException($"User with ID [{id}] not found.");
 
                 _context.Users.Remove(user);
                 await _context.SaveChangesAsync();
