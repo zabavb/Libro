@@ -1,0 +1,27 @@
+.status{
+    padding: 5px;
+    border-radius: 5px;
+    color: white;
+    background-color: skyblue;
+}
+
+.transit{
+    background-color: #ff642e;
+}
+
+.pending, .payment{
+    background-color: #ff502e;
+}
+
+.processing{
+    background-color: #ec911f;
+}
+
+.canceled{
+    background-color: #1a1d23;
+}
+
+.completed{
+    background-color: #79453a;
+}
+

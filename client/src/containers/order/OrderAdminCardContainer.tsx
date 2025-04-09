@@ -11,7 +11,7 @@ interface OrderAdminCardContainerProps {
     order: Order
 }
 
-const OrderAdminCardContainter: React.FC<OrderAdminCardContainerProps> = ({ order }) => {
+const OrderAdminCardContainer: React.FC<OrderAdminCardContainerProps> = ({ order }) => {
     const dispatch = useDispatch<AppDispatch>()
     const navigate = useNavigate()
 
@@ -46,4 +46,4 @@ const OrderAdminCardContainter: React.FC<OrderAdminCardContainerProps> = ({ orde
     )
 }
 
-export default OrderAdminCardContainter
+export default OrderAdminCardContainer

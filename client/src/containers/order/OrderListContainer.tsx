@@ -2,7 +2,7 @@ import { useDispatch } from "react-redux"
 import { AppDispatch } from "../../state/redux"
 import { useNavigate } from "react-router-dom"
 import { useCallback, useEffect, useMemo, useState } from "react"
-import { Order, OrderFilter, OrderSort } from "../../types"
+import { Order} from "../../types"
 import OrderList from "../../components/order/admin/OrderList"
 
 import { fetchOrdersService } from "../../services"
@@ -15,8 +15,6 @@ const OrderListContainer = () => {
     const [orders, setOrders] = useState<Order[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [searchTerm, setSearchTerm] = useState<string>('');
-    const [filters, setFilters] = useState<OrderFilter>({});
-    const [sort, setSort] = useState<OrderSort>({});
     const [pagination, setPagination] = useState({
         pageNumber: 1,
         pageSize: 10,
@@ -32,8 +30,6 @@ const OrderListContainer = () => {
                 paginationMemo.pageNumber,
                 paginationMemo.pageSize,
                 searchTerm,
-                filters,
-                sort
             );
 
             if(response.error)
@@ -53,7 +49,7 @@ const OrderListContainer = () => {
                     pageSize: paginatedData.pageSize,
                     totalCount: paginatedData.totalCount,
                 });
-            }else throw new Error('invalid response structure');
+            }else throw new Error('Invalid response structure');
         } catch (error) {
             dispatch(
                 addNotification({
@@ -64,12 +60,12 @@ const OrderListContainer = () => {
             setOrders([])
         }
         setLoading(false);
-    }, [paginationMemo, searchTerm, filters, sort, dispatch])
+    }, [paginationMemo, searchTerm, dispatch])
 
     useEffect(() => {
         fetchOrderList();
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    },[])
+    },[pagination.pageNumber, searchTerm])
 
     const handleNavigate = (path: string) => navigate(path);
     
@@ -78,16 +74,6 @@ const OrderListContainer = () => {
         setSearchTerm(newSearchTerm);
         setPagination((prev) => ({ ...prev, pageNumber: 1}));
     };
-
-    const handleFilterChange = (newFilters: OrderFilter) => {
-        setFilters(newFilters);
-        setPagination((prev) => ({ ... prev, pageNumber: 1}));
-    }
-
-    const handleSortChange = (field: keyof OrderSort) => {
-        setSort({ [field]: true});
-        setPagination((prev) => ({ ...prev,pageNumber: 1}));
-    }
 
     const handlePageChange = (pageNumber: number) => {
         setPagination((prev) => ({...prev, pageNumber}))
@@ -102,10 +88,6 @@ const OrderListContainer = () => {
             onNavigate={handleNavigate}
             onSearchTermChange={handleSearchTermChange}
             searchTerm={searchTerm}
-            onFilterChange={handleFilterChange}
-            filters={filters}
-            onSortChange={handleSortChange}
-            sort={sort}
         />
     )
 }

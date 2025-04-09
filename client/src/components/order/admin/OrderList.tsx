@@ -1,71 +1,83 @@
-import OrderAdminCardContainter from "../../../containers/order/OrderAdminCardContainer";
+import OrderAdminCardContainer from "../../../containers/order/OrderAdminCardContainer";
 import { Order } from "../../../types";
 import Pagination from "../../common/Pagination";
 import Search from "../../common/Search";
-import OrderFilter from "../OrderFilter";
-import OrderSort from "../OrderSort";
-
 
 interface OrderListProps {
     orders?: Order[]
     loading: boolean
-    pagination: {pageNumber: number; pageSize: number; totalCount: number}
+    pagination: { pageNumber: number; pageSize: number; totalCount: number }
     onPageChange: (pageNumber: number) => void
     onNavigate: (path: string) => void
     onSearchTermChange: (searchTerm: string) => void
     searchTerm: string
-    onFilterChange: (filters: OrderFilter) => void
-    filters: OrderFilter
-    onSortChange: (field: keyof OrderSort) => void
-    sort: OrderSort
 }
 
 const OrderList: React.FC<OrderListProps> = ({
     orders = [],
-	loading,
-	pagination,
-	onPageChange,
-	searchTerm,
-	onSearchTermChange,
-	filters,
-	onFilterChange,
-	sort,
-	onSortChange,
+    loading,
+    pagination,
+    onPageChange,
+    searchTerm,
+    onSearchTermChange,
 }) => {
-    if (loading) return <p>Loading...</p>
-    return(
+    return (
         <div>
-
-            <Search 
+            <link rel="stylesheet" href="/src/styles/orderTableStyles.css"/>
+            <Search
                 searchTerm={searchTerm}
-                onSearchTermChange={onSearchTermChange}/>
-
-            <OrderFilter
-                filters={filters}
-                onFilterChange={onFilterChange}
-            />
-
-            <OrderSort
-                sort={sort}
-                onSortChange={onSortChange}/>
-            
-            {loading ? (<>tmp</>) : orders.length > 0 ? (
-                orders.map((order) => (
-                    <OrderAdminCardContainter
-                        key={order.id}
-                        order={order}
-                    />
-                ))
+                onSearchTermChange={onSearchTermChange} />
+            {orders.length > 0 ? (
+                <div style={{ display: "flex", flexDirection: "column" }}>
+                    <div style={{ display: "flex", flexDirection: "row-reverse" }}>
+                        <p style={{ margin: "0 5%" }}>
+                            <strong style={{ color: "#ff642e" }}>
+                                ({pagination.totalCount}) orders
+                            </strong>
+                        </p>
+                    </div>
+                    <div className="table-wrapper">
+                        <table>
+                            <thead style={{ margin: "20px" }}>
+                                <tr>
+                                    <th style={{ width: "30%" }}>Name and Surname</th>
+                                    <th style={{ width: "25%" }}>Order</th>
+                                    <th style={{ width: "10%" }}>Price</th>
+                                    <th style={{ width: "15%" }}>Status</th>
+                                    <th style={{ width: "10%" }}></th>
+                                </tr>
+                            </thead>
+                            {loading ? (
+                                    <tr>
+                                        <td colSpan={5} style={{ textAlign: "center", height:`${orders.length * 65}px` }}>
+                                            Loading...
+                                        </td>
+                                    </tr>
+                            )
+                                : (
+                                    <tbody>
+                                        {orders.map((order) => (
+                                            <OrderAdminCardContainer
+                                                key={order.id}
+                                                order={order}
+                                            />
+                                        ))}
+                                    </tbody>
+                                )}
+                        </table>
+                    </div>
+                </div>
             ) : (
                 <p>No orders found.</p>
             )}
 
-            <hr/>
 
-            <Pagination
-                pagination={pagination}
-                onPageChange={onPageChange}
-            />
+            <div style={{ float: "right", padding: "0 5%" }}>
+                <Pagination
+                    pagination={pagination}
+                    onPageChange={onPageChange}
+                />
+            </div>
         </div>
     )
 }

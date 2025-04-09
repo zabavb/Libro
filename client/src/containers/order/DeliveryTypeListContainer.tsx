@@ -65,7 +65,7 @@ const DeliveryTypeListContainer = () => {
     useEffect(() => {
         fetchDeliveryTypeList();
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    },[])
+    },[pagination.pageNumber, searchTerm])
 
     const handleNavigate = (path: string) => navigate(path)
     
@@ -94,6 +94,7 @@ const DeliveryTypeListContainer = () => {
         searchTerm={searchTerm}
         onSortChange={handleSortChange}
         sort={sort}
+        handleNavigate={handleNavigate}
         />
     )
 }
