@@ -88,20 +88,9 @@ namespace UserAPI.Controllers
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
-
-            try
-            {
-                await _authService.RegisterAsync(request);
-                return Created(nameof(Register), null);
-            }
-            catch (ArgumentNullException ex)
-            {
-                return BadRequest(ex.Message);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
-            }
+            
+            await _authService.RegisterAsync(request);
+            return Created(nameof(Register), null);
         }
 
         /// <summary>
@@ -118,30 +107,23 @@ namespace UserAPI.Controllers
         [HttpPost("oauth")]
         public async Task<IActionResult> OAuth([FromBody] OAuthRequest request)
         {
-            try
+            var settings = new GoogleJsonWebSignature.ValidationSettings
             {
-                var settings = new GoogleJsonWebSignature.ValidationSettings
-                {
-                    Audience = [_config["OAuth:ClientId"]]
-                };
+                Audience = [_config["OAuth:ClientId"]]
+            };
 
-                var user = await _authService.OAuthAsync(request.Token, settings);
-                
-                if (user.Id.Equals(Guid.Empty))
-                    return Ok(user);
+            var user = await _authService.OAuthAsync(request.Token, settings);
+            
+            if (user.Id.Equals(Guid.Empty))
+                return Ok(user);
 
-                var token = GenerateJwtToken(user);
-                return Ok(new
-                {
-                    Token = token,
-                    ExpiresIn = _jwtSettings.ExpiresInDays,
-                    User = user
-                });
-            }
-            catch (Exception)
+            var token = GenerateJwtToken(user);
+            return Ok(new
             {
-                return BadRequest("Invalid Google authentication.");
-            }
+                Token = token,
+                ExpiresIn = _jwtSettings.ExpiresInDays,
+                User = user
+            });
         }
 
         /// <summary>

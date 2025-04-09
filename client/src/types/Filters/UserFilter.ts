@@ -1,9 +1,8 @@
-import { Role } from "../subTypes/Role"
+import { EmailDomen } from '../subTypes/user/EmailDomen';
+import { Role } from '../subTypes/user/Role';
 
 export interface UserFilter {
-	dateOfBirthStart?: string
-	dateOfBirthEnd?: string
-	email?: string
-	role?: Role
-	hasSubscription?: boolean
+  email?: EmailDomen;
+  role?: Role;
+  // subscription?: ...
 }

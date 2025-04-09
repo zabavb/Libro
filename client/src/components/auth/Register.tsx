@@ -32,7 +32,7 @@ const Register: React.FC<RegisterProps> = ({ data, onSubmit }) => {
         <input
           {...register('lastName')}
           placeholder='Last Name (Optional)'
-          value={data?.lastName}
+          value={data?.lastName ?? undefined}
         />
         <p>{errors.lastName?.message}</p>
 
@@ -40,7 +40,7 @@ const Register: React.FC<RegisterProps> = ({ data, onSubmit }) => {
           {...register('email')}
           placeholder='Email'
           type='email'
-          value={data?.email}
+          value={data?.email ?? undefined}
         />
         <p>{errors.email?.message}</p>
 

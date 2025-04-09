@@ -5,14 +5,11 @@ namespace BookAPI.Models
 {
     public class Book
     {
-        public Guid Id { get; set; } 
+        public Guid Id { get; set; }
         public string Title { get; set; } = null!;
-        public Guid AuthorId { get; set; } 
         public float Price { get; set; }
-        public Guid PublisherId { get; set; } 
         public Language Language { get; set; }
         public DateTime Year { get; set; }
-        public Guid CategoryId { get; set; } 
         public string Description { get; set; } = null!;
         public CoverType Cover { get; set; }
         public bool IsAvaliable { get; set; } = true;
@@ -20,11 +17,16 @@ namespace BookAPI.Models
         public string? AudioFileUrl { get; set; }
         [NotMapped]
         public bool HasAudio => !string.IsNullOrEmpty(AudioFileUrl);
+        public Guid CategoryId { get; set; }
         public Category Category { get; set; } = null!;
+        public Guid PublisherId { get; set; }
         public Publisher Publisher { get; set; } = null!;
+        public Guid AuthorId { get; set; }
         public Author Author { get; set; } = null!;
+        public Guid? DiscountId { get; set; }
+        public Discount? Discount { get; set; }
         public List<Feedback> Feedbacks { get; set; } = new();
-        public List<SubCategory> Subcategories { get; set; } = new(); 
+        public List<SubCategory> Subcategories { get; set; } = new();
 
         public Book()
         {
@@ -41,6 +43,7 @@ namespace BookAPI.Models
             Feedbacks = new List<Feedback>();
             Subcategories = new List<SubCategory>();
             ImageUrl = string.Empty;
+            DiscountId = Guid.Empty;
         }
     }
 }

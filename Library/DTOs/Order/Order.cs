@@ -1,5 +1,4 @@
-﻿using Library.Validators;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Library.DTOs.Order

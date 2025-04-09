@@ -1,6 +1,6 @@
 ﻿using System.Linq.Expressions;
 
-namespace Library.Sortings
+namespace Library.Sorts
 {
     public abstract class SortBase<T>
     {

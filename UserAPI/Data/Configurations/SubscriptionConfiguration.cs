@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.EntityFrameworkCore;
 using UserAPI.Models;
+using UserAPI.Models.Subscription;
 
 namespace UserAPI.Data.Configurations
 {
@@ -16,18 +17,13 @@ namespace UserAPI.Data.Configurations
                 .HasMaxLength(50)
                 .HasColumnType("nvarchar(50)");
 
+            builder.Property(s => s.Price)
+                .HasColumnType("money")
+                .IsRequired();
+
             builder.Property(s => s.Description)
-                .HasMaxLength(1000)
-                .HasColumnType("nvarchar(1000)");
-
-            builder.Property(s => s.EndDate)
-                .IsRequired()
-                .HasColumnType("datetime")
-                .HasDefaultValueSql("GETDATE() + 1");
-
-            /*builder.HasMany(s => s.Users)
-                .WithOne(u => u.Subscription)
-                .HasForeignKey(u => u.SubscriptionId);*/
+                .HasMaxLength(500)
+                .HasColumnType("nvarchar(500)");
         }
     }
 }

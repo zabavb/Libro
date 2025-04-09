@@ -1,17 +1,17 @@
-﻿/*using AutoMapper;
-using Library.DTOs.User;
-using UserAPI.Models;
+﻿using AutoMapper;
+using Library.DTOs.UserRelated.Subscription;
+using UserAPI.Models.Subscription;
 
 namespace UserAPI.Profiles
 {
     public class SubscriptionProfile : Profile
     {
-        public SubscriptionProfile() {
-            CreateMap<Subscription, SubscriptionDto>()
-                .ForMember(dst => dst.Id, opt => opt.MapFrom(src => src.SubscriptionId))
+        public SubscriptionProfile()
+        {
+            CreateMap<SubscriptionDto, Subscription>()
+                .ForMember(dst => dst.SubscriptionId, opt => opt.MapFrom(src => src.Id))
                 .ReverseMap()
-                .ForMember(dst => dst.SubscriptionId, opt => opt.MapFrom(src => src.Id));
+                .ForMember(dst => dst.Id, opt => opt.MapFrom(src => src.SubscriptionId));
         }
     }
 }
-*/

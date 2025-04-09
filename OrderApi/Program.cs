@@ -8,31 +8,54 @@ using OrderApi.Repository;
 using OrderApi.Profiles;
 using StackExchange.Redis;
 using OrderAPI.Repository;
+using BookAPI.Data;
+using BookAPI.Data.CachHelper;
+using BookAPI.Repositories.Interfaces;
+using BookAPI.Repositories;
+using BookAPI.Services.Interfaces;
+using BookAPI.Services;
+using Library.Common;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddSingleton<S3StorageService>();
+
+builder.Services.AddDbContext<BookDbContext>((serviceProvider, options) =>
+{
+    var storageService = serviceProvider.GetRequiredService<S3StorageService>();
+    options.UseSqlServer(builder.Configuration.GetConnectionString("BookDbConnection"));
+});
 
 builder.Services.AddDbContext<OrderDbContext>(options => options
         .UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.AddSingleton<IConnectionMultiplexer>(sp =>
 {
+    var config = sp.GetRequiredService<IConfiguration>();
+    var redisConfig = config.GetSection("Redis");
+
     var options = new ConfigurationOptions
     {
-        EndPoints = { "your_redis_endpoint", "your_port" },
-        User = "your_username",
-        Password = "your_password"
+        EndPoints = { { redisConfig["Host"]!, int.Parse(redisConfig["Port"]!) } },
+        User = redisConfig["User"],
+        Password = redisConfig["Password"]
     };
     return ConnectionMultiplexer.Connect(options);
 });
 
+
 builder.Services.AddAutoMapper(typeof(OrderProfile));
 builder.Services.AddAutoMapper(typeof(DeliveryTypeProfile));
+
+builder.Services.AddScoped<IBookRepository, BookRepository>();
+builder.Services.AddScoped<ICacheService, CacheService>();
 
 builder.Services.AddScoped<IOrderRepository, OrderRepository>();
 builder.Services.AddScoped<IOrderService, OrderService>();
 
 builder.Services.AddScoped<IDeliveryTypeRepository, DeliveryTypeRepository>();
 builder.Services.AddScoped<IDeliveryTypeService, DeliveryTypeService>();
+
 
 builder.Services.AddControllers();
 
@@ -44,10 +67,23 @@ builder.Services.AddSwaggerGen(options =>
         Title = "OrderApi",
         Version = "v1"
     });
+
+
+    options.DocInclusionPredicate((docName, apiDesc) =>
+    {
+        return apiDesc.ActionDescriptor?.DisplayName?.Contains("OrderAPI") ?? false;
+    });
+
+    options.CustomSchemaIds(type => type.FullName!.Replace('+', '.'));
     var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
     var xmlPath = Path.Combine($"{AppContext.BaseDirectory}", xmlFile);
-    options.IncludeXmlComments(xmlPath);
+    if (File.Exists(xmlPath))
+    {
+        options.IncludeXmlComments(xmlPath);
+    }
 });
+
+
 
 var logFilePath = Path.Combine(AppContext.BaseDirectory, "logs.log");
 Directory.CreateDirectory(Path.GetDirectoryName(logFilePath)!);

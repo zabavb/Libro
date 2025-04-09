@@ -3,131 +3,124 @@ using AutoMapper;
 using UserAPI.Models;
 using UserAPI.Services.Interfaces;
 using Library.Common;
+using Library.DTOs.UserRelated.Subscription;
+using Library.Interfaces;
+using UserAPI.Models.Subscription;
+using UserAPI.Repositories.Interfaces;
 
 namespace UserAPI.Services
 {
-    public class SubscriptionService : ISubscriptionService
+    public class SubscriptionService(
+        ISubscriptionRepository repository,
+        
+        IS3StorageService storageService,
+        IMapper mapper,
+        
+        ILogger<ISubscriptionService> logger
+    ) : ISubscriptionService
     {
-        private readonly ISubscriptionRepository _repository;
-        private readonly IMapper _mapper;
-        private readonly ILogger<ISubscriptionService> _logger;
-        private string _message;
+        private readonly ISubscriptionRepository _repository = repository;
 
-        public SubscriptionService(ISubscriptionRepository repository, IMapper mapper, ILogger<ISubscriptionService> logger)
+        private readonly IS3StorageService _storageService = storageService;
+        private const string Folder = "subscription/images/";
+
+        private readonly IMapper _mapper = mapper;
+        private readonly ILogger<ISubscriptionService> _logger = logger;
+
+
+        public async Task<PaginatedResult<SubscriptionCardDto>> GetAllAsync(
+            int pageNumber,
+            int pageSize,
+            string? searchTerm
+        )
         {
-            _repository = repository;
-            _mapper = mapper;
-            _logger = logger;
-            _message = string.Empty;
-        }
+            var subscriptions = await _repository.GetAllAsync(pageNumber, pageSize, searchTerm);
 
-        public async Task<PaginatedResult<SubscriptionDto>> GetAllAsync(int pageNumber, int pageSize, string searchTerm)
-        {
-            var paginatedSubscriptions = await _repository.GetAllAsync(pageNumber, pageSize, searchTerm);
+            if (subscriptions.Items.Any())
+                throw new KeyNotFoundException("No subscriptions found.");
+            _logger.LogInformation("Successfully fetched paginated subscriptions.");
 
-            if (paginatedSubscriptions == null || paginatedSubscriptions.Items == null)
+            var subscriptionCards = _mapper.Map<ICollection<SubscriptionCardDto>>(subscriptions.Items);
+            return new PaginatedResult<SubscriptionCardDto>
             {
-                _message = "Failed to fetch paginated subscriptions.";
-                _logger.LogError(_message);
-                throw new InvalidOperationException(_message);
-            }
-            _logger.LogInformation("Successfully fetched [{Count}] users.", paginatedSubscriptions.Items.Count());
-
-            return new PaginatedResult<SubscriptionDto>
-            {
-                Items = _mapper.Map<ICollection<SubscriptionDto>>(paginatedSubscriptions.Items),
-                TotalCount = paginatedSubscriptions.TotalCount,
-                PageNumber = paginatedSubscriptions.PageNumber,
-                PageSize = paginatedSubscriptions.PageSize
+                Items = subscriptionCards,
+                TotalCount = subscriptions.TotalCount,
+                PageNumber = subscriptions.PageNumber,
+                PageSize = subscriptions.PageSize
             };
         }
 
         public async Task<SubscriptionDto?> GetByIdAsync(Guid id)
         {
-            var subscription = await _repository.GetByIdAsync(id);
+            var subscription = await _repository.GetByIdAsync(id) ??
+                               throw new KeyNotFoundException($"Subscription with ID [{id}] not found.");
+            _logger.LogInformation("Subscription with ID [{id}] successfully fetched.", id);
 
-            if (subscription == null)
-            {
-                _message = $"Subscription with ID [{id}] not found.";
-                _logger.LogError(_message);
-                throw new KeyNotFoundException(_message);
-            }
-
-            _logger.LogInformation($"Subscription with ID [{id}] successfully fetched.");
-            return subscription == null ? null : _mapper.Map<SubscriptionDto>(subscription);
+            return _mapper.Map<SubscriptionDto>(subscription);
         }
 
-        public async Task CreateAsync(SubscriptionDto entity)
+        public async Task CreateAsync(SubscriptionDto dto)
         {
-            if (entity == null)
-            {
-                _message = "Subscription was not provided for creation.";
-                _logger.LogError(_message);
-                throw new ArgumentNullException(_message, nameof(entity));
-            }
+            if (dto == null)
+                throw new ArgumentException("Subscription data mast be provided.", nameof(dto));
 
-            var subscription = _mapper.Map<Subscription>(entity);
-            try
-            {
-                await _repository.CreateAsync(subscription);
-                _logger.LogInformation($"Subscription successfully created.");
-            }
-            catch (Exception ex)
-            {
-                _message = $"Error occurred while adding the subscription with ID [{entity.Id}].";
-                _logger.LogError(_message);
-                throw new InvalidOperationException(_message, ex);
-            }
+            var id = Guid.NewGuid();
+            if (dto.Image != null)
+                dto.ImageUrl = await _storageService.UploadAsync(GlobalDefaults.BucketName, dto.Image, Folder, id);
+
+            var subscription = _mapper.Map<Subscription>(dto);
+            subscription.SubscriptionId = id;
+
+            await _repository.CreateAsync(subscription);
+            _logger.LogInformation($"Subscription successfully created.");
         }
 
-        public async Task UpdateAsync(SubscriptionDto entity)
+        public async Task UpdateAsync(SubscriptionDto dto)
         {
-            if (entity == null)
+            if (dto == null)
+                throw new ArgumentException("Subscription data mast be provided.", nameof(dto));
+
+            var existingSubscription = await _repository.GetByIdAsync(dto.Id) ??
+                                       throw new KeyNotFoundException($"Subscription with ID [{dto.Id}] not found.");
+
+            if (dto.Image != null)
             {
-                _message = "Subscription was not provided for update.";
-                _logger.LogError(_message);
-                throw new ArgumentNullException(_message, nameof(entity));
+                if (!string.IsNullOrEmpty(existingSubscription.ImageUrl))
+                    await _storageService.DeleteAsync(GlobalDefaults.BucketName, existingSubscription.ImageUrl);
+
+                dto.ImageUrl = await _storageService.UploadAsync(GlobalDefaults.BucketName, dto.Image, Folder, dto.Id);
             }
 
-            var subscription = _mapper.Map<Subscription>(entity);
-            try
-            {
-                await _repository.UpdateAsync(subscription);
-                _logger.LogInformation($"User with ID [{entity.Id}] successfully updated.");
-            }
-            catch (InvalidOperationException)
-            {
-                _message = $"Subscription with ID {entity.Id} not found for update.";
-                _logger.LogError(_message);
-                throw new KeyNotFoundException(_message);
-            }
-            catch (Exception ex)
-            {
-                _message = $"Error occurred while updating the subscription with ID [{entity.Id}].";
-                _logger.LogError(_message);
-                throw new InvalidOperationException(_message, ex);
-            }
+            var subscription = _mapper.Map<Subscription>(dto);
+
+            await _repository.UpdateAsync(subscription);
+            _logger.LogInformation("Subscription with ID [{id}] successfully updated.", dto.Id);
         }
 
         public async Task DeleteAsync(Guid id)
         {
-            try
-            {
-                await _repository.DeleteAsync(id);
-                _logger.LogInformation($"Subscription with ID [{id}] successfully deleted.");
-            }
-            catch (KeyNotFoundException)
-            {
-                _message = $"Subscription with ID {id} not found for deletion.";
-                _logger.LogError(_message);
-                throw new KeyNotFoundException(_message);
-            }
-            catch (Exception ex)
-            {
-                _message = $"Error occurred while deleting the subscription with ID [{id}].";
-                _logger.LogError(_message);
-                throw new InvalidOperationException(_message, ex);
-            }
+            var existingSubscription = await _repository.GetByIdAsync(id) ??
+                                       throw new KeyNotFoundException($"Subscription with ID [{id}] not found.");
+
+            if (!string.IsNullOrEmpty(existingSubscription.ImageUrl))
+                await _storageService.DeleteAsync(GlobalDefaults.BucketName, existingSubscription.ImageUrl);
+
+            await _repository.DeleteAsync(id);
+            _logger.LogInformation($"Subscription with ID [{id}] successfully deleted.");
+        }
+
+        public async Task SubscribeAsync(SubscribeRequest request)
+        {
+            await _repository.SubscribeAsync(request.SubscriptionId, request.UserId);
+            _logger.LogInformation("User with ID [{id}] successfully subscribed for ID [{id}].", request.UserId,
+                request.SubscriptionId);
+        }
+
+        public async Task UnsubscribeAsync(SubscribeRequest request)
+        {
+            await _repository.UnsubscribeAsync(request.SubscriptionId, request.UserId);
+            _logger.LogInformation("User with ID [{id}] successfully UNsubscribed from ID [{id}].", request.UserId,
+                request.SubscriptionId);
         }
     }
 }

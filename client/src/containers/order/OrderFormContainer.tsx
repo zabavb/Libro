@@ -1,12 +1,12 @@
 import { useDispatch } from "react-redux"
-import { AppDispatch, editOrder, fetchBooks, RootState } from "../../state/redux"
+import { AppDispatch, fetchBooks, RootState } from "../../state/redux"
 import { useSelector } from "react-redux"
 import { useNavigate } from "react-router-dom"
-import { Order } from "../../types"
-import React, { useEffect, useState } from "react"
-import { resetOrderOperationStatus } from "../../state/redux/slices/orderSlice"
+import { Order, ServiceResponse } from "../../types"
+import React, { useCallback, useEffect, useState } from "react"
 import OrderForm from "../../components/order/admin/OrderForm"
 import { addNotification } from "../../state/redux/slices/notificationSlice"
+import { addOrderService, editOrderService, fetchOrderByIdService } from "../../services"
 
 
 
@@ -16,28 +16,60 @@ interface OrderFormContainerProps {
 
 const OrderFormContainer: React.FC<OrderFormContainerProps> = ({ orderId }) => {
     const dispatch = useDispatch<AppDispatch>()
-    const {data: orders, operationStatus, error } = useSelector((state: RootState) => state.orders)
+    const navigate = useNavigate()
+    const [page, setPage] = useState(1)
+    // old tmp
     const {data: books} = useSelector((state: RootState) => state.books) 
-    const [order, setOrder] = useState<Order>()
     const { pageSize, totalCount } = useSelector(
         (state: RootState) => state.books.pagination
       );
-    
-    const navigate = useNavigate()
-
+    const [serviceResponse, setServiceResponse] = useState<
+        ServiceResponse<Order>
+        >({
+            data:null,
+            loading: !!orderId,
+            error: null,
+        })
 
     useEffect(() => {
-        if (orders.length === 0) return;
-        const foundOrder = orders.find((order) => order.id == orderId)
-        if(!foundOrder){
-            navigate("/admin/orders")
+        if(books.length === 0){
+            dispatch(fetchBooks({pageNumber:page,pageSize:pageSize}))
         }
-        else{
-            setOrder(foundOrder)
-        }
-    },[orderId,orders,navigate])
-    const [page, setPage] = useState(1)
+        if (!orderId) return;
 
+        (async () => {
+            const response = await fetchOrderByIdService(orderId);
+            setServiceResponse(response);
+
+            if(response.error)
+                dispatch(addNotification({message:response.error, type: 'error'}));
+        })();
+    }, [orderId, dispatch, books, page, pageSize]);
+
+    const handleMessage = useCallback(
+        (message: string, type: 'success' | 'error') => {
+        dispatch(addNotification({ message, type }));
+        },
+        [dispatch],
+    );
+
+    const handleNavigate = useCallback(
+        (route: string) => navigate(route),
+        [navigate],
+    );
+
+    const handleAddOrder = useCallback(
+        async(order: Order) => {
+            const response = await addOrderService(order);
+
+            if (response.error) handleMessage(response.error, 'error');
+            else {
+                handleMessage('Order created successfully!', 'success');
+                handleNavigate('/admin/orders');
+            }
+        },
+        [handleMessage, handleNavigate]
+    )
 
     const handlePageChange = (page: number) =>{
         if(page > 0 && page <= totalCount / pageSize){
@@ -46,44 +78,26 @@ const OrderFormContainer: React.FC<OrderFormContainerProps> = ({ orderId }) => {
         }
     }
 
-    const handleEditOrder = (id: string, order: Order) => {
-        console.log("Editing order:", id, order)
-        dispatch(editOrder({id,order}))
-    }
+    const handleEditOrder = useCallback(
+        async (existingOrder: Order) => {
+            if (!orderId) return;
 
-    useEffect(() => {
-        // Forcing delivery types to be loaded into Store if they weren't
-
-        if(books.length === 0){
-            dispatch(fetchBooks({pageNumber:page,pageSize:pageSize}))
-        }
-        if (operationStatus === "success"){
-            dispatch(
-                addNotification({
-                    message: "Order updated successfully!",
-                    type: "success"
-                })
-            )
-            dispatch(resetOrderOperationStatus())
-            navigate("/admin/orders")
-        } else if (operationStatus === "error") {
-            dispatch(
-                addNotification({
-                    message: error,
-                    type: "error",
-                })
-            )
-            dispatch(resetOrderOperationStatus())
-        }
-    }, [operationStatus, error, dispatch, navigate, books, page, pageSize])
+            const response = await editOrderService(orderId, existingOrder);
+            if (response.error) handleMessage(response.error, 'error');
+            else handleMessage('Order updated successfully!', 'success');
+        },
+        [orderId, handleMessage]
+    )
 
     return (
         <OrderForm
             page={page}
-            books={books}
-            existingOrder={order as Order}
+            books={books ?? []}
+            existingOrder={serviceResponse.data ?? undefined}
             onEditOrder={handleEditOrder}
+            onAddOrder={handleAddOrder}
             onPageChange={handlePageChange}
+            loading={serviceResponse.loading}
         />
     )
 

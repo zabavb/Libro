@@ -1,22 +1,34 @@
-﻿using Library.Common;
+﻿using BookAPI.Models;
+using BookAPI.Repositories.Interfaces;
+using Library.Common;
 using Library.DTOs.Order;
-using Library.Sortings;
+using Library.DTOs.UserRelated.User;
 using Microsoft.EntityFrameworkCore;
 using OrderApi.Data;
+using OrderAPI;
 using StackExchange.Redis;
 using System.Text.Json;
+using Library.Interfaces;
+using Library.Sorts;
 using Order = OrderApi.Models.Order;
+
 namespace OrderApi.Repository
 {
-    public class OrderRepository(OrderDbContext context, IConnectionMultiplexer redis, ILogger<IOrderRepository> logger) : IOrderRepository
+    public class OrderRepository(
+        OrderDbContext context,
+        IConnectionMultiplexer redis,
+        ILogger<IOrderRepository> logger
+        ) : IOrderRepository
     {
         private readonly OrderDbContext _context = context;
         private readonly IDatabase _redisDatabase = redis.GetDatabase();
         public readonly string _cacheKeyPrefix = "Order_";
         public readonly TimeSpan _cacheExpiration = TimeSpan.FromMinutes(10);
         private readonly ILogger<IOrderRepository> _logger = logger;
+        
 
-        public async Task<PaginatedResult<Order>> GetAllPaginatedAsync(int pageNumber, int pageSize, string? searchTerm, Filter? filter, Sort? sort)
+        public async Task<PaginatedResult<Order>> GetAllPaginatedAsync(int pageNumber, int pageSize, string? searchTerm,
+            Filter? filter, Sort? sort)
         {
             IEnumerable<Order> orders;
 
@@ -71,15 +83,15 @@ namespace OrderApi.Repository
                 return await _context.Orders
                     .AsNoTracking()
                     .Where(o => o.Address.Contains(searchTerm) ||
-                           o.Region.Contains(searchTerm) ||
-                           o.City.Contains(searchTerm))
-                .ToListAsync();
+                                o.Region.Contains(searchTerm) ||
+                                o.City.Contains(searchTerm))
+                    .ToListAsync();
             }
 
             return await Task.FromResult(
-                    data.Where(o => o.Address.Contains(searchTerm) ||
-                               o.Region.Contains(searchTerm) ||
-                               o.City.Contains(searchTerm)));
+                data.Where(o => o.Address.Contains(searchTerm) ||
+                                o.Region.Contains(searchTerm) ||
+                                o.City.Contains(searchTerm)));
         }
 
         public async Task<IEnumerable<Order>> FilterEntitiesAsync(IEnumerable<Order> orders, Filter filter)
@@ -168,7 +180,7 @@ namespace OrderApi.Repository
                     cacheKey,
                     fieldKey,
                     JsonSerializer.Serialize(order)
-                    );
+                );
 
                 await _redisDatabase.KeyExpireAsync(cacheKey, _cacheExpiration);
             }
@@ -198,6 +210,10 @@ namespace OrderApi.Repository
             _context.Orders.Remove(order);
             await _context.SaveChangesAsync();
         }
-    }
 
+        // =============== MERGE FUNCTIONS ====================
+
+
+
+    }
 }

@@ -1,6 +1,7 @@
-﻿using Library.AWS;
+﻿using Library.Common;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace BookAPI.Controllers
 {
@@ -18,9 +19,10 @@ namespace BookAPI.Controllers
         [HttpGet("signed-url")]
         public IActionResult GetSignedUrl([FromQuery] string fileKey)
         {
+            //return await _storageService.UploadAsync(_bucketName, image, folder, id);
             try
             {
-                var signedUrl = _storageService.GenerateSignedUrl(fileKey);
+                var signedUrl = _storageService.GenerateSignedUrl(GlobalConstants.bucketName,fileKey);
                 return Ok(new { SignedUrl = signedUrl });
             }
             catch (Exception ex)

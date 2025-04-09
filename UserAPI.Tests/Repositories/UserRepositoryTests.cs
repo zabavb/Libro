@@ -149,7 +149,7 @@ namespace UserAPI.Tests.Repositories
         {
             // Arrange
             Guid userId = Guid.NewGuid();
-            string cacheKey = $"{_repository._cacheKeyPrefix}{userId}";
+            string cacheKey = $"{UserRepository.CacheKeyPrefix}{userId}";
             string fieldKey = userId.ToString();
 
             var user = new User { UserId = userId };
@@ -215,7 +215,7 @@ namespace UserAPI.Tests.Repositories
         {
             // Arrange
             Guid userId = Guid.NewGuid();
-            string cacheKey = $"{_repository._cacheKeyPrefix}{userId}";
+            string cacheKey = $"{UserRepository.CacheKeyPrefix}{userId}";
             string fieldKey = userId.ToString();
 
             var user = new User { UserId = userId };
@@ -282,7 +282,7 @@ namespace UserAPI.Tests.Repositories
         {
             // Arrange
             Guid userId = Guid.NewGuid();
-            string cacheKey = $"{_repository._cacheKeyPrefix}{userId}";
+            string cacheKey = $"{UserRepository.CacheKeyPrefix}{userId}";
             string fieldKey = userId.ToString();
 
             _redisDatabaseMock

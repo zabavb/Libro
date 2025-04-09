@@ -1,6 +1,6 @@
-﻿using BookAPI.Models;
+using BookAPI.Models;
+using Library.Common;
 using Microsoft.EntityFrameworkCore;
-using Library.AWS;
 
 namespace BookAPI.Data
 {
@@ -27,8 +27,7 @@ namespace BookAPI.Data
         {
             modelBuilder.ApplyConfigurationsFromAssembly(typeof(BookDbContext).Assembly);
 
-            // Викликаємо Seed з передачею S3StorageService
-            DataSeeder.Seed(modelBuilder, _storageService).Wait(); // Використовуйте .Wait() для синхронного виклику
+            DataSeeder.Seed(modelBuilder, _storageService).Wait(); 
         }
     }
 }

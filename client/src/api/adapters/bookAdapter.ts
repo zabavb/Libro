@@ -66,6 +66,9 @@ export const BookToBookView = (response: Book): BookView => {
     cover: coverNumberToEnum(response.cover),
     isAvailable: response.isAvailable,
     feedbackIds: response.feedbackIds,
+    discountRate: response.discountRate,
+    startDate: response.startDate,
+    endDate: response.endDate
     //subcategoryIds: response.subcategoryIds,
   };
 };

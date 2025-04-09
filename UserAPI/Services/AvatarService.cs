@@ -11,29 +11,29 @@ namespace UserAPI.Services
         private const int ImageSize = 80;
         private const int FontSize = 35;
 
-        public async Task<byte[]> GenerateAvatarAsync(string firstName, string lastName)
+        public async Task<byte[]> GenerateAvatarAsync(string firstName, string? lastName)
         {
             string initials = GetInitials(firstName, lastName);
             var randomColor = GetRandomColor();
-
+            
             using var image = new Image<Rgba32>(ImageSize, ImageSize, randomColor);
             var font = SystemFonts.CreateFont("Arial", FontSize, FontStyle.Bold);
-
+            
             var textOptions = new TextOptions(font)
             {
                 HorizontalAlignment = HorizontalAlignment.Center,
                 VerticalAlignment = VerticalAlignment.Center,
                 Origin = new PointF(ImageSize / 2, ImageSize / 2)
             };
-
+            
             image.Mutate(ctx => ctx.DrawText((RichTextOptions)textOptions, initials, Color.White));
-
+            
             using var ms = new MemoryStream();
             await image.SaveAsPngAsync(ms);
             return ms.ToArray();
         }
 
-        private static string GetInitials(string firstName, string lastName)
+        private static string GetInitials(string firstName, string? lastName)
         {
             char firstInitial = !string.IsNullOrWhiteSpace(firstName) ? char.ToUpper(firstName[0]) : ' ';
             char lastInitial = !string.IsNullOrWhiteSpace(lastName) ? char.ToUpper(lastName[0]) : ' ';

@@ -1,4 +1,4 @@
-using Library.AWS;
+using Library.Common;
 using Library.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -9,6 +9,13 @@ using StackExchange.Redis;
 using System.Reflection;
 using System.Security.Claims;
 using System.Text;
+using BookAPI.Data;
+using BookAPI.Data.CachHelper;
+using BookAPI.Repositories;
+using BookAPI.Repositories.Interfaces;
+using BookAPI.Services;
+using BookAPI.Services.Interfaces;
+using FeedbackApi.Services;
 using UserAPI.Data;
 using UserAPI.Models.Auth;
 using UserAPI.Profiles;
@@ -16,11 +23,52 @@ using UserAPI.Repositories;
 using UserAPI.Repositories.Interfaces;
 using UserAPI.Services;
 using UserAPI.Services.Interfaces;
+using Library.Common.Middleware;
+using OrderApi.Data;
+using OrderApi.Repository;
+using OrderApi.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddSingleton<S3StorageService>();
+
+builder.Services.AddDbContext<BookDbContext>((serviceProvider, options) =>
+{
+    var storageService = serviceProvider.GetRequiredService<S3StorageService>();
+    options.UseSqlServer(builder.Configuration.GetConnectionString("BookDbConnection"));
+});
+builder.Services.AddDbContext<OrderDbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("OrderDbConnection")));
 builder.Services.AddDbContext<UserDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+builder.Services.AddScoped<AvatarService>();
+builder.Services.AddScoped<IS3StorageService, S3StorageService>();
+
+builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IAuthRepository, AuthRepository>();
+
+builder.Services.AddScoped<ICacheService, CacheService>();
+builder.Services.AddScoped<IBookRepository, BookRepository>();
+builder.Services.AddScoped<IBookService, BookService>();
+
+builder.Services.AddScoped<IOrderService, OrderService>();
+builder.Services.AddScoped<IOrderRepository, OrderRepository>();
+
+builder.Services.AddScoped<IFeedbackService, FeedbackService>();
+builder.Services.AddScoped<IFeedbackRepository, FeedbackRepository>();
+
+builder.Services.AddScoped<ISubscriptionService, SubscriptionService>();
+builder.Services.AddScoped<ISubscriptionRepository, SubscriptionRepository>();
+
+builder.Services.AddScoped<IPasswordService, PasswordService>();
+builder.Services.AddScoped<IPasswordRepository, PasswordRepository>();
+
+builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+
+builder.Services.AddAutoMapper(typeof(UserProfile));
+builder.Services.AddAutoMapper(typeof(SubscriptionProfile));
 
 builder.Services.AddSingleton<IConnectionMultiplexer>(sp =>
 {
@@ -48,29 +96,11 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidateIssuerSigningKey = true,
             ValidIssuer = builder.Configuration["JwtSettings:Issuer"],
             ValidAudience = builder.Configuration["JwtSettings:Audience"],
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JwtSettings:SecretKey"]!)),
+            IssuerSigningKey =
+                new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JwtSettings:SecretKey"]!)),
             RoleClaimType = ClaimTypes.Role
         };
     });
-
-
-builder.Services.AddAutoMapper(typeof(UserProfile));
-//builder.Services.AddAutoMapper(typeof(SubscriptionProfile));
-
-builder.Services.AddScoped<AvatarService>();
-builder.Services.AddScoped<IS3StorageService, S3StorageService>();
-
-builder.Services.AddScoped<IUserRepository, UserRepository>();
-builder.Services.AddScoped<IUserService, UserService>();
-
-builder.Services.AddScoped<ISubscriptionRepository, SubscriptionRepository>();
-builder.Services.AddScoped<ISubscriptionService, SubscriptionService>();
-
-builder.Services.AddScoped<IPasswordRepository, PasswordRepository>();
-builder.Services.AddScoped<IPasswordService, PasswordService>();
-
-builder.Services.AddScoped<IAuthService, AuthService>();
-builder.Services.AddScoped<IAuthRepository, AuthRepository>();
 
 builder.Services.AddControllers();
 
@@ -82,9 +112,19 @@ builder.Services.AddSwaggerGen(options =>
         Title = "UserAPI",
         Version = "v1"
     });
+
+    options.DocInclusionPredicate((docName, apiDesc) =>
+    {
+        return apiDesc.ActionDescriptor?.DisplayName?.Contains("UserAPI") ?? false;
+    });
+
+    options.CustomSchemaIds(type => type.FullName!.Replace('+', '.'));
     var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
     var xmlPath = Path.Combine($"{AppContext.BaseDirectory}", xmlFile);
-    options.IncludeXmlComments(xmlPath);
+    if (File.Exists(xmlPath))
+    {
+        options.IncludeXmlComments(xmlPath);
+    }
 });
 
 var logFilePath = Path.Combine(AppContext.BaseDirectory, "logs.log");
@@ -97,7 +137,8 @@ Log.Logger = new LoggerConfiguration()
         logFilePath,
         rollingInterval: RollingInterval.Day,
         retainedFileCountLimit: 7,
-        outputTemplate: "[{Level:u3}]: {Message:lj} | Exception: {Exception} - {Timestamp:yyyy-MM-dd HH:mm:ss}{NewLine}{NewLine}"
+        outputTemplate:
+        "[{Level:u3}]: {Message:lj} | Exception: {Exception} - {Timestamp:yyyy-MM-dd HH:mm:ss}{NewLine}{NewLine}"
     )
     .CreateLogger();
 
@@ -109,9 +150,9 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowReactApp", policy =>
     {
         policy.WithOrigins("http://localhost:58482")
-              .AllowAnyMethod()
-              .AllowAnyHeader()
-              .AllowCredentials();
+            .AllowAnyMethod()
+            .AllowAnyHeader()
+            .AllowCredentials();
     });
 });
 
@@ -125,19 +166,16 @@ using (var scope = app.Services.CreateScope())
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
-    app.UseSwaggerUI(options =>
-    {
-        options.SwaggerEndpoint("/swagger/v1/swagger.json", "UserAPI");
-    });
+    app.UseSwaggerUI(options => { options.SwaggerEndpoint("/swagger/v1/swagger.json", "UserAPI"); });
 }
 
 app.UseHttpsRedirection();
-
 app.UseCors("AllowReactApp");
 
 app.UseAuthentication();
 app.UseAuthorization();
 
+app.UseExceptionMiddleware();
 app.MapControllers();
 
 app.Run();

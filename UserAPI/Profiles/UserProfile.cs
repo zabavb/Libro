@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Library.DTOs.UserRelated.User;
+using Library.Interfaces;
 using UserAPI.Models;
 
 namespace UserAPI.Profiles
@@ -21,7 +22,8 @@ namespace UserAPI.Profiles
                     LastOrder = src.Item2.LastOrder
                 });
 
-            CreateMap<(User, IEnumerable<OrderDetailsSnippet>, IEnumerable<FeedbackDetailsSnippet>/*, IEnumerable<SubscriptionDetailsSnippet>*/), UserDetailsDto>()
+            CreateMap<(User, CollectionSnippet<OrderDetailsSnippet>, CollectionSnippet<FeedbackDetailsSnippet>),
+                    UserDetailsDto>()
                 .ConstructUsing(src => new UserDetailsDto
                 {
                     UserId = src.Item1.UserId,
@@ -33,11 +35,45 @@ namespace UserAPI.Profiles
                     Role = src.Item1.Role,
 
                     Orders = src.Item2,
-                    
-                    FeedbacksCount = src.Item3.Count(),
+                    FeedbacksCount = src.Item3.Items.Count,
                     Feedbacks = src.Item3,
 
-                    // Subscriptions = src.Item4
+                    Subscriptions = new CollectionSnippet<SubscriptionDetailsSnippet>(
+                        false,
+                        src.Item1.UserSubscriptions!
+                            .Select(us => us.Subscription)
+                            .Select(s => new SubscriptionDetailsSnippet
+                            {
+                                Title = s.Title,
+                                Description = s.Description,
+                                ImageUrl = s.ImageUrl
+                            })
+                            .ToList()
+                    )
+                });
+
+            CreateMap<User, UserDetailsDto>()
+                .ConstructUsing(user => new UserDetailsDto
+                {
+                    UserId = user.UserId,
+                    LastName = user.LastName,
+                    FirstName = user.FirstName,
+                    Email = user.Email,
+                    PhoneNumber = user.PhoneNumber,
+                    DateOfBirth = user.DateOfBirth,
+                    Role = user.Role,
+                    Subscriptions = new CollectionSnippet<SubscriptionDetailsSnippet>(
+                        false,
+                        user.UserSubscriptions!
+                            .Select(us => us.Subscription)
+                            .Select(s => new SubscriptionDetailsSnippet
+                            {
+                                Title = s.Title,
+                                Description = s.Description,
+                                ImageUrl = s.ImageUrl
+                            })
+                            .ToList()
+                    )
                 });
 
             CreateMap<Dto, User>()

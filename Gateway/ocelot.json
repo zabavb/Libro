@@ -64,9 +64,56 @@
       "UpstreamHttpMethod": [ "GET", "PUT", "DELETE" ]
     },
     //======================= Password entity =======================
-
+    
     //======================= Subscription entity =======================
-
+    {
+      "DownstreamPathTemplate": "/api/subscriptions",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7007
+        }
+      ],
+      "UpstreamPathTemplate": "/gateway/subscriptions",
+      "UpstreamHttpMethod": [ "GET", "POST" ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/subscriptions/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7007
+        }
+      ],
+      "UpstreamPathTemplate": "/gateway/subscriptions/{id}",
+      "UpstreamHttpMethod": [ "GET", "PUT", "DELETE" ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/subscriptions/subscribe",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7007
+        }
+      ],
+      "UpstreamPathTemplate": "/gateway/subscriptions/subscribe",
+      "UpstreamHttpMethod": [ "POST" ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/subscriptions/unsubscribe",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7007
+        }
+      ],
+      "UpstreamPathTemplate": "/gateway/subscriptions/unsubscribe",
+      "UpstreamHttpMethod": [ "POST" ]
+    },
     //======================================= BookAPI =======================================
     //======================= Book entity =======================
     {
@@ -255,7 +302,7 @@
         }
       ],
       "UpstreamPathTemplate": "/gateway/deliverytypes",
-      "UpstreamHttpMethod": [ "GET", "POST", "PUT" ]
+      "UpstreamHttpMethod": [ "GET", "POST" ]
     },
     {
       "DownstreamPathTemplate": "/api/deliverytypes/{id}",
@@ -267,7 +314,7 @@
         }
       ],
       "UpstreamPathTemplate": "/gateway/deliverytypes/{id}",
-      "UpstreamHttpMethod": [ "GET", "DELETE" ]
+      "UpstreamHttpMethod": [ "GET", "DELETE","PUT" ]
     },
     //======================= Status update =======================
     {

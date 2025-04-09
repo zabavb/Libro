@@ -1,5 +1,7 @@
 ﻿using AutoMapper;
 using Google.Apis.Auth;
+using Library.DTOs.User;
+using Library.DTOs.UserRelated.User;
 using UserAPI.Models;
 using UserAPI.Models.Auth;
 using UserAPI.Repositories;
@@ -13,9 +15,9 @@ namespace UserAPI.Services
         private readonly IAuthRepository _authRepository = authRepository;
         private readonly IUserRepository _userRepository = userRepository;
         private readonly IPasswordRepository _passwordRepository = passwordRepository;
+        
         private readonly IMapper _mapper = mapper;
         private readonly ILogger<IAuthService> _logger = logger;
-        private string _message = string.Empty;
 
         public async Task<Dto?> AuthenticateAsync(LoginRequest request)
         {
@@ -29,11 +31,7 @@ namespace UserAPI.Services
         public async Task RegisterAsync(RegisterRequest request)
         {
             if (request == null)
-            {
-                _message = "User was not provided for creation.";
-                _logger.LogError(_message);
-                throw new ArgumentNullException(null, _message);
-            }
+                throw new ArgumentException("User data is required.", nameof(request));
 
             var passwordId = Guid.NewGuid();
             var password = request.Password;
@@ -45,23 +43,13 @@ namespace UserAPI.Services
                 LastName = request.LastName,
                 Email = request.Email,
                 PhoneNumber = request.PhoneNumber,
-                Role = Library.DTOs.User.RoleType.USER,
+                Role = RoleType.USER,
                 PasswordId = passwordId
             }; 
             
-            try
-            {
-                await _passwordRepository.AddAsync(passwordId, password, user);
-                await _userRepository.CreateAsync(user);
-                _message = "Successful user registration in UserAPI.Services.AuthService.RegisterAsync";
-                _logger.LogInformation(_message);
-            }
-            catch (Exception ex)
-            {
-                _message = $"Error occurred while registering new user.";
-                _logger.LogError(_message);
-                throw new InvalidOperationException(_message, ex);
-            }
+            await _passwordRepository.AddAsync(passwordId, password, user);
+            await _userRepository.CreateAsync(user);
+            _logger.LogInformation("Successful user registration.");
         }
 
         public async Task<Dto> OAuthAsync(string token, GoogleJsonWebSignature.ValidationSettings settings)
@@ -73,7 +61,7 @@ namespace UserAPI.Services
                     FirstName = payload.GivenName,
                     LastName = payload.FamilyName,
                     Email = payload.Email,
-                    Role = Library.DTOs.User.RoleType.USER,
+                    Role = RoleType.USER,
                 };
 
             _logger.LogInformation("OAuthAsync() => return {user}", user);
@@ -83,18 +71,10 @@ namespace UserAPI.Services
 
         private async Task<bool> IsRightPasswordAsync(User user, string password)
         {
-            try
+            if (user != null && !string.IsNullOrWhiteSpace(password))
             {
-                if (user != null && !string.IsNullOrWhiteSpace(password))
-                {
-                    Guid passwordId = user.PasswordId;
-                    return await _passwordRepository.VerifyAsync(passwordId, password);
-                }
-            }
-            catch
-            {
-                _message = $"Error occurred while registering new user.";
-                _logger.LogError(_message);
+                Guid passwordId = user.PasswordId;
+                return await _passwordRepository.VerifyAsync(passwordId, password);
             }
 
             return false;

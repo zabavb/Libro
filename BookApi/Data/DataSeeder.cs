@@ -179,9 +179,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
-using Library.AWS;
 using Amazon.Runtime.Internal.Transform;
-using Library.Interfaces;
+using Library.Common;
 
 namespace BookAPI.Data
 {
@@ -189,6 +188,14 @@ namespace BookAPI.Data
     {
         public static async Task Seed(ModelBuilder modelBuilder, S3StorageService storageService)
         {
+            var bookIds = new List<Guid>
+            {
+                Guid.NewGuid(),
+                Guid.NewGuid(), 
+                Guid.NewGuid() 
+            };
+
+
             var imagePaths = new Dictionary<string, string>
             {
                 { "Місто зі скла", "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTJSVPcBg9gdzf2mit382PYIbFkkDbn-JB7jA&s" },
@@ -265,12 +272,27 @@ namespace BookAPI.Data
                 new Author { Id = Guid.NewGuid(), Name = "Олександр Мельник", Biography = "Філософ, автор книг про етику та мораль." }
             };
             modelBuilder.Entity<Author>().HasData(authors);
-            var bookIds = new List<Guid>
+
+            // Creation of discounts
+
+            var discountsIds = new List<Guid>
             {
-                Guid.NewGuid(), // Id для "Місто зі скла"
-                Guid.NewGuid(), // Id для "Тіні минулого"
-                Guid.NewGuid()  // Id для "Емоційний інтелект"
+                Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid()
             };
+
+            var random = new Random();
+            var discounts = bookIds.Select(bookId => new Discount
+            {
+                DiscountId = Guid.NewGuid(),
+                BookId = bookId,
+                DiscountRate = random.Next(0, 36),
+                StartDate = DateTime.UtcNow,
+                EndDate = DateTime.UtcNow.AddMonths(1)
+            }).ToList();
+            var id = discountsIds[0];
+
+
+
             var books = new List<Book>
             {
                 new Book
@@ -286,8 +308,8 @@ namespace BookAPI.Data
                     Description = "Фантастичний роман про місто, побудоване зі скла.",
                     Cover = CoverType.HARDCOVER,
                     IsAvaliable = true,
-                    AudioFileUrl = await UploadAudioAsync(storageService, audios[0], bookIds[0]), 
-                    ImageUrl = await UploadImageAsync(storageService, imagePaths["Місто зі скла"], bookIds[0])
+                    //ImageUrl = await UploadImageAsync(storageService, imagePaths["Місто зі скла"], bookIds[0]),
+                    DiscountId = discountsIds[0]
                 },
                 new Book
                 {
@@ -302,7 +324,7 @@ namespace BookAPI.Data
                     Description = "Детективний роман з несподіваною розв'язкою.",
                     Cover = CoverType.SOFT_COVER,
                     IsAvaliable = true,
-                    ImageUrl = await UploadImageAsync(storageService, imagePaths["Тіні минулого"], bookIds[1]) 
+                    //ImageUrl = await UploadImageAsync(storageService, imagePaths["Тіні минулого"], bookIds[1]) 
                 },
                 new Book
                 {
@@ -317,11 +339,12 @@ namespace BookAPI.Data
                     Description = "Книга про те, як розвивати емоційний інтелект.",
                     Cover = CoverType.HARDCOVER,
                     IsAvaliable = true,
-                    ImageUrl = await UploadImageAsync(storageService, imagePaths["Емоційний інтелект"], bookIds[2]) 
+                    //ImageUrl = await UploadImageAsync(storageService, imagePaths["Емоційний інтелект"], bookIds[2]) 
                 }
             };
             modelBuilder.Entity<Book>().HasData(books);
 
+         
             modelBuilder.Entity("BookSubCategory").HasData(
                 new { BookId = books[0].Id, SubCategoryId = subCategories[0].Id }, 
                 new { BookId = books[1].Id, SubCategoryId = subCategories[3].Id }, 
@@ -334,98 +357,98 @@ namespace BookAPI.Data
                 new Feedback
                 {
                     Id = Guid.NewGuid(),
-                    ReviewerName = "Іван",
                     Comment = "Чудова книга! Захоплюючий сюжет.",
                     Rating = 5,
                     Date = DateTime.UtcNow,
                     IsPurchased = true,
-                    BookId = books[0].Id
+                    BookId = books[0].Id,
+                    UserId = new Guid("69be6ab0-0ad0-4ac9-bcce-096ebfa9bb4c")
+
+
                 },
                 new Feedback
                 {
                     Id = Guid.NewGuid(),
-                    ReviewerName = "Ольга",
                     Comment = "Цікава книга, але кінець трохи розчарував.",
                     Rating = 4,
                     Date = DateTime.UtcNow,
                     IsPurchased = true,
-                    BookId = books[1].Id
+                    BookId = books[1].Id,
+                    UserId = new Guid("69be6ab0-0ad0-4ac9-bcce-096ebfa9bb4c")
+
+
                 },
                 new Feedback
                 {
                     Id = Guid.NewGuid(),
-                    ReviewerName = "Марія",
                     Comment = "Дуже корисна книга для саморозвитку.",
                     Rating = 5,
                     Date = DateTime.UtcNow,
                     IsPurchased = true,
-                    BookId = books[2].Id
+                    BookId = books[2].Id,
+                    UserId = new Guid("69be6ab0-0ad0-4ac9-bcce-096ebfa9bb4c")
+
                 }
             };
             modelBuilder.Entity<Feedback>().HasData(feedbacks);
         }
 
-        private static async Task<string> UploadImageAsync(S3StorageService storageService, string imageUrl, Guid bookId)
-        {
-            using var httpClient = new HttpClient();
+        //private static async Task<string> UploadImageAsync(S3StorageService storageService, string imageUrl, Guid bookId)
+        //{
+        //    using var httpClient = new HttpClient();
 
-            try
-            {
-                // Завантажуємо зображення з інтернету
-                var response = await httpClient.GetAsync(imageUrl);
+        //    try
+        //    {
+        //        var response = await httpClient.GetAsync(imageUrl);
+        //        if (!response.IsSuccessStatusCode)
+        //        {
+        //            throw new Exception($"Failed to download image from {imageUrl}. Status code: {response.StatusCode}");
+        //        }
 
-                // Перевіряємо, чи успішно завантажено
-                if (!response.IsSuccessStatusCode)
-                {
-                    throw new Exception($"Failed to download image from {imageUrl}. Status code: {response.StatusCode}");
-                }
+        //        var stream = await response.Content.ReadAsStreamAsync();
 
-                // Отримуємо потік даних зображення
-                var stream = await response.Content.ReadAsStreamAsync();
+        //        var file = new FormFile(stream, 0, stream.Length, null, Path.GetFileName(imageUrl))
+        //        {
+        //            Headers = new HeaderDictionary(),
+        //            ContentType = response.Content.Headers.ContentType?.ToString() ?? "image/jpeg"
+        //        };
 
-                // Створюємо об'єкт IFormFile для завантаження на S3
-                var file = new FormFile(stream, 0, stream.Length, null, Path.GetFileName(imageUrl))
-                {
-                    Headers = new HeaderDictionary(),
-                    ContentType = response.Content.Headers.ContentType?.ToString() ?? "image/jpeg"
-                };
+        //        // Завантажуємо на S3
+        //        return await storageService.UploadAsync(GlobalConstants.bucketName,file,"book/images/", bookId);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        throw new Exception($"Failed to upload image from URL: {imageUrl}", ex);
+        //    }
+        //}
 
-                // Завантажуємо на S3
-                return await storageService.UploadAsync(file, bookId);
-            }
-            catch (Exception ex)
-            {
-                throw new Exception($"Failed to upload image from URL: {imageUrl}", ex);
-            }
-        }
+        //public static async Task<string> UploadAudioAsync(IS3StorageService storageService, string audioUrl, Guid bookId)
+        //{
+        //    using var httpClient = new HttpClient();
 
-        public static async Task<string> UploadAudioAsync(IS3StorageService storageService, string audioUrl, Guid bookId)
-        {
-            using var httpClient = new HttpClient();
+        //    try
+        //    {
+        //        var response = await httpClient.GetAsync(audioUrl);
+        //        if (!response.IsSuccessStatusCode)
+        //        {
+        //            throw new Exception($"Failed to download audio from {audioUrl}. Status code: {response.StatusCode}");
+        //        }
 
-            try
-            {
-                var response = await httpClient.GetAsync(audioUrl);
-                if (!response.IsSuccessStatusCode)
-                {
-                    throw new Exception($"Failed to download audio from {audioUrl}. Status code: {response.StatusCode}");
-                }
+        //        var stream = await response.Content.ReadAsStreamAsync();
 
-                var stream = await response.Content.ReadAsStreamAsync();
+        //        var file = new FormFile(stream, 0, stream.Length, null, Path.GetFileName(audioUrl))
+        //        {
+        //            Headers = new HeaderDictionary(),
+        //            ContentType = response.Content.Headers.ContentType?.ToString() ?? "audio/mpeg"
+        //        };
 
-                var file = new FormFile(stream, 0, stream.Length, null, Path.GetFileName(audioUrl))
-                {
-                    Headers = new HeaderDictionary(),
-                    ContentType = response.Content.Headers.ContentType?.ToString() ?? "audio/mpeg"
-                };
-
-                return await storageService.UploadAsync(file, bookId);
-            }
-            catch (Exception ex)
-            {
-                throw new Exception($"Failed to upload audio from URL: {audioUrl}", ex);
-            }
-        }
+        //        return await storageService.UploadAsync(GlobalConstants.bucketName, file, "book/audios/", bookId);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        throw new Exception($"Failed to upload audio from URL: {audioUrl}", ex);
+        //    }
+        //}
 
     }
 }

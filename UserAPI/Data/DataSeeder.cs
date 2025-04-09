@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Library.DTOs.UserRelated.User;
+using Microsoft.EntityFrameworkCore;
 using UserAPI.Models;
 using UserAPI.Repositories;
 
@@ -11,7 +12,7 @@ namespace UserAPI.Data
         public static void Seed(ModelBuilder modelBuilder)
         {
 
-            var userData = new[]
+            /*var userData = new[]
                 {
                     ("Alice", "Smith", new DateTime(1992, 5, 14), "123-456-0001", "A!ice123"),
                     ("Bob", "Johnson", new DateTime(1985, 8, 23), "123-456-0002", "B@b1985!"),
@@ -61,7 +62,7 @@ namespace UserAPI.Data
                 DateOfBirth = new DateTime(1990, 1, 1),
                 Email = "john.doe@example.com",
                 PhoneNumber = "123-456-7890",
-                Role = Library.DTOs.User.RoleType.ADMIN
+                Role = RoleType.ADMIN
             };
 
             var sub1 = new Subscription
@@ -95,7 +96,7 @@ namespace UserAPI.Data
                 DateOfBirth = new DateTime(1985, 5, 15),
                 Email = "jane.smith@example.com",
                 PhoneNumber = "987-654-3210",
-                Role = Library.DTOs.User.RoleType.MODERATOR
+                Role = RoleType.MODERATOR
             };
 
             var sub2 = new Subscription
@@ -108,7 +109,7 @@ namespace UserAPI.Data
             };
 
             user2.SubscriptionId = sub2.SubscriptionId;
-            
+
             var salt2 = PasswordRepository.GenerateSalt();
             var hash2 = PasswordRepository.HashPassword("abcdefg123@", salt2);
 
@@ -141,7 +142,7 @@ namespace UserAPI.Data
                     DateOfBirth = dob,
                     Email = $"{firstName.ToLower()}.{lastName.ToLower()}@example.com",
                     PhoneNumber = phone,
-                    Role = Library.DTOs.User.RoleType.USER,
+                    Role = RoleType.USER,
                 };
                 var salt = PasswordRepository.GenerateSalt();
                 var hash = PasswordRepository.HashPassword(passwordString, salt);
@@ -171,6 +172,7 @@ namespace UserAPI.Data
             modelBuilder.Entity<User>().HasData(users);
             modelBuilder.Entity<Subscription>().HasData(subscriptions);
             modelBuilder.Entity<Password>().HasData(passwords);
+        }*/
         }
     }
 }

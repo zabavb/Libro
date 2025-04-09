@@ -7,31 +7,24 @@ import { OrderFormData, orderSchema } from "../../utils";
 import { useNavigate } from "react-router-dom";
 
 interface UserCheckoutFormProps {
-    books: Record<string,number>
+    books: Record<string, number>
     deliveryTypes?: DeliveryType[]
     price: number
     onAddOrder: (order: Order) => void
+    loading: boolean
 }
 
-const UserCheckoutForm: React.FC<UserCheckoutFormProps> = ({books, price, deliveryTypes, onAddOrder }) => {
+const UserCheckoutForm: React.FC<UserCheckoutFormProps> = ({ books, price, deliveryTypes, onAddOrder, loading }) => {
 
     const [userId, setUserId] = useState<string>("");
     const navigate = useNavigate()
-    
-    useEffect(() => {
-        const json = localStorage.getItem('user');
-        if(json != null){
-            const user = JSON.parse(json)
-            setUserId(user.id)
-        }
-        else{
-            navigate('/login')
-        }
-    },[navigate])
+
+
 
     const {
         register,
         handleSubmit,
+        setValue,
         formState: { errors }
     } = useForm<OrderFormData>({
         resolver: zodResolver(orderSchema),
@@ -47,14 +40,28 @@ const UserCheckoutForm: React.FC<UserCheckoutFormProps> = ({books, price, delive
             price: 25,
             deliveryPrice: 25,
             deliveryTypeId: "",
-            status: Status.PENDING  
+            status: Status.PENDING
         },
-    })  
+    })
+
+    useEffect(() => {
+        
+        const json = localStorage.getItem('user');
+        if (json != null) {
+            const user = JSON.parse(json)
+            setUserId(user.id)
+            setValue("userId", user.id);
+        }
+        else {
+            navigate('/login')
+        }
+    }, [navigate, loading, setValue, userId])
 
     const onSubmit = (data: OrderFormData) => {
+
         const order: Order = {
             id: "00000000-0000-0000-0000-000000000000",
-            userId: data.userId,
+            userId: userId,
             books: books,
             region: data.region,
             city: data.city,
@@ -69,58 +76,56 @@ const UserCheckoutForm: React.FC<UserCheckoutFormProps> = ({books, price, delive
 
         onAddOrder(order)
     }
-    
-    
+
+    if (loading) return <p>Loading...</p>
     return (
-        <form onSubmit={handleSubmit(onSubmit)}>
-            <hr/>
-            <h2>Order Form</h2>
-            <hr/>
-            <p>Total Price: {price}</p>
-            {/* Hidden data, can't be set by user */}
-            <input type="hidden" {...register("userId")} value={userId}/>
+        <div>
+            <form onSubmit={handleSubmit(onSubmit)}>
+                <hr />
+                <h2>Order Form</h2>
+                <hr />
+                <p>Total Price: {price}</p>
+                {/* Hidden data, can't be set by user */}
+                <input type="hidden" {...register("userId")}/>
+                <p>{errors.userId?.message}</p>
+                <input type="hidden" {...register("orderDate")} />
+                <p>{errors.orderDate?.message}</p>
+                <input type="hidden" {...register("deliveryDate")} />
+                <p>{errors.deliveryDate?.message}</p>
+                <input type="hidden" {...register("price")} />
+                <p>{errors.price?.message}</p>
+                <input type="hidden" {...register("deliveryPrice")} />
+                <p>{errors.deliveryPrice?.message}</p>
+                <input type="hidden"{...register("status")} />
+                <p>{errors.status?.message}</p>
 
-            <input type="hidden" {...register("orderDate")}/>
-            <p>{errors.orderDate?.message}</p>
-            <input type="hidden" {...register("deliveryDate")}/>
-            <p>{errors.deliveryDate?.message}</p>
-            <input type="hidden" {...register("price")}/>
-            <p>{errors.price?.message}</p>
-            <input type="hidden" {...register("deliveryPrice")}/>
-            <p>{errors.deliveryPrice?.message}</p>
-            <input type="hidden"{...register("status")}/>
-            <p>{errors.status?.message}</p>
-            {/* manual for now, will be rewritten in the future */}
-            <input
-             type="hidden"
-             {...register("userId")}/>
+                {/* Form */}
+                <input {...register("region")}
+                    placeholder="Region" />
+                <p>{errors.region?.message}</p>
 
-            {/* Form */}
-            <input {...register("region")}
-            placeholder="Region" />
-            <p>{errors.region?.message}</p>
+                <input {...register("city")}
+                    placeholder="City" />
+                <p>{errors.city?.message}</p>
 
-            <input {...register("city")}
-            placeholder="City" />
-            <p>{errors.city?.message}</p>
+                <input {...register("address")}
+                    placeholder="Address" />
+                <p>{errors.address?.message}</p>
 
-            <input {...register("address")}
-            placeholder="Address" />
-            <p>{errors.address?.message}</p>
-
-            <select {...register("deliveryTypeId")}>
-            <option value="">Select Delivery Type</option>
-                {deliveryTypes?.map((delivery) => (
-                    <option
-                        value={delivery.id}>
-                        {delivery.serviceName}
-                    </option>
-                ))}
-            </select>
-            <p>{errors.deliveryTypeId?.message}</p>
-            <hr/>
-            <button type="submit">Place Order</button>
-        </form>
+                <select {...register("deliveryTypeId")}>
+                    <option value="">Select Delivery Type</option>
+                    {deliveryTypes?.map((delivery) => (
+                        <option
+                            value={delivery.id}>
+                            {delivery.serviceName}
+                        </option>
+                    ))}
+                </select>
+                <p>{errors.deliveryTypeId?.message}</p>
+                <hr />
+                <button type="submit">Place Order</button>
+            </form>
+        </div>
     )
 }
 

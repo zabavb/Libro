@@ -23,6 +23,12 @@ namespace BookAPI.Data.Configuration
               );
             builder.Property(b => b.IsAvaliable)
                    .HasDefaultValue(true);
+
+            builder
+                .HasOne(b => b.Discount)
+                .WithOne()
+                .HasForeignKey<Discount>(d => d.BookId)
+                .IsRequired(false);
         }
     }
 }

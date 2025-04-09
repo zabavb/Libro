@@ -1,72 +1,92 @@
 import { useDispatch } from "react-redux"
-import { AppDispatch, fetchDeliveryTypes, RootState } from "../../state/redux"
-import { useSelector } from "react-redux"
+import { AppDispatch } from "../../state/redux"
 import { useNavigate } from "react-router-dom"
-import { useEffect } from "react"
+import { useCallback, useEffect, useMemo, useState } from "react"
 import DeliveryTypeList from "../../components/order/DeliveryList"
-import { setDeliverySearchTerm, setDeliverySort } from "../../state/redux/slices/deliveryTypeSlice"
-import { DeliverySort } from "../../types"
+import { DeliverySort, DeliveryType } from "../../types"
+import { fetchDeliveryTypesService } from "../../services"
+import { addNotification } from "../../state/redux/slices/notificationSlice"
 
 const DeliveryTypeListContainer = () => {
     const dispatch = useDispatch<AppDispatch>()
-    const {
-        data: deliveryTypes,
-        loading,
-        error,
-        pagination,
-        searchTerm,
-        sort
-    } = useSelector((state: RootState) => state.deliveryTypes)
     const navigate = useNavigate()
+    const [deliveryTypes, setDeliveryTypes] = useState<DeliveryType[]>([]);
+    const [loading, setLoading] = useState<boolean>(true);
+    const [searchTerm, setSearchTerm] = useState<string>('');
+    const [sort, setSort] = useState<DeliverySort>({});
+    const [pagination, setPagination] = useState({
+        pageNumber: 1,
+        pageSize: 10,
+        totalCount: 0,
+    })
 
-    useEffect(() => {
-        dispatch(
-            fetchDeliveryTypes({
-                pageNumber: pagination.pageNumber,
-                pageSize: pagination.pageSize,
+    const paginationMemo = useMemo(() => ({...pagination}), [pagination]);
+
+    const fetchDeliveryTypeList = useCallback(async () => {
+        setLoading(true);
+        try{
+            const response = await fetchDeliveryTypesService(
+                paginationMemo.pageNumber,
+                paginationMemo.pageSize,
                 searchTerm,
                 sort
-            })
-        )
-    }, [dispatch, pagination.pageNumber, pagination.pageSize, searchTerm, sort])
+            );
 
-    const handleNavigate = (path: string) => {
-        navigate(path)
-    }
+            if(response.error)
+                dispatch(
+                    addNotification({
+                        message: response.error,
+                        type:'error',
+                    }),
+                );
 
+            if(response && response.data) {
+                const paginatedData = response.data;
+
+                setDeliveryTypes(paginatedData.items);
+                setPagination({
+                    pageNumber: paginatedData.pageNumber,
+                    pageSize: paginatedData.pageSize,
+                    totalCount: paginatedData.totalCount
+                })
+            }else throw new Error('invalid response structure');
+        }catch(error){
+            dispatch(
+                addNotification({
+                    message: error instanceof Error ? error.message : String(error),
+                    type: 'error'
+                })
+            )
+            setDeliveryTypes([])
+        }
+        setLoading(false);
+    }, [paginationMemo, searchTerm, sort,dispatch])
+
+    useEffect(() => {
+        fetchDeliveryTypeList();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    },[])
+
+    const handleNavigate = (path: string) => navigate(path)
+    
     const handlePageChange = (pageNumber: number) => {
-        dispatch(fetchDeliveryTypes({pageNumber, pageSize: pagination.pageSize}))
+        setPagination((prev) => ({...prev, pageNumber}))
     }
 
     const handleSearchTermChange = (newSearchTerm: string) => {
-        dispatch(setDeliverySearchTerm(newSearchTerm))
-        dispatch(
-            fetchDeliveryTypes({
-                pageNumber: 1,
-                pageSize: pagination.pageSize,
-                searchTerm: newSearchTerm,
-                sort
-            })
-        )
+        setSearchTerm(newSearchTerm);
+        setPagination((prev) => ({ ...prev, pageNumber: 1}));
     }
 
     const handleSortChange = (field: keyof DeliverySort) => {
-        dispatch(setDeliverySort(field))
-        dispatch(
-            fetchDeliveryTypes({
-                pageNumber: 1,
-                pageSize: pagination.pageSize,
-                searchTerm,
-                sort: { [field ]: true}
-            })
-        )
+        setSort({ [field]: true});
+        setPagination((prev) => ({ ...prev,pageNumber: 1}));
     }
 
     return (
         <DeliveryTypeList
         deliveryTypes={deliveryTypes}
         loading={loading}
-        error={error}
         pagination={pagination}
         onPageChange={handlePageChange}
         onNavigate={handleNavigate}

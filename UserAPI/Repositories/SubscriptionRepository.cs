@@ -1,74 +1,269 @@
-﻿using Library.Common;
+﻿using System.Text.Json;
+using System.Text.Json.Serialization;
+using Library.Common;
+using Library.Common.Middleware;
+using Library.DTOs.UserRelated.User;
+using Library.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using StackExchange.Redis;
 using UserAPI.Data;
 using UserAPI.Models;
+using UserAPI.Models.Subscription;
+using UserAPI.Repositories.Interfaces;
 
 namespace UserAPI.Repositories
 {
-    public class SubscriptionRepository : ISubscriptionRepository
+    public class SubscriptionRepository(
+        UserDbContext context,
+        IConnectionMultiplexer redis,
+        ILogger<ISubscriptionRepository> logger
+    ) : ISubscriptionRepository
     {
-        private readonly UserDbContext _context;
+        private readonly UserDbContext _context = context;
+        private readonly IDatabase _redisDatabase = redis.GetDatabase();
+        private const string CacheKeyPrefix = "Subscription_";
+        private readonly TimeSpan _cacheExpiration = TimeSpan.FromMinutes(GlobalDefaults.cacheExpirationTime);
+        private readonly ILogger<ISubscriptionRepository> _logger = logger;
 
-        public SubscriptionRepository(UserDbContext context) => _context = context;
-
-        public async Task<PaginatedResult<Subscription>> GetAllAsync(int pageNumber, int pageSize, string searchTerm)
+        public async Task<PaginatedResult<Subscription>> GetAllAsync(int pageNumber, int pageSize, string? searchTerm)
         {
-            IEnumerable<Subscription> subscriptions;
-            if (string.IsNullOrWhiteSpace(searchTerm))
-                subscriptions = await SearchAsync(searchTerm);
-            else
-                subscriptions = _context.Subscriptions.AsNoTracking();
-
-            var totalSubscriptions = await Task.FromResult(subscriptions.Count());
-
-            subscriptions = await Task.FromResult(subscriptions.Skip((pageNumber - 1) * pageSize).Take(pageSize));
-            ICollection<Subscription> result = new List<Subscription>(subscriptions);
-            return new PaginatedResult<Subscription>
+            try
             {
-                Items = result,
-                TotalCount = totalSubscriptions,
-                PageNumber = pageNumber,
-                PageSize = pageSize
-            };
+                var options = new JsonSerializerOptions
+                {
+                    ReferenceHandler = ReferenceHandler.Preserve,
+                    WriteIndented = true
+                };
+                string cacheKey = $"{CacheKeyPrefix}All_Page:{pageNumber}_Size:{pageSize}_Search:{searchTerm}";
+                var cachedSubscriptions = await _redisDatabase.HashGetAllAsync(cacheKey);
+
+                IQueryable<Subscription> subscriptions;
+                if (cachedSubscriptions.Length > 0)
+                {
+                    subscriptions = cachedSubscriptions
+                        .Select(entry => JsonSerializer.Deserialize<Subscription>(entry.Value!, options)!)
+                        .AsQueryable()
+                        .AsNoTracking();
+
+                    _logger.LogInformation("Fetched from CACHE.");
+                }
+                else
+                {
+                    subscriptions = _context.Subscriptions.AsNoTracking();
+                    _logger.LogInformation("Fetched from DB.");
+
+                    var hashEntries = subscriptions.ToDictionary(
+                        subscription => subscription.SubscriptionId.ToString(),
+                        subscription => JsonSerializer.Serialize(subscription, options)
+                    );
+
+                    await _redisDatabase.HashSetAsync(
+                        cacheKey,
+                        [.. hashEntries.Select(kvp => new HashEntry(kvp.Key, kvp.Value))]
+                    );
+                    await _redisDatabase.KeyExpireAsync(cacheKey, _cacheExpiration);
+                    _logger.LogInformation("Set to CACHE.");
+                }
+
+                if (subscriptions.Any() && !string.IsNullOrWhiteSpace(searchTerm))
+                    subscriptions = subscriptions.SearchBy(searchTerm, s => s.Title);
+
+                var total = await subscriptions.CountAsync();
+                var paginatedUsers = await subscriptions
+                    .Skip((pageNumber - 1) * pageSize)
+                    .Take(pageSize)
+                    .ToListAsync();
+
+                return new PaginatedResult<Subscription>
+                {
+                    Items = paginatedUsers,
+                    TotalCount = total,
+                    PageNumber = pageNumber,
+                    PageSize = pageSize
+                };
+            }
+            catch (Exception ex)
+            {
+                throw new RepositoryException("Error while fetching susbscriptions.", ex);
+            }
         }
 
-        public async Task<Subscription?> GetByIdAsync(Guid id) =>
-            await _context.Subscriptions.AsNoTracking().FirstOrDefaultAsync(s => s.SubscriptionId == id);
-
-        public async Task<IEnumerable<Subscription>> SearchAsync(string searchTerm)
+        public async Task<Subscription?> GetByIdAsync(Guid id)
         {
-            var subscriptions = await _context.Subscriptions
-                .AsNoTracking()
-                .Where(s => s.Title.Contains(searchTerm) || s.Description!.Contains(searchTerm))
-                .ToListAsync();
+            try
+            {
+                string cacheKey = $"{CacheKeyPrefix}{id}";
+                string fieldKey = id.ToString();
 
-            return subscriptions;
+                var cachedUser = await _redisDatabase.HashGetAsync(cacheKey, fieldKey);
+
+                if (!cachedUser.IsNullOrEmpty)
+                {
+                    _logger.LogInformation("Fetched from CACHE.");
+                    return JsonSerializer.Deserialize<Subscription>(cachedUser!);
+                }
+
+
+                var subscription = await _context.Subscriptions
+                    .AsNoTracking()
+                    .FirstOrDefaultAsync(u => u.SubscriptionId.Equals(id));
+                _logger.LogInformation("Fetched from DB.");
+
+                if (subscription != null)
+                {
+                    _logger.LogInformation("Set to CACHE.");
+                    await _redisDatabase.HashSetAsync(
+                        cacheKey,
+                        fieldKey,
+                        JsonSerializer.Serialize(subscription)
+                    );
+
+                    await _redisDatabase.KeyExpireAsync(cacheKey, _cacheExpiration);
+                }
+
+                return subscription;
+            }
+            catch (Exception ex)
+            {
+                throw new RepositoryException($"Database error while fetching subscription by ID [{id}].", ex);
+            }
         }
 
-        public async Task CreateAsync(Subscription entity)
+        /*public async Task<CollectionSnippet<SubscriptionDetailsSnippet>> GetAllByUserIdAsync(Guid id)
         {
-            await _context.Subscriptions.AddAsync(entity);
-            await _context.SaveChangesAsync();
+            try
+            {
+                var subscriptions = await _context.UserSubscriptions
+                    .AsNoTracking()
+                    .Where(us => us.UserId == id)
+                    .Include(us => us.Subscription)
+                    .Select(us => new SubscriptionDetailsSnippet
+                    {
+                        Title = us.Subscription.Title,
+                        Description = us.Subscription.Description,
+                        ImageUrl = us.Subscription.ImageUrl
+                    })
+                    .ToListAsync();
+
+                return new CollectionSnippet<SubscriptionDetailsSnippet>(false, subscriptions);
+            }
+            catch
+            {
+                return new CollectionSnippet<SubscriptionDetailsSnippet>(true, new List<SubscriptionDetailsSnippet>());
+            }
+        }*/
+
+        public async Task CreateAsync(Subscription subscription)
+        {
+            try
+            {
+                await _context.Subscriptions.AddAsync(subscription);
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateException ex)
+            {
+                throw new RepositoryException("Database update error while creating subscription.", ex);
+            }
+            catch (Exception ex)
+            {
+                throw new RepositoryException("Error occurred while creating subscribtion.", ex);
+            }
         }
 
-        public async Task UpdateAsync(Subscription entity)
+        public async Task UpdateAsync(Subscription subscription)
         {
-            if (!await _context.Subscriptions.AnyAsync(s => s.SubscriptionId == entity.SubscriptionId))
-                throw new InvalidOperationException();
+            try
+            {
+                var existingSubscription = await _context.Subscriptions.FindAsync(subscription.SubscriptionId) ??
+                                           throw new KeyNotFoundException(
+                                               $"User with ID [{subscription.SubscriptionId}] not found.");
 
-            _context.Subscriptions.Update(entity);
-            await _context.SaveChangesAsync();
+                _context.Entry(existingSubscription).CurrentValues.SetValues(subscription);
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateException ex)
+            {
+                throw new RepositoryException(
+                    $"Database error while updating subscription [{subscription.SubscriptionId}].",
+                    ex);
+            }
         }
 
         public async Task DeleteAsync(Guid id)
         {
-            var subscription = await _context.Subscriptions.FindAsync(id);
+            try
+            {
+                // Removing without fetching whole entity 
+                Subscription tmp = new() { SubscriptionId = id };
+                _context.Subscriptions.Remove(tmp);
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateException ex)
+            {
+                throw new RepositoryException($"Database error while deleting subscription with ID [{id}].", ex);
+            }
+        }
 
-            if (subscription == null)
-                throw new KeyNotFoundException();
+        public async Task SubscribeAsync(Guid subscriptionId, Guid userId)
+        {
+            try
+            {
+                var (existingSubscription, expirationDays) = await CheckForSubscriptionAsync(subscriptionId, userId);
+                if (existingSubscription != null)
+                    throw new InvalidOperationException(
+                        $"User with ID [{userId}] is already subscribed to this subscription with ID [{subscriptionId}].");
 
-            _context.Subscriptions.Remove(subscription);
-            await _context.SaveChangesAsync();
+                var expirationDate = DateTime.UtcNow.AddDays(expirationDays);
+                var userSubscription = new UserSubscription
+                {
+                    UserId = userId,
+                    SubscriptionId = subscriptionId,
+                    ExpirationDate = expirationDate
+                };
+
+                await _context.UserSubscriptions.AddAsync(userSubscription);
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateException ex)
+            {
+                throw new RepositoryException(
+                    $"Database error while subscribing user by ID [{userId}] with subscription by ID [{subscriptionId}].");
+            }
+        }
+
+        public async Task UnsubscribeAsync(Guid subscriptionId, Guid userId)
+        {
+            try
+            {
+                var (existingSubscription, expirationDays) = await CheckForSubscriptionAsync(subscriptionId, userId);
+
+                if (existingSubscription == null)
+                    throw new InvalidOperationException(
+                        $"User with ID [{userId}] does not have this subscription, with ID [{subscriptionId}], to unsubscribe.");
+
+                _context.UserSubscriptions.Remove(existingSubscription);
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateException ex)
+            {
+                throw new RepositoryException(
+                    $"Database error while UNsubscribing user, by ID [{userId}], with subscription, by ID [{subscriptionId}].");
+            }
+        }
+
+        private async Task<(UserSubscription? Existing, int ExpirationDays)> CheckForSubscriptionAsync(Guid userId,
+            Guid subscriptionId)
+        {
+            var user = await _context.Users.FindAsync(userId)
+                       ?? throw new KeyNotFoundException($"User with ID [{userId}] not found.");
+
+            var subscription = await _context.Subscriptions.FindAsync(subscriptionId)
+                               ?? throw new KeyNotFoundException($"Subscription with ID [{subscriptionId}] not found.");
+
+            var existingSubscription = await _context.UserSubscriptions
+                .FirstOrDefaultAsync(us => us.UserId == userId && us.SubscriptionId == subscriptionId);
+
+            return (existingSubscription, subscription.ExpirationDays);
         }
     }
 }

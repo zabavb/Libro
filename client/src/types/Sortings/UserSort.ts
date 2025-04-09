@@ -1,6 +1,5 @@
 export interface UserSort {
-	firstName?: boolean
-	lastName?: boolean
-	dateOfBirth?: boolean
-	role?: boolean
+  alphabetical?: boolean;
+  youngest?: boolean;
+  role?: boolean;
 }
