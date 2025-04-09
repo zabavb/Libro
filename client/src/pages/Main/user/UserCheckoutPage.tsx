@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom';
-import UserCheckoutFormContainer from '../../containers/user/UserCheckoutFormContainer';
-import useCart from '../../state/context/useCart';
+import useCart from '@/state/context/useCart';
+import UserCheckoutFormContainer from '@/containers/user/UserCheckoutFormContainer';
 
 const UserCheckoutPage = () => {
     const { cart } = useCart();

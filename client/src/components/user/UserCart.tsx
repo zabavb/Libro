@@ -35,12 +35,6 @@ const UserCart = () => {
                 <button onClick={clearCart}>Clear Basket</button>
             </div>
             <div>
-                {/* If price isn't calculating during test, replace the bookId with one that is in BookAPI database */}
-                <button
-                    onClick={() => addItem({ bookId: "685DB04F-01C9-4313-B7A1-27B9EB507398", amount: 1, name: "Емоційний інтелект", price:400.99 })}>
-                    Add sample</button>
-            </div>
-            <div>
                 <button onClick={() => navigate("/cart/checkout")}>Checkout</button>
             </div>
         </div>

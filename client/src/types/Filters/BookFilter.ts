@@ -12,7 +12,7 @@ export interface BookFilter {
   coverType?: CoverType;
   inStock?: boolean;
   subcategory?: string;
-  discountRate: number;
-  startDate: Date;
-  endDate: Date;
+  discountRate?: number;
+  startDate?: Date;
+  endDate?: Date;
 }

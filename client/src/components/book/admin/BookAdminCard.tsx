@@ -30,6 +30,12 @@ const BookAdminCard: React.FC<BookAdminCardProps> = ({ book, onDelete, onNavigat
                         <strong>Price:</strong> {book.price}
                     </p>
                     <p>
+                        <strong>Discount:</strong> {book.discountRate} <strong> %</strong>
+                    </p>
+                    <p>
+                        <strong>End of discount:</strong> {book.endDate.toString()}
+                    </p>
+                    <p>
                         <strong>Language:</strong> {book.language}
                     </p>
                     <p>

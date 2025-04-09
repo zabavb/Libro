@@ -9,12 +9,12 @@ using OrderApi.Profiles;
 using StackExchange.Redis;
 using OrderAPI.Repository;
 using BookAPI.Data;
-using BookAPI.Data.CachHelper;
 using BookAPI.Repositories.Interfaces;
 using BookAPI.Repositories;
 using BookAPI.Services.Interfaces;
 using BookAPI.Services;
 using Library.Common;
+using BookAPI.Data.CachHelper;
 
 var builder = WebApplication.CreateBuilder(args);
 
