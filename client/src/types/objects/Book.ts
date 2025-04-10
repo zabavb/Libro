@@ -9,7 +9,8 @@ export interface Book {
 	year: Date
 	description?: string
 	cover: number
-	isAvailable: boolean
+    quantity: number
+	//isAvailable: boolean
 	feedbackIds: string[]
 	discountRate: number;
 	startDate: Date;

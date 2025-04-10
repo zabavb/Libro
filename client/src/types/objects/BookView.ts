@@ -11,7 +11,8 @@ export interface BookView {
   year: string;
   description?: string;
   cover: CoverType;
-  isAvailable: boolean;
+  quantity: number;
+    //isAvailable: boolean;
   feedbackIds: string[];
   discountRate: number;
   startDate: Date;

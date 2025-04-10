@@ -25,7 +25,8 @@ const BookAdminForm: React.FC<BookAdminFormProps> = ({ book, onSubmit }) => {
             cover: CoverType.SOFT_COVER,
             price: 0,
             language: Language.ENGLISH,
-            isAvailable: false,
+            quantity: 0
+            //isAvailable: false,
         },
     });
 
@@ -36,7 +37,8 @@ const BookAdminForm: React.FC<BookAdminFormProps> = ({ book, onSubmit }) => {
             setValue("cover", book.cover);
             setValue("price", book.price);
             setValue("language", book.language);
-            setValue("isAvailable", book.isAvailable);
+            setValue("Quantity", book.quantity);
+            //setValue("isAvailable", book.isAvailable);
         }
     }, [book, setValue]);
 
@@ -96,9 +98,14 @@ const BookAdminForm: React.FC<BookAdminFormProps> = ({ book, onSubmit }) => {
             </div>
 
             <div>
-                <label>Available:</label>
-                <input type="checkbox" {...register("isAvailable")} />
+                <label>Quantity in stock:</label>
+                <input type="number" {...register("price")} />
+                <p>{errors.price?.message}</p>
             </div>
+            {/*<div>*/}
+            {/*    <label>Available:</label>*/}
+            {/*    <input type="checkbox" {...register("isAvailable")} />*/}
+            {/*</div>*/}
 
             <button type="submit">Submit</button>
         </form>

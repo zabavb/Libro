@@ -38,8 +38,11 @@ const BookAdminCard: React.FC<BookAdminCardProps> = ({ book, onDelete, onNavigat
                     <p>
                         <strong>Language:</strong> {book.language}
                     </p>
+                    {/*<p>*/}
+                    {/*    <strong>Available:</strong> {book.isAvailable ? "Yes" : "No"}*/}
+                    {/*</p>*/}
                     <p>
-                        <strong>Available:</strong> {book.isAvailable ? "Yes" : "No"}
+                        <strong>Quantity:</strong> {book.quantity}
                     </p>
                     <button
                         onClick={(e) => {

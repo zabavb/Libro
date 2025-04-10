@@ -13,7 +13,7 @@
             <p><strong>Price:</strong> @Model.Price.ToString("C")</p>
             <p><strong>Description:</strong> @Model.Description</p>
             <p><strong>Cover:</strong> @Model.Cover</p>
-            <p><strong>Availability:</strong> @(Model.IsAvailable ? "Yes" : "No")</p>
+            <p><strong>Availability:</strong> @(Model.Quantity > 0 ? "Yes" : "No")</p>
         </div>
     </div>
     <a asp-action="GetAllBooks" class="btn btn-primary mt-3">Back to Book List</a>

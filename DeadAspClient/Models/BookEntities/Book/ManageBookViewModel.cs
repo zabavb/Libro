@@ -37,8 +37,9 @@ namespace DeadAspClient.Models.BookEntities.Book
 
         [Required(ErrorMessage = "Cover type is required.")]
         public CoverType Cover { get; set; }
-
-        public bool IsAvailable { get; set; }
+        [Required(ErrorMessage = "Quantity in stock is required.")]
+        public int Quantity { get; set; }
+        //public bool IsAvailable { get; set; }
 
         public List<Guid> FeedbackIds { get; set; }
 
@@ -47,7 +48,8 @@ namespace DeadAspClient.Models.BookEntities.Book
             Title = string.Empty;
             Description = string.Empty;
             FeedbackIds = new List<Guid>();
-            IsAvailable = true;
+            Quantity = 0;
+            //IsAvailable = true;
             Year = DateTime.Now;
         }
     }

@@ -9,6 +9,7 @@ using Library.Common;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 
 namespace BookAPI.Services
@@ -22,9 +23,9 @@ namespace BookAPI.Services
 
         public async Task<PaginatedResult<BookDto>> GetBooksAsync(
             int pageNumber,
-            int pageSize, 
+            int pageSize,
             string searchTerm,
-            BookFilter? filter, 
+            BookFilter? filter,
             BookSort? sort)
         {
             var books = await _bookRepository.GetAllAsync(pageNumber, pageSize, searchTerm, filter, sort);
@@ -46,7 +47,7 @@ namespace BookAPI.Services
 
         public async Task<BookDto> GetBookByIdAsync(Guid id)
         {
-            var book = await _bookRepository.GetByIdAsync(id); 
+            var book = await _bookRepository.GetByIdAsync(id);
 
             if (book == null)
             {
@@ -55,7 +56,7 @@ namespace BookAPI.Services
             }
 
             _logger.LogInformation($"Successfully found book with id {id}");
-            return _mapper.Map<BookDto>(book); 
+            return _mapper.Map<BookDto>(book);
         }
 
         public async Task<BookDto> CreateBookAsync(BookDto bookDto, IFormFile? imageFile)
@@ -75,7 +76,7 @@ namespace BookAPI.Services
             catch (Exception ex)
             {
                 _logger.LogError($"Failed to create book. Error: {ex.Message}");
-                throw; 
+                throw;
             }
 
             return _mapper.Map<BookDto>(book);
@@ -95,7 +96,7 @@ namespace BookAPI.Services
             {
                 if (!string.IsNullOrEmpty(existingBook.ImageUrl))
                 {
-                    await _storageService.DeleteAsync(GlobalConstants.bucketName,existingBook.ImageUrl);
+                    await _storageService.DeleteAsync(GlobalConstants.bucketName, existingBook.ImageUrl);
                 }
 
                 if (imageFile != null)
@@ -110,7 +111,7 @@ namespace BookAPI.Services
             catch (Exception ex)
             {
                 _logger.LogError($"Failed to update book. Error: {ex.Message}");
-                throw; 
+                throw;
             }
 
             return _mapper.Map<BookDto>(existingBook);
@@ -129,7 +130,7 @@ namespace BookAPI.Services
             {
                 if (!string.IsNullOrEmpty(book.ImageUrl))
                 {
-                    await _storageService.DeleteAsync(GlobalConstants.bucketName,book.ImageUrl);
+                    await _storageService.DeleteAsync(GlobalConstants.bucketName, book.ImageUrl);
                 }
 
                 await _bookRepository.DeleteAsync(id);
@@ -149,7 +150,7 @@ namespace BookAPI.Services
 
             try
             {
-                return await _storageService.UploadAsync(GlobalConstants.bucketName,imageFile,"book/images/", id);
+                return await _storageService.UploadAsync(GlobalConstants.bucketName, imageFile, "book/images/", id);
             }
             catch (Exception ex)
             {
@@ -157,6 +158,48 @@ namespace BookAPI.Services
                 _logger.LogError(message);
                 throw new InvalidOperationException(message, ex);
             }
+        }
+        // example of condition: b => b.Quantity > 0
+        public async Task<List<BookDto>> GetBooksByConditionAsync(Expression<Func<Book, bool>> condition)
+        {
+
+            var books = await _bookRepository.GetBooksByConditionAsync(condition);
+
+            if (books == null || books.Count == 0)
+            {
+                _logger.LogWarning("No books matched the given condition");
+                throw new InvalidOperationException("No matching books found.");
+            }
+
+            _logger.LogInformation("Found {Count} books", books.Count);
+
+            return _mapper.Map<List<BookDto>>(books);
+        }
+
+
+        public async Task<int> GetQuantityById(Guid id)
+        {
+            var quantity = await _bookRepository.GetQuantityById(id);
+            if (quantity == 0)
+            {
+                _logger.LogWarning($"No book with id {id}");
+                throw new InvalidOperationException($"No book with id {id}");
+            }
+            _logger.LogInformation($"Successfully found quantity of book with id {id}");
+            return quantity;
+        }
+
+        public async Task AddQuantityById(Guid id, int quantity)
+        {
+            var book = await _bookRepository.GetByIdAsync(id);
+            if (book == null)
+            {
+                _logger.LogWarning($"No book with id {id}");
+                throw new InvalidOperationException($"No book with id {id}");
+            }
+            book.Quantity += quantity;
+            await _bookRepository.UpdateAsync(book);
+            _logger.LogInformation($"Successfully added {quantity} to book with id {id}");
         }
     }
 }
