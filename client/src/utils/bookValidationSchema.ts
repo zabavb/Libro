@@ -29,7 +29,9 @@ export const bookValidationSchema = z.object({
         errorMap: () => ({ message: "Invalid language selected" }),
     }),
 
-    isAvailable: z.boolean(),
+    quantity: z
+        .number()
+        .positive("Must be a positive number"),
 });
 
 export type BookFormData = z.infer<typeof bookValidationSchema>;
