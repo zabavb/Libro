@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { BookView } from "../../types"
 import "react-lazy-load-image-component/src/effects/blur.css"
 import { likeBook, unlikeBook, isBookLiked, } from "../../services/likedBooksStorage";
-import "@/styles/bookCard.css"
+import "@/assets/styles/components/book-card.css"
 import { CartItem } from "@/types/types/cart/CartItem"
 
 interface BookAdminCardProps {

@@ -2,7 +2,7 @@ import OrderAdminCardContainer from "../../../containers/order/OrderAdminCardCon
 import { Order } from "../../../types";
 import Pagination from "../../common/Pagination";
 import Search from "../../common/Search";
-
+import "@/assets/styles/base/table-styles.css"
 interface OrderListProps {
     orders?: Order[]
     loading: boolean
@@ -23,7 +23,6 @@ const OrderList: React.FC<OrderListProps> = ({
 }) => {
     return (
         <div>
-            <link rel="stylesheet" href="/src/styles/orderTableStyles.css"/>
             <Search
                 searchTerm={searchTerm}
                 onSearchTermChange={onSearchTermChange} />
@@ -68,7 +67,7 @@ const OrderList: React.FC<OrderListProps> = ({
                     </div>
                 </div>
             ) : (
-                <p>No orders found.</p>
+                loading ? (<p>Loading...</p>) : (<p>No orders found.</p>)
             )}
 
 

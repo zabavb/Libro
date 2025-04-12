@@ -4,7 +4,7 @@ import DeliveryTypeAdminCardContainer from "../../containers/order/DeliveryTypeA
 import Pagination from "../common/Pagination";
 import Search from "../common/Search";
 import DeliverySort from "./DeliverySort";
-
+import "@/assets/styles/base/table-styles.css"
 interface DeliveryTypeListProps {
     deliveryTypes?: DeliveryType[]
     loading: boolean
@@ -30,7 +30,6 @@ const DeliveryTypeList: React.FC<DeliveryTypeListProps> = ({
     if (loading) return <p>Loading...</p>
     return (
         <div style={{height:"100dvh"}}>
-            <link rel="stylesheet" href="/src/styles/orderTableStyles.css" />
             <div style={{ height: "5dvh", display:"flex" }}>
                 <Search
                     searchTerm={searchTerm}

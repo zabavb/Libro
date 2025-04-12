@@ -25,9 +25,9 @@ import BookListContainer from './containers/books/BookListContainer';
 import NotFoundPage from './pages/common/NotFoundPage'; 
 import OrderListPage from './pages/admin/orderRelated/orders/OrdersListPage';
 import DeliveriesListPage from './pages/admin/orderRelated/deliveries/DeliveriesListPage';
-import UserCartPage from './pages/main/UserCartPage';
-import UserCheckoutPage from './pages/main/UserCheckoutPage';
-import UserOrdersPage from './pages/main/UserOrdersPage';
+import UserCartPage from './pages/main/user/UserCartPage';
+import UserCheckoutPage from './pages/main/user/UserCheckoutPage';
+import UserOrdersPage from './pages/main/user/UserOrdersPage';
 
 
 const AppRoutes = () => (
