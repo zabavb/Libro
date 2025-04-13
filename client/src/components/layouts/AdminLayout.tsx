@@ -3,7 +3,7 @@ import "@/assets/styles/layout/admin-layout.css"
 import logoUrl from "@/assets/logoLibro.svg"
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
 import {faCreditCard, faFile, faUser} from '@fortawesome/free-regular-svg-icons'
-import {faArrowRightFromBracket, faBook, faChartSimple} from "@fortawesome/free-solid-svg-icons"
+import {faArrowRightFromBracket, faBook, faChartSimple, faTruck} from "@fortawesome/free-solid-svg-icons"
 const AdminLayout: React.FC = () => {
 	const location = useLocation();
 	const currentPath = location.pathname;
@@ -50,6 +50,14 @@ const AdminLayout: React.FC = () => {
 								href="/admin/orders"
 								>
 								Orders
+							</a>
+						</li>
+						<li className={isActive("/admin/delivery") ? "active-link link" : "link"}>
+							<FontAwesomeIcon icon={faTruck}/>
+							<a
+								href="/admin/delivery"
+								>
+								Deliveries
 							</a>
 						</li>
 						<li className={isActive("/admin/subscriptions") ? "active-link link" : "link"}>

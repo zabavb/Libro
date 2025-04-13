@@ -19,11 +19,12 @@ const Pagination: React.FC<PaginationProps> = ({ pagination, onPageChange }) => 
 	return (
 		<div className="pagination-container">
 
-			<button
-				onClick={() => onPageChange(Math.max(1, pagination.pageNumber - 1))}
-				className="page-nav">
-				&lt;
-			</button>
+				<button
+					onClick={() => onPageChange(Math.max(1, pagination.pageNumber - 1))}
+					className="page-nav">
+				{totalPages > 1 ? (<p>&lt;</p>) : (<p></p>)}
+				</button>
+
 			<div className="number-container">
 				{pages.map((page) => (
 					<button onClick={() => onPageChange(page)}>
@@ -50,7 +51,7 @@ const Pagination: React.FC<PaginationProps> = ({ pagination, onPageChange }) => 
 				onClick={() => onPageChange(Math.min(totalPages, pagination.pageNumber + 1))}
 				className="page-nav"
 			>
-				&gt;
+				{totalPages > 1 ? (<p>&gt;</p>) : (<p></p>)}
 			</button>
 
 

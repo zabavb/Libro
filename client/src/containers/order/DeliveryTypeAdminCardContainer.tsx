@@ -31,7 +31,7 @@ const DeliveryTypeAdminCardContainer: React.FC<DeliveryAdminCardContainerProps> 
     }
 
     const handleNavigate = () => {
-        navigate(`/admin/deliverytypes/${deliveryType.id}`)
+        navigate(`/admin/delivery/${deliveryType.id}`)
     }
 
     return (

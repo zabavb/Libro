@@ -12,7 +12,7 @@ table{
     overflow: hidden;
 }
 
-tr{
+tr>td{
     cursor: pointer;
 }
 
