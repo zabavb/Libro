@@ -28,6 +28,11 @@ const OrderList: React.FC<OrderListProps> = ({
                 <Search
                     searchTerm={searchTerm}
                     onSearchTermChange={onSearchTermChange} />
+                {/* Temporary implementation, replace with user pfp component */}
+                <div style={{marginLeft:"auto",display:'flex',alignItems:'center'}}>
+                    <div style={{borderRadius:"50%",backgroundColor:"grey", height:"43px", width:"43px"}}></div>
+                    <p style={{margin:"0 10px",fontWeight:"400"}}>Name Surname</p>
+                </div>
             </header>
             <main className="main-container">
                 {orders.length > 0 ? (
@@ -44,7 +49,7 @@ const OrderList: React.FC<OrderListProps> = ({
                                         <th style={{ width: "30%" }}>Name and Surname</th>
                                         <th style={{ width: "25%" }}>Order</th>
                                         <th style={{ width: "10%" }}>Price</th>
-                                        <th style={{ width: "15%" }}>Status</th>
+                                        <th style={{ width: "15%", textAlign:"center" }}>Status</th>
                                         <th style={{ width: "10%" }}></th>
                                     </tr>
                                 </thead>

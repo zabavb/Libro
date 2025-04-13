@@ -18,7 +18,7 @@ const AdminLayout: React.FC = () => {
 				<nav>
 					<ul className="admin-nav-list">
 						<li className="logo-container">
-							<img src={logoUrl}/>
+						<img src={logoUrl}/>
 						</li>
 						<li className={isActive("/admin") ? "active-link link" : "link"}>
 							<FontAwesomeIcon icon={faChartSimple}/>	

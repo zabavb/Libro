@@ -27,10 +27,10 @@ const OrderAdminCard: React.FC<OrderAdminCardProps> = ({ order, onDelete, onNavi
                     (to be implemented)
                 </td>
                 <td>
-                    {orderUid}
+                    {orderUid}...
                 </td>
                 <td>
-                    {cutFloat(order.price + order.deliveryPrice)}
+                    {cutFloat(order.price + order.deliveryPrice)} ₴
                 </td>
                 <td>
                     <div className={`status ${order.status.toLowerCase()}`}>{order.status}</div>

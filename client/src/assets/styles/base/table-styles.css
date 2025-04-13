@@ -1,7 +1,7 @@
 .table-wrapper{
     border-radius: 30px;
-    border: 1px solid black;
-    padding: 20px;
+    border: 1px solid #7A7A7A;
+    padding: 10px 40px;
 }
 table{
     font-weight: 600;
@@ -9,11 +9,15 @@ table{
 
     border-collapse: separate;
     border-spacing: 0;
-
     overflow: hidden;
 }
 
+tr{
+    cursor: pointer;
+}
+
 th, td{
+    text-align: start;
     padding: 15px;
-    border-bottom: 1px solid black;
+    border-bottom: 1px solid #7A7A7A;
 }

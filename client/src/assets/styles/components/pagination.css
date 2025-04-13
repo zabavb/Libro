@@ -1,0 +1,23 @@
+.pagination-container{
+    display: flex;
+    margin: 10px 40px;
+}
+
+.active{
+    font-weight: 600;
+    color: #ff642e;
+}
+
+.page-nav{
+    margin: 0 20px;
+}
+
+.page-number{
+    margin: 0 2px;
+}
+
+.number-container{
+    display: flex;
+    min-width: 50px;
+    justify-content: center;
+}

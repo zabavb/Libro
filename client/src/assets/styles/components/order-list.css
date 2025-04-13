@@ -11,10 +11,12 @@ body{
 
 .main-container{
     padding: 20px 80px;
+    padding-bottom: 0;
 }
 
 .counter{
     color: #ff642e;
     font-weight: 600;
     margin: 10px 0;
+    margin-right:5%;
 }
