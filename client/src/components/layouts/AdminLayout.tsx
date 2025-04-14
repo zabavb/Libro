@@ -1,46 +1,93 @@
-import { Outlet } from "react-router-dom"
-
+import { Outlet, useLocation } from "react-router-dom"
+import "@/assets/styles/layout/admin-layout.css"
+import logoUrl from "@/assets/logoLibro.svg"
+import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
+import {faCreditCard, faFile, faUser} from '@fortawesome/free-regular-svg-icons'
+import {faArrowRightFromBracket, faBook, faChartSimple, faTruck} from "@fortawesome/free-solid-svg-icons"
 const AdminLayout: React.FC = () => {
+	const location = useLocation();
+	const currentPath = location.pathname;
+
+	const isActive = (path: string) => currentPath === path;
+
+
 	return (
-		<div style={{ display: "flex", minHeight: "100vh" }}>
+		<div className="admin-container">
 			{/* Sidebar */}
-			<aside style={{ width: "250px", padding: "20px", background: "#f4f4f4", flexShrink: 0 }}>
+			<aside className="admin-sidebar">
 				<nav>
-					<ul style={{ listStyle: "none", padding: 0 }}>
-						<li style={{ marginBottom: "10px" }}>
+					<ul className="admin-nav-list">
+						<li className="logo-container">
+						<img src={logoUrl}/>
+						</li>
+						<li className={isActive("/admin") ? "active-link link" : "link"}>
+							<FontAwesomeIcon icon={faChartSimple}/>	
 							<a
 								href="/admin"
-								style={{ textDecoration: "none", color: "#333" }}>
-								Dashboard
+								>
+								Home
 							</a>
 						</li>
-						<li>
-							<a
-								href="/admin/users"
-								style={{ textDecoration: "none", color: "#333" }}>
-								Users
-							</a>
-						</li>
-						<li>
+						<li className={isActive("/admin/books") ? "active-link link" : "link"}>
+							<FontAwesomeIcon icon={faBook}/>
 							<a
 								href="/admin/books"
-								style={{ textDecoration: "none", color: "#333" }}>
+								>
 								Books
 							</a>
 						</li>
+						<li className={isActive("/admin/users") ? "active-link link" : "link"}>
+							<FontAwesomeIcon icon={faUser}/>
+							<a
+								href="/admin/users"
+								>
+								Users
+							</a>
+						</li>
+						<li className={isActive("/admin/orders") ? "active-link link" : "link"}>
+							<FontAwesomeIcon icon={faFile}/>
+							<a
+								href="/admin/orders"
+								>
+								Orders
+							</a>
+						</li>
+						<li className={isActive("/admin/delivery") ? "active-link link" : "link"}>
+							<FontAwesomeIcon icon={faTruck}/>
+							<a
+								href="/admin/delivery"
+								>
+								Deliveries
+							</a>
+						</li>
+						<li className={isActive("/admin/subscriptions") ? "active-link link" : "link"}>
+							<FontAwesomeIcon icon={faCreditCard}/>
+							<a>
+								Subscriptions
+							</a>
+						</li>
 					</ul>
+					<div className="link logout-item">
+					<FontAwesomeIcon 
+					style={{ transform: 'scaleX(-1)' }}
+					icon={faArrowRightFromBracket} />	
+					<a>
+					Logout
+					</a>
+					</div>
+
 				</nav>
 			</aside>
 
 			{/* Main Content Area */}
 			<div style={{ display: "flex", flexDirection: "column", flex: 1 }}>
 				{/* Header */}
-				<header style={{ background: "#333", color: "#fff", padding: "15px", textAlign: "center" }}>
+				{/* <header style={{ background: "#333", color: "#fff", padding: "15px", textAlign: "center" }}>
 					<h1>Admin Panel</h1>
-				</header>
-
+				</header> */}
+				<header></header>
 				{/* Main Content */}
-				<main style={{ flex: 1, padding: "20px", overflowY: "auto" }}>
+				<main style={{ flex: 1, overflowY: "auto" }}>
 					<Outlet />
 				</main>
 			</div>

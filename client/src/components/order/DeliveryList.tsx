@@ -4,7 +4,10 @@ import DeliveryTypeAdminCardContainer from "../../containers/order/DeliveryTypeA
 import Pagination from "../common/Pagination";
 import Search from "../common/Search";
 import DeliverySort from "./DeliverySort";
-
+import "@/assets/styles/base/table-styles.css"
+import "@/assets/styles/components/delivery-list.css"
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPlus } from "@fortawesome/free-solid-svg-icons";
 interface DeliveryTypeListProps {
     deliveryTypes?: DeliveryType[]
     loading: boolean
@@ -29,24 +32,30 @@ const DeliveryTypeList: React.FC<DeliveryTypeListProps> = ({
 }) => {
     if (loading) return <p>Loading...</p>
     return (
-        <div style={{height:"100dvh"}}>
-            <link rel="stylesheet" href="/src/styles/orderTableStyles.css" />
-            <div style={{ height: "5dvh", display:"flex" }}>
+        <div>
+            <header className="header-container">
                 <Search
                     searchTerm={searchTerm}
                     onSearchTermChange={onSearchTermChange} />
-                <button onClick={() => handleNavigate("/admin/deliveryTypes/add")}>
-                    Add Delivery
+                <button className="add-button" onClick={() => handleNavigate("/admin/delivery/add")}>
+                    <FontAwesomeIcon icon={faPlus} />
+                    <p>
+                        Add Delivery
+                    </p>
                 </button>
-            </div>
-            <div style={{ height: "100%" }}>
+                {/* Temporary implementation, replace with user pfp component */}
+                <div style={{ marginLeft: "auto", display: 'flex', alignItems: 'center' }}>
+                    <div style={{ borderRadius: "50%", backgroundColor: "grey", height: "43px", width: "43px" }}></div>
+                    <p style={{ margin: "0 10px", fontWeight: "400" }}>Name Surname</p>
+                </div>
+
+            </header>
+            <main className="main-container">
                 {deliveryTypes.length > 0 ? (
                     <div style={{ display: "flex", flexDirection: "column" }}>
                         <div style={{ display: "flex", flexDirection: "row-reverse" }}>
-                            <p style={{ margin: "0 5%" }}>
-                                <strong style={{ color: "#ff642e" }}>
-                                    ({pagination.totalCount}) delivery types
-                                </strong>
+                            <p className="counter">
+                                ({pagination.totalCount}) delivery types
                             </p>
                         </div>
                         <div className="table-wrapper">
@@ -81,15 +90,15 @@ const DeliveryTypeList: React.FC<DeliveryTypeListProps> = ({
                 ) : (
                     <p>No delivery types found.</p>
                 )}
-            </div>
-            <div style={{ height: "5dvh" }}>
+            </main>
+            <footer>
                 <div style={{ float: "right", padding: "0 5%" }}>
                     <Pagination
                         pagination={pagination}
                         onPageChange={onPageChange}
                     />
                 </div>
-            </div>
+            </footer>
         </div>
     )
 

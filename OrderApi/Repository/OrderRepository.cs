@@ -84,14 +84,18 @@ namespace OrderApi.Repository
                     .AsNoTracking()
                     .Where(o => o.Address.Contains(searchTerm) ||
                                 o.Region.Contains(searchTerm) ||
-                                o.City.Contains(searchTerm))
+                                o.City.Contains(searchTerm) ||
+                                (o.Price + o.DeliveryPrice).ToString().Contains(searchTerm) ||
+                                o.OrderId.ToString().ToLower().Contains(searchTerm.ToLower()))
                     .ToListAsync();
             }
 
             return await Task.FromResult(
                 data.Where(o => o.Address.Contains(searchTerm) ||
                                 o.Region.Contains(searchTerm) ||
-                                o.City.Contains(searchTerm)));
+                                o.City.Contains(searchTerm) ||
+                                (o.Price + o.DeliveryPrice).ToString().Contains(searchTerm) ||
+                                o.OrderId.ToString().ToLower().Contains(searchTerm.ToLower())));
         }
 
         public async Task<IEnumerable<Order>> FilterEntitiesAsync(IEnumerable<Order> orders, Filter filter)

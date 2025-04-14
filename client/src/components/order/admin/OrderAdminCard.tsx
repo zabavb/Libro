@@ -1,6 +1,6 @@
 import React from "react";
 import { OrderView } from "../../../types/types/order/OrderView";
-
+import "@/assets/styles/base/status-display.css"
 interface OrderAdminCardProps {
     order: OrderView
     onDelete: (e: React.MouseEvent) => void
@@ -18,7 +18,6 @@ const OrderAdminCard: React.FC<OrderAdminCardProps> = ({ order, onDelete, onNavi
     const orderUid = order.id.split('-')[4];
     return (
         <>
-            <link rel="stylesheet" href="/src/styles/statusDisplay.css"/>
             <tr
                 onClick={(e) => {
                     e.stopPropagation()
@@ -28,10 +27,10 @@ const OrderAdminCard: React.FC<OrderAdminCardProps> = ({ order, onDelete, onNavi
                     (to be implemented)
                 </td>
                 <td>
-                    {orderUid}
+                    {orderUid}...
                 </td>
                 <td>
-                    {cutFloat(order.price + order.deliveryPrice)}
+                    {cutFloat(order.price + order.deliveryPrice)} ₴
                 </td>
                 <td>
                     <div className={`status ${order.status.toLowerCase()}`}>{order.status}</div>

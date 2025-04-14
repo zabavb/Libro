@@ -44,8 +44,7 @@ builder.Services.AddSingleton<IConnectionMultiplexer>(sp =>
 });
 
 
-builder.Services.AddAutoMapper(typeof(OrderProfile));
-builder.Services.AddAutoMapper(typeof(DeliveryTypeProfile));
+builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
 builder.Services.AddScoped<IBookRepository, BookRepository>();
 builder.Services.AddScoped<ICacheService, CacheService>();

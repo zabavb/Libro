@@ -20,7 +20,7 @@ const DeliveryTypeAdminCard: React.FC<DeliveryTypeAdminCardProps> = ({deliveryTy
                     {deliveryType.serviceName}
                 </td>
                 <td>
-                    {deliveryUid}
+                    {deliveryUid}...
                 </td>
                 <td>
                     <button

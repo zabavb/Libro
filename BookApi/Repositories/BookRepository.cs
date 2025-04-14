@@ -61,7 +61,6 @@ namespace BookAPI.Repositories
                     .Include(b => b.Publisher)
                     .Include(b => b.Feedbacks)
                     .Include(b => b.Subcategories)
-                    .Include(b => b.Quantity)
                     .ToListAsync();
                 _logger.LogInformation("Fetched from DB.");
 
@@ -112,7 +111,6 @@ namespace BookAPI.Repositories
                 .Include(b => b.Publisher)
                 .Include(b => b.Feedbacks)
                 .Include(b => b.Subcategories)
-                .Include(b => b.Quantity)
                 .FirstOrDefaultAsync(b => b.Id == id);
 
             if (book != null)

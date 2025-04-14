@@ -1,0 +1,17 @@
+.search{
+    border-radius: 5px;
+    border: 1px solid #000000;
+    background-color: #F4F0E5;
+    padding: 5px;
+    color: black;
+    min-width: 400px;
+}
+
+.search::placeholder{
+    color: black;
+    opacity: 1;
+}
+
+.serach-container{
+    align-content: center;
+}
