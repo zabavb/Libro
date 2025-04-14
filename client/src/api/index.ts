@@ -17,6 +17,22 @@ export const USERS_PAGINATED = (
 
 export const USER_BY_ID = API_ROUTES.USERS.BY_ID;
 
+// ================= SUBSCRIPTION =================
+
+export const SUBSCRIPTIONS = API_ROUTES.SUBSCRIPTIONS.BASE;
+
+export const SUBSCRIPTIONS_PAGINATED = (
+  pageNumber: number = 1,
+  pageSize: number = 10,
+) => API_ROUTES.SUBSCRIPTIONS.PAGINATED(pageNumber, pageSize);
+
+export const SUBSCRIPTION_BY_ID = API_ROUTES.SUBSCRIPTIONS.BY_ID;
+
+export const SUBSCRIBE = API_ROUTES.SUBSCRIPTIONS.SUBSCRIBE;
+export const UNSUBSCRIBE = API_ROUTES.SUBSCRIPTIONS.UNSUBSCRIBE;
+
+export const FOR_FILTERING = API_ROUTES.SUBSCRIPTIONS.FOR_FILTERING;
+
 // ================= ORDER API  =================
 //================= ORDER =================
 export const ORDERS = API_ROUTES.ORDERS.BASE;
