@@ -1,7 +1,7 @@
 import axios from 'axios';
-import { USERS_PAGINATED, USERS, USER_BY_ID } from '../index';
-import { User, PaginatedResponse, UserCard, UserForm } from '../../types';
-import { getAuthHeaders } from './common';
+import {USERS_PAGINATED, USERS, USER_BY_ID} from '../index';
+import {User, PaginatedResponse, UserCard, UserForm} from '../../types';
+import {getAuthHeaders} from './common';
 
 interface UserQueryParams {
   role?: string;

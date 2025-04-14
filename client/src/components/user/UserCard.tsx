@@ -1,5 +1,5 @@
 import React from 'react';
-import { UserCard as UserCardType } from '../../types';
+import { Role, UserCard as UserCardType } from '../../types';
 
 interface UserCardProps {
   user: UserCardType;
@@ -18,9 +18,12 @@ const UserCard: React.FC<UserCardProps> = ({ user, onNavigate, onDelete }) => {
         }}
       >
         <div>{user.fullName}</div>
+        {(user.role === Role.ADMIN || Role.MODERATOR) && <div>{user.role}</div>}
         <div>{user.email}</div>
         <div>{user.phoneNumber}</div>
-        <div>{user.role}</div>
+        <div>{user.ordersCount}</div>
+        <div>{user.lastOrder}</div>
+
         <div>Edit</div>
         <div
           onClick={(e) => {

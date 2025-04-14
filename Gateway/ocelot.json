@@ -112,7 +112,23 @@
         }
       ],
       "UpstreamPathTemplate": "/gateway/subscriptions/unsubscribe",
-      "UpstreamHttpMethod": [ "POST" ]
+      "UpstreamHttpMethod": [
+        "POST"
+      ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/subscriptions/filter",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7007
+        }
+      ],
+      "UpstreamPathTemplate": "/gateway/subscriptions/filter",
+      "UpstreamHttpMethod": [
+        "GET"
+      ]
     },
     //======================================= BookAPI =======================================
     //======================= Book entity =======================
