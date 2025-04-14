@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
 using Google.Apis.Auth;
-using Library.DTOs.User;
 using Library.DTOs.UserRelated.User;
 using UserAPI.Models;
 using UserAPI.Models.Auth;
@@ -10,20 +9,27 @@ using UserAPI.Services.Interfaces;
 
 namespace UserAPI.Services
 {
-    public class AuthService(IAuthRepository authRepository, IUserRepository userRepository, IPasswordRepository passwordRepository, IMapper mapper, ILogger<IAuthService> logger) : IAuthService
+    public class AuthService(
+        IAuthRepository authRepository,
+        IUserService userService,
+        IUserRepository userRepository,
+        IPasswordRepository passwordRepository,
+        IMapper mapper,
+        ILogger<IAuthService> logger) : IAuthService
     {
         private readonly IAuthRepository _authRepository = authRepository;
+        private readonly IUserService _userService = userService;
         private readonly IUserRepository _userRepository = userRepository;
         private readonly IPasswordRepository _passwordRepository = passwordRepository;
-        
+
         private readonly IMapper _mapper = mapper;
         private readonly ILogger<IAuthService> _logger = logger;
 
         public async Task<Dto?> AuthenticateAsync(LoginRequest request)
         {
-            var user = request.Identifier.Contains('@') ?
-                await _authRepository.GetUserByEmailAsync(request) :
-                await _authRepository.GetUserByPhoneNumberAsync(request);
+            var user = request.Identifier.Contains('@')
+                ? await _authRepository.GetUserByEmailAsync(request)
+                : await _authRepository.GetUserByPhoneNumberAsync(request);
 
             return await IsRightPasswordAsync(user!, request.Password) ? _mapper.Map<Dto>(user) : null;
         }
@@ -45,10 +51,10 @@ namespace UserAPI.Services
                 PhoneNumber = request.PhoneNumber,
                 Role = RoleType.USER,
                 PasswordId = passwordId
-            }; 
-            
+            };
+
             await _passwordRepository.AddAsync(passwordId, password, user);
-            await _userRepository.CreateAsync(user);
+            await _userService.CreateAsync(_mapper.Map<Dto>(user));
             _logger.LogInformation("Successful user registration.");
         }
 
@@ -57,12 +63,13 @@ namespace UserAPI.Services
             var payload = await GoogleJsonWebSignature.ValidateAsync(token, settings);
 
             var user = _mapper.Map<Dto>(await _userRepository.GetByEmailAsync(payload.Email)) ?? new Dto
-                {
-                    FirstName = payload.GivenName,
-                    LastName = payload.FamilyName,
-                    Email = payload.Email,
-                    Role = RoleType.USER,
-                };
+            {
+                Id = Guid.Empty,
+                FirstName = payload.GivenName,
+                LastName = payload.FamilyName,
+                Email = payload.Email,
+                Role = RoleType.USER,
+            };
 
             _logger.LogInformation("OAuthAsync() => return {user}", user);
 
@@ -71,7 +78,7 @@ namespace UserAPI.Services
 
         private async Task<bool> IsRightPasswordAsync(User user, string password)
         {
-            if (user != null && !string.IsNullOrWhiteSpace(password))
+            if (!string.IsNullOrWhiteSpace(password))
             {
                 Guid passwordId = user.PasswordId;
                 return await _passwordRepository.VerifyAsync(passwordId, password);
