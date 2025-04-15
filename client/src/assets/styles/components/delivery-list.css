@@ -3,8 +3,21 @@ body{
 }
 
 .header-container{
-    @apply flex items-center px-20 py-5 items-center;
+    @apply flex items-center px-20 py-5 sticky top-0 bg-[#F4F0E5];
     border-bottom: 1px solid black;
+}
+
+.profile-icon{
+    @apply flex ml-auto items-center;
+}
+
+.profile-name{
+    @apply my-0 mx-2.5;
+}
+
+.pagination-container{
+    @apply float-right;
+    padding: 0 5%;
 }
 
 .main-container{
@@ -12,13 +25,11 @@ body{
 }
 
 .counter{
-    @apply font-semibold my-2.5 mx-0;
-    color: #ff642e;
+    @apply font-semibold my-2.5 mx-0 text-[#ff642e];
     margin-right:5%;
 }
 
 .add-button{
-    @apply flex font-semibold items-center text-center rounded-lg my-0 mx-5 gap-3.5;
+    @apply flex font-semibold items-center text-center rounded-lg my-0 mx-5 gap-3.5 bg-[#F5CB2E];
     padding: 5px 20px;
-    background-color: #F5CB2E;
 }
