@@ -16,6 +16,9 @@ const MainPage: React.FC = () => {
       <div>
         <button onClick={() => navigate('/catalog')}>Catalog</button>
       </div>
+      <div>
+        <button onClick={() => navigate('/liked')}>Liked Books</button>
+      </div>
     </div>
   );
 }
