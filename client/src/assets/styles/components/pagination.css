@@ -3,8 +3,7 @@
 }
 
 .active{
-    @apply font-semibold;
-    color: #ff642e;
+    @apply font-semibold text-[#ff642e];
 }
 
 .page-nav{

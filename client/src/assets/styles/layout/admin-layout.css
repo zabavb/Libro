@@ -4,14 +4,12 @@
 }
 
 .admin-sidebar{
-    @apply p-5 shrink-0 font-semibold text-white leading-none h-dvh;
+    @apply p-5 shrink-0 font-semibold text-white leading-none h-dvh bg-[#1A1D23];
     min-width: 250px;
-    background-color: #1A1D23;
 }
 
 .admin-sidebar nav {
-    @apply flex flex-col flex-1;
-    height: 100%;
+    @apply flex flex-col flex-1 h-full;
 }
 
 .admin-nav-list{
@@ -31,8 +29,7 @@
     @apply mt-auto;
 }
 .active-link{
-    background-color: #FF642E;
-    color: #1A1D23;
+    @apply bg-[#FF642E] text-[#1A1D23];
 }
 
 .logo-container{
