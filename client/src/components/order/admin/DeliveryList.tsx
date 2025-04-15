@@ -1,11 +1,11 @@
 import React from "react";
-import { DeliveryType } from "../../types";
-import DeliveryTypeAdminCardContainer from "../../containers/order/DeliveryTypeAdminCardContainer";
-import Pagination from "../common/Pagination";
-import Search from "../common/Search";
-import DeliverySort from "./DeliverySort";
+import { DeliveryType } from "../../../types";
+import DeliveryTypeAdminCardContainer from "../../../containers/order/DeliveryTypeAdminCardContainer";
+import Pagination from "../../common/Pagination";
+import Search from "../../common/Search";
+import DeliverySort from "../DeliverySort";
 import "@/assets/styles/base/table-styles.css"
-import "@/assets/styles/components/delivery-list.css"
+import "@/assets/styles/components/list-styles.css"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 interface DeliveryTypeListProps {

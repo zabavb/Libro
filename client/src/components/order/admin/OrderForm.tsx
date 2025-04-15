@@ -6,12 +6,12 @@ import React, { useEffect, useState } from "react";
 import { statusEnumToNumber, statusNumberToEnum } from "../../../api/adapters/orderAdapters";
 import { OrderFormData, orderSchema } from "../../../utils";
 import OrderFormBookSearch from "./OrderFormBookSearch";
-import OrderFormBookList from "./OrderFormBookList";
 import { useNavigate } from "react-router-dom";
-import "@/assets/styles/components/order-form.css"
+import "@/assets/styles/components/order/order-form.css"
 import "@/assets/styles/base/status-display.css"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
+import OrderAdminFormBookList from "./OrderAdminFormBookList";
 interface OrderFormProps {
     existingOrder?: Order;
     onEditOrder: (existingOrder: Order) => Promise<void>;
@@ -221,7 +221,7 @@ const OrderForm: React.FC<OrderFormProps> = ({ existingOrder, onEditOrder }) => 
                                 onBookAdd={handleBookAdd}
                             />
                             <div className="overflow-auto" style={{maxHeight:"900px"}}>
-                                <OrderFormBookList
+                                <OrderAdminFormBookList
                                     books={bookObjs}
                                     onBookDelete={handleBookDelete}
                                     onBookAdd={handleBookAdd}

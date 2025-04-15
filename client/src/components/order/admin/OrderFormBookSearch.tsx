@@ -4,7 +4,7 @@ import { addNotification } from "@/state/redux/slices/notificationSlice"
 import { fetchBooksService } from "@/services/bookService"
 import { useDispatch } from "react-redux"
 import { AppDispatch } from "@/state/redux"
-import "@/assets/styles/components/order-book-search.css"
+import "@/assets/styles/components/order/order-book-search.css"
 interface OrderFormBookSearchProps {
     onBookAdd: (bookId: string) => void
 }

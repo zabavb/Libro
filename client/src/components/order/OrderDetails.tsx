@@ -1,12 +1,12 @@
 import { Order } from "../../types";
 import React, { useEffect, useState } from "react";
-import OrderFormBookList from "./admin/OrderFormBookList";
 import { useNavigate } from "react-router-dom";
-import "@/assets/styles/components/order-form.css"
+import "@/assets/styles/components/order/order-form.css"
 import "@/assets/styles/base/status-display.css"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 import { statusNumberToEnum } from "@/api/adapters/orderAdapters";
+import OrderFormBookList from "./OrderFormBookList";
 interface OrderDetailsProps {
     existingOrder?: Order;
     loading: boolean;
@@ -36,8 +36,7 @@ const OrderDetails: React.FC<OrderDetailsProps> = ({ existingOrder }) => {
         <div>
             <header className="header-container">
                 <div className="flex h-10 gap-2.5">
-                    <button className="cancel-button" onClick={() => navigate('/admin/orders')}><FontAwesomeIcon icon={faArrowLeft} /></button>
-                    <button className="update-button" type="submit">Update</button>
+                    <button className="cancel-button" onClick={() => navigate('/orders')}><FontAwesomeIcon icon={faArrowLeft} /></button>
                 </div>
 
                 <div className="profile-icon">
@@ -48,7 +47,7 @@ const OrderDetails: React.FC<OrderDetailsProps> = ({ existingOrder }) => {
                 <main className="main-container">
                     {/* Left form */}
                     <div className="main-form-container">
-                        <h1 className=" font-semibold text-2xl mb-5">Order Details</h1>
+                        <h1 className=" font-semibold text-2xl mb-5">Order Profile</h1>
 
                         <div className="input-container">
                             <p className="input-title">Region</p>
@@ -62,7 +61,7 @@ const OrderDetails: React.FC<OrderDetailsProps> = ({ existingOrder }) => {
 
                         <div className="input-container">
                             <p className="input-title">Address</p>
-                            <p className="input=text">{existingOrder?.address}</p>
+                            <p className="input-text">{existingOrder?.address}</p>
                         </div>
 
                         <div className="flex gap-2.5">
@@ -72,7 +71,7 @@ const OrderDetails: React.FC<OrderDetailsProps> = ({ existingOrder }) => {
                             </div>
                             <div className="input-container">
                                 <p className="input-title">Delivery Date</p>
-                                <p className="input=text">{existingOrder?.deliveryDate.toString()}</p>
+                                <p className="input-text">{existingOrder?.deliveryDate.toString()}</p>
                             </div>
                         </div>
 
@@ -106,8 +105,6 @@ const OrderDetails: React.FC<OrderDetailsProps> = ({ existingOrder }) => {
                             <div style={{maxHeight:"240px", overflow:"auto"}}>
                                 <OrderFormBookList
                                     books={bookObjs}
-                                    onBookDelete={() => {}}
-                                    onBookAdd={() => {}}
                                 />
                             </div>
                         </div>

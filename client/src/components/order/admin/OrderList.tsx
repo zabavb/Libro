@@ -3,7 +3,7 @@ import { Order } from "../../../types";
 import Pagination from "../../common/Pagination";
 import Search from "../../common/Search";
 import "@/assets/styles/base/table-styles.css"
-import "@/assets/styles/components/order-list.css"
+import "@/assets/styles/components/list-styles.css"
 interface OrderListProps {
     orders?: Order[]
     loading: boolean

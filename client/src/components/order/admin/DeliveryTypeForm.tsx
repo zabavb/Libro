@@ -3,7 +3,7 @@ import { DeliveryType } from "../../../types";
 import { DeliveryTypeFormData, deliveryTypeSchema } from "../../../utils";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
-import "@/assets/styles/components/delivery-form.css"
+import "@/assets/styles/components/delivery/delivery-form.css"
 import { useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
