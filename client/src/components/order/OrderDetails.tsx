@@ -7,6 +7,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 import { statusNumberToEnum } from "@/api/adapters/orderAdapters";
 import OrderFormBookList from "./OrderFormBookList";
+import { dateToString } from "@/api/adapters/commonAdapters";
 interface OrderDetailsProps {
     existingOrder?: Order;
     loading: boolean;
@@ -67,11 +68,11 @@ const OrderDetails: React.FC<OrderDetailsProps> = ({ existingOrder }) => {
                         <div className="flex gap-2.5">
                             <div className="input-container">
                                 <p className="input-title">Order Date</p>
-                                <p className="input-text">{existingOrder?.orderDate.toString()}</p>
+                                <p className="input-text">{existingOrder?.orderDate ? (`${dateToString(existingOrder.orderDate)}`) : "Failed to get date"}</p>
                             </div>
                             <div className="input-container">
                                 <p className="input-title">Delivery Date</p>
-                                <p className="input-text">{existingOrder?.deliveryDate.toString()}</p>
+                                <p className="input-text">{existingOrder?.deliveryDate ? (`${dateToString(existingOrder.deliveryDate)}`) : "Failed to get date" }</p>
                             </div>
                         </div>
 
