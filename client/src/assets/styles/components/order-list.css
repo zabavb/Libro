@@ -3,20 +3,16 @@ body{
 }
 
 .header-container{
-    display: flex;
+    @apply flex items-center px-20 py-5;
     border-bottom: 1px solid black;
-    align-items: center;
-    padding: 20px 80px;
 }
 
 .main-container{
-    padding: 20px 80px;
-    padding-bottom: 0;
+    @apply px-20 py-5 pb-0;
 }
 
 .counter{
+    @apply font-semibold my-2.5 mx-0;
     color: #ff642e;
-    font-weight: 600;
-    margin: 10px 0;
     margin-right:5%;
 }
