@@ -46,16 +46,7 @@ const OrderForm: React.FC<OrderFormProps> = ({ existingOrder, onEditOrder }) => 
         },
     })
 
-    /* Outsource the function into separate lib */
-    function cutFloat(num: number): number {
-        const parts = num.toString().split('.');
-        if (parts.length === 1) return num; // no decimal part
-        const decimal = parts[1].slice(0, 2);
-        return parseFloat(`${parts[0]}.${decimal}`);
-    }
-    
     const statusValue = watch("status");
-    const fullPrice = cutFloat((existingOrder?.price ?? 0) + (existingOrder?.deliveryPrice ?? 0));
 
     useEffect(() => {
         if (existingOrder) {
@@ -129,6 +120,8 @@ const OrderForm: React.FC<OrderFormProps> = ({ existingOrder, onEditOrder }) => 
         });
     }
 
+    const uid = existingOrder?.id.toString().split('-')[4];
+
     return (
         <div>
             <header className="header-container">
@@ -146,7 +139,7 @@ const OrderForm: React.FC<OrderFormProps> = ({ existingOrder, onEditOrder }) => 
                 <main className="main-container">
                     {/* Left form */}
                     <div className="main-form-container">
-                        <h1 className=" font-semibold text-2xl mb-5">Order Update</h1>
+                        <h1 className=" font-semibold text-2xl mb-5">Order № {uid}</h1>
                         {/* Hidden values, cannot be edited */}
                         <input className="absolute" type="hidden" {...register("userId")} />
                         <input className="absolute" type="hidden" {...register("deliveryTypeId")} />
@@ -200,19 +193,6 @@ const OrderForm: React.FC<OrderFormProps> = ({ existingOrder, onEditOrder }) => 
                                 <p>{errors.deliveryDate?.message}</p>
                             </div>
                         </div>
-
-                        <div className="subscription-box">
-                            <div className="subscription-logo">
-                                <p className="m-0 font-semibold text-center w-full">365</p>
-                            </div>
-                            <div className="flex flex-col gap-3.5">
-                                <p className="text-xl font-semibold">Activated<br />Delivery 365</p>
-                                <p className="h-1/2 text-sm font-semibold text-[#9C9C97]">Free delivery for a <br /> year for 365₴</p>
-                            </div>
-
-                        </div>
-                    </div>
-                    <div className="book-form-container">
                         <div className="mb-11">
                             <h1 className=" font-semibold text-2xl mb-1 text-[#FF642E]">Status</h1>
                             <div>
@@ -233,29 +213,20 @@ const OrderForm: React.FC<OrderFormProps> = ({ existingOrder, onEditOrder }) => 
                                 </div>
                             </div>
                         </div>
-                        <div className="mb-3.5 text-[#FF642E]">
-                            <h1 className="font-semibold text-2xl">Order</h1>
-                            <p className="font-medium text-sm">№ {existingOrder?.id}</p>
-                        </div>
+                    </div>
+                    <div className="book-form-container">
+
                         <div className="mb-3.5">
                             <OrderFormBookSearch
                                 onBookAdd={handleBookAdd}
                             />
-                            <div style={{maxHeight:"240px", overflow:"auto"}}>
+                            <div className="overflow-auto" style={{maxHeight:"900px"}}>
                                 <OrderFormBookList
                                     books={bookObjs}
                                     onBookDelete={handleBookDelete}
                                     onBookAdd={handleBookAdd}
                                 />
                             </div>
-                        </div>
-                        <div className="flex justify-between text-[#FF642E] font-semibold mb-8">
-                            <p className="text-xl">Total</p>
-                            <p className="text-2xl">{fullPrice}  ₴</p>
-                        </div>
-                        <div className="flex flex-col gap-2">
-                            <h1 className="font-semibold text-[#FF642E] text-2xl">Delivery</h1>
-                            <p className="delivery-card">Delivery Name</p>
                         </div>
                     </div>
                 </main>
