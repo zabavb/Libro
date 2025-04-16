@@ -1,66 +1,37 @@
 
-.admin-container{
-    display: flex;
-    height: 100dvh;
+.admin-container{   
+    @apply flex h-dvh;
 }
 
 .admin-sidebar{
+    @apply p-5 shrink-0 font-semibold text-white leading-none h-dvh bg-[#1A1D23];
     min-width: 250px;
-    height: 100dvh;
-
-    padding: 20px;
-
-    flex-shrink: 0;
-
-    background-color: #1A1D23;
-
-    color: white;
-    font-weight: 600;
-    line-height: 100%;
 }
 
 .admin-sidebar nav {
-    display: flex;
-    flex-direction: column;
-    flex: 1;
-    height: 100%;
+    @apply flex flex-col flex-1 h-full;
 }
 
 .admin-nav-list{
-    display: flex;
-    flex-direction: column;
-
-    gap:21px;
-    padding: 0;
-    margin: 0;
-
-    list-style: none;
+    @apply flex flex-col p-0 m-0 list-none;
+    gap: 21px;
 }
 
 .link{
-    align-items: center;
-    display: flex;
-    gap: 10px;
-    padding: 10px;
-    border-radius: 8px;
+    @apply flex items-center rounded-lg gap-2.5 p-2.5;
 }
 
 .link a{
-    display: block;
-    text-align: start;
-    align-content: start;
-    margin-right: auto;
+    @apply block text-start content-start mr-auto;
 }
 
 .logout-item{
-    margin-top: auto;
+    @apply mt-auto;
 }
 .active-link{
-    background-color: #FF642E;
-    color: #1A1D23;
+    @apply bg-[#FF642E] text-[#1A1D23];
 }
 
 .logo-container{
-    display: flex;
-    justify-content: center;
+    @apply flex justify-center;
 }

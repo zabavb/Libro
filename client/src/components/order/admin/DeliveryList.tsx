@@ -1,11 +1,11 @@
 import React from "react";
-import { DeliveryType } from "../../types";
-import DeliveryTypeAdminCardContainer from "../../containers/order/DeliveryTypeAdminCardContainer";
-import Pagination from "../common/Pagination";
-import Search from "../common/Search";
-import DeliverySort from "./DeliverySort";
+import { DeliveryType } from "../../../types";
+import DeliveryTypeAdminCardContainer from "../../../containers/order/DeliveryTypeAdminCardContainer";
+import Pagination from "../../common/Pagination";
+import Search from "../../common/Search";
+import DeliverySort from "../DeliverySort";
 import "@/assets/styles/base/table-styles.css"
-import "@/assets/styles/components/delivery-list.css"
+import "@/assets/styles/components/list-styles.css"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 interface DeliveryTypeListProps {
@@ -44,23 +44,23 @@ const DeliveryTypeList: React.FC<DeliveryTypeListProps> = ({
                     </p>
                 </button>
                 {/* Temporary implementation, replace with user pfp component */}
-                <div style={{ marginLeft: "auto", display: 'flex', alignItems: 'center' }}>
+                <div className="profile-icon">
                     <div style={{ borderRadius: "50%", backgroundColor: "grey", height: "43px", width: "43px" }}></div>
-                    <p style={{ margin: "0 10px", fontWeight: "400" }}>Name Surname</p>
+                    <p className="profile-name">Name Surname</p>
                 </div>
 
             </header>
             <main className="main-container">
                 {deliveryTypes.length > 0 ? (
-                    <div style={{ display: "flex", flexDirection: "column" }}>
-                        <div style={{ display: "flex", flexDirection: "row-reverse" }}>
+                    <div className="flex flex-col w-full">
+                        <div className="flex flex-row-reverse">
                             <p className="counter">
                                 ({pagination.totalCount}) delivery types
                             </p>
                         </div>
                         <div className="table-wrapper">
                             <table>
-                                <thead style={{ margin: "20px" }}>
+                                <thead className="m-5">
                                     <tr>
                                         <th style={{ width: "50%" }}>Service name</th>
                                         <th style={{ width: "40%" }}>Delivery</th>
@@ -92,7 +92,7 @@ const DeliveryTypeList: React.FC<DeliveryTypeListProps> = ({
                 )}
             </main>
             <footer>
-                <div style={{ float: "right", padding: "0 5%" }}>
+                <div className="pagination-container">
                     <Pagination
                         pagination={pagination}
                         onPageChange={onPageChange}

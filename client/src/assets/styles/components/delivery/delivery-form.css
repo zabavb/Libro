@@ -1,0 +1,33 @@
+.header-container{
+    @apply flex items-center px-20 py-5 sticky top-0 bg-[#F4F0E5];
+    border-bottom: 1px solid black;
+}
+
+.main-container{
+    @apply flex gap-11;
+}
+
+.profile-icon{
+    @apply flex ml-auto items-center;
+}
+
+.profile-name{
+    @apply my-0 mx-2.5;
+}
+
+.input-container{
+    @apply flex flex-col gap-2 w-full;
+}
+
+.input-title{
+    @apply text-sm font-medium;
+    line-height: 130%;
+}
+
+.input-text{
+    @apply rounded-lg p-2.5 gap-2.5 bg-[#DEDBD1];
+}
+
+.input-text::placeholder{
+    @apply text-black;
+}

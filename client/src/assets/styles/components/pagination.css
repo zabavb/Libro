@@ -1,23 +1,20 @@
 .pagination-container{
-    display: flex;
-    margin: 10px 40px;
+    @apply flex my-2.5 mx-10;
 }
 
 .active{
-    font-weight: 600;
-    color: #ff642e;
+    @apply font-semibold text-[#ff642e];
 }
 
 .page-nav{
-    margin: 0 20px;
+    @apply py-0 px-5;
 }
 
 .page-number{
-    margin: 0 2px;
+    @apply my-0 mx-0.5
 }
 
 .number-container{
-    display: flex;
+    @apply flex justify-center;
     min-width: 50px;
-    justify-content: center;
 }

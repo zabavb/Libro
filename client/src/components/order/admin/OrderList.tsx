@@ -3,7 +3,7 @@ import { Order } from "../../../types";
 import Pagination from "../../common/Pagination";
 import Search from "../../common/Search";
 import "@/assets/styles/base/table-styles.css"
-import "@/assets/styles/components/order-list.css"
+import "@/assets/styles/components/list-styles.css"
 interface OrderListProps {
     orders?: Order[]
     loading: boolean
@@ -29,22 +29,22 @@ const OrderList: React.FC<OrderListProps> = ({
                     searchTerm={searchTerm}
                     onSearchTermChange={onSearchTermChange} />
                 {/* Temporary implementation, replace with user pfp component */}
-                <div style={{marginLeft:"auto",display:'flex',alignItems:'center'}}>
+                <div className="profile-icon">
                     <div style={{borderRadius:"50%",backgroundColor:"grey", height:"43px", width:"43px"}}></div>
-                    <p style={{margin:"0 10px",fontWeight:"400"}}>Name Surname</p>
+                    <p className="profile-name">Name Surname</p>
                 </div>
             </header>
             <main className="main-container">
                 {orders.length > 0 ? (
-                    <div style={{ display: "flex", flexDirection: "column" }}>
-                        <div style={{ display: "flex", flexDirection: "row-reverse" }}>
+                    <div className="flex flex-col w-full">
+                        <div className="flex flex-row-reverse">
                             <p className="counter">
                                 ({pagination.totalCount}) orders
                             </p>
                         </div>
                         <div className="table-wrapper">
                             <table>
-                                <thead style={{ margin: "20px" }}>
+                                <thead className="m-5">
                                     <tr>
                                         <th style={{ width: "30%" }}>Name and Surname</th>
                                         <th style={{ width: "25%" }}>Order</th>
@@ -78,7 +78,7 @@ const OrderList: React.FC<OrderListProps> = ({
                 )}
             </main>
             <footer>
-                <div style={{ float: "right", padding: "0 5%" }}>
+                <div className="pagination-container">
                     <Pagination
                         pagination={pagination}
                         onPageChange={onPageChange}

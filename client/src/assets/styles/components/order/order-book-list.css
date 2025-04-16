@@ -1,0 +1,18 @@
+table{
+    @apply font-semibold overflow-hidden border-separate border-spacing-0 w-full text-xl;
+}
+
+th{
+    @apply text-[#FF642E];
+    border-bottom: none;
+}
+
+.list-buttons{
+    @apply cursor-pointer w-full bg-[#FF642E] text-white;
+    border: 1px solid #FF642E;
+    transition: all 0.2s;
+}
+
+.list-buttons:hover{
+    @apply text-[#FF642E] bg-[#F4F0E5];
+}

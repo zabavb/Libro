@@ -1,23 +1,18 @@
 .table-wrapper{
+    @apply py-2.5 px-10;
     border-radius: 30px;
     border: 1px solid #7A7A7A;
-    padding: 10px 40px;
 }
 table{
-    font-weight: 600;
-    width: 100%;
-
-    border-collapse: separate;
-    border-spacing: 0;
-    overflow: hidden;
+    @apply font-semibold overflow-hidden border-separate border-spacing-0 w-full;
 }
 
 tr>td{
-    cursor: pointer;
+    @apply cursor-pointer;
 }
 
 th, td{
-    text-align: start;
+    @apply text-start;
     padding: 15px;
     border-bottom: 1px solid #7A7A7A;
 }
