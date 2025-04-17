@@ -57,6 +57,30 @@ namespace OrderApi.Services
             return order == null ? null : _mapper.Map<OrderDto>(order);
         }
 
+        public async Task<OrderForUserCard?> GetForUserCardAsync(Guid id)
+        {
+            try
+            {
+                return await _repository.GetForUserCardAsync(id);
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
+        public async Task<ICollection<OrderForUserDetails>?> GetAllForUserDetailsAsync(Guid id)
+        {
+            try
+            {
+                return await _repository.GetAllForUserDetailsAsync(id);
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
         public async Task CreateAsync(OrderDto entity)
         {
             if(entity == null)

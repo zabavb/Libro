@@ -188,6 +188,83 @@ namespace OrderApi.Repository
             return order;
         }
 
+        public async Task<OrderForUserCard> GetForUserCardAsync(Guid userId)
+        {
+            string cacheKey = $"{_cacheKeyPrefix}userCard_{userId}";
+            string fieldKey = userId.ToString();
+
+            var cachedOrder = await _redisDatabase.HashGetAsync(cacheKey, fieldKey);
+            if (!cachedOrder.IsNullOrEmpty)
+            {
+                _logger.LogInformation("Fetched from CACHE.");
+                return JsonSerializer.Deserialize<OrderForUserCard>(cachedOrder!)!;
+            }
+
+            var orders = await _context.Orders
+                .Where(o => o.UserId == userId)
+                .Select(o => new { o.OrderId })
+                .ToListAsync();
+
+            var snippet = new OrderForUserCard()
+            {
+                OrdersCount = orders.Count,
+                LastOrder = orders.Count > 0
+                    ? orders[0].OrderId.ToString().Split('-')[4]
+                    : string.Empty
+            };
+            _logger.LogInformation("Fetched from DB.");
+
+            await _redisDatabase.HashSetAsync(
+                cacheKey,
+                fieldKey,
+                JsonSerializer.Serialize(snippet)
+            );
+
+            await _redisDatabase.KeyExpireAsync(cacheKey, _cacheExpiration);
+            _logger.LogInformation("Set to CACHE.");
+
+            return snippet;
+        }
+
+        public async Task<ICollection<OrderForUserDetails>> GetAllForUserDetailsAsync(Guid userId)
+        {
+            string cacheKey = $"{_cacheKeyPrefix}userDetails_{userId}";
+            string fieldKey = userId.ToString();
+
+            var cachedOrder = await _redisDatabase.HashGetAsync(cacheKey, fieldKey);
+            if (!cachedOrder.IsNullOrEmpty)
+            {
+                _logger.LogInformation("Fetched from CACHE.");
+                return JsonSerializer.Deserialize<List<OrderForUserDetails>>(cachedOrder!)!;
+            }
+
+            var orders = _context.Orders
+                .AsNoTracking()
+                .Where(o => o.UserId == userId)
+                .AsEnumerable()
+                .Select(o => new OrderForUserDetails()
+                {
+                    OrderUiId = o.OrderId.ToString().Split('-')[4],
+                    BookIds = o.Books.Keys,
+                    Price = o.Price
+                }).ToList();
+            _logger.LogInformation("Fetched from DB.");
+
+            if (orders.Count > 0)
+            {
+                await _redisDatabase.HashSetAsync(
+                    cacheKey,
+                    fieldKey,
+                    JsonSerializer.Serialize(orders)
+                );
+
+                await _redisDatabase.KeyExpireAsync(cacheKey, _cacheExpiration);
+                _logger.LogInformation("Set to CACHE.");
+            }
+
+            return orders;
+        }
+
         public async Task CreateAsync(Order entity)
         {
             await _context.Orders.AddAsync(entity);

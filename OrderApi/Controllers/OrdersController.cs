@@ -80,6 +80,44 @@ namespace OrderApi.Controllers
         }
 
         /// <summary>
+        /// Retrieves Order data for user's card for users' list page by ID.
+        /// </summary>
+        /// <param name="id">The unique identifier of the user.</param>
+        /// <returns>Snippet of order data which ID matches with provided one in parameters.</returns>
+        /// <response code="200">Retrieval successful, return the order snippet.</response>
+        /// <response code="404">Could not find the order.</response>
+        /// <response code="500">An unexpected error occured.</response>
+        // [Authorize(Roles = "ADMIN, MODERATOR")]
+        [HttpGet("for-user/card/{id}")]
+        public async Task<ActionResult<OrderForUserCard>> GetForUserCardAsync(Guid id)
+        {
+            if (id == Guid.Empty)
+                return NotFound($"User ID [{id}] was not provided.");
+
+            var user = await _orderService.GetForUserCardAsync(id);
+            return Ok(user);
+        }
+
+        /// <summary>
+        /// Retrieves Orders data for user's details page by ID.
+        /// </summary>
+        /// <param name="id">The unique identifier of the user.</param>
+        /// <returns>Snippets of order data which user ID matches with provided one in parameters.</returns>
+        /// <response code="200">Retrieval successful, return the order snippets.</response>
+        /// <response code="404">Could not find the user.</response>
+        /// <response code="500">An unexpected error occured.</response>
+        // [Authorize(Roles = "ADMIN, MODERATOR")]
+        [HttpGet("for-user/details/{id}")]
+        public async Task<ActionResult<ICollection<OrderForUserDetails>>> GetAllForUserDetailsAsync(Guid id)
+        {
+            if (id == Guid.Empty)
+                return NotFound($"User ID [{id}] was not provided.");
+
+            var snippets = await _orderService.GetAllForUserDetailsAsync(id);
+            return Ok(snippets);
+        }
+
+        /// <summary>
         /// Creates a new order
         /// </summary>
         /// <param name="orderDto">Order data</param>
