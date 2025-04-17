@@ -76,7 +76,20 @@ namespace FeedbackApi.Services
             _logger.LogInformation($"Successfully found feedback with id {id}");
             return _mapper.Map<FeedbackDto>(feedback);
         }
-        public async Task<FeedbackDto> CreateFeedbackAsync(FeedbackDto feedbackDto)
+
+        public async Task<ICollection<FeedbackForUserDetails>?> GetAllForUserDetailsAsync(Guid userId)
+        {
+            try
+            {
+                return await _feedbackRepository.GetAllForUserDetailsAsync(userId);
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
+        public async Task /*<FeedbackDto>*/ CreateAsync(FeedbackDto feedbackDto)
         {
             var feedback = _mapper.Map<Feedback>(feedbackDto);
 

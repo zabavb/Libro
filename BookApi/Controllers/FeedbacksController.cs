@@ -96,6 +96,23 @@ namespace BookAPI.Controllers
             {
                 _logger.LogError(ex, $"Error occurred while retrieving feedback with id {id}.");
                 return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Retrieves Feedbacks data for user's details page by ID.
+        /// </summary>
+        /// <param name="id">The unique identifier of the user.</param>
+        /// <returns>Snippets of feedbacks data which user ID matches with provided one in parameters.</returns>
+        /// <response code="200">Retrieval successful, return the feedback snippets.</response>
+        /// <response code="404">Could not find the user.</response>
+        /// <response code="500">An unexpected error occured.</response>
+        // [Authorize(Roles = "ADMIN, MODERATOR")]
+        [HttpGet("for-user/details/{id}")]
+        public async Task<ActionResult<ICollection<FeedbackForUserDetails>>> GetAllForUserDetailsAsync(Guid id)
+        {
+            if (id == Guid.Empty)
+                return NotFound($"User ID [{id}] was not provided.");
 
             }
         }

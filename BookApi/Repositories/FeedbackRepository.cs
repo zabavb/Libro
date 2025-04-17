@@ -136,6 +136,38 @@ namespace BookAPI.Repositories
             return feedback;
         }
 
+        public async Task<ICollection<FeedbackForUserDetails>> GetAllForUserDetailsAsync(Guid userId)
+        {
+            string cacheKey = $"{_cacheKeyPrefix}{userId}";
+            var cachedFeedback = await _cacheService.GetAsync<ICollection<FeedbackForUserDetails>>(cacheKey);
+            if (cachedFeedback != null)
+            {
+                _logger.LogInformation("Fetched from CACHE.");
+                return cachedFeedback;
+            }
+
+            var feedbacks = _context.Feedbacks
+                .AsNoTracking()
+                .Where(f => f.UserId == userId)
+                .Include(f => f.Book)
+                .AsEnumerable()
+                .Select(f => new FeedbackForUserDetails()
+                {
+                    HeadLabel = $"{f.Book.Title} - {f.Id.ToString().Split('-')[4]}",
+                    Rating = f.Rating,
+                    Comment = f.Comment,
+                    Date = f.Date
+                }).ToList();
+            _logger.LogInformation("Fetched from DB.");
+
+            if (feedbacks.Count > 0)
+            {
+                await _cacheService.SetAsync(cacheKey, feedbacks, _cacheExpiration);
+            }
+
+            return feedbacks;
+        }
+
         public async Task UpdateAsync(Feedback entity)
         {
             var feedbackToUpdate = await _context.Feedbacks.FirstOrDefaultAsync(a => a.Id == entity.Id) ?? throw new KeyNotFoundException("Feedback not found");
