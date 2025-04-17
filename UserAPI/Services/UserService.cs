@@ -15,8 +15,6 @@ namespace UserAPI.Services
         IUserRepository repository,
         ISubscriptionRepository subscriptionRepository,
         IPasswordRepository passwordRepository,
-        IOrderService orderService,
-        IFeedbackService feedbackService,
         AvatarService avatarService,
         IS3StorageService storageService,
         IMapper mapper,
@@ -27,9 +25,6 @@ namespace UserAPI.Services
         private readonly ISubscriptionRepository _subscriptionRepository = subscriptionRepository;
         private readonly IPasswordRepository _passwordRepository = passwordRepository;
 
-        private readonly IOrderService _orderService = orderService;
-        private readonly IFeedbackService _feedbackService = feedbackService;
-
         private readonly AvatarService _avatarService = avatarService;
         private readonly IS3StorageService _storageService = storageService;
         private const string Folder = "user/images/";
@@ -37,7 +32,7 @@ namespace UserAPI.Services
         private readonly IMapper _mapper = mapper;
         private readonly ILogger<IUserService> _logger = logger;
 
-        public async Task<PaginatedResult<CardDto>> GetAllAsync(
+        public async Task<PaginatedResult<Dto>> GetAllAsync(
             int pageNumber,
             int pageSize,
             string? searchTerm,
@@ -51,24 +46,23 @@ namespace UserAPI.Services
                 throw new KeyNotFoundException("No users found.");
             _logger.LogInformation("Successfully fetched paginated users.");
 
-            var cards = await MergeForCardAsync(users.Items);
-
-            return new PaginatedResult<CardDto>
+            var dtos = users.Items.Select(user => _mapper.Map<Dto>(user)).ToList();
+            return new PaginatedResult<Dto>
             {
-                Items = cards,
+                Items = dtos,
                 TotalCount = users.TotalCount,
                 PageNumber = users.PageNumber,
                 PageSize = users.PageSize
             };
         }
 
-        public async Task<UserDetailsDto?> GetByIdAsync(Guid id)
+        public async Task<UserWithSubscriptionsDto?> GetByIdAsync(Guid id)
         {
             var user = await _repository.GetByIdAsync(id) ??
                        throw new KeyNotFoundException($"User with ID [{id}] not found.");
             _logger.LogInformation("User with ID [{id}] successfully fetched.", id);
 
-            return await MergeForDetailsAsync(id, user);
+            return _mapper.Map<UserWithSubscriptionsDto>(user);
         }
 
         public async Task CreateAsync(Dto dto)
@@ -103,43 +97,6 @@ namespace UserAPI.Services
             await _passwordRepository.DeleteAsync(user.PasswordId);
             await _repository.DeleteAsync(id);
             _logger.LogInformation($"User with ID [{id}] successfully deleted.");
-        }
-
-        private async Task<ICollection<CardDto>> MergeForCardAsync(ICollection<User> users)
-        {
-            var tasks = users.Select(async user =>
-            {
-                var orderSnippet = await _orderService.GetCardSnippetByUserIdAsync(user.UserId);
-                return _mapper.Map<CardDto>((user, orderSnippet));
-            });
-
-            return await Task.WhenAll(tasks);
-        }
-
-        private async Task<UserDetailsDto> MergeForDetailsAsync(Guid id, User user)
-        {
-            var ordersSnippetTask = _orderService.GetAllByUserIdAsync(id);
-            var feedbacksSnippetTask = _feedbackService.GetAllByUserIdAsync(id);
-
-            await Task.WhenAll(ordersSnippetTask, feedbacksSnippetTask);
-
-            var ordersSnippet = await ordersSnippetTask;
-            var feedbacksSnippet = await feedbacksSnippetTask;
-
-            // If both failed, return only user data
-            if (ordersSnippet.IsFailedToFetch && feedbacksSnippet.IsFailedToFetch)
-                return _mapper.Map<UserDetailsDto>(user);
-
-            // If only orders failed, return user + feedbacks
-            if (ordersSnippet.IsFailedToFetch)
-                return _mapper.Map<UserDetailsDto>((user, feedbacksSnippet));
-
-            // If only feedbacks failed, return user + orders
-            if (feedbacksSnippet.IsFailedToFetch)
-                return _mapper.Map<UserDetailsDto>((user, ordersSnippet));
-
-            // If both succeeded, return full mapped data
-            return _mapper.Map<UserDetailsDto>((user, ordersSnippet, feedbacksSnippet));
         }
 
         private async Task<IFormFile?> GenerateAvatarAsync(string? lastName, string firstName)

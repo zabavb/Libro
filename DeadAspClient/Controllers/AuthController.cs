@@ -1,5 +1,4 @@
 ﻿using DeadAspClient.Models.Extensions;
-using Library.DTOs.User;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Library.DTOs.UserRelated.User;
+using Microsoft.AspNetCore.Mvc;
 using OrderApi.Services;
 
 namespace OrderApi.Controllers
@@ -28,7 +29,8 @@ namespace OrderApi.Controllers
         /// <response code="200">Returns the paginated list of orders.</response>
         /// <response code="500">an unexpected error occured.</response>
         [HttpGet]
-        public async Task<IActionResult> GetAll([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10, [FromQuery] string? searchTerm = null, [FromQuery] Filter? filter = null, [FromQuery] Sort? sort = null)
+        public async Task<IActionResult> GetAll([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10,
+            [FromQuery] string? searchTerm = null, [FromQuery] Filter? filter = null, [FromQuery] Sort? sort = null)
         {
             try
             {
@@ -36,11 +38,11 @@ namespace OrderApi.Controllers
                 _logger.LogInformation("Orders successfully fetched.");
                 return Ok(orders);
             }
-            catch (Exception ex) {
+            catch (Exception ex)
+            {
                 _logger.LogError(ex.Message);
                 return StatusCode(StatusCodes.Status500InternalServerError, new { message = ex.Message });
             }
-
         }
 
         /// <summary>
@@ -52,7 +54,6 @@ namespace OrderApi.Controllers
         /// <response code="404">Could not find the order</response>
         /// <response code="500">an unexpected error occured.</response>
         [HttpGet("{id}")]
-
         public async Task<IActionResult> GetById(Guid id)
         {
             try
@@ -126,7 +127,7 @@ namespace OrderApi.Controllers
         /// <response code="400">Invalid input data.</response>
         /// <response code="500"> an unexpected error occured.</response>
         [HttpPost]
-        public async Task<ActionResult<OrderDto>> Create([FromBody]OrderDto orderDto)
+        public async Task<ActionResult<OrderDto>> Create([FromBody] OrderDto orderDto)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);

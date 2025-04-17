@@ -1,5 +1,6 @@
 ﻿using BookAPI;
 using Library.Common;
+using Library.DTOs.UserRelated.User;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using UserAPI.Services.Interfaces;
@@ -38,9 +39,9 @@ namespace UserAPI.Controllers
         /// <response code="401">If request is unauthorized.</response>
         /// <response code="404">If no users are found.</response>
         /// <response code="500">If an unexpected error occurred.</response>
-        [Authorize(Roles = "ADMIN, MODERATOR")]
+        // [Authorize(Roles = "ADMIN, MODERATOR")]
         [HttpGet]
-        public async Task<ActionResult<PaginatedResult<CardDto>>> GetAll(
+        public async Task<ActionResult<PaginatedResult<Dto>>> GetAll(
             [FromQuery] int pageNumber = GlobalConstants.DefaultPageNumber,
             [FromQuery] int pageSize = GlobalConstants.DefaultPageSize,
             [FromQuery] string? searchTerm = null,
@@ -61,11 +62,11 @@ namespace UserAPI.Controllers
         /// <response code="401">If request is unauthorized.</response>
         /// <response code="404">If the user with the specified ID is not found or ID was not specified.</response>
         /// <response code="500">If an unexpected error occurred.</response>
-        [Authorize(Roles = "ADMIN, MODERATOR")]
+        // [Authorize(Roles = "ADMIN, MODERATOR")]
         [HttpGet("{id}")]
-        public async Task<ActionResult<DetailsDto>> GetById(Guid id)
+        public async Task<ActionResult<UserWithSubscriptionsDto>> GetById(Guid id)
         {
-            if (id.Equals(Guid.Empty))
+            if (id == Guid.Empty)
                 return NotFound($"User ID [{id}] was not provided.");
 
             var user = await _service.GetByIdAsync(id);

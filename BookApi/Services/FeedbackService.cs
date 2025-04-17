@@ -1,6 +1,4 @@
 ﻿using AutoMapper;
-using BookAPI;
-using BookAPI.Data;
 using BookAPI.Models;
 using BookAPI.Models.Filters;
 using BookAPI.Models.Sortings;
@@ -8,11 +6,8 @@ using BookAPI.Repositories.Interfaces;
 using BookAPI.Services.Interfaces;
 using Library.Common;
 using Library.DTOs.UserRelated.User;
-using Library.Interfaces;
-using Microsoft.EntityFrameworkCore;
 
-
-namespace FeedbackApi.Services
+namespace BookAPI.Services
 {
     public class FeedbackService : IFeedbackService
     {
@@ -21,7 +16,8 @@ namespace FeedbackApi.Services
         private readonly ILogger<FeedbackService> _logger;
         private readonly IBookService _bookService;
 
-        public FeedbackService(IMapper mapper, IFeedbackRepository feedbackRepository, ILogger<FeedbackService> logger, IBookService bookService)
+        public FeedbackService(IMapper mapper, IFeedbackRepository feedbackRepository, ILogger<FeedbackService> logger,
+            IBookService bookService)
         {
             _mapper = mapper;
             _feedbackRepository = feedbackRepository;
@@ -29,14 +25,14 @@ namespace FeedbackApi.Services
             _bookService = bookService;
         }
 
-        public async Task<PaginatedResult<FeedbackDto>> GetFeedbacksAsync(
-            int pageNumber, 
+        public async Task<PaginatedResult<FeedbackDto>> GetAllAsync(
+            int pageNumber,
             int pageSize,
             FeedbackFilter? filter,
             FeedbackSort? sort)
         {
             var feedbacks = await _feedbackRepository.GetAllAsync(
-                pageNumber, 
+                pageNumber,
                 pageSize,
                 filter,
                 sort);
@@ -52,6 +48,7 @@ namespace FeedbackApi.Services
                     PageSize = pageSize
                 };
             }
+
             _logger.LogInformation("Successfully found feedback");
             return new PaginatedResult<FeedbackDto>
             {
@@ -63,8 +60,7 @@ namespace FeedbackApi.Services
         }
 
 
-
-        public async Task<FeedbackDto> GetFeedbackByIdAsync(Guid id)
+        public async Task<FeedbackDto> GetByIdAsync(Guid id)
         {
             var feedback = await _feedbackRepository.GetByIdAsync(id);
 
@@ -73,6 +69,7 @@ namespace FeedbackApi.Services
                 _logger.LogWarning($"No feedback with id {id}");
                 return null;
             }
+
             _logger.LogInformation($"Successfully found feedback with id {id}");
             return _mapper.Map<FeedbackDto>(feedback);
         }
@@ -102,16 +99,19 @@ namespace FeedbackApi.Services
             {
                 _logger.LogWarning($"Failed to create feedback. Error: {ex.Message}");
             }
-            return _mapper.Map<FeedbackDto>(feedback);
+
+            // return _mapper.Map<FeedbackDto>(feedback);
         }
-        public async Task<FeedbackDto> UpdateFeedbackAsync(Guid id, FeedbackDto feedbackDto)
+
+        //TODO: Remove
+        /*public async Task /*<FeedbackDto>#1# UpdateAsync(Guid id, FeedbackDto feedbackDto)
         {
             var existingfeedback = await _feedbackRepository.GetByIdAsync(id);
 
             if (existingfeedback == null)
             {
                 _logger.LogWarning($"UpdateFeedbackAsync returns null");
-                return null;
+                // return null;
             }
 
             try
@@ -123,69 +123,32 @@ namespace FeedbackApi.Services
             catch (Exception ex)
             {
                 _logger.LogWarning($"Failed to update feedback. Error: {ex.Message}");
-
             }
-            return _mapper.Map<FeedbackDto>(existingfeedback);
-        }
 
-        public async Task<bool> DeleteFeedbackAsync(Guid id)
+            // return _mapper.Map<FeedbackDto>(existingfeedback);
+        }*/
+
+        public async Task /*<bool>*/ DeleteAsync(Guid id)
         {
-            var feedback= await _feedbackRepository.GetByIdAsync(id);
+            var feedback = await _feedbackRepository.GetByIdAsync(id);
 
             if (feedback == null)
             {
                 _logger.LogWarning($"DeleteFeedbackAsync returns null");
-                return false;
+                // return false;
             }
+
             try
             {
                 await _feedbackRepository.DeleteAsync(id);
                 _logger.LogInformation($"Successfully deleted feedback with id {id}");
-                return true;
+                // return true;
             }
             catch (Exception ex)
             {
                 _logger.LogWarning($"Failed to delete feedback. Error: {ex.Message}");
-                return false;
+                // return false;
             }
         }
-
-        public async Task<CollectionSnippet<FeedbackDetailsSnippet>> GetAllByUserIdAsync(Guid id, int pageNumber)
-        {
-            try
-            {
-                var feedbackFilter = new FeedbackFilter { userId = id };
-                var feedbacks = await _feedbackRepository.GetAllAsync(pageNumber, GlobalConstants.DefaultPageSize, feedbackFilter, null);
-
-                var snippets = new List<FeedbackDetailsSnippet>();
-                foreach (var feedback in feedbacks.Items)
-                {
-                    var book = await _bookService.GetBookByIdAsync(feedback.BookId);
-
-                    var detailsSnippet = new FeedbackDetailsSnippet
-                    {
-                        HeadLabel = $"{book.Title} - {feedback.Id.ToString().Split('-')[4]}",
-                        Comment = feedback.Comment,
-                        Date = feedback.Date,
-                        Rating = feedback.Rating,
-                    };
-                    snippets.Add(detailsSnippet);
-                }
-
-                return new CollectionSnippet<FeedbackDetailsSnippet>(false, snippets);
-            }
-            catch
-            {
-                return new CollectionSnippet<FeedbackDetailsSnippet>(true, new List<FeedbackDetailsSnippet>());
-            }
-
-                /*                    public string HeadLabel { get; set; }
-                        public int Rating { get; set; }
-                        public string Comment { get; set; }
-                        public DateTime Date { get; set; }*/
-
-            }
-
     }
-
 }

@@ -1,7 +1,5 @@
 ﻿using Library.Common;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace BookAPI.Controllers
 {

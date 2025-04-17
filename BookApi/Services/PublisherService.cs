@@ -1,48 +1,47 @@
 ﻿using AutoMapper;
-using BookAPI.Data;
 using BookAPI.Models;
 using BookAPI.Models.Sortings;
 using BookAPI.Repositories.Interfaces;
 using BookAPI.Services.Interfaces;
 using Library.Common;
-using Microsoft.EntityFrameworkCore;
 
 namespace BookAPI.Services
 {
-
     public class PublisherService : IPublisherService
     {
         private readonly IMapper _mapper;
         private readonly IPublisherRepository _publisherRepository;
         private readonly ILogger<PublisherService> _logger;
 
-        public PublisherService(IMapper mapper, IPublisherRepository publisherRepository, ILogger<PublisherService> logger)
+        public PublisherService(IMapper mapper, IPublisherRepository publisherRepository,
+            ILogger<PublisherService> logger)
         {
             _mapper = mapper;
             _publisherRepository = publisherRepository;
             _logger = logger;
         }
-        public async Task<PublisherDto> CreatePublisherAsync(PublisherDto publisherDto)
+
+        public async Task /*<PublisherDto>*/ CreateAsync(PublisherDto publisherDto)
         {
             var publisher = _mapper.Map<Publisher>(publisherDto);
 
             await _publisherRepository.CreateAsync(publisher);
 
-            return _mapper.Map<PublisherDto>(publisher);
+            // return _mapper.Map<PublisherDto>(publisher);
         }
 
-        public async Task<bool> DeletePublisherAsync(Guid id)
+        public async Task /*<bool>*/ DeleteAsync(Guid id)
         {
             var publisher = await _publisherRepository.GetByIdAsync(id);
-            if (publisher is null) return false;
+            // if (publisher is null) return false;
 
             await _publisherRepository.DeleteAsync(id);
 
-            return true;
-
+            // return true;
         }
 
-        public async Task<PaginatedResult<PublisherDto>> GetPublishersAsync(int pageNumber, int pageSize, string searchTerm, PublisherSort ? sort)
+        public async Task<PaginatedResult<PublisherDto>> GetAllAsync(int pageNumber, int pageSize,
+            string searchTerm, PublisherSort? sort)
         {
             var publishers = await _publisherRepository.GetAllAsync(pageNumber, pageSize, searchTerm, sort);
             if (publishers == null || publishers.Items == null)
@@ -60,7 +59,7 @@ namespace BookAPI.Services
         }
 
 
-        public async Task<PublisherDto> GetPublisherByIdAsync(Guid id)
+        public async Task<PublisherDto> GetByIdAsync(Guid id)
         {
             var publisher = await _publisherRepository.GetByIdAsync(id);
 
@@ -72,13 +71,13 @@ namespace BookAPI.Services
             return _mapper.Map<PublisherDto>(publisher);
         }
 
-        public async Task<PublisherDto> UpdatePublisherAsync(Guid id, PublisherDto publisherDto)
+        public async Task /*<PublisherDto>*/ UpdateAsync(PublisherDto publisherDto)
         {
-            var existingPublisher = await _publisherRepository.GetByIdAsync(id);
+            var existingPublisher = await _publisherRepository.GetByIdAsync(publisherDto.PublisherId);
 
             if (existingPublisher == null)
             {
-                return null;
+                // return null;
             }
 
             _mapper.Map(publisherDto, existingPublisher);
@@ -86,9 +85,7 @@ namespace BookAPI.Services
 
             var pub = _mapper.Map<PublisherDto>(existingPublisher);
 
-            return pub;
+            // return pub;
         }
-
     }
-
 }

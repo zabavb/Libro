@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using DeadAspClient.Extensions;
 using DeadAspClient.Models.UserEntities.User;
-using Library.DTOs.User;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 

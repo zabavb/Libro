@@ -18,16 +18,16 @@ namespace OrderApi.Repository
         OrderDbContext context,
         IConnectionMultiplexer redis,
         ILogger<IOrderRepository> logger
-        ) : IOrderRepository
+    ) : IOrderRepository
     {
         private readonly OrderDbContext _context = context;
         private readonly IDatabase _redisDatabase = redis.GetDatabase();
         public readonly string _cacheKeyPrefix = "Order_";
         public readonly TimeSpan _cacheExpiration = TimeSpan.FromMinutes(10);
         private readonly ILogger<IOrderRepository> _logger = logger;
-        
 
-        public async Task<PaginatedResult<Order>> GetAllPaginatedAsync(int pageNumber, int pageSize, string? searchTerm,
+
+        public async Task<PaginatedResult<Order>> GetAllAsync(int pageNumber, int pageSize, string? searchTerm,
             Filter? filter, Sort? sort)
         {
             IEnumerable<Order> orders;
@@ -287,10 +287,5 @@ namespace OrderApi.Repository
             _context.Orders.Remove(order);
             await _context.SaveChangesAsync();
         }
-
-        // =============== MERGE FUNCTIONS ====================
-
-
-
     }
 }

@@ -2,7 +2,7 @@
 {
     public interface ILanguageService
     {
-        Task<IEnumerable<string>> GetLanguagesAsync();
-        Task<string> GetLanguageByIdAsync(int id);
+        Task<IEnumerable<string>> GetAllAsync();
+        Task<string> GetByIdAsync(int id);
     }
 }

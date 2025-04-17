@@ -1,4 +1,5 @@
-﻿using BookAPI.Data;
+﻿using System.Text;
+using BookAPI.Data;
 using BookAPI.Data.CachHelper;
 using BookAPI.Models;
 using BookAPI.Models.Filters;
@@ -6,11 +7,8 @@ using BookAPI.Models.Sortings;
 using BookAPI.Repositories.Interfaces;
 using Library.Common;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Storage;
-using StackExchange.Redis;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using IDatabase = StackExchange.Redis.IDatabase;
 
 namespace BookAPI.Repositories
 {
@@ -21,6 +19,7 @@ namespace BookAPI.Repositories
         private readonly string _cacheKeyPrefix = "Book_";
         private readonly TimeSpan _cacheExpiration = TimeSpan.FromMinutes(GlobalConstants.DefaultCacheExpirationTime);
         private readonly ICacheService _cacheService;
+
         private readonly JsonSerializerOptions _jsonOptions = new JsonSerializerOptions
         {
             ReferenceHandler = ReferenceHandler.IgnoreCycles,
@@ -35,14 +34,14 @@ namespace BookAPI.Repositories
             _cacheService = cacheService;
             _logger = logger;
         }
-        
+
 
         public async Task<PaginatedResult<Book>> GetAllAsync(
-           int pageNumber,
-           int pageSize,
-           string searchTerm,
-           BookFilter? filter,
-           BookSort? sort)
+            int pageNumber,
+            int pageSize,
+            string searchTerm,
+            BookFilter? filter,
+            BookSort? sort)
         {
             List<Book> books;
             string cacheKey = $"{_cacheKeyPrefix}All";
@@ -163,7 +162,8 @@ namespace BookAPI.Repositories
             await _cacheService.SetAsync(cacheKey, entity, _cacheExpiration, _jsonOptions);
 
             string allBooksCacheKey = $"{_cacheKeyPrefix}All";
-            var cachedBooks = await _cacheService.GetAsync<List<Book>>(allBooksCacheKey, _jsonOptions) ?? new List<Book>();
+            var cachedBooks = await _cacheService.GetAsync<List<Book>>(allBooksCacheKey, _jsonOptions) ??
+                              new List<Book>();
 
             cachedBooks.Add(entity);
             await _cacheService.SetAsync(allBooksCacheKey, cachedBooks, _cacheExpiration, _jsonOptions);
@@ -175,7 +175,7 @@ namespace BookAPI.Repositories
         public async Task UpdateAsync(Book entity)
         {
             var existingBook = await _context.Books.FirstOrDefaultAsync(b => b.Id == entity.Id)
-                                 ?? throw new KeyNotFoundException("Book not found");
+                               ?? throw new KeyNotFoundException("Book not found");
 
             _context.Entry(existingBook).CurrentValues.SetValues(entity);
             await _context.SaveChangesAsync();
@@ -199,7 +199,8 @@ namespace BookAPI.Repositories
             if (id == Guid.Empty)
                 throw new ArgumentException("Id cannot be empty.", nameof(id));
 
-            var book = await _context.Books.FirstOrDefaultAsync(b => b.Id == id) ?? throw new KeyNotFoundException("Book not found");
+            var book = await _context.Books.FirstOrDefaultAsync(b => b.Id == id) ??
+                       throw new KeyNotFoundException("Book not found");
             _context.Books.Remove(book);
             await _context.SaveChangesAsync();
 
@@ -215,6 +216,5 @@ namespace BookAPI.Repositories
 
             _logger.LogInformation("Book deleted from DB and cache.");
         }
-
     }
 }

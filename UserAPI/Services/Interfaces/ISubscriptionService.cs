@@ -6,7 +6,7 @@ using UserAPI.Models.Subscription;
 
 namespace UserAPI.Services.Interfaces
 {
-    public interface ISubscriptionService : IManageable<SubscriptionDto, SubscriptionDto>
+    public interface ISubscriptionService : IManageable<SubscriptionDto>
     {
         Task<PaginatedResult<SubscriptionCardDto>> GetAllAsync(int pageNumber, int pageSize, string? searchTerm);
         Task SubscribeAsync(SubscribeRequest request);

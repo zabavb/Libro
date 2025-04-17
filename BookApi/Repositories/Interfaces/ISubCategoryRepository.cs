@@ -6,9 +6,14 @@ using Library.Interfaces;
 
 namespace BookAPI.Repositories.Interfaces
 {
-    public interface ISubCategoryRepository : IManageable<SubCategory,SubCategory>
+    public interface ISubCategoryRepository : IManageable<SubCategory>
     {
-        Task<PaginatedResult<SubCategory>> GetAllAsync(int pageNumber, int pageSize, string? searchTerm, SubCategoryFilter? filter, SubCategorySort? sort);
-        Task DeleteAsync(Guid id);
+        Task<PaginatedResult<SubCategory>> GetAllAsync(
+            int pageNumber,
+            int pageSize,
+            string? searchTerm,
+            SubCategoryFilter? filter,
+            SubCategorySort? sort
+        );
     }
 }

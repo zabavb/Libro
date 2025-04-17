@@ -1,5 +1,4 @@
-﻿using Library.DTOs.Book;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 
 namespace BookAPI.Models
 {
