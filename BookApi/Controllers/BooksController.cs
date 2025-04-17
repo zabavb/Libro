@@ -92,6 +92,22 @@ namespace BookAPI.Controllers
         }
 
         /// <summary>
+        /// Retrieves Book names for user's details page by ID.
+        /// </summary>
+        /// <param name="ids">The unique identifiers of books which titles to retrieve.</param>
+        /// <returns>Books' titles which IDs matches with provided ones in parameters.</returns>
+        /// <response code="200">Retrieval successful, return the book titles.</response>
+        /// <response code="500">An unexpected error occured.</response>
+        // [Authorize(Roles = "ADMIN, MODERATOR")]
+        [HttpGet("for-user/details")]
+        public async Task<ActionResult<ICollection<string>>> GetAllForUserDetailsAsync(
+            [FromQuery] ICollection<Guid> ids)
+        {
+            var titles = await _bookService.GetAllForUserDetailsAsync(ids);
+            return Ok(titles);
+        }
+
+        /// <summary>
         /// Creates a new book.
         /// </summary>
         /// <param name="bookDto">Book data.</param>

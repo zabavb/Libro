@@ -121,6 +121,36 @@ namespace BookAPI.Repositories
             return book;
         }
 
+        public async Task<ICollection<string>> GetAllForUserDetailsAsync(ICollection<Guid> ids)
+        {
+            if (ids.Count == 0)
+                return new List<string>();
+
+            string keySuffix = string.Join("_", ids.OrderBy(id => id));
+            string cacheKey = $"{_cacheKeyPrefix}userDetails_{keySuffix}";
+
+            var cachedTitles = await _cacheService.GetAsync<ICollection<string>>(cacheKey, _jsonOptions);
+            if (cachedTitles != null)
+            {
+                _logger.LogInformation("Fetched from CACHE.");
+                return cachedTitles;
+            }
+
+            var titles = await _context.Books
+                .AsNoTracking()
+                .Where(book => ids.Contains(book.Id))
+                .Select(book => book.Title)
+                .ToListAsync();
+            _logger.LogInformation("Fetched from DB.");
+
+            if (titles.Count > 0)
+            {
+                await _cacheService.SetAsync(cacheKey, titles, _cacheExpiration, _jsonOptions);
+                _logger.LogInformation("Set to CACHE.");
+            }
+
+            return titles;
+        }
 
         public async Task CreateAsync(Book entity)
         {

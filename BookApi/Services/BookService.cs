@@ -58,7 +58,19 @@ namespace BookAPI.Services
             return _mapper.Map<BookDto>(book); 
         }
 
-        public async Task<BookDto> CreateBookAsync(BookDto bookDto, IFormFile? imageFile)
+        public async Task<ICollection<string>?> GetAllForUserDetailsAsync(ICollection<Guid> ids)
+        {
+            try
+            {
+                return await _bookRepository.GetAllForUserDetailsAsync(ids);
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
+        public async Task /*<BookDto>*/ CreateAsync(BookDto bookDto, IFormFile? imageFile)
         {
             var book = _mapper.Map<Book>(bookDto);
             book.Id = Guid.NewGuid();
