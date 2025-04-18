@@ -9,14 +9,11 @@ interface UserSortProps {
 const UserSort: React.FC<UserSortProps> = ({ onSortChange, sort }) => {
 	return (
 		<div>
-			<button onClick={() => onSortChange("firstName")}>
-				First Name {sort.firstName === true ? "↑" : sort.firstName === false ? "↓" : ""}
+			<button onClick={() => onSortChange("alphabetical")}>
+				Alphabetical {sort.alphabetical === true ? "↑" : sort.alphabetical === false ? "↓" : ""}
 			</button>
-			<button onClick={() => onSortChange("lastName")}>
-				Last Name {sort.lastName === true ? "↑" : sort.lastName === false ? "↓" : ""}
-			</button>
-			<button onClick={() => onSortChange("dateOfBirth")}>
-				Date of Birth {sort.dateOfBirth === true ? "↑" : sort.dateOfBirth === false ? "↓" : ""}
+			<button onClick={() => onSortChange("youngest")}>
+				Age {sort.youngest === true ? "↑" : sort.youngest === false ? "↓" : ""}
 			</button>
 			<button onClick={() => onSortChange("role")}>
 				Role {sort.role === true ? "↑" : sort.role === false ? "↓" : ""}

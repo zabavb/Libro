@@ -5,6 +5,7 @@ using UserAPI.Services.Interfaces;
 using Library.Common;
 using Library.DTOs.UserRelated.Subscription;
 using Library.Interfaces;
+using UserAPI.Models.Filters;
 using UserAPI.Models.Subscription;
 using UserAPI.Repositories.Interfaces;
 
@@ -12,10 +13,8 @@ namespace UserAPI.Services
 {
     public class SubscriptionService(
         ISubscriptionRepository repository,
-        
         IS3StorageService storageService,
         IMapper mapper,
-        
         ILogger<ISubscriptionService> logger
     ) : ISubscriptionService
     {
@@ -121,6 +120,14 @@ namespace UserAPI.Services
             await _repository.UnsubscribeAsync(request.SubscriptionId, request.UserId);
             _logger.LogInformation("User with ID [{id}] successfully UNsubscribed from ID [{id}].", request.UserId,
                 request.SubscriptionId);
+        }
+
+        public async Task<ICollection<BySubscription>> GetAllForFilterContentAsync()
+        {
+            var subscriptions = await _repository.GetAllForFilterContentAsync();
+            _logger.LogInformation("Subscriptions successfully fetched.");
+
+            return subscriptions;
         }
     }
 }

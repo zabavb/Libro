@@ -2,7 +2,8 @@
 {
     public interface ICoverTypeService
     {
-        Task<IEnumerable<string>> GetCoverTypesAsync();
-        Task<string> GetCoverTypeByIdAsync(int id);
+        // Renamed from "GetCoberTypesAsync" to "GetAllAsync"
+        Task<IEnumerable<string>> GetAllAsync();
+        Task<string> GetByIdAsync(int id);
     }
 }

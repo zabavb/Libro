@@ -158,9 +158,7 @@ namespace UserAPI.Repositories
                     return JsonSerializer.Deserialize<User>(cachedUser!);
                 }
 
-                User? user = null;
-
-                user = await _context.Users
+                var user = await _context.Users
                     .AsNoTracking()
                     .FirstOrDefaultAsync(u => u.Email! == email);
                 _logger.LogInformation("Fetched from DB.");
@@ -190,7 +188,6 @@ namespace UserAPI.Repositories
         {
             try
             {
-                user.UserId = Guid.NewGuid();
                 await _context.Users.AddAsync(user);
                 await _context.SaveChangesAsync();
             }

@@ -1,5 +1,5 @@
-import { useNavigate } from "react-router-dom";
-import "../../index.css"
+import { useNavigate } from 'react-router-dom';
+import '../../index.css';
 
 const MainPage: React.FC = () => {
   const navigate = useNavigate();
@@ -8,16 +8,16 @@ const MainPage: React.FC = () => {
     <div>
       <h1>Main page</h1>
       <div>
-        <button onClick={() => navigate("/admin")}>Admin dashboard</button>
+        <button onClick={() => navigate('/admin')}>Admin dashboard</button>
       </div>
       <div>
-        <button onClick={() => navigate("/cart")}>Cart</button>
+        <button onClick={() => navigate('/cart')}>Cart</button>
       </div>
       <div>
         <button onClick={() => navigate('/catalog')}>Catalog</button>
       </div>
     </div>
   );
-}
+};
 
-export default MainPage
+export default MainPage;

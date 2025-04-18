@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
 using DeadAspClient.Models.UserEntities.User;
-using Library.DTOs.User;
 
 namespace DeadAspClient.Profiles
 {

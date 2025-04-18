@@ -1,10 +1,7 @@
-﻿using BookAPI;
-using BookAPI.Models.Filters;
-using BookAPI.Models.Sortings;
+﻿using BookAPI.Models.Sortings;
 using BookAPI.Services.Interfaces;
 using Library.Common;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 
 namespace BookAPI.Controllers
 {
@@ -39,12 +36,12 @@ namespace BookAPI.Controllers
         /// <response code="400">Invalid pagination parameters.</response>
         /// <response code="404">No categories found.</response>
         [HttpGet]
-        public async Task<ActionResult<PaginatedResult<CategoryDto>>> GetCategories(
+        public async Task<ActionResult<PaginatedResult<CategoryDto>>> GetAll(
             [FromQuery] int pageNumber = GlobalConstants.DefaultPageNumber,
             [FromQuery] int pageSize = GlobalConstants.DefaultPageSize,
             [FromQuery] string? searchTerm = null,
             [FromQuery] CategorySort? sort = null
-            )
+        )
         {
             try
             {
@@ -54,7 +51,7 @@ namespace BookAPI.Controllers
                     return BadRequest("Page number and page size must be greater than 0.");
                 }
 
-                var categories = await _categoryService.GetCategoriesAsync(pageNumber, pageSize, searchTerm, sort);
+                var categories = await _categoryService.GetAllAsync(pageNumber, pageSize, searchTerm, sort);
 
                 if (categories == null || categories.Items == null || !categories.Items.Any())
                 {
@@ -78,16 +75,17 @@ namespace BookAPI.Controllers
         /// <response code="200">Returns the category.</response>
         /// <response code="404">Category not found.</response>
         [HttpGet("{id}")]
-        public async Task<ActionResult<CategoryDto>> GetCategoryById(Guid id)
+        public async Task<ActionResult<CategoryDto>> GetById(Guid id)
         {
             try
             {
-                var category = await _categoryService.GetCategoryByIdAsync(id);
+                var category = await _categoryService.GetByIdAsync(id);
 
                 if (category == null)
                 {
                     return NotFound($"Category with id {id} not found.");
                 }
+
                 return Ok(category);
             }
             catch (Exception ex)
@@ -105,7 +103,7 @@ namespace BookAPI.Controllers
         /// <response code="201">Category successfully created.</response>
         /// <response code="400">Invalid data provided.</response>
         [HttpPost]
-        public async Task<ActionResult<CategoryDto>> CreateCategory([FromBody] CategoryDto categoryDto)
+        public async Task<ActionResult<CategoryDto>> Create([FromBody] CategoryDto categoryDto)
         {
             try
             {
@@ -114,9 +112,10 @@ namespace BookAPI.Controllers
                     return BadRequest("Invalid data.");
                 }
 
-                var created = await _categoryService.CreateCategoryAsync(categoryDto);
+                /*var created = */
+                await _categoryService.CreateAsync(categoryDto);
 
-                return CreatedAtAction(nameof(GetCategoryById), new { id = created.CategoryId }, created);
+                return CreatedAtAction(nameof(GetById), new { id = categoryDto.CategoryId }, categoryDto);
             }
             catch (Exception ex)
             {
@@ -135,7 +134,7 @@ namespace BookAPI.Controllers
         /// <response code="400">Invalid data provided.</response>
         /// <response code="404">Category not found.</response>
         [HttpPut("{id}")]
-        public async Task<ActionResult<CategoryDto>> UpdateCategory(Guid id, [FromBody] CategoryDto categoryDto)
+        public async Task<ActionResult<CategoryDto>> Update(Guid id, [FromBody] CategoryDto categoryDto)
         {
             try
             {
@@ -145,14 +144,15 @@ namespace BookAPI.Controllers
                     return BadRequest("Invalid data.");
                 }
 
-                var updated = await _categoryService.UpdateCategoryAsync(id, categoryDto);
+                /*var updated = */
+                await _categoryService.UpdateAsync(categoryDto);
 
-                if (updated == null)
+                /*if (updated == null)
                 {
                     return NotFound("Category not found.");
-                }
+                }*/
 
-                return Ok(updated);
+                return Ok( /*updated*/);
             }
             catch (Exception ex)
             {
@@ -169,16 +169,17 @@ namespace BookAPI.Controllers
         /// <response code="204">Category successfully deleted.</response>
         /// <response code="404">Category not found.</response>
         [HttpDelete("{id}")]
-        public async Task<ActionResult> DeleteCategory(Guid id)
+        public async Task<ActionResult> Delete(Guid id)
         {
             try
             {
-                var isDeleted = await _categoryService.DeleteCategoryAsync(id);
+                /*var isDeleted = */
+                await _categoryService.DeleteAsync(id);
 
-                if (!isDeleted)
+                /*if (!isDeleted)
                 {
                     return NotFound("Category not found.");
-                }
+                }*/
 
                 return NoContent();
             }

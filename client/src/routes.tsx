@@ -22,9 +22,13 @@ import DeliveryTypeFormPage from './pages/admin/orderRelated/deliveries/Delivery
 
 import BookListContainer from './containers/books/BookListContainer';
 
-import NotFoundPage from './pages/common/NotFoundPage'; 
+import NotFoundPage from './pages/common/NotFoundPage';
 import OrderListPage from './pages/admin/orderRelated/orders/OrdersListPage';
 import DeliveriesListPage from './pages/admin/orderRelated/deliveries/DeliveriesListPage';
+import UserCheckoutPage from './pages/main/UserCheckoutPage';
+import SubscriptionPage from './pages/main/SubscriptionPage';
+import SubscriptionListPage from './pages/admin/userRelated/subscriptions/SubscriptionListPage';
+import SubscriptionFormPage from './pages/admin/userRelated/subscriptions/SubscriptionFormPage';
 import UserCartPage from './pages/main/user/UserCartPage';
 import UserCheckoutPage from './pages/main/user/UserCheckoutPage';
 import UserOrdersPage from './pages/main/user/UserOrdersPage';
@@ -37,12 +41,12 @@ const AppRoutes = () => (
       <Routes>
         {/* Authentication */}
         <Route path='/login' element={<LoginPage />} />
-        {/* Subscription */}
-        {/* <Route 
-				   	path="/subscription" 
-					element={<Subscription />} 
-				/>  */}
         <Route path='/register' element={<RegisterPage />} />
+        {/* Subscription */}
+        <Route
+          path='/subscriptions/:subscriptionId'
+          element={<SubscriptionPage />}
+        />
         {/* Main */}
         <Route path='/' element={<MainPage />} />
         <Route path='/cart' element={<UserCartPage />} />
@@ -57,6 +61,19 @@ const AppRoutes = () => (
             <Route path='/admin/users' element={<UserListPage />} />
             <Route path='/admin/users/add' element={<UserFormPage />} />
             <Route path='/admin/users/:userId' element={<UserFormPage />} />
+            {/* Subscription */}
+            <Route
+              path='/admin/subscriptions'
+              element={<SubscriptionListPage />}
+            />
+            <Route
+              path='/admin/subscriptions/add'
+              element={<SubscriptionFormPage />}
+            />
+            <Route
+              path='/admin/subscriptions/:subscriptionId'
+              element={<SubscriptionFormPage />}
+            />
             {/* Order */}
             <Route path='/admin/orders' element={<OrderListPage />} />
             <Route path='/admin/orders/:orderId' element={<OrderFormPage />} />

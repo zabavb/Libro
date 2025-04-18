@@ -19,7 +19,7 @@ namespace OrderApi.Repository
         private readonly ILogger<IDeliveryTypeRepository> _logger = logger;
 
 
-        public async Task<PaginatedResult<DeliveryType>> GetAllPaginatedAsync(int pageNumber, int pageSize, string? searchTerm, DeliverySort? sort)
+        public async Task<PaginatedResult<DeliveryType>> GetAllAsync(int pageNumber, int pageSize, string? searchTerm, DeliverySort? sort)
         {
             IEnumerable<DeliveryType> deliveryTypes;
 

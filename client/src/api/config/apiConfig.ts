@@ -1,6 +1,7 @@
 const GATEWAY = `https://localhost:7102/gateway`;
 const AUTH = `${GATEWAY}/auth`;
 const USERS = `${GATEWAY}/users`;
+const SUBSCRIPTIONS = `${GATEWAY}/subscriptions`;
 const ORDERS = `${GATEWAY}/orders`;
 const DELIVERY = `${GATEWAY}/deliverytypes`;
 const BOOKS = `${GATEWAY}/books`;
@@ -16,6 +17,15 @@ export const API_ROUTES = {
     PAGINATED: (pageNumber: number, pageSize: number) =>
       `${USERS}?pageNumber=${pageNumber}&pageSize=${pageSize}`,
     BY_ID: (id: string) => `${USERS}/${id}`,
+  },
+  SUBSCRIPTIONS: {
+    BASE: SUBSCRIPTIONS,
+    PAGINATED: (pageNumber: number, pageSize: number) =>
+      `${SUBSCRIPTIONS}?pageNumber=${pageNumber}&pageSize=${pageSize}`,
+    BY_ID: (id: string) => `${SUBSCRIPTIONS}/${id}`,
+    SUBSCRIBE: `${SUBSCRIPTIONS}/subscribe`,
+    UNSUBSCRIBE: `${SUBSCRIPTIONS}/unsubscribe`,
+    FOR_FILTERING: `${SUBSCRIPTIONS}/filter`,
   },
   ORDERS: {
     BASE: ORDERS,

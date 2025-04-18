@@ -4,24 +4,23 @@ using BookAPI.Models.Filters;
 using BookAPI.Models.Sortings;
 using BookAPI.Repositories.Interfaces;
 using BookAPI.Services.Interfaces;
-using Humanizer;
 using Library.Common;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
-using System.Threading.Tasks;
 
 namespace BookAPI.Services
 {
-    public class BookService(IBookRepository bookRepository, IMapper mapper, ILogger<BookService> logger, S3StorageService storageService) : IBookService
+    public class BookService(
+        IBookRepository bookRepository,
+        IMapper mapper,
+        ILogger<BookService> logger,
+        S3StorageService storageService) : IBookService
     {
         private readonly IBookRepository _bookRepository = bookRepository;
         private readonly IMapper _mapper = mapper;
         private readonly ILogger<BookService> _logger = logger;
         private readonly S3StorageService _storageService = storageService;
 
-        public async Task<PaginatedResult<BookDto>> GetBooksAsync(
+        public async Task<PaginatedResult<BookDto>> GetAllAsync(
             int pageNumber,
             int pageSize,
             string searchTerm,
@@ -35,6 +34,7 @@ namespace BookAPI.Services
                 _logger.LogWarning("No books found");
                 throw new InvalidOperationException("Failed to fetch books.");
             }
+
             _logger.LogInformation("Successfully found books");
             return new PaginatedResult<BookDto>
             {
@@ -45,7 +45,7 @@ namespace BookAPI.Services
             };
         }
 
-        public async Task<BookDto> GetBookByIdAsync(Guid id)
+        public async Task<BookDto> GetByIdAsync(Guid id)
         {
             var book = await _bookRepository.GetByIdAsync(id);
 
@@ -59,7 +59,19 @@ namespace BookAPI.Services
             return _mapper.Map<BookDto>(book);
         }
 
-        public async Task<BookDto> CreateBookAsync(BookDto bookDto, IFormFile? imageFile)
+        public async Task<ICollection<string>?> GetAllForUserDetailsAsync(ICollection<Guid> ids)
+        {
+            try
+            {
+                return await _bookRepository.GetAllForUserDetailsAsync(ids);
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
+        public async Task /*<BookDto>*/ CreateAsync(BookDto bookDto, IFormFile? imageFile)
         {
             var book = _mapper.Map<Book>(bookDto);
             book.Id = Guid.NewGuid();
@@ -79,10 +91,10 @@ namespace BookAPI.Services
                 throw;
             }
 
-            return _mapper.Map<BookDto>(book);
+            // return _mapper.Map<BookDto>(book);
         }
 
-        public async Task<BookDto> UpdateBookAsync(Guid id, BookDto bookDto, IFormFile? imageFile)
+        public async Task /*<BookDto>*/ UpdateAsync(Guid id, BookDto bookDto, IFormFile? imageFile)
         {
             var existingBook = await _bookRepository.GetByIdAsync(id);
 
@@ -114,16 +126,17 @@ namespace BookAPI.Services
                 throw;
             }
 
-            return _mapper.Map<BookDto>(existingBook);
+            // return _mapper.Map<BookDto>(existingBook);
         }
-        public async Task<bool> DeleteBookAsync(Guid id)
+
+        public async Task /*<bool>*/ DeleteAsync(Guid id)
         {
             var book = await _bookRepository.GetByIdAsync(id);
 
             if (book == null)
             {
                 _logger.LogWarning($"Book with id {id} not found.");
-                return false;
+                // return false;
             }
 
             try
@@ -135,14 +148,15 @@ namespace BookAPI.Services
 
                 await _bookRepository.DeleteAsync(id);
                 _logger.LogInformation($"Successfully deleted book with id {id}");
-                return true;
+                // return true;
             }
             catch (Exception ex)
             {
                 _logger.LogError($"Failed to delete book. Error: {ex.Message}");
-                return false;
+                // return false;
             }
         }
+
         private async Task<string?> UploadImageAsync(IFormFile? imageFile, Guid id)
         {
             if (imageFile == null || imageFile.Length == 0)

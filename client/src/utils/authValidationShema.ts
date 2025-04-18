@@ -29,7 +29,13 @@ export const registerSchema = z
       .regex(/^\d{10,15}$/, 'Phone number must be 10-15 digits')
       .optional()
       .or(z.literal('')),
-    password: z.string().min(8, 'Password must be at least 8 characters'),
+    password: z
+      .string()
+      .min(8, 'Password must be between 8 and 100 characters')
+      .regex(
+        /^(?=.*[A-Za-z])(?=.*\d).{8,}$/,
+        'Password must be at least 8 characters long and contain at least one letter and one number',
+      ),
     confirmPassword: z.string(),
   })
   .refine((data) => data.email !== '' || data.phoneNumber !== '', {

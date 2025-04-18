@@ -5,9 +5,13 @@ using Library.Interfaces;
 
 namespace BookAPI.Repositories.Interfaces
 {
-    public interface IPublisherRepository : IManageable<Publisher,Publisher>
+    public interface IPublisherRepository : IManageable<Publisher>
     {
-        Task<PaginatedResult<Publisher>> GetAllAsync(int pageNumber, int pageSize, string searchTerm, PublisherSort? sort);
-        Task DeleteAsync(Guid id);
+        Task<PaginatedResult<Publisher>> GetAllAsync(
+            int pageNumber,
+            int pageSize,
+            string searchTerm,
+            PublisherSort? sort
+        );
     }
 }

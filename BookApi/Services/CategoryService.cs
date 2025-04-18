@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using BookAPI.Models;
 using BookAPI.Models.Sortings;
-using BookAPI.Repositories;
 using BookAPI.Repositories.Interfaces;
 using BookAPI.Services.Interfaces;
 using Library.Common;
@@ -21,7 +20,7 @@ namespace BookAPI.Services
             _logger = logger;
         }
 
-        public async Task<CategoryDto> CreateCategoryAsync(CategoryDto categoryDto)
+        public async Task /*<CategoryDto>*/ CreateAsync(CategoryDto categoryDto)
         {
             var category = _mapper.Map<Category>(categoryDto);
             category.Id = Guid.NewGuid();
@@ -35,32 +34,34 @@ namespace BookAPI.Services
             {
                 _logger.LogWarning($"Failed to create category. Error: {ex.Message}");
             }
-            return _mapper.Map<CategoryDto>(category);
+            // return _mapper.Map<CategoryDto>(category);
         }
 
-        public async Task<bool> DeleteCategoryAsync(Guid id)
+        public async Task /*<bool>*/ DeleteAsync(Guid id)
         {
             var category = await _categoryRepository.GetByIdAsync(id);
             if (category is null)
             {
                 _logger.LogWarning($"DeleteCategoryAsync returns null");
 
-                return false; 
+                // return false; 
             }
+
             try
             {
                 await _categoryRepository.DeleteAsync(id);
                 _logger.LogInformation($"Successfully deleted category with id {id}");
-                return true;
+                // return true;
             }
             catch (Exception ex)
             {
                 _logger.LogWarning($"Failed to delete category. Error: {ex.Message}");
-                return false;
+                // return false;
             }
         }
 
-        public async Task<PaginatedResult<CategoryDto>> GetCategoriesAsync(int pageNumber, int pageSize, string? searchTerm, CategorySort? sort)
+        public async Task<PaginatedResult<CategoryDto>> GetAllAsync(int pageNumber, int pageSize, string? searchTerm,
+            CategorySort? sort)
         {
             var categories = await _categoryRepository.GetAllAsync(pageNumber, pageSize, searchTerm, sort);
 
@@ -69,6 +70,7 @@ namespace BookAPI.Services
                 _logger.LogWarning("No categories found");
                 throw new InvalidOperationException("Failed to fetch categories.");
             }
+
             _logger.LogInformation("Successfully found categories");
             return new PaginatedResult<CategoryDto>
             {
@@ -80,7 +82,7 @@ namespace BookAPI.Services
         }
 
 
-        public async Task<CategoryDto> GetCategoryByIdAsync(Guid id)
+        public async Task<CategoryDto> GetByIdAsync(Guid id)
         {
             var category = await _categoryRepository.GetByIdAsync(id);
 
@@ -89,32 +91,33 @@ namespace BookAPI.Services
                 _logger.LogWarning($"No category with id {id}");
                 return null;
             }
+
             _logger.LogInformation($"Successfully found category with id {id}");
             return _mapper.Map<CategoryDto>(category);
         }
 
-        public async Task<CategoryDto> UpdateCategoryAsync(Guid id, CategoryDto categoryDto)
+        public async Task /*<CategoryDto>*/ UpdateAsync(CategoryDto categoryDto)
         {
-            var existingCategory = await _categoryRepository.GetByIdAsync(id);
+            var existingCategory = await _categoryRepository.GetByIdAsync(categoryDto.CategoryId);
 
             if (existingCategory == null)
             {
-                _logger.LogWarning($"UpdateCategoryAsync returns null");
-                return null;
+                _logger.LogWarning("UpdateCategoryAsync returns null");
+                // return null;
             }
 
             try
             {
                 _mapper.Map(categoryDto, existingCategory);
                 await _categoryRepository.UpdateAsync(existingCategory);
-                _logger.LogInformation($"Successfully updated category with id {id}");
-
+                _logger.LogInformation($"Successfully updated category with id {categoryDto.CategoryId}");
             }
             catch (Exception ex)
             {
                 _logger.LogWarning($"Failed to update category. Error: {ex.Message}");
             }
-            return _mapper.Map<CategoryDto>(existingCategory);
+
+            // return _mapper.Map<CategoryDto>(existingCategory);
         }
     }
 }
