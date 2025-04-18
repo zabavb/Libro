@@ -1,22 +1,80 @@
-import React, { useRef, useState } from "react"
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { Book } from "../../../types"
-
+import { addNotification } from "@/state/redux/slices/notificationSlice"
+import { fetchBooksService } from "@/services/bookService"
+import { useDispatch } from "react-redux"
+import { AppDispatch } from "@/state/redux"
+import "@/assets/styles/components/order/order-book-search.css"
 interface OrderFormBookSearchProps {
-    page: number
-    books?: Book[]
     onBookAdd: (bookId: string) => void
-    onPageChange: (page: number) => void
 }
 
-const OrderFormBookSearch: React.FC<OrderFormBookSearchProps> = ({ page, books, onPageChange, onBookAdd }) => {
-    const [search, setSearch] = useState<string>()
+const OrderFormBookSearch: React.FC<OrderFormBookSearchProps> = ({ onBookAdd }) => {
     const [searchFocus, setSearchFocus] = useState<boolean>()
     const timeoutRef = useRef<NodeJS.Timeout | null>()
-    const bookList = books && "$values" in books ? (books.$values as Book[]) : [];
-    const handleBookIdSubmit = () => {
-        if(search != undefined){
-            handleBookAdd(search)
-            setSearch("")
+    const dispatch = useDispatch<AppDispatch>();
+    const [books, setBooks] = useState<Book[]>([]);
+    const [loading, setLoading] = useState<boolean>(true);
+    const [searchTerm, setSearchTerm] = useState<string>('');
+    //const [filters, setFilters] = useState<BookFilter>({});
+    //const [sort, setSort] = useState<BookSort>({});
+    const [pagination, setPagination] = useState({
+        pageNumber: 1,
+        pageSize: 10,
+        totalCount: 0,
+    })
+
+    const paginationMemo = useMemo(() => ({ ...pagination }), [pagination]);
+
+    const fetchBookList = useCallback(async () => {
+        setLoading(true);
+        try {
+            const response = await fetchBooksService(
+                paginationMemo.pageNumber,
+                paginationMemo.pageSize,
+                searchTerm,
+            );
+
+            if (response.error)
+                dispatch(
+                    addNotification({
+                        message: response.error,
+                        type: 'error'
+                    })
+                );
+
+            if (response && response.data) {
+                const paginatedData = response.data;
+
+                setBooks(paginatedData.items);
+                setPagination({
+                    pageNumber: paginatedData.pageNumber,
+                    pageSize: paginatedData.pageSize,
+                    totalCount: paginatedData.totalCount,
+                });
+            }
+            else throw new Error('invalid response structure');
+        } catch (error) {
+            dispatch(
+                addNotification({
+                    message: error instanceof Error ? error.message : String(error),
+                    type: 'error'
+                })
+            )
+            setBooks([])
+        }
+        setLoading(false);
+    }, [paginationMemo, searchTerm, dispatch])
+
+    useEffect(() => {
+        fetchBookList()
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [pagination.pageNumber, pagination.pageSize])
+
+    const handleBookIdSubmit = (event: React.KeyboardEvent<HTMLInputElement>) => {
+        if (event.key === "Enter" && searchTerm != undefined) {
+            handleBookAdd(searchTerm)
+            setSearchTerm("")
         }
     };
 
@@ -40,36 +98,51 @@ const OrderFormBookSearch: React.FC<OrderFormBookSearchProps> = ({ page, books, 
         setSearchFocus(false)
     }
 
+    const onPageChange = (page: number) => {
+        // Limiting the page value
+        page = Math.min(page, Math.ceil(pagination.totalCount / pagination.pageSize));
+        page = Math.max(1, page);
+
+        setPagination((prev) => ({
+            ...prev,
+            pageNumber: page,
+        }));
+    }
+
+    if (loading) return <div>loading</div>
+
     return (
         <div> {/* Book select container*/}
-            <div style={{display:"flex"}}>
+            <div className="flex w-1/2">
                 <input
+                    className="input-text w-full"
                     placeholder="Book Search"
                     onFocus={() => handleFocus(true)}
                     onBlur={() => handleFocus(false)}
-                    onChange={(e) => {setSearch(e.target.value)}}
-                    value={search}
+                    onChange={(e) => { setSearchTerm(e.target.value) }}
+                    onKeyDown={(e) => { handleBookIdSubmit(e) }}
+                    value={searchTerm}
                 />
-                <p style={{cursor:"pointer"}} onClick={handleBookIdSubmit}>Submit</p>
             </div>
-            {searchFocus === true &&
-                (
-                    <div style={{ cursor: "pointer" }} onFocus={() => handleFocus(true)} onBlur={() => handleFocus(false)}> {/* Book selection container*/}
-                        <div> 
-                            {bookList.map((book)=> (
-                                <div onClick={() => handleBookAdd(book.bookId)}>
-                                    <p>{book.title}</p>
-                                </div>
-                            ))}
+            <div className="relative">
+                {searchFocus === true &&
+                    (
+                        <div className="search-menu" onFocus={() => handleFocus(true)} onBlur={() => handleFocus(false)}> {/* Book selection container*/}
+                            <div>
+                                {books.map((book) => (
+                                    <div className="book-item" onClick={() => handleBookAdd(book.bookId)}>
+                                        <p>{book.title}</p>
+                                    </div>
+                                ))}
+                            </div>
+                            <div className="search-nav-menu">
+                                <button type="button" onClick={() => onPageChange(pagination.pageNumber - 1)}>&lt;</button>
+                                <p>{pagination.pageNumber}</p>
+                                <button type="button" onClick={() => onPageChange(pagination.pageNumber + 1)}>&gt;</button>
+                            </div>
                         </div>
-                        <hr />
-                        <div style={{ display: "flex" }}>
-                            <button type="button" onClick={() => onPageChange(page - 1)}>prev</button>
-                            <p>{page}</p>
-                            <button type="button" onClick={() => onPageChange(page + 1)}>next</button>
-                        </div>
-                    </div>
-                )}
+                    )}
+            </div>
         </div>
     )
 }

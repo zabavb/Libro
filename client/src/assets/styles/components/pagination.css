@@ -1,0 +1,20 @@
+.pagination-container{
+    @apply flex my-2.5 mx-10;
+}
+
+.active{
+    @apply font-semibold text-[#ff642e];
+}
+
+.page-nav{
+    @apply py-0 px-5;
+}
+
+.page-number{
+    @apply my-0 mx-0.5
+}
+
+.number-container{
+    @apply flex justify-center;
+    min-width: 50px;
+}

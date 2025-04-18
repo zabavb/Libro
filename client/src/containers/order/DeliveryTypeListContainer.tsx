@@ -2,7 +2,7 @@ import { useDispatch } from "react-redux"
 import { AppDispatch } from "../../state/redux"
 import { useNavigate } from "react-router-dom"
 import { useCallback, useEffect, useMemo, useState } from "react"
-import DeliveryTypeList from "../../components/order/DeliveryList"
+import DeliveryTypeList from "../../components/order/admin/DeliveryList"
 import { DeliverySort, DeliveryType } from "../../types"
 import { fetchDeliveryTypesService } from "../../services"
 import { addNotification } from "../../state/redux/slices/notificationSlice"
@@ -65,7 +65,7 @@ const DeliveryTypeListContainer = () => {
     useEffect(() => {
         fetchDeliveryTypeList();
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    },[])
+    },[pagination.pageNumber, searchTerm])
 
     const handleNavigate = (path: string) => navigate(path)
     
@@ -94,6 +94,7 @@ const DeliveryTypeListContainer = () => {
         searchTerm={searchTerm}
         onSortChange={handleSortChange}
         sort={sort}
+        handleNavigate={handleNavigate}
         />
     )
 }

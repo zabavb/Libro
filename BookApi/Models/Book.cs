@@ -11,7 +11,8 @@ namespace BookAPI.Models
         public DateTime Year { get; set; }
         public string Description { get; set; } = null!;
         public CoverType Cover { get; set; }
-        public bool IsAvaliable { get; set; } = true;
+        public int Quantity { get; set; } = 0;
+        //public bool IsAvaliable { get; set; } = true;
         public string? ImageUrl { get; set; }
         public string? AudioFileUrl { get; set; }
         [NotMapped]
@@ -38,7 +39,8 @@ namespace BookAPI.Models
             CategoryId = Guid.Empty;
             Description = string.Empty;
             Cover = CoverType.OTHER;
-            IsAvaliable = true;
+            Quantity = 0;
+            //IsAvaliable = true;
             Feedbacks = new List<Feedback>();
             Subcategories = new List<SubCategory>();
             ImageUrl = string.Empty;

@@ -14,7 +14,8 @@ namespace BookAPI.Models.Filters
         public DateTime? MaxYear { get; set; }
         public Language? Language { get; set; }
         public CoverType? Cover { get; set; }
-        public bool IsAvaliable { get; set; }
+        //public bool IsAvaliable { get; set; }
+        public int Quantity { get; set; }
         public Guid? CategoryId { get; set; }
 
         public IQueryable<Book> Apply(IQueryable<Book> books)
@@ -44,8 +45,11 @@ namespace BookAPI.Models.Filters
             if (Cover.HasValue)
                 books = books.Where(b => b.Cover.ToString() == Cover.Value.ToString());
 
-            if (IsAvaliable)
-                books = books.Where(b => b.IsAvaliable == IsAvaliable);
+            if(Quantity > 0)
+                books = books.Where(b => b.Quantity >= Quantity);
+
+            //if (IsAvaliable)
+            //    books = books.Where(b => b.IsAvaliable == IsAvaliable);
 
             if (CategoryId.HasValue)
                 books = books.Where(b => b.CategoryId == CategoryId.Value);

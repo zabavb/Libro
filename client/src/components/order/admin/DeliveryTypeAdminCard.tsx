@@ -7,26 +7,31 @@ interface DeliveryTypeAdminCardProps {
 }
 
 const DeliveryTypeAdminCard: React.FC<DeliveryTypeAdminCardProps> = ({deliveryType, onDelete,onNavigate}) => {
+    const deliveryUid = deliveryType.id.split('-')[4];
     return(
         <>
-            <hr/>
-            <li
+            <tr
                 onClick={(e) => {
                     e.stopPropagation()
                     onNavigate()
-                }}>
-                <p>
-                    <strong>Service Name:</strong>
+                }}
+                style={{textAlign:"center"}}>
+                <td>
                     {deliveryType.serviceName}
-                </p>
-                <button
-                    onClick={(e) => {
-                        e.stopPropagation()
-                        onDelete(e)
-                    }}>
-                    Delete
-                </button>
-            </li>
+                </td>
+                <td>
+                    {deliveryUid}...
+                </td>
+                <td>
+                    <button
+                        onClick={(e) => {
+                            e.stopPropagation()
+                            onDelete(e)
+                        }}>
+                        <img width="25" height="25" src="https://img.icons8.com/ios-filled/50/trash.png" alt="delete"/>
+                    </button>
+                </td>
+            </tr>
         </>
     )
 }

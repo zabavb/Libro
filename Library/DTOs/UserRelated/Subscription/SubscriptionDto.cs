@@ -12,7 +12,7 @@ namespace Library.DTOs.UserRelated.Subscription
         [StringLength(50, ErrorMessage = "Title cannot exceed 50 characters.")]
         public string Title { get; set; }
 
-        [Required(ErrorMessage = "Expiration date are required.")]
+        [Required(ErrorMessage = "Expiration days are required.")]
         public int ExpirationDays { get; set; }
 
         [Required(ErrorMessage = "Price is required.")]

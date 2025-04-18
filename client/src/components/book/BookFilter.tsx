@@ -1,5 +1,5 @@
 import React from 'react';
-import type { BookFilter } from '../../types/filters/BookFilter';
+import type { BookFilter } from '@/types/filters/BookFilter';
 import { CoverType } from '../../types/subTypes/book/CoverType';
 import { Language } from '../../types/subTypes/book/Language';
 

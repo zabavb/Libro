@@ -21,8 +21,10 @@ namespace BookAPI.Data.Configuration
                   j => j.HasOne<SubCategory>().WithMany().HasForeignKey("SubCategoryId"),
                   j => j.HasOne<Book>().WithMany().HasForeignKey("BookId")
               );
-            builder.Property(b => b.IsAvaliable)
-                   .HasDefaultValue(true);
+            builder.Property(b => b.Quantity)
+                   .HasDefaultValue(0);
+            //builder.Property(b => b.IsAvaliable)
+            //       .HasDefaultValue(true);
 
             builder
                 .HasOne(b => b.Discount)

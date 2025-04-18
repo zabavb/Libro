@@ -25,12 +25,15 @@ import BookListContainer from './containers/books/BookListContainer';
 import NotFoundPage from './pages/common/NotFoundPage';
 import OrderListPage from './pages/admin/orderRelated/orders/OrdersListPage';
 import DeliveriesListPage from './pages/admin/orderRelated/deliveries/DeliveriesListPage';
-import UserCartPage from './pages/main/UserCartPage';
 import UserCheckoutPage from './pages/main/UserCheckoutPage';
-import UserOrdersPage from './pages/main/UserOrdersPage';
 import SubscriptionPage from './pages/main/SubscriptionPage';
 import SubscriptionListPage from './pages/admin/userRelated/subscriptions/SubscriptionListPage';
 import SubscriptionFormPage from './pages/admin/userRelated/subscriptions/SubscriptionFormPage';
+import UserCartPage from './pages/main/user/UserCartPage';
+import UserCheckoutPage from './pages/main/user/UserCheckoutPage';
+import UserOrdersPage from './pages/main/user/UserOrdersPage';
+import OrderDetailsPage from './pages/Admin/OrderRelated/Orders/OrderDetailsPage';
+
 
 const AppRoutes = () => (
   <AuthProvider>
@@ -49,6 +52,7 @@ const AppRoutes = () => (
         <Route path='/cart' element={<UserCartPage />} />
         <Route path='/cart/checkout' element={<UserCheckoutPage />} />
         <Route path='/orders' element={<UserOrdersPage />} />
+        <Route path='/orders/:orderId' element={<OrderDetailsPage /> }/>
         <Route element={<PrivateRoute />}>
           {/* Admin */}
           <Route path='/admin' element={<AdminLayout />}>
@@ -75,15 +79,15 @@ const AppRoutes = () => (
             <Route path='/admin/orders/:orderId' element={<OrderFormPage />} />
             {/* Delivery Types */}
             <Route
-              path='/admin/deliverytypes'
+              path='/admin/delivery'
               element={<DeliveriesListPage />}
             />
             <Route
-              path='/admin/deliverytypes/add'
+              path='/admin/delivery/add'
               element={<DeliveryTypeFormPage />}
             />
             <Route
-              path='/admin/deliverytypes/:deliveryTypeId'
+              path='/admin/delivery/:deliveryTypeId'
               element={<DeliveryTypeFormPage />}
             />
             {/*BOOKS*/}

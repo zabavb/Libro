@@ -9,6 +9,7 @@ using Library.Common;
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using IDatabase = StackExchange.Redis.IDatabase;
 
 namespace BookAPI.Repositories
 {
@@ -34,7 +35,6 @@ namespace BookAPI.Repositories
             _cacheService = cacheService;
             _logger = logger;
         }
-
 
         public async Task<PaginatedResult<Book>> GetAllAsync(
             int pageNumber,
@@ -215,6 +215,48 @@ namespace BookAPI.Repositories
             }
 
             _logger.LogInformation("Book deleted from DB and cache.");
+        }
+
+        //condition - expression to filter books quantity
+        // example of condition: b => b.Quantity > 0
+        public async Task<List<Book>> GetBooksByConditionAsync(Expression<Func<Book, bool>> condition)
+        {
+            return await _context.Books
+                                 .Where(condition)
+                                 .ToListAsync();
+        }
+
+        public async Task<int> GetQuantityById(Guid id)
+        {
+            var book = await GetByIdAsync(id);
+            if (book == null)
+            {
+                throw new KeyNotFoundException("Book not found");
+            }
+            return book.Quantity;
+        }
+
+        public async Task AddQuantityById(Guid id, int quantity)
+        {
+            var book = await GetByIdAsync(id);
+            if (book == null)
+            {
+                throw new KeyNotFoundException("Book not found");
+            }
+            book.Quantity += quantity;
+            if (book.Quantity < 0)
+            {
+                book.Quantity = 0;
+            }
+            await UpdateAsync(book);
+            string cacheKey = $"{_cacheKeyPrefix}{id}";
+            await _cacheService.SetAsync(cacheKey, book, _cacheExpiration, _jsonOptions);
+            string allBooksCacheKey = $"{_cacheKeyPrefix}All";
+            var cachedBooks = await _cacheService.GetAsync<List<Book>>(allBooksCacheKey, _jsonOptions);
+            if (cachedBooks != null)
+            {
+                await _cacheService.UpdateListAsync(allBooksCacheKey, book, null, _cacheExpiration);
+            }
         }
     }
 }

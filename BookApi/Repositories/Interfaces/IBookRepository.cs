@@ -1,8 +1,10 @@
-﻿using BookAPI.Models;
+﻿
+using BookAPI.Models;
 using BookAPI.Models.Filters;
 using BookAPI.Models.Sortings;
 using Library.Common;
 using Library.Interfaces;
+using System.Linq.Expressions;
 
 namespace BookAPI.Repositories.Interfaces
 {
@@ -17,5 +19,9 @@ namespace BookAPI.Repositories.Interfaces
         );
 
         Task<ICollection<string>> GetAllForUserDetailsAsync(ICollection<Guid> ids);
+        Task<List<Book>> GetBooksByConditionAsync(Expression<Func<Book, bool>> condition);
+        Task<int> GetQuantityById(Guid id);
+        Task AddQuantityById(Guid id, int quantity);
+
     }
 }

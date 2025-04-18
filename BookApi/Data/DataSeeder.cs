@@ -307,7 +307,8 @@ namespace BookAPI.Data
                     Year = new DateTime(2023, 1, 1),
                     Description = "Фантастичний роман про місто, побудоване зі скла.",
                     Cover = CoverType.HARDCOVER,
-                    IsAvaliable = true,
+                    Quantity = 5,
+                    //IsAvaliable = true,
                     //ImageUrl = await UploadImageAsync(storageService, imagePaths["Місто зі скла"], bookIds[0]),
                     DiscountId = discountsIds[0]
                 },
@@ -323,7 +324,8 @@ namespace BookAPI.Data
                     Year = new DateTime(2022, 1, 1),
                     Description = "Детективний роман з несподіваною розв'язкою.",
                     Cover = CoverType.SOFT_COVER,
-                    IsAvaliable = true,
+                    Quantity = 3,
+                    //IsAvaliable = true,
                     //ImageUrl = await UploadImageAsync(storageService, imagePaths["Тіні минулого"], bookIds[1]) 
                 },
                 new Book
@@ -338,7 +340,8 @@ namespace BookAPI.Data
                     Year = new DateTime(2021, 1, 1),
                     Description = "Книга про те, як розвивати емоційний інтелект.",
                     Cover = CoverType.HARDCOVER,
-                    IsAvaliable = true,
+                    Quantity = 1,
+                    //IsAvaliable = true,
                     //ImageUrl = await UploadImageAsync(storageService, imagePaths["Емоційний інтелект"], bookIds[2]) 
                 }
             };
