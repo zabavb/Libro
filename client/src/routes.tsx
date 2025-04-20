@@ -28,7 +28,7 @@ import DeliveriesListPage from './pages/admin/orderRelated/deliveries/Deliveries
 import UserCartPage from './pages/main/user/UserCartPage';
 import UserCheckoutPage from './pages/main/user/UserCheckoutPage';
 import UserOrdersPage from './pages/main/user/UserOrdersPage';
-import OrderDetailsPage from './pages/Admin/OrderRelated/Orders/OrderDetailsPage';
+import OrderDetailsPage from './pages/admin/orderRelated/orders/OrderDetailsPage';
 
 
 const AppRoutes = () => (
