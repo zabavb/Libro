@@ -57,16 +57,16 @@ const BookCatalog: React.FC<BookCatalogProps> = ({
                     </div>
                 </div>
                 <div className="books-panel-main">
-                {loading ? (<>tmp</>) : books.length > 0 ? (
-                    books.map((book) => (
-                        <BookCardContainer
-                            key={book.bookId}
-                            book={book}
-                            />
-                    ))
-                ) : (
-                    <p>No books found.</p>
-                )}
+                    {loading ? (<>tmp</>) : books.length > 0 ? (
+                        books.map((book) => (
+                            <BookCardContainer
+                                key={book.bookId}
+                                book={book}
+                                />
+                        ))
+                    ) : (
+                        <p>No books found.</p>
+                    )}
                 </div>
                 <div className="books-panel-footer">
                     {/* Replace with custom pagination */}
