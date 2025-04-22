@@ -1,0 +1,11 @@
+.sort-container{
+    @apply absolute left-0 mt-2 w-full bg-none shadow-lg rounded transition-all duration-500 ease-in-out overflow-hidden z-10;
+}
+
+.sort-btn{
+    @apply mx-2 my-1;
+}
+
+.sort-title{
+    @apply text-start;
+}

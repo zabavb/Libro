@@ -3,6 +3,7 @@ import { BookFilter } from "@/types/filters/BookFilter";
 import Pagination from "../common/Pagination";
 import BookCardContainer from "@/containers/books/BookCardContainer";
 import "@/assets/styles/components/book/catalog.css"
+import CatalogSort from "./CatalogSort";
 interface BookCatalogProps {
     books?: Book[]
     loading: boolean
@@ -26,10 +27,9 @@ const BookCatalog: React.FC<BookCatalogProps> = ({
     //onSearchTermChange,
     //filters,
     //onFilterChange,
-    //sort,
-    //onSortChange,
+    sort,
+    onSortChange,
 }) => {
-    if (loading) return <p>Loading...</p>
     return(
         <div className="catalog-container">
             <aside className="options-panel">
@@ -53,11 +53,11 @@ const BookCatalog: React.FC<BookCatalogProps> = ({
                         {pagination.totalCount} books
                     </div>
                     <div className="opacity-50 font-semibold text-base">
-                        SORT_COMPONENT_TMP
+                        <CatalogSort sort={sort} onSortChange={onSortChange}/>
                     </div>
                 </div>
                 <div className="books-panel-main">
-                    {loading ? (<>tmp</>) : books.length > 0 ? (
+                    {loading ? (<>Loading...</>) : books.length > 0 ? (
                         books.map((book) => (
                             <BookCardContainer
                                 key={book.bookId}
