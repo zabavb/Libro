@@ -67,7 +67,7 @@ const DashboardPage: React.FC = () => {
             </div>
 
             <div className="top-sales">
-                <h3>Топ продажів</h3>
+                <h3>Топ dsadsadsasaddпродажів</h3>
                 <div className="top-sales-grid">
                     {topSales.map((title, index) => (
                     <div key={index} className="book-card">
