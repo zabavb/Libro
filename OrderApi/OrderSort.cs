@@ -2,7 +2,7 @@
 
 namespace OrderAPI
 {
-    public class OrderSort
+    public class OrderSort// change to ennum
     {
         public Bool OrderDate { get; set; } // OrderDate Variable
         public Bool BooksAmount { get; set; } // Count of BookIds list
