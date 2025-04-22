@@ -19,9 +19,6 @@ namespace BookAPI.Repositories.Interfaces
         );
 
         Task<ICollection<string>> GetAllForUserDetailsAsync(ICollection<Guid> ids);
-        Task<List<Book>> GetBooksByConditionAsync(Expression<Func<Book, bool>> condition);
-        Task<int> GetQuantityById(Guid id);
-        Task AddQuantityById(Guid id, int quantity);
 
     }
 }
