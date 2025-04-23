@@ -1,12 +1,10 @@
 import React from 'react';
-import type { UserFilter } from '../../types';
-import { Role } from '../../types';
-import { EmailDomen } from '../../types/subTypes/user/EmailDomen';
+import { EmailViewDomen, RoleView, UserViewFilter } from '../../types';
 import SubscriptionDropdown from './SubscriptionDropdown';
 
 interface UserFilterProps {
-  filters: UserFilter;
-  onFilterChange: (filters: UserFilter) => void;
+  filters: UserViewFilter;
+  onFilterChange: (filters: UserViewFilter) => void;
 }
 
 const UserFilter: React.FC<UserFilterProps> = ({ onFilterChange, filters }) => {
@@ -16,26 +14,33 @@ const UserFilter: React.FC<UserFilterProps> = ({ onFilterChange, filters }) => {
       <select
         value={filters.email || ''}
         onChange={(e) =>
-          onFilterChange({ ...filters, email: e.target.value as EmailDomen })
+          onFilterChange({
+            ...filters,
+            email:
+              e.target.value === '' ? null : (e.target.value as EmailViewDomen),
+          })
         }
       >
         <option value=''>Filter by email</option>
-        {Object.values(EmailDomen).map((domen) => (
-          <option key={domen} value={domen}>
-            {domen}
+        {Object.entries(EmailViewDomen).map(([key, value]) => (
+          <option key={key} value={key}>
+            {value}
           </option>
         ))}
       </select>
       <select
         value={filters.role || ''}
         onChange={(e) =>
-          onFilterChange({ ...filters, role: e.target.value as Role })
+          onFilterChange({
+            ...filters,
+            role: e.target.value === '' ? null : (e.target.value as RoleView),
+          })
         }
       >
         <option value=''>Filter by role</option>
-        {Object.values(Role).map((role) => (
-          <option key={role} value={role}>
-            {role}
+        {Object.entries(RoleView).map(([key, value]) => (
+          <option key={key} value={key}>
+            {value}
           </option>
         ))}
       </select>

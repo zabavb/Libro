@@ -6,6 +6,7 @@ import { CarouselOffers } from "@/components/common/CarouselOffers";
 
 const MainPage: React.FC = () => {
   const navigate = useNavigate();
+  const { logout } = useAuth();
 
   return (
     <div className="flex flex-col min-h-screen">

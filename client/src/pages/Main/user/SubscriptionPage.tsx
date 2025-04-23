@@ -1,5 +1,5 @@
+import SubscriptionContainer from '@/containers/user/SubscriptionContainer';
 import { useParams } from 'react-router-dom';
-import SubscriptionContainer from '../../containers/user/SubscriptionContainer';
 
 const SubscriptionPage: React.FC = () => {
   const { subscriptionId } = useParams<{ subscriptionId: string }>();

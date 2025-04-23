@@ -1,5 +1,9 @@
 import { API_ROUTES } from './config/apiConfig';
 
+// ================= GRAPHQL =================
+
+export const GRAPHQL = API_ROUTES.GRAPHQL;
+
 // ================= AUTHENTICATION =================
 
 export const LOGIN = API_ROUTES.AUTH.LOGIN;

@@ -123,9 +123,7 @@
         }
       ],
       "UpstreamPathTemplate": "/gateway/subscriptions/unsubscribe",
-      "UpstreamHttpMethod": [
-        "POST"
-      ]
+      "UpstreamHttpMethod": [ "POST" ]
     },
     {
       "DownstreamPathTemplate": "/api/subscriptions/filter",
@@ -137,9 +135,7 @@
         }
       ],
       "UpstreamPathTemplate": "/gateway/subscriptions/filter",
-      "UpstreamHttpMethod": [
-        "GET"
-      ]
+      "UpstreamHttpMethod": [ "GET" ]
     },
     //======================================= BookAPI =======================================
     //======================= Book entity =======================

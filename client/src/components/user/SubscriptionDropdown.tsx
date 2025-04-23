@@ -4,15 +4,14 @@ import { subscriptionsforFilteringService } from '../../services';
 import { useDispatch } from 'react-redux';
 import { AppDispatch } from '../../state/redux';
 import { addNotification } from '../../state/redux/slices/notificationSlice';
-import Loading from '../common/Loading';
 
 const SubscriptionDropdown: React.FC<{
-  onSelect: (subscriptionId: string) => void;
+  onSelect: (subscriptionId: string | null) => void;
 }> = ({ onSelect }) => {
   const [subscriptions, setSubscriptions] = useState<BySubscription[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const dispatch = useDispatch<AppDispatch>();
-  const [selectedId, setSelectedId] = useState<string>('');
+  const [selectedId, setSelectedId] = useState<string | null>('');
 
   const fetchSubscriptionList = useCallback(async () => {
     setLoading(true);
@@ -47,7 +46,7 @@ const SubscriptionDropdown: React.FC<{
   }, [fetchSubscriptionList]);
 
   const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const selected = e.target.value;
+    const selected = e.target.value === '' ? null : e.target.value;
     setSelectedId(selected);
     onSelect(selected);
   };
@@ -56,16 +55,27 @@ const SubscriptionDropdown: React.FC<{
     <div>
       <select
         id='subscription-select'
-        value={selectedId}
+        value={selectedId ?? ''}
         onChange={handleChange}
       >
-        <option value=''>Filter by owned subscription </option>
-        {(loading && <Loading />) ??
-          subscriptions.map((sub) => (
-            <option key={sub.id} value={sub.id}>
-              {sub.title}
-            </option>
-          ))}
+        {loading ? (
+          <option disabled value=''>
+            Loading...
+          </option>
+        ) : (
+          <>
+            <option value=''>Filter by owned subscription</option>
+            {subscriptions && subscriptions.length > 0 ? (
+              subscriptions.map((sub) => (
+                <option key={sub.id} value={sub.id}>
+                  {sub.title}
+                </option>
+              ))
+            ) : (
+              <option disabled>No subscriptions available</option>
+            )}
+          </>
+        )}
       </select>
     </div>
   );

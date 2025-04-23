@@ -7,6 +7,7 @@ const DELIVERY = `${GATEWAY}/deliverytypes`;
 const BOOKS = `${GATEWAY}/books`;
 
 export const API_ROUTES = {
+  GRAPHQL: `${GATEWAY}/graphql`,
   AUTH: {
     LOGIN: `${AUTH}/login`,
     REGISTER: `${AUTH}/register`,

@@ -13,7 +13,6 @@ namespace UserAPI.Models
         public string? PhoneNumber { get; set; }
         public RoleType Role { get; set; }
         public string ImageUrl { get; set; }
-        public Guid PasswordId { get; set; }
         public Password Password { get; set; }
         public ICollection<Guid>? SubscriptionIds { get; set; }
         public ICollection<UserSubscription>? UserSubscriptions { get; set; }

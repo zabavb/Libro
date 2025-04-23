@@ -4,6 +4,7 @@ using BookAPI.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Library.Common;
 using Library.DTOs.UserRelated.User;
+using Microsoft.AspNetCore.Authorization;
 
 namespace BookAPI.Controllers
 {
@@ -105,7 +106,7 @@ namespace BookAPI.Controllers
         /// <response code="200">Retrieval successful, return the feedback snippets.</response>
         /// <response code="404">Could not find the user.</response>
         /// <response code="500">An unexpected error occured.</response>
-        // [Authorize(Roles = "ADMIN, MODERATOR")]
+        [Authorize(Roles = "ADMIN, MODERATOR")]
         [HttpGet("for-user/details/{id}")]
         public async Task<ActionResult<ICollection<FeedbackForUserDetails>>> GetAllForUserDetailsAsync(Guid id)
         {

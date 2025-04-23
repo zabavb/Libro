@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { Role } from '../types';
+import { RoleView } from '../types';
 
 const today = new Date();
 const minDateOfBirth = new Date(
@@ -37,7 +37,7 @@ export const userSchema = z
         (val) => new Date(val) <= today,
         'Date of birth cannot be in the future',
       ),
-    role: z.nativeEnum(Role, {
+    role: z.nativeEnum(RoleView, {
       errorMap: () => ({ message: 'Invalid role selected' }),
     }),
   })

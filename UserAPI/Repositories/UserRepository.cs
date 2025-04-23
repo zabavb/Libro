@@ -25,8 +25,7 @@ namespace UserAPI.Repositories
             int pageSize,
             string? searchTerm,
             Filter? filter,
-            Sort? sort
-        )
+            Sort? sort)
         {
             try
             {
@@ -40,51 +39,71 @@ namespace UserAPI.Repositories
                 var cachedUsers = await _redisDatabase.HashGetAllAsync(cacheKey);
 
                 IQueryable<User> users;
+
                 if (cachedUsers.Length > 0)
                 {
-                    users = cachedUsers
+                    var usersList = cachedUsers
                         .Select(entry => JsonSerializer.Deserialize<User>(entry.Value!, options)!)
-                        .AsQueryable()
-                        .AsNoTracking();
+                        .ToList();
 
                     _logger.LogInformation("Fetched from CACHE.");
+
+                    IEnumerable<User>? filteredUsers = null;
+                    if (searchTerm is not null)
+                    {
+                        filteredUsers = usersList.Where(u =>
+                            (!string.IsNullOrEmpty(u.FirstName) &&
+                             u.FirstName.Contains(searchTerm!, StringComparison.OrdinalIgnoreCase)) ||
+                            (!string.IsNullOrEmpty(u.LastName) &&
+                             u.LastName.Contains(searchTerm!, StringComparison.OrdinalIgnoreCase)) ||
+                            (!string.IsNullOrEmpty(u.Email) &&
+                             u.Email.Contains(searchTerm!, StringComparison.OrdinalIgnoreCase)) ||
+                            (!string.IsNullOrEmpty(u.PhoneNumber) &&
+                             u.PhoneNumber.Contains(searchTerm!, StringComparison.OrdinalIgnoreCase))
+                        );
+                    }
+
+                    users = filteredUsers is not null ? filteredUsers.AsQueryable() : usersList.AsQueryable();
                 }
                 else
                 {
                     users = _context.Users.AsNoTracking();
-                    _logger.LogInformation("Fetched from DB.");
-                    var hashEntries = users.ToDictionary(
+
+                    if (!string.IsNullOrWhiteSpace(searchTerm))
+                    {
+                        users = users.SearchBy(
+                            searchTerm,
+                            u => u.FirstName,
+                            u => u.LastName!,
+                            u => u.Email!,
+                            u => u.PhoneNumber!
+                        );
+                    }
+
+                    var hashEntries = await users.ToDictionaryAsync(
                         user => user.UserId.ToString(),
                         user => JsonSerializer.Serialize(user, options)
                     );
 
                     await _redisDatabase.HashSetAsync(
                         cacheKey,
-                        [.. hashEntries.Select(kvp => new HashEntry(kvp.Key, kvp.Value))]
+                        hashEntries.Select(kvp => new HashEntry(kvp.Key, kvp.Value)).ToArray()
                     );
                     await _redisDatabase.KeyExpireAsync(cacheKey, _cacheExpiration);
                     _logger.LogInformation("Set to CACHE.");
                 }
 
-                if (users.Any() && !string.IsNullOrWhiteSpace(searchTerm))
-                    users = users.SearchBy(searchTerm,
-                        u => u.FirstName,
-                        u => u.LastName!,
-                        u => u.Email!,
-                        u => u.PhoneNumber!
-                    );
-
-                if (users.Any() && filter != null)
+                if (filter is not null)
                     users = filter.Apply(users);
 
-                if (users.Any() && sort != null)
+                if (sort is not null)
                     users = sort.Apply(users);
 
-                var total = await users.CountAsync();
-                var paginatedUsers = await users
+                var total = users.Count();
+                var paginatedUsers = users
                     .Skip((pageNumber - 1) * pageSize)
                     .Take(pageSize)
-                    .ToListAsync();
+                    .ToList();
 
                 return new PaginatedResult<User>
                 {
@@ -99,6 +118,7 @@ namespace UserAPI.Repositories
                 throw new RepositoryException("Error while fetching users.", ex);
             }
         }
+
 
         public async Task<User?> GetByIdAsync(Guid id)
         {
@@ -188,6 +208,10 @@ namespace UserAPI.Repositories
         {
             try
             {
+                var exists = await _context.Users.AnyAsync(u => u.Email == user.Email);
+                if (exists)
+                    throw new RepositoryException($"User with such email already exists.");
+
                 await _context.Users.AddAsync(user);
                 await _context.SaveChangesAsync();
             }
@@ -218,7 +242,7 @@ namespace UserAPI.Repositories
         }
 
         public async Task DeleteAsync(Guid id)
-        {   
+        {
             try
             {
                 var user = await _context.Users.FindAsync(id) ??

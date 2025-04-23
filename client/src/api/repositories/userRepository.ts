@@ -1,27 +1,32 @@
 import axios from 'axios';
-import {USERS_PAGINATED, USERS, USER_BY_ID} from '../index';
-import {User, PaginatedResponse, UserCard, UserForm} from '../../types';
-import {getAuthHeaders} from './common';
-
-interface UserQueryParams {
-  role?: string;
-  dateOfBirthStart?: string;
-  dateOfBirthEnd?: string;
-  hasSubscription?: boolean;
-  searchTerm?: string;
-}
+import { USERS, USER_BY_ID, GRAPHQL } from '../index';
+import {
+  User,
+  PaginatedResponse,
+  UserCard,
+  UserForm,
+  UserFilter,
+  UserSort,
+  GraphQLResponse,
+} from '../../types';
+import { getAuthHeaders } from './common';
 
 /**
  * Fetch a paginated list of users with optional filters.
  */
-export const getAllUsers = async (
-  pageNumber: number = 1,
-  pageSize: number = 10,
-  params: UserQueryParams = {},
-): Promise<PaginatedResponse<UserCard>> => {
-  const url = USERS_PAGINATED(pageNumber, pageSize);
-  const response = await axios.get<PaginatedResponse<UserCard>>(url, {
-    params,
+export const getAllUsers = async (body: {
+  query: string;
+  variables: {
+    pageNumber: number;
+    pageSize: number;
+    searchTerm: string | null;
+    filter: UserFilter;
+    sort: UserSort;
+  };
+}): Promise<GraphQLResponse<{ allUsers: PaginatedResponse<UserCard> }>> => {
+  const response = await axios.post<
+    GraphQLResponse<{ allUsers: PaginatedResponse<UserCard> }>
+  >(GRAPHQL, body, {
     headers: getAuthHeaders(),
   });
   return response.data;
@@ -30,10 +35,19 @@ export const getAllUsers = async (
 /**
  * Fetch a single user by their ID.
  */
-export const getUserById = async (id: string): Promise<UserForm> => {
-  const response = await axios.get<UserForm>(USER_BY_ID(id), {
-    headers: getAuthHeaders(),
-  });
+export const getUserById = async (body: {
+  query: string;
+  variables: {
+    id: string;
+  };
+}): Promise<GraphQLResponse<{ user: UserForm }>> => {
+  const response = await axios.post<GraphQLResponse<{ user: UserForm }>>(
+    GRAPHQL,
+    body,
+    {
+      headers: getAuthHeaders(),
+    },
+  );
   return response.data;
 };
 
