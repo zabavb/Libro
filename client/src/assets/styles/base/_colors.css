@@ -1,0 +1,21 @@
+@layer utilities {
+    .text-dark {
+      color: #1A1D23;
+    }
+    .bg-primary {
+      background-color: #F4F0E5;
+    }
+    .text-accent {
+      color: #FF642E;
+    }
+    .bg-dark {
+      background-color: #1A1D23;
+    }
+    .border-dark {
+      border-color: #1A1D23;
+    }
+    .placeholder-dark::placeholder {
+      color: #1A1D23;
+    }
+  }
+  
