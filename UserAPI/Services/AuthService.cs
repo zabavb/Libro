@@ -31,16 +31,23 @@ namespace UserAPI.Services
                 ? await _authRepository.GetUserByEmailAsync(request)
                 : await _authRepository.GetUserByPhoneNumberAsync(request);
 
-            return await IsRightPasswordAsync(user!, request.Password) ? _mapper.Map<Dto>(user) : null;
+            Guid passwordId;
+            var password = await _passwordRepository.GetByUserIdAsync(user!.UserId);
+            if (password != null)
+                passwordId = password.PasswordId;
+            else
+            {
+                passwordId = Guid.NewGuid();
+                await _passwordRepository.AddAsync(passwordId, request.Password, user.UserId);
+            }
+
+            return await IsRightPasswordAsync(passwordId, request.Password) ? _mapper.Map<Dto>(user) : null;
         }
 
         public async Task RegisterAsync(RegisterRequest request)
         {
             if (request == null)
                 throw new ArgumentException("User data is required.", nameof(request));
-
-            var passwordId = Guid.NewGuid();
-            var password = request.Password;
 
             User user = new()
             {
@@ -49,12 +56,11 @@ namespace UserAPI.Services
                 LastName = request.LastName,
                 Email = request.Email,
                 PhoneNumber = request.PhoneNumber,
-                Role = RoleType.USER,
-                PasswordId = passwordId
+                Role = RoleType.USER
             };
 
-            await _passwordRepository.AddAsync(passwordId, password, user);
             await _userService.CreateAsync(_mapper.Map<Dto>(user));
+            await _passwordRepository.AddAsync(Guid.NewGuid(), request.Password, user.UserId);
             _logger.LogInformation("Successful user registration.");
         }
 
@@ -76,13 +82,10 @@ namespace UserAPI.Services
             return user;
         }
 
-        private async Task<bool> IsRightPasswordAsync(User user, string password)
+        private async Task<bool> IsRightPasswordAsync(Guid passwordId, string password)
         {
             if (!string.IsNullOrWhiteSpace(password))
-            {
-                Guid passwordId = user.PasswordId;
                 return await _passwordRepository.VerifyAsync(passwordId, password);
-            }
 
             return false;
         }
