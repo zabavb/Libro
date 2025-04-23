@@ -1,5 +1,7 @@
+import { Bool } from "../subTypes/Bool";
+
 export interface UserSort {
-  alphabetical?: boolean;
-  youngest?: boolean;
-  role?: boolean;
+  alphabetical: Bool;
+  youngest: Bool;
+  roleSort: Bool;
 }

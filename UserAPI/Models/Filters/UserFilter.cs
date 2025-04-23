@@ -6,16 +6,19 @@ namespace UserAPI.Models.Filters
     public class UserFilter : IFilter<User>
     {
         public EmailDomen? Email { get; set; }
-        public RoleType? Role { get; set; }
+        public RoleType? RoleFilter { get; set; }
         public Guid? SubscriptionId { get; set; }
 
         public IQueryable<User> Apply(IQueryable<User> users)
         {
             if (Email.HasValue)
-                users = users.Where(u => u.Email!.Equals(Email));
+            {
+                var normalizedEmail = $"{Email.Value.ToString().ToLower()}.com";
+                users = users.Where(u => u.Email!.EndsWith(normalizedEmail));
+            }
 
-            if (Role.HasValue)
-                users = users.Where(u => u.Role.Equals(Role));
+            if (RoleFilter.HasValue)
+                users = users.Where(u => u.Role == RoleFilter);
 
             if (SubscriptionId.HasValue)
                 users = users.Where(u => u.SubscriptionIds != null &&

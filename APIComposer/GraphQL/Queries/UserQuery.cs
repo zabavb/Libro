@@ -23,16 +23,12 @@ namespace APIComposer.GraphQL.Queries
             var users = await userClient.GetAllUsersAsync(pageNumber, pageSize, searchTerm, filter, sort);
             var userCards = new List<UserCard>();
 
-            await Parallel.ForEachAsync(users.Items, async (user, token) =>
+            foreach (var user in users.Items)
             {
                 var order = await orderClient.GetOrderAsync(user.Id);
-
                 var userCard = mapper.Map<UserCard>((user, order));
-                lock (userCards)
-                {
-                    userCards.Add(userCard);
-                }
-            });
+                userCards.Add(userCard);
+            }
 
             return new PaginatedResult<UserCard>()
             {
@@ -43,7 +39,7 @@ namespace APIComposer.GraphQL.Queries
             };
         }
 
-        [GraphQLName("User")]
+        [GraphQLName("user")]
         public async Task<UserDetails> GetUserAsync(
             [Service] IUserServiceClient userClient,
             [Service] IOrderServiceClient orderClient,

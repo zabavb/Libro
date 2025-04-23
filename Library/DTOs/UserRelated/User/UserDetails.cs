@@ -2,13 +2,14 @@
 {
     public class UserDetails
     {
-        public Guid UserId { get; set; }
+        public Guid Id { get; set; }
         public string? LastName { get; set; }
         public string FirstName { get; set; }
         public string? Email { get; set; }
         public string? PhoneNumber { get; set; }
         public DateTime? DateOfBirth { get; set; }
         public RoleType Role { get; set; }
+        public string ImageUrl { get; set; }
 
         public ICollection<OrderWithBookForUserDetails> Orders { get; set; }
         public int? FeedbacksCount { get; set; }
@@ -22,6 +23,7 @@
             Email = string.Empty;
             PhoneNumber = string.Empty;
             DateOfBirth = DateTime.Today;
+            ImageUrl = string.Empty;
         }
     }
 

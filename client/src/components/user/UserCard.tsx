@@ -21,8 +21,8 @@ const UserCard: React.FC<UserCardProps> = ({ user, onNavigate, onDelete }) => {
         {(user.role === Role.ADMIN || Role.MODERATOR) && <div>{user.role}</div>}
         <div>{user.email}</div>
         <div>{user.phoneNumber}</div>
-        <div>{user.ordersCount}</div>
-        <div>{user.lastOrder}</div>
+        <div>{user.order.ordersCount}</div>
+        <div>{user.order.lastOrder}</div>
 
         <div>Edit</div>
         <div
