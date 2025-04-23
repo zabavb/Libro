@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using FluentAssertions;
 using Library.Common;
-using Library.DTOs.User;
 using Library.DTOs.UserRelated.User;
 using Microsoft.Extensions.Logging;
 using Moq;

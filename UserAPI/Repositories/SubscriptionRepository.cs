@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using StackExchange.Redis;
 using UserAPI.Data;
 using UserAPI.Models;
+using UserAPI.Models.Filters;
 using UserAPI.Models.Subscription;
 using UserAPI.Repositories.Interfaces;
 
@@ -84,7 +85,7 @@ namespace UserAPI.Repositories
             }
             catch (Exception ex)
             {
-                throw new RepositoryException("Error while fetching susbscriptions.", ex);
+                throw new RepositoryException("Error while fetching subscriptions.", ex);
             }
         }
 
@@ -248,6 +249,60 @@ namespace UserAPI.Repositories
             {
                 throw new RepositoryException(
                     $"Database error while UNsubscribing user, by ID [{userId}], with subscription, by ID [{subscriptionId}].");
+            }
+        }
+
+        public async Task<ICollection<BySubscription>> GetAllForFilterContentAsync()
+        {
+            try
+            {
+                var options = new JsonSerializerOptions
+                {
+                    ReferenceHandler = ReferenceHandler.Preserve,
+                    WriteIndented = true
+                };
+                string cacheKey = $"{CacheKeyPrefix}All";
+                var cachedSubscriptions = await _redisDatabase.HashGetAllAsync(cacheKey);
+
+                IQueryable<BySubscription> subscriptions;
+                if (cachedSubscriptions.Length > 0)
+                {
+                    subscriptions = cachedSubscriptions
+                        .Select(entry => JsonSerializer.Deserialize<BySubscription>(entry.Value!, options)!)
+                        .AsQueryable()
+                        .AsNoTracking();
+
+                    _logger.LogInformation("Fetched from CACHE.");
+                }
+                else
+                {
+                    subscriptions = _context.Subscriptions
+                        .Select(s => new BySubscription()
+                        {
+                            Id = s.SubscriptionId,
+                            Title = s.Title
+                        })
+                        .AsNoTracking();
+                    _logger.LogInformation("Fetched from DB.");
+
+                    var hashEntries = subscriptions.ToDictionary(
+                        subscription => subscription.Id.ToString(),
+                        subscription => JsonSerializer.Serialize(subscription, options)
+                    );
+
+                    await _redisDatabase.HashSetAsync(
+                        cacheKey,
+                        [.. hashEntries.Select(kvp => new HashEntry(kvp.Key, kvp.Value))]
+                    );
+                    await _redisDatabase.KeyExpireAsync(cacheKey, _cacheExpiration);
+                    _logger.LogInformation("Set to CACHE.");
+                }
+
+                return await subscriptions.ToListAsync();
+            }
+            catch (Exception ex)
+            {
+                throw new RepositoryException("Error while fetching subscriptions.", ex);
             }
         }
 

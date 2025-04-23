@@ -4,6 +4,7 @@ using UserAPI.Services.Interfaces;
 using Library.Common;
 using Library.DTOs.UserRelated.Subscription;
 using Microsoft.AspNetCore.Authorization;
+using UserAPI.Models.Filters;
 using UserAPI.Models.Subscription;
 
 namespace UserAPI.Controllers
@@ -141,7 +142,7 @@ namespace UserAPI.Controllers
         /// <response code="400">The request data is invalid.</response>
         /// <response code="401">The request is unauthorized.</response>
         /// <response code="500">An unexpected server error occurred.</response>
-        // [Authorize(Roles = "USER")]
+        [Authorize(Roles = "USER")]
         [HttpPost("[action]")]
         public async Task<IActionResult> Subscribe([FromBody] SubscribeRequest request)
         {
@@ -161,7 +162,7 @@ namespace UserAPI.Controllers
         /// <response code="400">The request data is invalid.</response>
         /// <response code="401">The request is unauthorized.</response>
         /// <response code="500">An unexpected server error occurred.</response>
-        // [Authorize(Roles = "USER")]
+        [Authorize(Roles = "USER")]
         [HttpPost("[action]")]
         public async Task<IActionResult> Unsubscribe([FromBody] SubscribeRequest request)
         {
@@ -170,6 +171,22 @@ namespace UserAPI.Controllers
 
             await _service.UnsubscribeAsync(request);
             return Ok();
+        }
+
+        /// <summary>
+        /// Retrieves all low-weight subscriptions' data.
+        /// </summary>
+        /// <returns>A confirmation that subscriptions were successfully fetched.</returns>
+        /// <response code="200">Subscriptions were successfully fetched.</response>
+        /// <response code="400">The request data is invalid.</response>
+        /// <response code="401">The request is unauthorized.</response>
+        /// <response code="500">An unexpected server error occurred.</response>
+        [Authorize(Roles = "ADMIN")]
+        [HttpGet("filter")]
+        public async Task<ActionResult<ICollection<BySubscription>>> GetAllForFilterContent()
+        {
+            var subscriptions = await _service.GetAllForFilterContentAsync();
+            return Ok(subscriptions);
         }
     }
 }

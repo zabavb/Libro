@@ -1,5 +1,4 @@
-﻿using Library.DTOs.User;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using Library.DTOs.UserRelated.User;
 
 namespace DeadAspClient.Models.UserEntities.User

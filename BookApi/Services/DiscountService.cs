@@ -10,40 +10,42 @@ namespace BookAPI.Services
         private readonly IDiscountRepository _repository;
         private readonly IMapper _mapper;
         private readonly ILogger<DiscountService> _logger;
-        public DiscountService(IDiscountRepository repository, IMapper mapper, ILogger<DiscountService> logger) {
-            _repository= repository;
+
+        public DiscountService(IDiscountRepository repository, IMapper mapper, ILogger<DiscountService> logger)
+        {
+            _repository = repository;
             _mapper = mapper;
             _logger = logger;
         }
 
-        public async Task<bool> AddAsync(DiscountDTO discountDto)
+        public async Task /*<bool>*/ CreateAsync(DiscountDTO discountDto)
         {
             try
             {
                 _logger.LogInformation("Adding discount");
                 var discount = _mapper.Map<Discount>(discountDto);
-                await _repository.AddAsync(discount);
-                return true;
+                await _repository.CreateAsync(discount);
+                // return true;
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error adding discount");
-                return false;
+                // return false;
             }
         }
 
-        public async Task<bool> DeleteAsync(Guid discountId)
+        public async Task /*<bool>*/ DeleteAsync(Guid discountId)
         {
             try
             {
                 _logger.LogInformation("Deleting discount with ID {DiscountId}", discountId);
                 await _repository.DeleteAsync(discountId);
-                return true;
+                // return true;
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error deleting discount with ID {DiscountId}", discountId);
-                return false;
+                // return false;
             }
         }
 
@@ -77,8 +79,6 @@ namespace BookAPI.Services
             }
         }
 
-
-
         public async Task<List<DiscountDTO>> GetAllAsync()
         {
             try
@@ -94,21 +94,20 @@ namespace BookAPI.Services
             }
         }
 
-        public async Task<bool> UpdateAsync(DiscountDTO discountDto)
+        public async Task /*<bool>*/ UpdateAsync(DiscountDTO discountDto)
         {
             try
             {
                 _logger.LogInformation("Updating discount with ID {DiscountId}", discountDto.DiscountId);
                 var discount = _mapper.Map<Discount>(discountDto);
                 await _repository.UpdateAsync(discount);
-                return true;
+                // return true;
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error updating discount with ID {DiscountId}", discountDto.DiscountId);
-                return false;
+                // return false;
             }
         }
-
     }
 }

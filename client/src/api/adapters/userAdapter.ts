@@ -6,10 +6,9 @@ export const roleNumberToEnum = (roleNumber: number): Role => {
     0: Role.ADMIN,
     1: Role.MODERATOR,
     2: Role.USER,
-    3: Role.GUEST,
   };
 
-  return roleMap[roleNumber] ?? Role.GUEST;
+  return roleMap[roleNumber] ?? Role.USER;
 };
 
 export const roleEnumToNumber = (role: Role): number => {
@@ -17,7 +16,6 @@ export const roleEnumToNumber = (role: Role): number => {
     [Role.ADMIN]: 0,
     [Role.MODERATOR]: 1,
     [Role.USER]: 2,
-    [Role.GUEST]: 3,
   };
 
   return roleMap[role] ?? 2;

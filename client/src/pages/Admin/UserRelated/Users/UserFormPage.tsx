@@ -1,7 +1,7 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import UserFormContainer from '../../../../containers/user/UserFormContainer';
 
-const UserFormPage = () => {
+const UserFormPage: React.FC = () => {
   const { userId } = useParams<{ userId: string }>();
   const navigate = useNavigate();
 
@@ -16,7 +16,7 @@ const UserFormPage = () => {
         <button onClick={handleGoBack}>Back to User List</button>
       </header>
       <main>
-        <UserFormContainer userId={userId ?? ''} />
+        <UserFormContainer id={userId ?? ''} />
       </main>
     </div>
   );

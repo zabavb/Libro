@@ -4,5 +4,5 @@ import { Role } from '../subTypes/user/Role';
 export interface UserFilter {
   email?: EmailDomen;
   role?: Role;
-  // subscription?: ...
+  subscriptionId?: string;
 }

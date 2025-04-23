@@ -1,10 +1,7 @@
-﻿using BookAPI;
-using BookAPI.Models.Sortings;
+﻿using BookAPI.Models.Sortings;
 using BookAPI.Services.Interfaces;
 using Library.Common;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 
 namespace BookAPI.Controllers
 {
@@ -38,7 +35,7 @@ namespace BookAPI.Controllers
             [FromQuery] int pageSize = GlobalConstants.DefaultPageSize,
             [FromQuery] string? searchTerm = null,
             [FromQuery] PublisherSort? sort = null
-            )
+        )
         {
             try
             {
@@ -48,7 +45,7 @@ namespace BookAPI.Controllers
                     return BadRequest("Page number and page size must be greater than 0.");
                 }
 
-                var publishers = await _publisherService.GetPublishersAsync(pageNumber, pageSize, searchTerm, sort);
+                var publishers = await _publisherService.GetAllAsync(pageNumber, pageSize, searchTerm, sort);
 
                 if (publishers == null || publishers.Items == null || publishers.Items.Count == 0)
                 {
@@ -74,11 +71,11 @@ namespace BookAPI.Controllers
         /// <response code="200">Returns the publisher with the specified ID.</response>
         /// <response code="404">Returns if no publisher is found with the specified ID.</response>
         [HttpGet("{id}")]
-        public async Task<ActionResult<PublisherDto>> GetPublisherById(Guid id)
+        public async Task<ActionResult<PublisherDto>> GetById(Guid id)
         {
             try
             {
-                var publisher = await _publisherService.GetPublisherByIdAsync(id);
+                var publisher = await _publisherService.GetByIdAsync(id);
 
                 if (publisher == null)
                 {
@@ -102,7 +99,7 @@ namespace BookAPI.Controllers
         /// <response code="201">Returns the newly created publisher.</response>
         /// <response code="400">Returns if the provided data is invalid.</response>
         [HttpPost]
-        public async Task<ActionResult<PublisherDto>> CreatePublisher([FromBody] PublisherDto publisherDto)
+        public async Task<ActionResult<PublisherDto>> Create([FromBody] PublisherDto publisherDto)
         {
             try
             {
@@ -112,9 +109,10 @@ namespace BookAPI.Controllers
                     return BadRequest("Invalid data.");
                 }
 
-                var created = await _publisherService.CreatePublisherAsync(publisherDto);
+                /*var created = */
+                await _publisherService.CreateAsync(publisherDto);
 
-                return CreatedAtAction(nameof(GetPublisherById), new { id = created.PublisherId }, created);
+                return CreatedAtAction(nameof(GetById), new { id = publisherDto.PublisherId }, publisherDto);
             }
             catch (Exception ex)
             {
@@ -133,7 +131,7 @@ namespace BookAPI.Controllers
         /// <response code="400">Returns if the provided data is invalid.</response>
         /// <response code="404">Returns if no publisher is found with the specified ID.</response>
         [HttpPut("{id}")]
-        public async Task<ActionResult<PublisherDto>> UpdatePublisher(Guid id, [FromBody] PublisherDto publisherDto)
+        public async Task<ActionResult<PublisherDto>> Update(Guid id, [FromBody] PublisherDto publisherDto)
         {
             try
             {
@@ -143,14 +141,15 @@ namespace BookAPI.Controllers
                     return BadRequest("Invalid data.");
                 }
 
-                var updated = await _publisherService.UpdatePublisherAsync(id, publisherDto);
+                /*var updated = */
+                await _publisherService.UpdateAsync(publisherDto);
 
-                if (updated == null)
+                /*if (updated == null)
                 {
                     return NotFound("Publisher not found.");
-                }
+                }*/
 
-                return Ok(updated);
+                return Ok( /*updated*/);
             }
             catch (Exception ex)
             {
@@ -167,16 +166,17 @@ namespace BookAPI.Controllers
         /// <response code="204">Returns if the publisher is successfully deleted.</response>
         /// <response code="404">Returns if no publisher is found with the specified ID.</response>
         [HttpDelete("{id}")]
-        public async Task<ActionResult> DeletePublisher(Guid id)
+        public async Task<ActionResult> Delete(Guid id)
         {
             try
             {
-                var isDeleted = await _publisherService.DeletePublisherAsync(id);
+                /*var isDeleted = */
+                await _publisherService.DeleteAsync(id);
 
-                if (!isDeleted)
+                /*if (!isDeleted)
                 {
                     return NotFound("Publisher not found.");
-                }
+                }*/
 
                 return NoContent();
             }
@@ -186,7 +186,5 @@ namespace BookAPI.Controllers
                 return StatusCode(500, $"Internal server error: {ex.Message}");
             }
         }
-    
-        
     }
 }

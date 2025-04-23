@@ -1,7 +1,5 @@
 ﻿using BookAPI.Services.Interfaces;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 
 namespace BookAPI.Controllers
 {
@@ -16,7 +14,8 @@ namespace BookAPI.Controllers
         private readonly ILanguageService _languageService;
         private readonly ILogger<ReferenceDataController> _logger;
 
-        public ReferenceDataController(ICoverTypeService coverTypeService, ILanguageService languageService, ILogger<ReferenceDataController> logger)
+        public ReferenceDataController(ICoverTypeService coverTypeService, ILanguageService languageService,
+            ILogger<ReferenceDataController> logger)
         {
             _coverTypeService = coverTypeService;
             _languageService = languageService;
@@ -31,11 +30,12 @@ namespace BookAPI.Controllers
         /// <response code="404">If no cover types are found.</response>
         /// <response code="500">If an error occurs while retrieving cover types.</response>
         [HttpGet("cover-types")]
-        public async Task<ActionResult<IEnumerable<string>>> GetCoverTypes()
+        // Change to ICollection (faster data transfer)
+        public async Task<ActionResult<IEnumerable<string>>> GetAllCoverTypes()
         {
             try
             {
-                var coverTypes = await _coverTypeService.GetCoverTypesAsync();
+                var coverTypes = await _coverTypeService.GetAllAsync();
                 if (coverTypes == null || !coverTypes.Any())
                 {
                     _logger.LogInformation("No cover types found.");
@@ -61,11 +61,11 @@ namespace BookAPI.Controllers
         /// <response code="404">If the cover type with the specified ID is not found.</response>
         /// <response code="500">If an error occurs while retrieving the cover type.</response>
         [HttpGet("cover-types/{id}")]
-        public async Task<ActionResult<string>> GetCoverType(int id)
+        public async Task<ActionResult<string>> GetCoverTypeById(int id)
         {
             try
             {
-                var coverType = await _coverTypeService.GetCoverTypeByIdAsync(id);
+                var coverType = await _coverTypeService.GetByIdAsync(id);
                 if (coverType == null)
                 {
                     _logger.LogWarning($"Cover type with id {id} not found.");
@@ -90,11 +90,11 @@ namespace BookAPI.Controllers
         /// <response code="404">If no languages are found.</response>
         /// <response code="500">If an error occurs while retrieving languages.</response>
         [HttpGet("languages")]
-        public async Task<ActionResult<IEnumerable<string>>> GetLanguages()
+        public async Task<ActionResult<IEnumerable<string>>> GetAllLanguages()
         {
             try
             {
-                var languages = await _languageService.GetLanguagesAsync();
+                var languages = await _languageService.GetAllAsync();
                 if (languages == null || !languages.Any())
                 {
                     _logger.LogInformation("No languages found.");
@@ -120,11 +120,11 @@ namespace BookAPI.Controllers
         /// <response code="404">If the language with the specified ID is not found.</response>
         /// <response code="500">If an error occurs while retrieving the language.</response>
         [HttpGet("languages/{id}")]
-        public async Task<ActionResult<string>> GetLanguage(int id)
+        public async Task<ActionResult<string>> GetLanguageById(int id)
         {
             try
             {
-                var language = await _languageService.GetLanguageByIdAsync(id);
+                var language = await _languageService.GetByIdAsync(id);
                 if (language == null)
                 {
                     _logger.LogWarning($"Language with id {id} not found.");

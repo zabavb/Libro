@@ -1,6 +1,4 @@
-﻿using BookAPI.Models;
-using BookAPI;
-using BookAPI.Models.Filters;
+﻿using BookAPI.Models.Filters;
 using BookAPI.Models.Sortings;
 using BookAPI.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
@@ -24,7 +22,8 @@ namespace BookAPI.Controllers
         private readonly ILogger<BooksController> _logger;
 
 
-        public BooksController(IBookService bookService, ILogger<BooksController> logger, IDiscountService discountService)
+        public BooksController(IBookService bookService, ILogger<BooksController> logger,
+            IDiscountService discountService)
         {
             _bookService = bookService;
             _logger = logger;
@@ -45,14 +44,14 @@ namespace BookAPI.Controllers
         public async Task<IActionResult> GetAll(
             [FromQuery] int pageNumber = GlobalConstants.DefaultPageNumber,
             [FromQuery] int pageSize = GlobalConstants.DefaultPageSize,
-            [FromQuery] string? searchTerm = null, 
+            [FromQuery] string? searchTerm = null,
             [FromQuery] BookFilter? filter = null,
             [FromQuery] BookSort? sort = null
-            )
+        )
         {
             try
             {
-                var books = await _bookService.GetBooksAsync(pageNumber, pageSize, searchTerm, filter, sort);
+                var books = await _bookService.GetAllAsync(pageNumber, pageSize, searchTerm, filter, sort);
                 return Ok(books);
             }
             catch (Exception ex)
@@ -63,7 +62,6 @@ namespace BookAPI.Controllers
         }
 
 
-
         /// <summary>
         /// Retrieves a book by its ID.
         /// </summary>
@@ -72,11 +70,11 @@ namespace BookAPI.Controllers
         /// <response code="200">Returns the book.</response>
         /// <response code="404">Book not found.</response>
         [HttpGet("{id}")]
-        public async Task<ActionResult<BookDto>> GetBookById(Guid id)
+        public async Task<ActionResult<BookDto>> GetById(Guid id)
         {
             try
             {
-                var book = await _bookService.GetBookByIdAsync(id);
+                var book = await _bookService.GetByIdAsync(id);
 
                 if (book == null)
                 {
@@ -93,6 +91,22 @@ namespace BookAPI.Controllers
         }
 
         /// <summary>
+        /// Retrieves Book names for user's details page by ID.
+        /// </summary>
+        /// <param name="ids">The unique identifiers of books which titles to retrieve.</param>
+        /// <returns>Books' titles which IDs matches with provided ones in parameters.</returns>
+        /// <response code="200">Retrieval successful, return the book titles.</response>
+        /// <response code="500">An unexpected error occured.</response>
+        // [Authorize(Roles = "ADMIN, MODERATOR")]
+        [HttpGet("for-user/details")]
+        public async Task<ActionResult<ICollection<string>>> GetAllForUserDetailsAsync(
+            [FromQuery] ICollection<Guid> ids)
+        {
+            var titles = await _bookService.GetAllForUserDetailsAsync(ids);
+            return Ok(titles);
+        }
+
+        /// <summary>
         /// Creates a new book.
         /// </summary>
         /// <param name="bookDto">Book data.</param>
@@ -100,7 +114,7 @@ namespace BookAPI.Controllers
         /// <response code="201">Book successfully created.</response>
         /// <response code="400">Invalid input data.</response>
         [HttpPost]
-        public async Task<ActionResult<BookDto>> CreateBook([FromForm] BookDto bookDto, IFormFile? imageFile)
+        public async Task<ActionResult<BookDto>> Create([FromForm] BookDto bookDto, IFormFile? imageFile)
         {
             if (bookDto == null)
             {
@@ -110,9 +124,10 @@ namespace BookAPI.Controllers
 
             try
             {
-                var createdBook = await _bookService.CreateBookAsync(bookDto, imageFile);
-                var createdDiscount = await _discountService.AddAsync(new DiscountDTO { BookId = createdBook.BookId, DiscountRate = 0 });
-                return CreatedAtAction(nameof(GetBookById), new { id = createdBook.BookId }, createdBook);
+                /*var createdBook = */
+                await _bookService.CreateAsync(bookDto, imageFile);
+                // var createdDiscount = await _discountService.AddAsync(new DiscountDTO { BookId = createdBook.BookId, DiscountRate = 0 });
+                return CreatedAtAction(nameof(GetById), new { id = bookDto.BookId }, bookDto);
             }
             catch (Exception ex)
             {
@@ -131,7 +146,8 @@ namespace BookAPI.Controllers
         /// <response code="400">Invalid input data.</response>
         /// <response code="404">Book not found.</response>
         [HttpPut("{id}")]
-        public async Task<ActionResult<BookDto>> UpdateBook(Guid id, [FromBody] UpdateBookRequest request, IFormFile? imageFile)
+        public async Task<ActionResult<BookDto>> Update(Guid id, [FromBody] UpdateBookRequest request,
+            IFormFile? imageFile)
         {
             var bookDto = request.Book;
             var discount = request.Discount;
@@ -143,21 +159,23 @@ namespace BookAPI.Controllers
 
             try
             {
-                var updatedBook = await _bookService.UpdateBookAsync(id, bookDto, imageFile);
+                /*var updatedBook = */
+                await _bookService.UpdateAsync(id, bookDto, imageFile);
 
-                if (updatedBook == null)
+                /*if (updatedBook == null)
                 {
                     return NotFound($"Book with id {id} not found.");
-                }
+                }*/
 
                 //discount.BookId = updatedBook.BookId;
 
                 if (discount != null)
                 {
-                    _ = await _discountService.UpdateAsync(discount);
+                    /*_ =*/
+                    await _discountService.UpdateAsync(discount);
                 }
 
-                return Ok(updatedBook);
+                return Ok( /*updatedBook*/);
             }
             catch (Exception ex)
             {
@@ -174,28 +192,31 @@ namespace BookAPI.Controllers
         /// <response code="204">Book successfully deleted.</response>
         /// <response code="404">Book not found.</response>
         [HttpDelete("{id}")]
-        public async Task<ActionResult> DeleteBook(Guid id)
+        public async Task<ActionResult> Delete(Guid id)
         {
             try
             {
-                var isDeleted = await _bookService.DeleteBookAsync(id);
+                /*var isDeleted = */
+                await _bookService.DeleteAsync(id);
 
-                if (!isDeleted)
+                /*if (!isDeleted)
                 {
                     return NotFound($"Book with id {id} not found.");
-                }
+                }*/
 
                 var discount = await _discountService.GetByBookIdAsync(id);
                 if (discount == null)
                 {
                     return NotFound($"Discount with id {id} not found.");
                 }
-                var isDeletedDiscount = await _discountService.DeleteAsync(id);
 
-                if (!isDeletedDiscount)
+                /*var isDeletedDiscount = */
+                await _discountService.DeleteAsync(id);
+
+                /*if (!isDeletedDiscount)
                 {
                     return NotFound($"Discount with id {discount.BookId} was not deleted.");
-                }
+                }*/
 
                 return NoContent();
             }
