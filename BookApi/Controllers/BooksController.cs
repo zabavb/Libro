@@ -4,6 +4,7 @@ using BookAPI.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Library.DTOs.Book;
 using System.Linq.Expressions;
+using Microsoft.AspNetCore.Authorization;
 
 namespace BookAPI.Controllers
 {
@@ -97,7 +98,7 @@ namespace BookAPI.Controllers
         /// <returns>Books' titles which IDs matches with provided ones in parameters.</returns>
         /// <response code="200">Retrieval successful, return the book titles.</response>
         /// <response code="500">An unexpected error occured.</response>
-        // [Authorize(Roles = "ADMIN, MODERATOR")]
+        [Authorize(Roles = "ADMIN, MODERATOR")]
         [HttpGet("for-user/details")]
         public async Task<ActionResult<ICollection<string>>> GetAllForUserDetailsAsync(
             [FromQuery] ICollection<Guid> ids)

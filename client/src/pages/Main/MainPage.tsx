@@ -1,8 +1,10 @@
 import { useNavigate } from 'react-router-dom';
 import '../../index.css';
+import { useAuth } from '@/state/context';
 
 const MainPage: React.FC = () => {
   const navigate = useNavigate();
+  const { logout } = useAuth();
 
   return (
     <div>
@@ -15,6 +17,9 @@ const MainPage: React.FC = () => {
       </div>
       <div>
         <button onClick={() => navigate('/catalog')}>Catalog</button>
+      </div>
+      <div>
+        <button onClick={logout}>Logout</button>
       </div>
     </div>
   );

@@ -8,7 +8,7 @@ namespace APIComposer.GraphQL
         public Profiles()
         {
             CreateMap<(UserDto user, OrderForUserCard order), UserCard>()
-                .ForMember(dest => dest.UserId, opt => opt.MapFrom(src => src.user.Id))
+                .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.user.Id))
                 .ForMember(dest => dest.FullName,
                     opt => opt.MapFrom(src => $"{src.user.LastName} {src.user.FirstName}"))
                 .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.user.Email))
@@ -19,13 +19,14 @@ namespace APIComposer.GraphQL
 
             CreateMap<(UserWithSubscriptionsDto user, ICollection<OrderForUserDetails> orders,
                     ICollection<FeedbackForUserDetails> feedbacks), UserDetails>()
-                .ForMember(dest => dest.UserId, opt => opt.MapFrom(src => src.user.Id))
+                .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.user.Id))
                 .ForMember(dest => dest.LastName, opt => opt.MapFrom(src => src.user.LastName))
                 .ForMember(dest => dest.FirstName, opt => opt.MapFrom(src => src.user.FirstName))
                 .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.user.Email))
                 .ForMember(dest => dest.PhoneNumber, opt => opt.MapFrom(src => src.user.PhoneNumber))
                 .ForMember(dest => dest.DateOfBirth, opt => opt.MapFrom(src => src.user.DateOfBirth))
                 .ForMember(dest => dest.Role, opt => opt.MapFrom(src => src.user.Role))
+                .ForMember(dest => dest.ImageUrl, opt => opt.MapFrom(src => src.user.ImageUrl))
                 .ForPath(dest => dest.Orders, opt => opt.MapFrom(src => src.orders))
                 .ForPath(dest => dest.Feedbacks, opt => opt.MapFrom(src => src.feedbacks))
                 .ForPath(dest => dest.Subscriptions, opt => opt.MapFrom(src => src.user.Subscriptions));

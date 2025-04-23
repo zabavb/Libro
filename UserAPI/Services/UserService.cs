@@ -42,8 +42,12 @@ namespace UserAPI.Services
         {
             var users = await _repository.GetAllAsync(pageNumber, pageSize, searchTerm, filter, sort);
 
-            if (users.Items.Any())
-                throw new KeyNotFoundException("No users found.");
+            if (users.Items.Count == 0)
+            {
+                _logger.LogInformation("No users found.");
+                return new();
+            }
+
             _logger.LogInformation("Successfully fetched paginated users.");
 
             var dtos = users.Items.Select(user => _mapper.Map<Dto>(user)).ToList();
@@ -70,13 +74,13 @@ namespace UserAPI.Services
             if (dto == null)
                 throw new ArgumentException("User data mast be provided.", nameof(dto));
 
-            var id = Guid.NewGuid();
+            if (dto.Id == Guid.Empty)
+                dto.Id = Guid.NewGuid();
 
             var image = await GenerateAvatarAsync(dto.LastName, dto.FirstName);
-            dto.ImageUrl = await UploadAvatarAsync(image, Folder, id);
+            dto.ImageUrl = await UploadAvatarAsync(image, Folder, dto.Id);
 
             var user = _mapper.Map<User>(dto);
-            user.UserId = id;
             await _repository.CreateAsync(user);
             _logger.LogInformation("User successfully created.");
         }
@@ -93,8 +97,7 @@ namespace UserAPI.Services
 
         public async Task DeleteAsync(Guid id)
         {
-            var user = await DeleteAvatarAsync(id);
-            await _passwordRepository.DeleteAsync(user.PasswordId);
+            await DeleteAvatarAsync(id);
             await _repository.DeleteAsync(id);
             _logger.LogInformation($"User with ID [{id}] successfully deleted.");
         }
@@ -124,15 +127,13 @@ namespace UserAPI.Services
                 ? await _storageService.UploadAsync(GlobalDefaults.BucketName, image, folder, id)
                 : string.Empty;
 
-        private async Task<User> DeleteAvatarAsync(Guid id)
+        private async Task DeleteAvatarAsync(Guid id)
         {
-            var user = await _repository.GetByIdAsync(id) ??
-                       throw new KeyNotFoundException($"User with ID [{id}] not found for deletion.");
+            _ = await _repository.GetByIdAsync(id) ??
+                throw new KeyNotFoundException($"User with ID [{id}] not found for deletion.");
 
             string fileKey = $"{Folder}{id}.png";
             await _storageService.DeleteAsync(GlobalDefaults.BucketName, fileKey);
-
-            return user;
         }
     }
 }
