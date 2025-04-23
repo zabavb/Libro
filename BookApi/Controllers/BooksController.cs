@@ -273,14 +273,17 @@ namespace BookAPI.Controllers
             }
         }
 
-        /// <summary>
-        /// Retrieves a list of books based on a specified condition.
-        /// </summary>
-        /// <param name="condition">The condition to filter books.  b => b.Quantity > 0</param>
-        /// <returns>A list of books that match the specified condition.</returns>
-        /// <response code="200">Returns the list of books matching the condition.</response>
-        /// <response code="500">Internal server error.</response>
-        public async Task<List<BookDto>> GetBooksByConditionAsync(Expression<Func<Models.Book, bool>> condition)
+		/// <summary>
+		/// Retrieves a list of books based on a specified condition.
+		/// </summary>
+		/// <param name="condition">The condition to filter books.  b => b.Quantity > 0</param>
+		/// <returns>A list of books that match the specified condition.</returns>
+		/// <response code="200">Returns the list of books matching the condition.</response>
+		/// <response code="500">Internal server error.</response>
+		/// 
+
+		[HttpGet("GetBooksByCondition")]
+		public async Task<List<BookDto>> GetBooksByConditionAsync(Expression<Func<Models.Book, bool>> condition)
         {
             try
             {

@@ -186,7 +186,156 @@ namespace BookAPI.Data
 {
     public static class DataSeeder
     {
-        public static async Task Seed(ModelBuilder modelBuilder, S3StorageService storageService)
+		public static string SanitizeFileName(this string fileName)
+		{
+			if (string.IsNullOrWhiteSpace(fileName))
+				return string.Empty;
+
+			var invalidChars = Path.GetInvalidFileNameChars();
+			var cleanName = new string(fileName
+				.Where(ch => !invalidChars.Contains(ch))
+				.ToArray());
+
+			cleanName = cleanName.Replace(" ", "_");
+			var lastDotIndex = cleanName.LastIndexOf('.');
+			if (lastDotIndex > 0)
+			{
+				var nameWithoutExt = cleanName.Substring(0, lastDotIndex);
+				var extension = cleanName.Substring(lastDotIndex);
+				cleanName = nameWithoutExt.Replace(".", "") + extension;
+			}
+			else
+			{
+				cleanName = cleanName.Replace(".", "");
+			}
+
+			const int maxLength = 50;
+			if (cleanName.Length > maxLength)
+			{
+				cleanName = cleanName.Substring(0, maxLength);
+
+				if (lastDotIndex > 0 && lastDotIndex < cleanName.Length)
+				{
+					cleanName = cleanName.Substring(0, cleanName.LastIndexOf('.'))
+							  + cleanName.Substring(cleanName.LastIndexOf('.'));
+				}
+			}
+
+			return cleanName.ToLowerInvariant();
+		}
+		private static async Task<string> UploadLocalAudioToS3(
+	        S3StorageService storageService,
+	        string localFilePath,
+	        Guid bookId,
+	        string bookTitle)
+		{
+			try
+			{
+				if (!File.Exists(localFilePath))
+				{
+					Console.WriteLine($"File not found: {localFilePath}");
+					return null;
+				}
+
+				var fileExtension = Path.GetExtension(localFilePath).ToLower();
+				var fileName = $"{bookTitle.SanitizeFileName()}{fileExtension}";
+
+				await using var fileStream = File.OpenRead(localFilePath);
+				var formFile = new FormFile(
+					fileStream,
+					0,
+					fileStream.Length,
+					"file",
+					fileName)
+				{
+					Headers = new HeaderDictionary(),
+					ContentType = GetAudioContentType(fileExtension)
+				};
+
+				return await storageService.UploadAsync(
+					"libro-book",
+					formFile,
+					"book/audios/",
+					bookId);
+			}
+			catch (Exception ex)
+			{
+				Console.WriteLine($"Error uploading local audio: {ex.Message}");
+				return null;
+			}
+		}
+		private static string GetAudioContentType(string fileExtension)
+		{
+			return fileExtension.ToLower() switch
+			{
+				".mp3" => "audio/mpeg",
+				".mp4" => "audio/mp4",
+				".ogg" => "audio/ogg",
+				".wav" => "audio/wav",
+				".aac" => "audio/aac",
+				".webm" => "audio/webm",
+				".flac" => "audio/flac",
+				".m4a" => "audio/m4a",
+				_ => "application/octet-stream" 
+			};
+		}
+		private static async Task<string> UploadImageAsync(S3StorageService storageService, string imageUrl, Guid bookId)
+		{
+			string tempFileName = null;
+			try
+			{
+				using var httpClient = new HttpClient();
+				var response = await httpClient.GetAsync(imageUrl);
+
+				if (!response.IsSuccessStatusCode)
+					return null;
+
+				tempFileName = Path.Combine(Path.GetTempPath(), $"{Guid.NewGuid()}{Path.GetExtension(imageUrl)}");
+
+				await using (var fileStream = File.Create(tempFileName))
+				{
+					await response.Content.CopyToAsync(fileStream);
+				}
+
+				var fileStreamForForm = new FileStream(tempFileName, FileMode.Open, FileAccess.Read);
+				var formFile = new FormFile(
+					fileStreamForForm,
+					0,
+					fileStreamForForm.Length,
+					"file",
+					$"{bookId}{Path.GetExtension(imageUrl)}")
+				{
+					Headers = new HeaderDictionary(),
+					ContentType = response.Content.Headers.ContentType?.MediaType ?? "application/octet-stream"
+				};
+
+				var s3Url = await storageService.UploadAsync(
+					"libro-book",
+					formFile,
+					"book/images/",
+					bookId);
+
+				return s3Url;
+			}
+			catch (Exception ex)
+			{
+				Console.WriteLine($"Error uploading image: {ex.Message}");
+				return null;
+			}
+			finally
+			{
+				if (tempFileName != null && File.Exists(tempFileName))
+				{
+					try
+					{
+						File.Delete(tempFileName);
+					}
+					catch {  }
+				}
+			}
+		}
+
+		public static async Task Seed(ModelBuilder modelBuilder, S3StorageService storageService)
         {
             var bookIds = new List<Guid>
             {
@@ -194,9 +343,10 @@ namespace BookAPI.Data
                 Guid.NewGuid(), 
                 Guid.NewGuid() 
             };
+			var localAudioPath = Path.Combine(Directory.GetCurrentDirectory(),"Data","Files","MBp1.mp3");
 
 
-            var imagePaths = new Dictionary<string, string>
+			var imagePaths = new Dictionary<string, string>
             {
                 { "Місто зі скла", "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTJSVPcBg9gdzf2mit382PYIbFkkDbn-JB7jA&s" },
                 { "Тіні минулого", "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTJSVPcBg9gdzf2mit382PYIbFkkDbn-JB7jA&s" },
@@ -308,6 +458,12 @@ namespace BookAPI.Data
                     Description = "Фантастичний роман про місто, побудоване зі скла.",
                     Cover = CoverType.HARDCOVER,
                     Quantity = 5,
+					ImageUrl = await UploadImageAsync(storageService, imagePaths["Місто зі скла"], bookIds[0]),
+					AudioFileUrl = await UploadLocalAudioToS3(
+			   storageService,
+			   localAudioPath,
+			   bookIds[0],
+			   "MBp1.mp3"),
                     //IsAvaliable = true,
                     //ImageUrl = await UploadImageAsync(storageService, imagePaths["Місто зі скла"], bookIds[0]),
                     DiscountId = discountsIds[0]
@@ -325,7 +481,13 @@ namespace BookAPI.Data
                     Description = "Детективний роман з несподіваною розв'язкою.",
                     Cover = CoverType.SOFT_COVER,
                     Quantity = 3,
+					AudioFileUrl = await UploadLocalAudioToS3(
+			   storageService,
+			   localAudioPath,
+			   bookIds[1],
+			   "MBp1.mp3"),
                     //IsAvaliable = true,
+                    ImageUrl = await UploadImageAsync(storageService, imagePaths["Тіні минулого"], bookIds[1])
                     //ImageUrl = await UploadImageAsync(storageService, imagePaths["Тіні минулого"], bookIds[1]) 
                 },
                 new Book
@@ -341,6 +503,8 @@ namespace BookAPI.Data
                     Description = "Книга про те, як розвивати емоційний інтелект.",
                     Cover = CoverType.HARDCOVER,
                     Quantity = 1,
+					AudioFileUrl = await UploadLocalAudioToS3(storageService, localAudioPath, bookIds[2], "MBp1.mp3"),
+					ImageUrl = await UploadImageAsync(storageService, imagePaths["Емоційний інтелект"], bookIds[2])
                     //IsAvaliable = true,
                     //ImageUrl = await UploadImageAsync(storageService, imagePaths["Емоційний інтелект"], bookIds[2]) 
                 }

@@ -44,7 +44,8 @@ namespace BookAPI.Models
             Feedbacks = new List<Feedback>();
             Subcategories = new List<SubCategory>();
             ImageUrl = string.Empty;
-            DiscountId = Guid.Empty;
+            AudioFileUrl = string.Empty;
+			DiscountId = Guid.Empty;
         }
     }
 }
