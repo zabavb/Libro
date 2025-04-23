@@ -43,7 +43,10 @@ namespace UserAPI.Services
         private static Rgba32 GetRandomColor()
         {
             Random rnd = new();
-            return new Rgba32(rnd.Next(256), rnd.Next(256), rnd.Next(256));
+            var r = rnd.Next(200);
+            var g = rnd.Next(200);
+            var b = rnd.Next(200);
+            return new Rgba32((byte)r, (byte)g, (byte)b);
         }
     }
 }
