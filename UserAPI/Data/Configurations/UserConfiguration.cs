@@ -38,11 +38,6 @@ namespace UserAPI.Data.Configurations
             builder.Property(u => u.Role)
                 .IsRequired()
                 .HasConversion<string>();
-
-            builder.HasOne(u => u.Password)
-                .WithOne()
-                .HasForeignKey<User>(u => u.PasswordId)
-                .IsRequired();
         }
     }
 }

@@ -1,0 +1,5 @@
+export enum Bool {
+  NULL = 'NULL',
+  ASCENDING = 'ASCENDING',
+  DESCENDING = 'DESCENDING',
+}

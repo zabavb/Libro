@@ -37,9 +37,8 @@ namespace UserAPI.Controllers
         /// <returns>A paginated list of users.</returns>
         /// <response code="200">Returns the paginated list of users.</response>
         /// <response code="401">If request is unauthorized.</response>
-        /// <response code="404">If no users are found.</response>
         /// <response code="500">If an unexpected error occurred.</response>
-        // [Authorize(Roles = "ADMIN, MODERATOR")]
+        [Authorize(Roles = "ADMIN, MODERATOR")]
         [HttpGet]
         public async Task<ActionResult<PaginatedResult<Dto>>> GetAll(
             [FromQuery] int pageNumber = GlobalConstants.DefaultPageNumber,
@@ -62,7 +61,7 @@ namespace UserAPI.Controllers
         /// <response code="401">If request is unauthorized.</response>
         /// <response code="404">If the user with the specified ID is not found or ID was not specified.</response>
         /// <response code="500">If an unexpected error occurred.</response>
-        // [Authorize(Roles = "ADMIN, MODERATOR")]
+        [Authorize(Roles = "ADMIN, MODERATOR")]
         [HttpGet("{id}")]
         public async Task<ActionResult<UserWithSubscriptionsDto>> GetById(Guid id)
         {
@@ -85,7 +84,7 @@ namespace UserAPI.Controllers
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] Dto user)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
             await _service.CreateAsync(user);
@@ -108,7 +107,7 @@ namespace UserAPI.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(Guid id, [FromBody] Dto user)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
                 return BadRequest(ModelState);
             if (id != user.Id)
                 return BadRequest("User ID in the URL does not match the ID in the body.");

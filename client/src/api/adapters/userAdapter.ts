@@ -1,14 +1,24 @@
-import { Role, User } from '../../types';
+import { Role, RoleView, User, UserFilter, UserViewFilter } from '../../types';
 import { UserFormData } from '../../utils';
 
-export const roleNumberToEnum = (roleNumber: number): Role => {
-  const roleMap: { [key: number]: Role } = {
-    0: Role.ADMIN,
-    1: Role.MODERATOR,
-    2: Role.USER,
+export const numberToRoleView = (roleNumber: number): RoleView => {
+  const roleMap: { [key: number]: RoleView } = {
+    0: RoleView.ADMIN,
+    1: RoleView.MODERATOR,
+    2: RoleView.USER,
   };
 
-  return roleMap[roleNumber] ?? Role.USER;
+  return roleMap[roleNumber] ?? RoleView.USER;
+};
+
+export const roleViewToNumber = (role: RoleView): number => {
+  const roleMap: { [key in RoleView]: number } = {
+    [RoleView.ADMIN]: 0,
+    [RoleView.MODERATOR]: 1,
+    [RoleView.USER]: 2,
+  };
+
+  return roleMap[role] ?? 2;
 };
 
 export const roleEnumToNumber = (role: Role): number => {
@@ -21,13 +31,33 @@ export const roleEnumToNumber = (role: Role): number => {
   return roleMap[role] ?? 2;
 };
 
-export const UserFormDataToUser = (form: UserFormData): User => ({
+export const UserFormDataToUser = (form: UserFormData, id?: string): User => ({
   ...form,
-  id: '00000000-0000-0000-0000-000000000000',
+  id: id ?? '00000000-0000-0000-0000-000000000000',
   lastName: form.lastName ?? null,
   email: form.email ?? null,
-  phoneNumber: form.phoneNumber ?? null,
+  phoneNumber: form.phoneNumber ? form.phoneNumber : null,
   dateOfBirth: form.dateOfBirth ? new Date(form.dateOfBirth) : null,
-  role: roleEnumToNumber(form.role),
+  role: roleViewToNumber(form.role),
   imageUrl: '',
 });
+
+export const FromUserViewFilterToUserFilter = (
+  view: UserViewFilter,
+): UserFilter => {
+  return {
+    email: view.email ?? null,
+    roleFilter: view.role ?? null,
+    subscriptionId: view.subscriptionId ?? null,
+  } as UserFilter;
+};
+
+export const FromUserFilterToUserViewFilter = (
+  view: UserFilter,
+): UserViewFilter => {
+  return {
+    email: view.email ?? null,
+    role: view.roleFilter ?? null,
+    subscriptionId: view.subscriptionId ?? null,
+  } as UserViewFilter;
+};

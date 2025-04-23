@@ -19,14 +19,14 @@ namespace UserAPI.Services
             using var image = new Image<Rgba32>(ImageSize, ImageSize, randomColor);
             var font = SystemFonts.CreateFont("Arial", FontSize, FontStyle.Bold);
             
-            var textOptions = new TextOptions(font)
+            var richTextOptions = new RichTextOptions(font)
             {
                 HorizontalAlignment = HorizontalAlignment.Center,
                 VerticalAlignment = VerticalAlignment.Center,
                 Origin = new PointF(ImageSize / 2, ImageSize / 2)
             };
             
-            image.Mutate(ctx => ctx.DrawText((RichTextOptions)textOptions, initials, Color.White));
+            image.Mutate(ctx => ctx.DrawText(richTextOptions, initials, Color.White));
             
             using var ms = new MemoryStream();
             await image.SaveAsPngAsync(ms);
@@ -39,11 +39,14 @@ namespace UserAPI.Services
             char lastInitial = !string.IsNullOrWhiteSpace(lastName) ? char.ToUpper(lastName[0]) : ' ';
             return $"{lastInitial}{firstInitial}";
         }
-
+        
         private static Rgba32 GetRandomColor()
         {
             Random rnd = new();
-            return new Rgba32(rnd.Next(256), rnd.Next(256), rnd.Next(256));
+            var r = rnd.Next(200);
+            var g = rnd.Next(200);
+            var b = rnd.Next(200);
+            return new Rgba32((byte)r, (byte)g, (byte)b);
         }
     }
 }

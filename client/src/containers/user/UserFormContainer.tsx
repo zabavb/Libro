@@ -68,7 +68,7 @@ const UserFormContainer: React.FC<UserFormContainerProps> = ({ id }) => {
   const handleEditUser = useCallback(
     async (existingUser: UserFormType, userForm: UserFormData) => {
       if (!id) return;
-      const user = UserFormDataToUser(userForm);
+      const user = UserFormDataToUser(userForm, id);
       const margedData: User = { ...existingUser, ...user };
       const response = await editUserService(id, margedData);
 

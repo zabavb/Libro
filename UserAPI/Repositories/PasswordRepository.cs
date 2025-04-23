@@ -8,9 +8,9 @@ namespace UserAPI.Repositories
 {
     public class PasswordRepository : IPasswordRepository
     {
-
         private readonly UserDbContext _context;
         private readonly ILogger<IPasswordRepository> _logger;
+
         public PasswordRepository(UserDbContext context, ILogger<IPasswordRepository> logger)
         {
             _context = context;
@@ -37,6 +37,7 @@ namespace UserAPI.Repositories
             {
                 rng.GetBytes(saltBytes);
             }
+
             string result = Convert.ToBase64String(saltBytes);
             return result.Substring(0, result.Length - (size / 8));
         }
@@ -44,6 +45,13 @@ namespace UserAPI.Repositories
         public async Task<Password> GetByIdAsync(Guid passwordId)
         {
             return await _context.Passwords.FirstOrDefaultAsync(p => p.PasswordId == passwordId);
+        }
+
+        public async Task<Password?> GetByUserIdAsync(Guid userId)
+        {
+            return await _context.Passwords
+                .AsNoTracking()
+                .FirstOrDefaultAsync(p => p.UserId == userId);
         }
 
         public async Task<bool> UpdateAsync(Guid userId, string oldPassword, string newPassword)
@@ -64,6 +72,7 @@ namespace UserAPI.Repositories
 
                 return true;
             }
+
             return false;
         }
 
@@ -76,7 +85,7 @@ namespace UserAPI.Repositories
             return hashedInput == passwordEntity.PasswordHash;
         }
 
-        public async Task<bool> AddAsync(Guid id, string password, User user)
+        public async Task<bool> AddAsync(Guid id, string password, Guid userId)
         {
             var salt = GenerateSalt();
             var hash = HashPassword(password, salt);
@@ -86,12 +95,12 @@ namespace UserAPI.Repositories
                 PasswordId = id,
                 PasswordHash = hash,
                 PasswordSalt = salt,
-                User = user,
-                UserId = user.UserId
+                UserId = userId
             };
 
 
-            await _context.AddAsync(passwordEntity);
+            await _context.Passwords.AddAsync(passwordEntity);
+            await _context.SaveChangesAsync();
             return true;
         }
 
@@ -112,11 +121,10 @@ namespace UserAPI.Repositories
             }
         }
 
-        
 
         public async Task<string> GetHashByIdAsync(Guid passwordId)
         {
-            return  _context.Passwords.FirstOrDefaultAsync(p => p.PasswordId == passwordId).Result.PasswordHash;
+            return _context.Passwords.FirstOrDefaultAsync(p => p.PasswordId == passwordId).Result.PasswordHash;
         }
     }
 }

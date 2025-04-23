@@ -108,7 +108,7 @@ export const unsubscribe = async (request: SubscribeRequest): Promise<void> => {
 export const subscriptionsforFiltering = async (): Promise<
   BySubscription[]
 > => {
-  const response = await axios.post<BySubscription[]>(FOR_FILTERING, {
+  const response = await axios.get<BySubscription[]>(FOR_FILTERING, {
     headers: getAuthHeaders(),
   });
   return response.data;

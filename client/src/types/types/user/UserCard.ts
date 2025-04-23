@@ -7,6 +7,8 @@ export interface UserCard {
   phoneNumber: string;
   role: Role;
 
-  ordersCount: number;
-  lastOrder: string;
+  order: {
+    ordersCount: number;
+    lastOrder: string;
+  };
 }

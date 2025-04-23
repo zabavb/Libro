@@ -6,7 +6,7 @@ namespace Library.Common
     public static class Search
     {
         public static IQueryable<T> SearchBy<T>(this IQueryable<T> query, string searchTerm,
-            params Expression<Func<T, string>>[] searchFields)
+            params Expression<Func<T, string?>>[] searchFields)
         {
             if (string.IsNullOrWhiteSpace(searchTerm) || searchFields.Length == 0)
                 return query;
@@ -19,7 +19,7 @@ namespace Library.Common
 
             foreach (var field in searchFields)
             {
-                var property = Expression.Invoke(field, parameter);
+                /*var property = Expression.Invoke(field, parameter);
                 var toLowerMethod = typeof(string).GetMethod("ToLower", Type.EmptyTypes);
                 var containsMethod =
                     typeof(DbFunctionsExtensions).GetMethod("Like",
@@ -32,14 +32,56 @@ namespace Library.Common
                         toLowerExpression, Expression.Constant(searchTerm));
 
                     predicate = predicate == null ? likeExpression : Expression.OrElse(predicate, likeExpression);
-                }
+                }*/
+                // Access the property directly (MemberExpression)
+                var member = ReplaceParameter(field.Body, field.Parameters[0], parameter);
+
+                var toLower = Expression.Call(member,
+                    typeof(string).GetMethod(nameof(string.ToLower), Type.EmptyTypes)!);
+
+                var likeMethod = typeof(DbFunctionsExtensions).GetMethod(
+                    nameof(DbFunctionsExtensions.Like),
+                    new[] { typeof(DbFunctions), typeof(string), typeof(string) }
+                )!;
+
+                var likeCall = Expression.Call(
+                    null,
+                    likeMethod,
+                    Expression.Constant(EF.Functions),
+                    toLower,
+                    Expression.Constant(searchTerm)
+                );
+
+                predicate = predicate == null ? likeCall : Expression.OrElse(predicate, likeCall);
             }
 
-            if (predicate == null)
-                return query;
+            /*if (predicate == null)
+                return query;*/
+            /*var lambda = Expression.Lambda<Func<T, bool>>(predicate, parameter);
+            return query.Where(lambda);*/
 
-            var lambda = Expression.Lambda<Func<T, bool>>(predicate, parameter);
-            return query.Where(lambda);
+            return query.Where(Expression.Lambda<Func<T, bool>>(predicate!, parameter));
+        }
+
+        // Replaces all instances of `source` in `expression` with `target`
+        private static Expression ReplaceParameter(Expression expression, ParameterExpression source, Expression target)
+        {
+            return new ReplaceVisitor(source, target).Visit(expression)!;
+        }
+
+        private class ReplaceVisitor : ExpressionVisitor
+        {
+            private readonly ParameterExpression _source;
+            private readonly Expression _target;
+
+            public ReplaceVisitor(ParameterExpression source, Expression target)
+            {
+                _source = source;
+                _target = target;
+            }
+
+            protected override Expression VisitParameter(ParameterExpression node) =>
+                node == _source ? _target : base.VisitParameter(node);
         }
     }
 }

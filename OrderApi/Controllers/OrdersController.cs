@@ -1,4 +1,5 @@
 ﻿using Library.DTOs.UserRelated.User;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using OrderApi.Services;
 
@@ -88,7 +89,7 @@ namespace OrderApi.Controllers
         /// <response code="200">Retrieval successful, return the order snippet.</response>
         /// <response code="404">Could not find the order.</response>
         /// <response code="500">An unexpected error occured.</response>
-        // [Authorize(Roles = "ADMIN, MODERATOR")]
+        [Authorize(Roles = "ADMIN, MODERATOR")]
         [HttpGet("for-user/card/{id}")]
         public async Task<ActionResult<OrderForUserCard>> GetForUserCardAsync(Guid id)
         {
@@ -107,7 +108,7 @@ namespace OrderApi.Controllers
         /// <response code="200">Retrieval successful, return the order snippets.</response>
         /// <response code="404">Could not find the user.</response>
         /// <response code="500">An unexpected error occured.</response>
-        // [Authorize(Roles = "ADMIN, MODERATOR")]
+        [Authorize(Roles = "ADMIN, MODERATOR")]
         [HttpGet("for-user/details/{id}")]
         public async Task<ActionResult<ICollection<OrderForUserDetails>>> GetAllForUserDetailsAsync(Guid id)
         {

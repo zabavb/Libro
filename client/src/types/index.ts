@@ -20,6 +20,7 @@ export type { OrderView } from './types/order/OrderView';
 
 // Filters
 export type { UserFilter } from './filters/UserFilter';
+export type { UserViewFilter } from './filters/view/UserViewFilter';
 export type { BySubscription } from './filters/BySubscription';
 export type { OrderFilter } from './filters/OrderFilter';
 
@@ -31,7 +32,12 @@ export type { BookSort } from './sortings/BookSort';
 
 // Subtypes
 export type { ServiceResponse } from './subTypes/ServiceResponse';
+export type { GraphQLResponse } from './subTypes/GraphQLResponse';
 export type { PaginatedResponse } from './subTypes/PaginatedResponse';
 export { Role } from './subTypes/user/Role';
+export { RoleView } from './subTypes/user/RoleView';
 export { Status } from './subTypes/Status';
+export { EmailDomen } from './subTypes/user/EmailDomen';
+export { EmailViewDomen } from './subTypes/user/EmailViewDomen';
+export { Bool } from './subTypes/Bool';
 export type { Notification, NotificationData } from './subTypes/Notification';

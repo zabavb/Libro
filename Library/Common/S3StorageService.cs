@@ -11,18 +11,20 @@ namespace Library.Common
     public class S3StorageService(IConfiguration configuration, ILogger<IS3StorageService> logger) : IS3StorageService
     {
         private readonly string _region = configuration["AWS:Region"]!;
+
         private readonly IAmazonS3 _s3Client = new AmazonS3Client(
             configuration["AWS:AccessKey"],
             configuration["AWS:SecretKey"],
             Amazon.RegionEndpoint.GetBySystemName(configuration["AWS:Region"])
         );
+
         private readonly ILogger<IS3StorageService> _logger = logger;
 
         public async Task<string> UploadAsync(string bucketName, IFormFile file, string folder, Guid id)
         {
             string fileKey = $"{folder}{id}{Path.GetExtension(file.FileName)}";
             using var fs = file.OpenReadStream();
-            
+
             try
             {
                 var uploadRequest = new TransferUtilityUploadRequest
@@ -52,10 +54,11 @@ namespace Library.Common
             }
         }
 
-        public async Task DeleteAsync(string bucketName, string fullFileKey)
+        public async Task DeleteAsync(string bucketName, string fileKey)
         {
             // Removes first half of path, leaving only the directory path
-            string fileKey = new Uri(fullFileKey).AbsolutePath.TrimStart('/');
+            if (IsFullUrl(fileKey))
+                fileKey = new Uri(fileKey).AbsolutePath.TrimStart('/');
             try
             {
                 var deleteRequest = new DeleteObjectRequest
@@ -73,6 +76,13 @@ namespace Library.Common
                 throw new InvalidOperationException(message, ex);
             }
         }
+
+        public bool IsFullUrl(string url)
+        {
+            return Uri.TryCreate(url, UriKind.Absolute, out Uri? uriResult)
+                   && (uriResult.Scheme == Uri.UriSchemeHttp || uriResult.Scheme == Uri.UriSchemeHttps);
+        }
+
 
         public string GenerateSignedUrl(string bucketName, string fileKey, int expirationMinutes = 20)
         {
