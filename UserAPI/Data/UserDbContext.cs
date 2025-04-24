@@ -38,8 +38,8 @@ namespace UserAPI.Data
 
             modelBuilder.Entity<UserSubscription>()
                 .Property(s => s.ExpirationDate)
-                .HasColumnType("datetime")
-                .IsRequired();
+                .IsRequired()
+                .HasColumnType("datetime");
 
             modelBuilder.Entity<Password>()
                 .Property(p => p.PasswordHash)

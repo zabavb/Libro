@@ -9,16 +9,17 @@ namespace Library.DTOs.UserRelated.Subscription
         public Guid Id { get; set; }
 
         [Required(ErrorMessage = "Title is required.")]
-        [StringLength(50, ErrorMessage = "Title cannot exceed 50 characters.")]
+        [StringLength(50, MinimumLength = 2, ErrorMessage = "Title cannot be less then 2 and exceed 50 characters.")]
         public string Title { get; set; }
 
         [Required(ErrorMessage = "Expiration days are required.")]
         public int ExpirationDays { get; set; }
 
         [Required(ErrorMessage = "Price is required.")]
+        [Range(0, 5000, ErrorMessage = "Price cannot be negative or exceed 5000.")]
         public float Price { get; set; }
 
-        [StringLength(500, ErrorMessage = "Description cannot exceed 500 characters.")]
+        [StringLength(50, ErrorMessage = "Description cannot exceed 50 characters.")]
         public string? Description { get; set; }
 
         public string? ImageUrl { get; set; }
