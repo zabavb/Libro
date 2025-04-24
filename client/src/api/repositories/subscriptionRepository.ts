@@ -27,7 +27,7 @@ export const getAllSubscriptions = async (
   const url = SUBSCRIPTIONS_PAGINATED(pageNumber, pageSize);
   const response = await axios.get<PaginatedResponse<SubscriptionCard>>(url, {
     params: searchTerm,
-    headers: getAuthHeaders(),
+    headers: getAuthHeaders('application/json'),
   });
   return response.data;
 };
@@ -39,7 +39,7 @@ export const getSubscriptionById = async (
   id: string,
 ): Promise<Subscription> => {
   const response = await axios.get<Subscription>(SUBSCRIPTION_BY_ID(id), {
-    headers: getAuthHeaders(),
+    headers: getAuthHeaders('application/json'),
   });
   return response.data;
 };
@@ -50,7 +50,9 @@ export const getSubscriptionById = async (
 export const createSubscription = async (
   subscription: Partial<FormData>,
 ): Promise<FormData> => {
-  const response = await axios.post<FormData>(SUBSCRIPTIONS, subscription);
+  const response = await axios.post<FormData>(SUBSCRIPTIONS, subscription, {
+    headers: getAuthHeaders('multipart/form-data'),
+  });
   return response.data;
 };
 
@@ -65,7 +67,7 @@ export const updateSubscription = async (
     SUBSCRIPTION_BY_ID(id),
     subscription,
     {
-      headers: getAuthHeaders(),
+      headers: getAuthHeaders('multipart/form-data'),
     },
   );
   return response.data;
@@ -77,7 +79,7 @@ export const updateSubscription = async (
 export const deleteSubscription = async (id: string): Promise<void> => {
   const url = SUBSCRIPTION_BY_ID(id);
   const response = await axios.delete(url, {
-    headers: getAuthHeaders(),
+    headers: getAuthHeaders('application/json'),
   });
   return response.data;
 };
@@ -87,7 +89,7 @@ export const deleteSubscription = async (id: string): Promise<void> => {
  */
 export const subscribe = async (request: SubscribeRequest): Promise<void> => {
   const response = await axios.post(SUBSCRIBE, request, {
-    headers: getAuthHeaders(),
+    headers: getAuthHeaders('application/json'),
   });
   return response.data;
 };
@@ -97,7 +99,7 @@ export const subscribe = async (request: SubscribeRequest): Promise<void> => {
  */
 export const unsubscribe = async (request: SubscribeRequest): Promise<void> => {
   const response = await axios.post(UNSUBSCRIBE, request, {
-    headers: getAuthHeaders(),
+    headers: getAuthHeaders('application/json'),
   });
   return response.data;
 };
@@ -109,7 +111,7 @@ export const subscriptionsforFiltering = async (): Promise<
   BySubscription[]
 > => {
   const response = await axios.get<BySubscription[]>(FOR_FILTERING, {
-    headers: getAuthHeaders(),
+    headers: getAuthHeaders('application/json'),
   });
   return response.data;
 };

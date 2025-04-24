@@ -27,7 +27,7 @@ export const getAllUsers = async (body: {
   const response = await axios.post<
     GraphQLResponse<{ allUsers: PaginatedResponse<UserCard> }>
   >(GRAPHQL, body, {
-    headers: getAuthHeaders(),
+    headers: getAuthHeaders('application/json'),
   });
   return response.data;
 };
@@ -45,7 +45,7 @@ export const getUserById = async (body: {
     GRAPHQL,
     body,
     {
-      headers: getAuthHeaders(),
+      headers: getAuthHeaders('application/json'),
     },
   );
   return response.data;
@@ -67,7 +67,7 @@ export const updateUser = async (
   user: Partial<User>,
 ): Promise<User> => {
   const response = await axios.put<User>(USER_BY_ID(id), user, {
-    headers: getAuthHeaders(),
+    headers: getAuthHeaders('application/json'),
   });
   return response.data;
 };
@@ -78,7 +78,7 @@ export const updateUser = async (
 export const deleteUser = async (id: string): Promise<void> => {
   const url = USER_BY_ID(id);
   const response = await axios.delete(url, {
-    headers: getAuthHeaders(),
+    headers: getAuthHeaders('application/json'),
   });
   return response.data;
 };
