@@ -16,7 +16,7 @@ const DropdownWrapper: React.FC<DropdownWrapperProps> = ({ triggerLabel, childre
         onClick={() => setIsOpen(!isOpen)}
         className="dropdown-header"
       >
-        {triggerLabel} <img className="caret-scale" src={caretDown}/>
+        {triggerLabel} <img className={`caret-scale ${isOpen ? "caret-open": ""}`} src={caretDown}/>
       </div>
 
       <div className={`dropdown-container 
