@@ -62,8 +62,10 @@ const AdminLayout: React.FC = () => {
 						</li>
 						<li className={isActive("/admin/subscriptions") ? "active-link link" : "link"}>
 							<FontAwesomeIcon icon={faCreditCard}/>
-							<a>
-								Subscriptions
+							<a
+								href="/admin/subscriptions"
+								>
+									Subscriptions
 							</a>
 						</li>
 					</ul>

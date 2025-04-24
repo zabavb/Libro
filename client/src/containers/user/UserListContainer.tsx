@@ -17,7 +17,7 @@ import {
   FromUserViewFilterToUserFilter,
 } from '@/api/adapters/userAdapter';
 
-const UserListContainer = () => {
+const UserListContainer: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
 
