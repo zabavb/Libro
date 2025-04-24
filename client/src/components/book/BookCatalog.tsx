@@ -4,6 +4,7 @@ import Pagination from "../common/Pagination";
 import BookCardContainer from "@/containers/books/BookCardContainer";
 import "@/assets/styles/components/book/catalog.css"
 import CatalogSort from "./CatalogSort";
+import CatalogFilter from "./CatalogFilter";
 interface BookCatalogProps {
     books?: Book[]
     loading: boolean
@@ -25,8 +26,8 @@ const BookCatalog: React.FC<BookCatalogProps> = ({
     onPageChange,
     //searchTerm,
     //onSearchTermChange,
-    //filters,
-    //onFilterChange,
+    filters,
+    onFilterChange,
     sort,
     onSortChange,
 }) => {
@@ -35,17 +36,7 @@ const BookCatalog: React.FC<BookCatalogProps> = ({
             <aside className="options-panel">
                 {/* Temporary text, to be replaced 
                 with actual components in the future */}
-                <div className="options-container">
-                    <div>Filters</div>
-                    <div>Categories</div>
-                    <div>Types</div>
-                    <div>Availability</div>
-                    <div>Language</div>
-                    <div>Author</div>
-                </div>
-                <div>
-                    <div>Price</div>
-                </div>
+                <CatalogFilter filters={filters} onFilterChange={onFilterChange}/>
             </aside>
             <main className="books-panel">
                 <div className="books-panel-header">

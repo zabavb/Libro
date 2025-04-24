@@ -4,8 +4,7 @@ import "react-lazy-load-image-component/src/effects/blur.css"
 import { likeBook, unlikeBook, isBookLiked, } from "../../services/likedBooksStorage";
 import { CartItem } from "@/types/types/cart/CartItem"
 import "@/assets/styles/components/book/card.css"
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faShoppingCart } from "@fortawesome/free-solid-svg-icons";
+import cartIcon from "@/assets/icons/cartIcon.svg"
 interface BookAdminCardProps {
     book: BookView
     onNavigate: () => void
@@ -54,7 +53,7 @@ const BookCard: React.FC<BookAdminCardProps> = ({ onAddItem, book, onNavigate })
                 <button
                     onClick={() => onAddItem({ bookId: book.bookId, amount: 1, name: book.title, price: book.price })}
                     className="book-cart-btn">
-                    <FontAwesomeIcon icon={faShoppingCart} size="xs"/>
+                    <img src={cartIcon}></img>
                 </button>
             </div>
         </div>
