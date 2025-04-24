@@ -35,6 +35,7 @@ namespace UserAPI.Repositories
                     ReferenceHandler = ReferenceHandler.Preserve,
                     WriteIndented = true
                 };
+
                 string cacheKey = $"{CacheKeyPrefix}All_Page:{pageNumber}_Size:{pageSize}_Search:{searchTerm}";
                 var cachedSubscriptions = await _redisDatabase.HashGetAllAsync(cacheKey);
 
@@ -43,6 +44,7 @@ namespace UserAPI.Repositories
                 {
                     subscriptions = cachedSubscriptions
                         .Select(entry => JsonSerializer.Deserialize<Subscription>(entry.Value!, options)!)
+                        .ToList()
                         .AsQueryable()
                         .AsNoTracking();
 
@@ -52,6 +54,9 @@ namespace UserAPI.Repositories
                 {
                     subscriptions = _context.Subscriptions.AsNoTracking();
                     _logger.LogInformation("Fetched from DB.");
+
+                    if (!string.IsNullOrWhiteSpace(searchTerm))
+                        subscriptions = subscriptions.SearchBy(searchTerm, s => s.Title);
 
                     var hashEntries = subscriptions.ToDictionary(
                         subscription => subscription.SubscriptionId.ToString(),
@@ -66,18 +71,15 @@ namespace UserAPI.Repositories
                     _logger.LogInformation("Set to CACHE.");
                 }
 
-                if (subscriptions.Any() && !string.IsNullOrWhiteSpace(searchTerm))
-                    subscriptions = subscriptions.SearchBy(searchTerm, s => s.Title);
-
-                var total = await subscriptions.CountAsync();
-                var paginatedUsers = await subscriptions
+                var total = subscriptions.Count();
+                var paginatedSubscriptions = subscriptions
                     .Skip((pageNumber - 1) * pageSize)
                     .Take(pageSize)
-                    .ToListAsync();
+                    .ToList();
 
                 return new PaginatedResult<Subscription>
                 {
-                    Items = paginatedUsers,
+                    Items = paginatedSubscriptions,
                     TotalCount = total,
                     PageNumber = pageNumber,
                     PageSize = pageSize

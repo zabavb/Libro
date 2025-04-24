@@ -5,6 +5,8 @@ using UserAPI.Services.Interfaces;
 using Library.Common;
 using Library.DTOs.UserRelated.Subscription;
 using Library.Interfaces;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Processing;
 using UserAPI.Models.Filters;
 using UserAPI.Models.Subscription;
 using UserAPI.Repositories.Interfaces;
@@ -22,6 +24,7 @@ namespace UserAPI.Services
 
         private readonly IS3StorageService _storageService = storageService;
         private const string Folder = "subscription/images/";
+        private static readonly Size Size = new(190, 190);
 
         private readonly IMapper _mapper = mapper;
         private readonly ILogger<ISubscriptionService> _logger = logger;
@@ -35,14 +38,20 @@ namespace UserAPI.Services
         {
             var subscriptions = await _repository.GetAllAsync(pageNumber, pageSize, searchTerm);
 
-            if (subscriptions.Items.Any())
-                throw new KeyNotFoundException("No subscriptions found.");
+            if (subscriptions.Items.Count == 0)
+            {
+                _logger.LogInformation("No subscriptions found.");
+                return new();
+            }
+
             _logger.LogInformation("Successfully fetched paginated subscriptions.");
 
-            var subscriptionCards = _mapper.Map<ICollection<SubscriptionCardDto>>(subscriptions.Items);
+            var cards = subscriptions.Items
+                .Select(subscription => _mapper.Map<SubscriptionCardDto>(subscription))
+                .ToList();
             return new PaginatedResult<SubscriptionCardDto>
             {
-                Items = subscriptionCards,
+                Items = cards,
                 TotalCount = subscriptions.TotalCount,
                 PageNumber = subscriptions.PageNumber,
                 PageSize = subscriptions.PageSize
@@ -65,7 +74,8 @@ namespace UserAPI.Services
 
             var id = Guid.NewGuid();
             if (dto.Image != null)
-                dto.ImageUrl = await _storageService.UploadAsync(GlobalDefaults.BucketName, dto.Image, Folder, id);
+                dto.ImageUrl =
+                    await _storageService.UploadAsync(GlobalDefaults.BucketName, Folder, id, dto.Image, Size);
 
             var subscription = _mapper.Map<Subscription>(dto);
             subscription.SubscriptionId = id;
@@ -87,7 +97,8 @@ namespace UserAPI.Services
                 if (!string.IsNullOrEmpty(existingSubscription.ImageUrl))
                     await _storageService.DeleteAsync(GlobalDefaults.BucketName, existingSubscription.ImageUrl);
 
-                dto.ImageUrl = await _storageService.UploadAsync(GlobalDefaults.BucketName, dto.Image, Folder, dto.Id);
+                dto.ImageUrl =
+                    await _storageService.UploadAsync(GlobalDefaults.BucketName, Folder, dto.Id, dto.Image, Size);
             }
 
             var subscription = _mapper.Map<Subscription>(dto);

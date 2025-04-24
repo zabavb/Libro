@@ -63,14 +63,16 @@ namespace UserAPI.Repositories
                         );
                     }
 
-                    users = filteredUsers is not null ? filteredUsers.AsQueryable() : usersList.AsQueryable();
+                    users = filteredUsers is not null
+                        ? filteredUsers.AsQueryable().AsNoTracking()
+                        : usersList.AsQueryable().AsNoTracking();
                 }
                 else
                 {
                     users = _context.Users.AsNoTracking();
+                    _logger.LogInformation("Fetched from DB.");
 
                     if (!string.IsNullOrWhiteSpace(searchTerm))
-                    {
                         users = users.SearchBy(
                             searchTerm,
                             u => u.FirstName,
@@ -78,7 +80,6 @@ namespace UserAPI.Repositories
                             u => u.Email!,
                             u => u.PhoneNumber!
                         );
-                    }
 
                     var hashEntries = await users.ToDictionaryAsync(
                         user => user.UserId.ToString(),
@@ -118,7 +119,6 @@ namespace UserAPI.Repositories
                 throw new RepositoryException("Error while fetching users.", ex);
             }
         }
-
 
         public async Task<User?> GetByIdAsync(Guid id)
         {

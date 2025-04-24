@@ -6,6 +6,7 @@ using BookAPI.Repositories.Interfaces;
 using BookAPI.Services.Interfaces;
 using Library.Common;
 using System.Linq.Expressions;
+using SixLabors.ImageSharp;
 
 namespace BookAPI.Services
 {
@@ -19,6 +20,7 @@ namespace BookAPI.Services
         private readonly IMapper _mapper = mapper;
         private readonly ILogger<BookService> _logger = logger;
         private readonly S3StorageService _storageService = storageService;
+        private static readonly Size Size = new Size(500, 400);
 
         public async Task<PaginatedResult<BookDto>> GetAllAsync(
             int pageNumber,
@@ -164,7 +166,8 @@ namespace BookAPI.Services
 
             try
             {
-                return await _storageService.UploadAsync(GlobalConstants.bucketName, imageFile, "book/images/", id);
+                return await _storageService.UploadAsync(GlobalConstants.bucketName, "book/images/", id, imageFile,
+                    Size);
             }
             catch (Exception ex)
             {
@@ -173,10 +176,10 @@ namespace BookAPI.Services
                 throw new InvalidOperationException(message, ex);
             }
         }
+
         // example of condition: b => b.Quantity > 0
         public async Task<List<BookDto>> GetBooksByConditionAsync(Expression<Func<Book, bool>> condition)
         {
-
             var books = await _bookRepository.GetBooksByConditionAsync(condition);
 
             if (books == null || books.Count == 0)
@@ -199,6 +202,7 @@ namespace BookAPI.Services
                 _logger.LogWarning($"No book with id {id}");
                 throw new InvalidOperationException($"No book with id {id}");
             }
+
             _logger.LogInformation($"Successfully found quantity of book with id {id}");
             return quantity;
         }
@@ -211,6 +215,7 @@ namespace BookAPI.Services
                 _logger.LogWarning($"No book with id {id}");
                 throw new InvalidOperationException($"No book with id {id}");
             }
+
             book.Quantity += quantity;
             await _bookRepository.UpdateAsync(book);
             _logger.LogInformation($"Successfully added {quantity} to book with id {id}");
