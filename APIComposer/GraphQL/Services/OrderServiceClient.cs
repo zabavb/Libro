@@ -1,3 +1,4 @@
+using Amazon.S3.Model;
 using System.Net.Http.Headers;
 using APIComposer.GraphQL.Services.Interfaces;
 using Library.Common;
