@@ -56,19 +56,17 @@ namespace APIComposer.GraphQL.Services
         {
             try
             {
-                // Use the correct endpoint from your Order controller
                 var response = await _http.GetAsync($"orders/{orderId}");
 
                 if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
                 {
-                    return null; // Or handle as needed
+                    return null;
                 }
 
                 if (!response.IsSuccessStatusCode)
                 {
-                    // Use your existing ErrorHandler or throw an exception
                     await ErrorHandler.HandleErrorResponseAsync(response);
-                    return null; // Should not be reached if HandleError throws
+                    return null;
                 }
 
                 return await response.Content.ReadFromJsonAsync<Order>();
@@ -95,14 +93,14 @@ namespace APIComposer.GraphQL.Services
                 {
                     queryString.Append($"&searchTerm={Uri.EscapeDataString(searchTerm)}");
                 }
-                if (filter != null && !string.IsNullOrEmpty(filter.S3KeyFilter.ToString()))
-                {
-                    queryString.Append($"&filterProperty={filter.S3KeyFilter}");
-                }
-                if (sort != null)
-                {
-                    // add sorting to query ?
-                }
+                //if (filter != null && !string.IsNullOrEmpty(filter.S3KeyFilter.ToString()))
+                //{
+                //    queryString.Append($"&filterProperty={filter.S3KeyFilter}");
+                //}
+                //if (sort != null)
+                //{
+                //    // add sorting to query ?
+                //}
 
                 var response = await _http.GetAsync(queryString.ToString());
 
