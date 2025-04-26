@@ -3,6 +3,7 @@ import "../../index.css";
 import Header from "@/components/layouts/Header";
 import Footer from "@/components/layouts/Footer";
 import { CarouselOffers } from "@/components/common/CarouselOffers";
+import { useAuth } from "../../state/context";
 
 const MainPage: React.FC = () => {
   const navigate = useNavigate();

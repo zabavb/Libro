@@ -27,8 +27,13 @@ namespace OrderApi.Repository
         private readonly ILogger<IOrderRepository> _logger = logger;
 
 
-        public async Task<PaginatedResult<Order>> GetAllAsync(int pageNumber, int pageSize, string? searchTerm,
-            Filter? filter, Sort? sort)
+        public async Task<PaginatedResult<Order>> GetAllAsync(
+            int pageNumber,
+            int pageSize,
+            string? searchTerm,
+            Filter? filter,
+            Sort? sort
+        )
         {
             IEnumerable<Order> orders;
 
