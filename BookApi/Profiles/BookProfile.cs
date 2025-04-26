@@ -15,6 +15,12 @@ namespace BookAPI.Profiles
              .ForMember(dest => dest.Id, opt => opt.Ignore())
              .ForMember(dest => dest.Feedbacks, opt => opt.Ignore())
              .ForMember(dest => dest.Subcategories, opt => opt.Ignore());
+            CreateMap<Library.DTOs.Book.BookRequest, Book>()
+            .ForMember(dest => dest.ImageUrl, opt => opt.Ignore()) 
+            .ForMember(dest => dest.AudioFileUrl, opt => opt.Ignore())
+            .ForMember(dest => dest.Id, opt => opt.Ignore()) 
+            .ForMember(dest => dest.Feedbacks, opt => opt.Ignore()) 
+            .ForMember(dest => dest.Subcategories, opt => opt.Ignore());
 
         }
     }
