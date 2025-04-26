@@ -1,6 +1,7 @@
 ﻿using BookAPI.Models.Filters;
 using BookAPI.Models.Sortings;
 using Library.Common;
+using Library.DTOs.Book;
 using System.Linq.Expressions;
 
 namespace BookAPI.Services.Interfaces
@@ -17,8 +18,8 @@ namespace BookAPI.Services.Interfaces
         );
         Task<BookDto> GetByIdAsync(Guid bookId);
         Task<ICollection<string>?> GetAllForUserDetailsAsync(ICollection<Guid> ids);
-        Task /*<BookDto>*/ CreateAsync(BookDto bookDto, IFormFile? imageFile);
-        Task /*<BookDto>*/ UpdateAsync(Guid id, BookDto bookDto, IFormFile? imageFile);
+        Task /*<BookDto>*/ CreateAsync(BookRequest bookDto);
+        Task /*<BookDto>*/ UpdateAsync(Guid id, BookRequest bookDto);
         Task /*<bool>*/ DeleteAsync(Guid id);
         Task<int> GetQuantityById(Guid id);
         Task AddQuantityById(Guid id, int quantity);

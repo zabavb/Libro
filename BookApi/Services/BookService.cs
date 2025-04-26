@@ -4,8 +4,16 @@ using BookAPI.Models.Filters;
 using BookAPI.Models.Sortings;
 using BookAPI.Repositories.Interfaces;
 using BookAPI.Services.Interfaces;
+using Humanizer;
 using Library.Common;
 using System.Linq.Expressions;
+using SixLabors.Fonts;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Drawing.Processing;
+using SixLabors.ImageSharp.PixelFormats;
+using SixLabors.ImageSharp.Processing;
+using Library.DTOs.Book;
+using Book = BookAPI.Models.Book;
 
 namespace BookAPI.Services
 {
@@ -71,13 +79,25 @@ namespace BookAPI.Services
             }
         }
 
-        public async Task /*<BookDto>*/ CreateAsync(BookDto bookDto, IFormFile? imageFile)
+        public async Task /*<BookDto>*/ CreateAsync(BookRequest request)
         {
-            var book = _mapper.Map<Book>(bookDto);
+            var book = _mapper.Map<Book>(request);
             book.Id = Guid.NewGuid();
-            if (imageFile != null)
+
+            var filesHelper = new FilesHelper(_storageService, "libro-book");
+
+            if (request.Image != null)
             {
-                book.ImageUrl = await UploadImageAsync(imageFile, book.Id);
+                book.ImageUrl = await filesHelper.UploadImageFromFormAsync(request.Image, book.Id);
+            }
+
+            if (request.Audio != null)
+            {
+                book.AudioFileUrl = await filesHelper.UploadAudioFromFormAsync(request.Audio, book.Id);
+            }
+            if (request.PDF != null)
+            {
+                book.PdfFileUrl = await filesHelper.UploadPdfFromFormAsync(request.PDF, book.Id);
             }
 
             try
@@ -91,10 +111,10 @@ namespace BookAPI.Services
                 throw;
             }
 
-            // return _mapper.Map<BookDto>(book);
         }
 
-        public async Task /*<BookDto>*/ UpdateAsync(Guid id, BookDto bookDto, IFormFile? imageFile)
+
+        public async Task UpdateAsync(Guid id, BookRequest request)
         {
             var existingBook = await _bookRepository.GetByIdAsync(id);
 
@@ -106,17 +126,29 @@ namespace BookAPI.Services
 
             try
             {
-                if (!string.IsNullOrEmpty(existingBook.ImageUrl))
+                if (!string.IsNullOrEmpty(existingBook.ImageUrl) && request.Image != null)
                 {
                     await _storageService.DeleteAsync(GlobalConstants.bucketName, existingBook.ImageUrl);
+                    existingBook.ImageUrl = null; 
                 }
 
-                if (imageFile != null)
+                var filesHelper = new FilesHelper(_storageService, "libro-book");
+                if (request.Image != null)
                 {
-                    existingBook.ImageUrl = await UploadImageAsync(imageFile, id);
+                    existingBook.ImageUrl = await filesHelper.UploadImageFromFormAsync(request.Image, id);
                 }
 
-                _mapper.Map(bookDto, existingBook);
+                if (request.Audio != null)
+                {
+                    existingBook.AudioFileUrl = await filesHelper.UploadAudioFromFormAsync(request.Audio, id); 
+                }
+
+                if (request.PDF != null)
+                {
+                    existingBook.PdfFileUrl = await filesHelper.UploadPdfFromFormAsync(request.PDF, id);
+                }
+
+                _mapper.Map(request, existingBook);
                 await _bookRepository.UpdateAsync(existingBook);
                 _logger.LogInformation($"Successfully updated book with id {id}");
             }
@@ -125,9 +157,8 @@ namespace BookAPI.Services
                 _logger.LogError($"Failed to update book. Error: {ex.Message}");
                 throw;
             }
-
-            // return _mapper.Map<BookDto>(existingBook);
         }
+
 
         public async Task /*<bool>*/ DeleteAsync(Guid id)
         {
@@ -148,31 +179,14 @@ namespace BookAPI.Services
 
                 await _bookRepository.DeleteAsync(id);
                 _logger.LogInformation($"Successfully deleted book with id {id}");
-                // return true;
             }
             catch (Exception ex)
             {
                 _logger.LogError($"Failed to delete book. Error: {ex.Message}");
-                // return false;
             }
         }
 
-        private async Task<string?> UploadImageAsync(IFormFile? imageFile, Guid id)
-        {
-            if (imageFile == null || imageFile.Length == 0)
-                return null;
 
-            try
-            {
-                return await _storageService.UploadAsync(GlobalConstants.bucketName, imageFile, "book/images/", id);
-            }
-            catch (Exception ex)
-            {
-                string message = "Error occurred while uploading book's image.";
-                _logger.LogError(message);
-                throw new InvalidOperationException(message, ex);
-            }
-        }
         // example of condition: b => b.Quantity > 0
         public async Task<List<BookDto>> GetBooksByConditionAsync(Expression<Func<Book, bool>> condition)
         {
