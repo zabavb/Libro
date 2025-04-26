@@ -27,8 +27,8 @@ const SubscriptionListContainer: React.FC = () => {
       setLoading(true);
       try {
         const response = await fetchSubscriptionsService(
-          paginationMemo.pageNumber,
-          paginationMemo.pageSize,
+          (paginationMemo.pageNumber = 1),
+          (paginationMemo.pageSize = 10),
           searchTerm,
         );
 

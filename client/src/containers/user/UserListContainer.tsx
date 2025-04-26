@@ -43,8 +43,8 @@ const UserListContainer: React.FC = () => {
       setLoading(true);
       try {
         const response = await fetchUsersService(
-          paginationMemo.pageNumber,
-          paginationMemo.pageSize,
+          (paginationMemo.pageNumber = 1),
+          (paginationMemo.pageSize = 10),
           searchTerm,
           filters,
           sort,
