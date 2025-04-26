@@ -4,7 +4,6 @@ using Microsoft.EntityFrameworkCore;
 using StackExchange.Redis;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using Library.DTOs.UserRelated.User;
 using UserAPI.Data;
 using UserAPI.Models;
 using UserAPI.Repositories.Interfaces;
@@ -69,7 +68,22 @@ namespace UserAPI.Repositories
                 }
                 else
                 {
-                    users = _context.Users.AsNoTracking();
+                    users = _context.Users
+                        .AsNoTracking()
+                        .Select(u => new User()
+                        {
+                            UserId = u.UserId,
+                            FirstName = u.FirstName,
+                            LastName = u.LastName,
+                            DateOfBirth = u.DateOfBirth,
+                            Email = u.Email,
+                            PhoneNumber = u.PhoneNumber,
+                            Role = u.Role,
+                            ImageUrl = u.ImageUrl,
+                            Password = null!,
+                            SubscriptionIds = u.UserSubscriptions!.Select(us => us.SubscriptionId).ToList(),
+                            UserSubscriptions = null
+                        });
                     _logger.LogInformation("Fetched from DB.");
 
                     if (!string.IsNullOrWhiteSpace(searchTerm))
@@ -94,8 +108,10 @@ namespace UserAPI.Repositories
                     _logger.LogInformation("Set to CACHE.");
                 }
 
+                var userList = users.ToList();
                 if (filter is not null)
-                    users = filter.Apply(users);
+                    userList = filter.Apply(userList.AsQueryable()).ToList();
+                users = userList.AsQueryable();
 
                 if (sort is not null)
                     users = sort.Apply(users);

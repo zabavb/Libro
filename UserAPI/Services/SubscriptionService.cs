@@ -1,12 +1,9 @@
-﻿using UserAPI.Repositories;
-using AutoMapper;
-using UserAPI.Models;
+﻿using AutoMapper;
 using UserAPI.Services.Interfaces;
 using Library.Common;
 using Library.DTOs.UserRelated.Subscription;
 using Library.Interfaces;
 using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.Processing;
 using UserAPI.Models.Filters;
 using UserAPI.Models.Subscription;
 using UserAPI.Repositories.Interfaces;

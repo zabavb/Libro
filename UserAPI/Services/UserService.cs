@@ -1,9 +1,7 @@
 ﻿using AutoMapper;
-using BookAPI.Services.Interfaces;
 using Library.Common;
 using Library.DTOs.UserRelated.User;
 using Library.Interfaces;
-using OrderApi.Services;
 using SixLabors.ImageSharp;
 using UserAPI.Models;
 using UserAPI.Repositories;
@@ -43,12 +41,6 @@ namespace UserAPI.Services
         )
         {
             var users = await _repository.GetAllAsync(pageNumber, pageSize, searchTerm, filter, sort);
-
-            if (users.Items.Count == 0)
-            {
-                _logger.LogInformation("No users found.");
-                return new();
-            }
 
             _logger.LogInformation("Successfully fetched paginated users.");
 
