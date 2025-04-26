@@ -23,7 +23,6 @@ const BookCatalogContainer = () => {
     })
 
     const paginationMemo = useMemo(() => ({...pagination}), [pagination]);
-
     const fetchBookList = useCallback(async () => {
         setLoading(true);
         try{
@@ -34,7 +33,7 @@ const BookCatalogContainer = () => {
                 filters,
                 sort
             );
-
+            
             if(response.error)
                 dispatch(
                     addNotification({
@@ -69,7 +68,7 @@ const BookCatalogContainer = () => {
     useEffect(() => {
         fetchBookList()
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    },[])
+    },[sort, filters])
 
     const handleNavigate = (path: string) => navigate(path);
 
@@ -84,9 +83,12 @@ const BookCatalogContainer = () => {
     }
     
     const handleSortChange = (field: keyof BookSort) => {
-        setSort({ [field]: true});
-        setPagination((prev) => ({ ...prev,pageNumber: 1}));
-    }
+        setSort((prevSort) => {
+          const current = prevSort[field];
+          return { [field]: current === true ? false : true }; // toggles direction
+        });
+        setPagination((prev) => ({ ...prev, pageNumber: 1 }));
+      };
     
     const handlePageChange = (pageNumber: number) => {
         setPagination((prev) => ({...prev, pageNumber}))

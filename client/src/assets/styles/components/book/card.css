@@ -1,0 +1,34 @@
+.card-container{
+    @apply flex flex-col gap-3;
+}
+
+.card-footer{
+    @apply flex justify-between text-lg;
+    line-height: 16px;
+}
+
+.card-info{
+    @apply text-lg flex flex-col gap-1.5;
+    line-height: 22px;
+}
+
+.card-title{
+    @apply cursor-pointer font-bold overflow-hidden whitespace-nowrap text-ellipsis;
+}
+
+.card-subtext{
+    @apply opacity-40 font-medium;
+}
+
+.book-price{
+    @apply font-bold ;
+}
+
+.book-availability{
+    @apply text-[#FF642E] font-semibold;
+}
+
+.book-cart-btn{
+    @apply bg-[#FF642E] p-3;
+    border-radius: 9px;
+}

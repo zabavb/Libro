@@ -1,0 +1,15 @@
+.caret-scale {
+    @apply w-[12px] h-[6px] transition-all duration-500;
+}
+
+.dropdown-header {
+    @apply flex justify-between items-center cursor-pointer font-bold;
+}
+
+.dropdown-container{
+    @apply ml-4 left-0 mt-2 w-full bg-none rounded transition-all duration-500 overflow-hidden z-10;
+}
+
+.caret-open{
+    transform: rotate(180deg);
+}

@@ -1,0 +1,52 @@
+.filter-panel-container {
+    @apply flex flex-col gap-5 font-semibold;
+    font-size: 15px;
+}
+
+.filter-container {
+    @apply flex flex-col;
+}
+
+.filter-header {
+    @apply flex justify-between items-center cursor-pointer font-bold;
+}
+
+.filter-main {}
+
+
+
+.price-limit {
+    @apply font-medium;
+    font-size: 12px;
+}
+
+.filter-main>* {
+    @apply ml-4;
+}
+
+.caret-scale {
+    @apply w-[12px] h-[6px];
+}
+
+.price-btn {
+    @apply text-[#FF642E] border-[#FF642E] py-2.5 rounded-lg flex-1;
+    transition: all;
+    transition-duration: 300ms;
+    border-width: 1px;
+    padding-left: 38px;
+    padding-right: 38px;
+}
+
+.price-btn-active{
+    @apply bg-[#FF642E] text-[#1A1D23];
+}
+
+.price-btn:hover{
+    @apply bg-[#FF642E] text-[#1A1D23];
+}
+
+.apply-btn {
+    @apply text-[#1A1D23] bg-[#FF642E] rounded-lg py-2.5 flex-1;
+    padding-left: 38px;
+    padding-right: 38px;
+}
