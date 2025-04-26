@@ -6,6 +6,7 @@ using BookAPI.Repositories.Interfaces;
 using BookAPI.Services.Interfaces;
 using Library.Common;
 using System.Linq.Expressions;
+using SixLabors.ImageSharp;
 
 namespace BookAPI.Services
 {
@@ -19,6 +20,7 @@ namespace BookAPI.Services
         private readonly IMapper _mapper = mapper;
         private readonly ILogger<BookService> _logger = logger;
         private readonly S3StorageService _storageService = storageService;
+        private static readonly Size Size = new Size(500, 400);
 
         public async Task<PaginatedResult<BookDto>> GetAllAsync(
             int pageNumber,
@@ -164,7 +166,8 @@ namespace BookAPI.Services
 
             try
             {
-                return await _storageService.UploadAsync(GlobalConstants.bucketName, imageFile, "book/images/", id);
+                return await _storageService.UploadAsync(GlobalConstants.bucketName, "book/images/", id, imageFile,
+                    Size);
             }
             catch (Exception ex)
             {
@@ -173,6 +176,5 @@ namespace BookAPI.Services
                 throw new InvalidOperationException(message, ex);
             }
         }
-
     }
 }

@@ -15,7 +15,7 @@ interface SubscriptionListProps {
   searchTerm: string;
 }
 
-const UserList: React.FC<SubscriptionListProps> = ({
+const SubscriptionList: React.FC<SubscriptionListProps> = ({
   subscriptions = [],
   loading,
   pagination,
@@ -68,4 +68,4 @@ const UserList: React.FC<SubscriptionListProps> = ({
   );
 };
 
-export default UserList;
+export default SubscriptionList;

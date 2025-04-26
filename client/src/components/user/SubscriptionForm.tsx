@@ -25,7 +25,7 @@ const SubscriptionForm: React.FC<SubscriptionFormProps> = ({
   } = useForm<SubscriptionFormData>({
     resolver: zodResolver(subscriptionSchema),
     defaultValues: {
-      title: 'Subscription',
+      title: '',
       expirationDays: 14,
       price: 0,
       description: '',
@@ -67,7 +67,8 @@ const SubscriptionForm: React.FC<SubscriptionFormProps> = ({
     formData.append('price', data.price.toString());
     formData.append('description', data.description ?? '');
     formData.append('image', data.image ?? '');
-    formData.append('imageUrl', existingSubscription?.imageUrl ?? '');
+    if (existingSubscription)
+      formData.append('imageUrl', existingSubscription.imageUrl ?? '');
 
     if (existingSubscription) onEditSubscription(formData);
     else onAddSubscription(formData);
@@ -108,13 +109,13 @@ const SubscriptionForm: React.FC<SubscriptionFormProps> = ({
         <p>{errors.title?.message}</p>
 
         <input
-          type='date'
+          type='number'
           {...register('expirationDays')}
           placeholder='expirationDays'
         />
         <p>{errors.expirationDays?.message}</p>
 
-        <input {...register('price')} placeholder='Price' />
+        <input type='number' {...register('price')} placeholder='Price' />
         <p>{errors.price?.message}</p>
 
         <input {...register('description')} placeholder='description' />

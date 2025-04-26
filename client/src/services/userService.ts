@@ -195,7 +195,6 @@ export const addUserService = async (
   };
 
   try {
-    console.log('Creating user:', user);
     response.data = await createUser(user);
   } catch (error) {
     console.error('Failed to create user', error);

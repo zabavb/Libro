@@ -3,8 +3,11 @@ using Amazon.S3.Model;
 using Amazon.S3.Transfer;
 using Library.Interfaces;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Internal;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Processing;
 
 namespace Library.Common
 {
@@ -20,10 +23,40 @@ namespace Library.Common
 
         private readonly ILogger<IS3StorageService> _logger = logger;
 
-        public async Task<string> UploadAsync(string bucketName, IFormFile file, string folder, Guid id)
+        /*private async Task<IFormFile> ResizeImage(
+            Stream inputStream,
+            string name,
+            string fileName,
+            IHeaderDictionary headers,
+            Size size)
+        {
+            using var imageResult = await Image.LoadAsync(inputStream);
+
+            imageResult.Mutate(x => x.Resize(new ResizeOptions
+            {
+                Mode = ResizeMode.Max,
+                Size = size
+            }));
+
+            var outputStream = new MemoryStream();
+            await imageResult.SaveAsPngAsync(outputStream);
+            outputStream.Position = 0;
+
+            var resizedFormFile = new FormFile(outputStream, 0, outputStream.Length, name, fileName)
+            {
+                Headers = headers,
+                ContentType = "image/png"
+            };
+
+            return resizedFormFile;
+        }
+
+        public async Task<string> UploadAsync(string bucketName, string folder, Guid id, IFormFile file, Size? size)
         {
             string fileKey = $"{folder}{id}{Path.GetExtension(file.FileName)}";
             using var fs = file.OpenReadStream();
+
+            file = await ResizeImage(fs, file.Name, file.FileName, file.Headers, size ?? new Size(500, 500));
 
             try
             {
@@ -34,6 +67,63 @@ namespace Library.Common
                     BucketName = bucketName,
                     ContentType = file.ContentType,
                     // Set the ACL based on the folder
+                    CannedACL = folder.StartsWith("book/audios") || folder.StartsWith("book/e-books")
+                        ? S3CannedACL.Private
+                        // Temporary change
+                        //: S3CannedACL.PublicRead
+                        : S3CannedACL.Private
+                };
+
+                var transferUtility = new TransferUtility(_s3Client);
+                await transferUtility.UploadAsync(uploadRequest);
+
+                return $"https://{bucketName}.s3.{_region}.amazonaws.com/{fileKey}";
+            }
+            catch (Exception ex)
+            {
+                string message = "An unexpected database error occurred for user's avatar uploading.";
+                _logger.LogError(message);
+                throw new InvalidOperationException(message, ex);
+            }
+        }*/
+
+        private async Task<Stream> ResizeImage(Stream inputStream, Size size)
+        {
+            using var image = await Image.LoadAsync(inputStream);
+
+            image.Mutate(x => x.Resize(new ResizeOptions
+            {
+                Size = size
+            }));
+
+            var outputStream = new MemoryStream();
+            await image.SaveAsPngAsync(outputStream);
+            outputStream.Position = 0;
+
+            return outputStream;
+        }
+
+        public async Task<string> UploadAsync(string bucketName, string folder, Guid id, IFormFile file, Size? size)
+        {
+            string fileKey = $"{folder}{id}{Path.GetExtension(file.FileName)}";
+            Stream fs;
+
+            if (size.HasValue)
+            {
+                using var inputStream = file.OpenReadStream();
+                fs = await ResizeImage(inputStream, size.Value);
+            }
+            else
+                fs = file.OpenReadStream();
+
+            try
+            {
+                var uploadRequest = new TransferUtilityUploadRequest
+                {
+                    InputStream = fs,
+                    Key = fileKey,
+                    BucketName = bucketName,
+                    ContentType = file.ContentType, // "image/png"
                     CannedACL = folder.StartsWith("book/audios") || folder.StartsWith("book/e-books")
                         ? S3CannedACL.Private
                         // Temporary change

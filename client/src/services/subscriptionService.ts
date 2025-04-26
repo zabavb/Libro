@@ -234,7 +234,7 @@ export const subscriptionsforFilteringService = async (): Promise<
   };
 
   try {
-    await subscriptionsforFiltering();
+    response.data = await subscriptionsforFiltering();
   } catch (error) {
     console.error('Failed to fetch', error);
     response.error =

@@ -17,7 +17,7 @@ import {
   FromUserViewFilterToUserFilter,
 } from '@/api/adapters/userAdapter';
 
-const UserListContainer = () => {
+const UserListContainer: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
 
@@ -43,8 +43,8 @@ const UserListContainer = () => {
       setLoading(true);
       try {
         const response = await fetchUsersService(
-          paginationMemo.pageNumber,
-          paginationMemo.pageSize,
+          (paginationMemo.pageNumber = 1),
+          (paginationMemo.pageSize = 10),
           searchTerm,
           filters,
           sort,

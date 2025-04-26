@@ -1,9 +1,8 @@
 ﻿using AutoMapper;
-using BookAPI.Services.Interfaces;
 using Library.Common;
 using Library.DTOs.UserRelated.User;
 using Library.Interfaces;
-using OrderApi.Services;
+using SixLabors.ImageSharp;
 using UserAPI.Models;
 using UserAPI.Repositories;
 using UserAPI.Repositories.Interfaces;
@@ -28,6 +27,7 @@ namespace UserAPI.Services
         private readonly AvatarService _avatarService = avatarService;
         private readonly IS3StorageService _storageService = storageService;
         private const string Folder = "user/images/";
+        private static readonly Size Size = new Size(200, 200);
 
         private readonly IMapper _mapper = mapper;
         private readonly ILogger<IUserService> _logger = logger;
@@ -41,12 +41,6 @@ namespace UserAPI.Services
         )
         {
             var users = await _repository.GetAllAsync(pageNumber, pageSize, searchTerm, filter, sort);
-
-            if (users.Items.Count == 0)
-            {
-                _logger.LogInformation("No users found.");
-                return new();
-            }
 
             _logger.LogInformation("Successfully fetched paginated users.");
 
@@ -124,7 +118,7 @@ namespace UserAPI.Services
 
         private async Task<string> UploadAvatarAsync(IFormFile? image, string folder, Guid id) =>
             image != null && image.Length > 0
-                ? await _storageService.UploadAsync(GlobalDefaults.BucketName, image, folder, id)
+                ? await _storageService.UploadAsync(GlobalDefaults.BucketName, folder, id, image, Size)
                 : string.Empty;
 
         private async Task DeleteAvatarAsync(Guid id)

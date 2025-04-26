@@ -17,11 +17,11 @@ namespace UserAPI.Data.Configurations
                 .HasColumnType("nvarchar(50)");
 
             builder.Property(s => s.Price)
-                .HasColumnType("money")
-                .IsRequired();
+                .IsRequired()
+                .HasColumnType("money");
 
             builder.Property(s => s.Description)
-                .HasMaxLength(500)
+                .HasMaxLength(50)
                 .HasColumnType("nvarchar(500)");
         }
     }
