@@ -45,9 +45,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Library\Library.csproj" />
   </ItemGroup>
-
   <ItemGroup>
     <Folder Include="Data\Files\" />
   </ItemGroup>
-
 </Project>

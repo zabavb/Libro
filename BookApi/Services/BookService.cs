@@ -7,11 +7,6 @@ using BookAPI.Services.Interfaces;
 using Humanizer;
 using Library.Common;
 using System.Linq.Expressions;
-using SixLabors.Fonts;
-using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.Drawing.Processing;
-using SixLabors.ImageSharp.PixelFormats;
-using SixLabors.ImageSharp.Processing;
 using Library.DTOs.Book;
 using Book = BookAPI.Models.Book;
 
