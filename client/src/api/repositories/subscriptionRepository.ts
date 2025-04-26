@@ -26,7 +26,7 @@ export const getAllSubscriptions = async (
 ): Promise<PaginatedResponse<SubscriptionCard>> => {
   const url = SUBSCRIPTIONS_PAGINATED(pageNumber, pageSize);
   const response = await axios.get<PaginatedResponse<SubscriptionCard>>(url, {
-    params: searchTerm,
+    params: { searchTerm },
     headers: getAuthHeaders('application/json'),
   });
   return response.data;
@@ -38,9 +38,7 @@ export const getAllSubscriptions = async (
 export const getSubscriptionById = async (
   id: string,
 ): Promise<Subscription> => {
-  const response = await axios.get<Subscription>(SUBSCRIPTION_BY_ID(id), {
-    headers: getAuthHeaders('application/json'),
-  });
+  const response = await axios.get<Subscription>(SUBSCRIPTION_BY_ID(id));
   return response.data;
 };
 
