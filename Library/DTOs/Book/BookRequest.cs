@@ -1,10 +1,14 @@
 ﻿using Microsoft.AspNetCore.Http;
-using System.ComponentModel.DataAnnotations.Schema;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using System.Text.Json.Serialization;
+using System.Threading.Tasks;
 
 namespace Library.DTOs.Book
 {
-    public class Book
+    public class BookRequest
     {
         public Guid BookId { get; set; }
         public string Title { get; set; }
@@ -19,15 +23,10 @@ namespace Library.DTOs.Book
         public CoverType Cover { get; set; }
         public int Quantity { get; set; } = 0;
         //public bool IsAvaliable { get; set; }
-        public string? ImageUrl { get; set; }
-        public string? AudioFileUrl { get; set; }
-        public string? PdfFileUrl { get; set; }
+        public IFormFile? Image { get; set; }
+        public IFormFile? Audio { get; set; }
+        public IFormFile? PDF { get; set; }
 
-        [JsonIgnore]
-        public bool HasAudio => !string.IsNullOrEmpty(AudioFileUrl);
-
-
-        public List<Guid> FeedbackIds { get; set; } = new List<Guid>();
         public List<Guid> SubcategoryIds { get; set; } = new List<Guid>();
     }
 }
