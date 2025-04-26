@@ -40,17 +40,16 @@ const AppRoutes = () => (
         {/* Authentication */}
         <Route path='/login' element={<LoginPage />} />
         <Route path='/register' element={<RegisterPage />} />
-        {/* Subscription */}
-        <Route
-          path='/subscriptions/:subscriptionId'
-          element={<SubscriptionPage />}
-        />
         {/* Main */}
         <Route path='/' element={<MainPage />} />
         <Route path='/cart' element={<UserCartPage />} />
         <Route path='/cart/checkout' element={<UserCheckoutPage />} />
         <Route path='/orders' element={<UserOrdersPage />} />
         <Route path='/orders/:orderId' element={<OrderDetailsPage />} />
+        <Route
+          path='/subscriptions/:subscriptionId'
+          element={<SubscriptionPage />}
+        />
         <Route element={<PrivateRoute />}>
           {/* Admin */}
           <Route path='/admin' element={<AdminLayout />}>

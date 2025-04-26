@@ -19,6 +19,15 @@ const MainPage: React.FC = () => {
         <button onClick={() => navigate('/catalog')}>Catalog</button>
       </div>
       <div>
+        <button
+          onClick={() =>
+            navigate('/subscriptions/78d416c7-c6af-41c8-a1fb-913180408686')
+          }
+        >
+          Subscribe for 365
+        </button>
+      </div>
+      <div>
         <button onClick={logout}>Logout</button>
       </div>
     </div>
