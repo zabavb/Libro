@@ -1,5 +1,5 @@
-import OrderAdminCardContainer from "../../../containers/order/OrderAdminCardContainer";
-import { Order } from "../../../types";
+﻿import OrderAdminCardContainer from "../../../containers/order/OrderAdminCardContainer";
+import { Order, OrderFilter, OrderSort, Status } from "../../../types";
 import Pagination from "../../common/Pagination";
 import Search from "../../common/Search";
 import "@/assets/styles/base/table-styles.css"
@@ -12,6 +12,10 @@ interface OrderListProps {
     onNavigate: (path: string) => void
     onSearchTermChange: (searchTerm: string) => void
     searchTerm: string
+    onFilterChange: (filters: OrderFilter) => void
+    filters: OrderFilter
+    onSortChange: (sort: OrderSort) => void
+    sort: OrderSort
 }
 
 const OrderList: React.FC<OrderListProps> = ({
@@ -21,6 +25,10 @@ const OrderList: React.FC<OrderListProps> = ({
     onPageChange,
     searchTerm,
     onSearchTermChange,
+    onFilterChange,
+    filters,
+    onSortChange,
+    sort,
 }) => {
     return (
         <div>
@@ -29,6 +37,31 @@ const OrderList: React.FC<OrderListProps> = ({
                     searchTerm={searchTerm}
                     onSearchTermChange={onSearchTermChange} />
                 {/* Temporary implementation, replace with user pfp component */}
+                <select
+                    value={filters.status || ""}
+                    onChange={(e) =>
+                        onFilterChange({ ...filters, status: e.target.value as Status })
+                    }
+                    className="ml-4"
+                >
+                    <option value="">All statuses</option>
+                    <option value="pending">Pending</option>
+                    <option value="shipped">Shipped</option>
+                    <option value="delivered">Delivered</option>
+                    <option value="cancelled">Cancelled</option>
+                </select>
+
+                {/* Сортування за ціною */}
+                <select
+                    value={sort.orderPrice ? "price" : ""}
+                    onChange={(e) =>
+                        onSortChange(e.target.value === "price" ? { orderPrice: true } : {})
+                    }
+                    className="ml-4"
+                >
+                    <option value="">Default sort</option>
+                    <option value="price">Sort by Price</option>
+                </select>
                 <div className="profile-icon">
                     <div style={{borderRadius:"50%",backgroundColor:"grey", height:"43px", width:"43px"}}></div>
                     <p className="profile-name">Name Surname</p>

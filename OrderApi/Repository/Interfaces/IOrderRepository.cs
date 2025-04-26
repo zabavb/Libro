@@ -11,7 +11,8 @@ public interface IOrderRepository : IManageable<Order>
         int pageSize,
         string searchTerm,
         Filter? filter,
-        Sort? sort);
+        Sort? sort
+    );
 
     Task<OrderForUserCard> GetForUserCardAsync(Guid userId);
     Task<ICollection<OrderForUserDetails>> GetAllForUserDetailsAsync(Guid userId);
