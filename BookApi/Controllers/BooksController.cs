@@ -114,10 +114,34 @@ namespace BookAPI.Controllers
         /// <returns>The created book.</returns>
         /// <response code="201">Book successfully created.</response>
         /// <response code="400">Invalid input data.</response>
+        //[HttpPost]
+        //public async Task<ActionResult<BookDto>> Create([FromForm] BookDto bookDto)
+        //{
+        //    if (bookDto == null)
+        //    {
+        //        _logger.LogWarning("Invalid book data provided.");
+        //        return BadRequest("Invalid data.");
+        //    }
+
+        //    try
+        //    {
+        //        /*var createdBook = */
+        //        await _bookService.CreateAsync(bookDto);
+        //        // var createdDiscount = await _discountService.AddAsync(new DiscountDTO { BookId = createdBook.BookId, DiscountRate = 0 });
+        //        return CreatedAtAction(nameof(GetById), new { id = bookDto.BookId }, bookDto);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        _logger.LogError(ex, "Error occurred while creating a new book.");
+        //        return StatusCode(StatusCodes.Status500InternalServerError, new { message = ex.Message });
+        //    }
+        //}
+
         [HttpPost]
-        public async Task<ActionResult<BookDto>> Create([FromForm] BookDto bookDto, IFormFile? imageFile)
+        [Consumes("multipart/form-data")] 
+        public async Task<ActionResult<BookDto>> Create([FromForm] BookRequest request)
         {
-            if (bookDto == null)
+            if (request == null)
             {
                 _logger.LogWarning("Invalid book data provided.");
                 return BadRequest("Invalid data.");
@@ -125,10 +149,9 @@ namespace BookAPI.Controllers
 
             try
             {
-                /*var createdBook = */
-                await _bookService.CreateAsync(bookDto, imageFile);
-                // var createdDiscount = await _discountService.AddAsync(new DiscountDTO { BookId = createdBook.BookId, DiscountRate = 0 });
-                return CreatedAtAction(nameof(GetById), new { id = bookDto.BookId }, bookDto);
+                 await _bookService.CreateAsync(request);
+                return CreatedAtAction(nameof(GetById), new { id = request.BookId }, request);
+
             }
             catch (Exception ex)
             {
@@ -136,6 +159,7 @@ namespace BookAPI.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, new { message = ex.Message });
             }
         }
+
 
         /// <summary>
         /// Updates an existing book.
@@ -146,9 +170,11 @@ namespace BookAPI.Controllers
         /// <response code="200">Book successfully updated.</response>
         /// <response code="400">Invalid input data.</response>
         /// <response code="404">Book not found.</response>
+        /// 
         [HttpPut("{id}")]
-        public async Task<ActionResult<BookDto>> Update(Guid id, [FromBody] UpdateBookRequest request,
-            IFormFile? imageFile)
+        [Consumes("multipart/form-data")]
+
+        public async Task<ActionResult<BookDto>> Update(Guid id, [FromForm] UpdateBookRequest request)
         {
             var bookDto = request.Book;
             var discount = request.Discount;
@@ -161,7 +187,7 @@ namespace BookAPI.Controllers
             try
             {
                 /*var updatedBook = */
-                await _bookService.UpdateAsync(id, bookDto, imageFile);
+                await _bookService.UpdateAsync(id, bookDto);
 
                 /*if (updatedBook == null)
                 {
