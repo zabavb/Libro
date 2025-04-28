@@ -37,6 +37,10 @@ export const UNSUBSCRIBE = API_ROUTES.SUBSCRIPTIONS.UNSUBSCRIBE;
 
 export const FOR_FILTERING = API_ROUTES.SUBSCRIPTIONS.FOR_FILTERING;
 
+// ================= PASSWORD =================
+
+export const PASSWORD = API_ROUTES.PASSWORD.BASE;
+
 // ================= ORDER API  =================
 //================= ORDER =================
 export const ORDERS = API_ROUTES.ORDERS.BASE;
