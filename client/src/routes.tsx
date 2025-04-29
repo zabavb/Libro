@@ -32,6 +32,7 @@ import UserCartPage from './pages/main/user/UserCartPage';
 import UserCheckoutPage from './pages/main/user/UserCheckoutPage';
 import UserOrdersPage from './pages/main/user/UserOrdersPage';
 import OrderDetailsPage from './pages/admin/orderRelated/orders/OrderDetailsPage';
+import ProfilePage from './pages/common/ProfilePage';
 
 const AppRoutes = () => (
   <AuthProvider>
@@ -42,6 +43,7 @@ const AppRoutes = () => (
         <Route path='/register' element={<RegisterPage />} />
         {/* Main */}
         <Route path='/' element={<MainPage />} />
+        <Route path='/profile' element={<ProfilePage />} />
         <Route path='/cart' element={<UserCartPage />} />
         <Route path='/cart/checkout' element={<UserCheckoutPage />} />
         <Route path='/orders' element={<UserOrdersPage />} />

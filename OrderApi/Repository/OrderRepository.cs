@@ -138,30 +138,30 @@ namespace OrderApi.Repository
                     ? query.OrderBy(o => o.OrderDate)
                     : query.OrderByDescending(o => o.OrderDate);
 
-            if (sort.BooksAmount != Bool.NULL)
+            /*if (sort.BooksAmount != Bool.NULL)
                 query = sort.BooksAmount == Bool.ASCENDING
                     ? query.OrderBy(o => o.Books.Values.Sum())
-                    : query.OrderByDescending(o => o.Books.Values.Sum());
+                    : query.OrderByDescending(o => o.Books.Values.Sum());*/
 
             if (sort.OrderPrice != Bool.NULL)
                 query = sort.OrderPrice == Bool.ASCENDING
                     ? query.OrderBy(o => o.Price)
                     : query.OrderByDescending(o => o.Price);
 
-            if (sort.DeliveryPrice != Bool.NULL)
+            /*if (sort.DeliveryPrice != Bool.NULL)
                 query = sort.DeliveryPrice == Bool.ASCENDING
                     ? query.OrderBy(o => o.DeliveryPrice)
-                    : query.OrderByDescending(o => o.DeliveryPrice);
+                    : query.OrderByDescending(o => o.DeliveryPrice);*/
 
             if (sort.DeliveryDate != Bool.NULL)
                 query = sort.DeliveryDate == Bool.ASCENDING
                     ? query.OrderBy(o => o.DeliveryDate)
                     : query.OrderByDescending(o => o.DeliveryDate);
 
-            if (sort.StatusSort != Bool.NULL)
+            /*if (sort.StatusSort != Bool.NULL)
                 query = sort.StatusSort == Bool.ASCENDING
                     ? query.OrderBy(o => o.Status)
-                    : query.OrderByDescending(o => o.Status);
+                    : query.OrderByDescending(o => o.Status);*/
 
             return await Task.FromResult(query.ToList());
         }
