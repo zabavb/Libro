@@ -14,8 +14,11 @@ namespace APIComposer.GraphQL.Services.Interfaces
             int pageNumber,
             int pageSize,
             string? searchTerm,
-            Filter? filter, // Use the specific Filter type for Orders if different
+            Filter? filter,
             OrderAPI.OrderSort? sort);
+
+        Task CreateOrderAsync(Order order);
+        Task UpdateOrderAsync(Order order);
 
     }
 }

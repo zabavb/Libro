@@ -88,15 +88,17 @@ namespace APIComposer.GraphQL.Services
         {
             try
             {
+                // add BuildQuery
                 var queryString = new StringBuilder($"orders?pageNumber={pageNumber}&pageSize={pageSize}");
                 if (!string.IsNullOrEmpty(searchTerm))
                 {
                     queryString.Append($"&searchTerm={Uri.EscapeDataString(searchTerm)}");
                 }
-                //if (filter != null && !string.IsNullOrEmpty(filter.S3KeyFilter.ToString()))
-                //{
-                //    queryString.Append($"&filterProperty={filter.S3KeyFilter}");
-                //}
+                if (filter != null && !string.IsNullOrEmpty(filter.S3KeyFilter.ToString()))
+                {
+                    queryString.Append($"&filterProperty={filter.S3KeyFilter}");
+                }
+               
                 //if (sort != null)
                 //{
                 //    // add sorting to query ?
@@ -114,6 +116,42 @@ namespace APIComposer.GraphQL.Services
             }
             catch (Exception ex)
             {
+                throw;
+            }
+        }
+
+        public async Task CreateOrderAsync(Order order)
+        {
+            try
+            {
+                SetAuthHeader();
+                var response = await _http.PostAsJsonAsync("orders", order);
+                if (!response.IsSuccessStatusCode)
+                {
+                    await ErrorHandler.HandleErrorResponseAsync(response);
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error creating order: {ex.Message}");
+                throw;
+            }
+        }
+
+        public async Task UpdateOrderAsync(Order order)
+        {
+            try
+            {
+                SetAuthHeader();
+                var response = await _http.PutAsJsonAsync($"orders/{order.Id}", order);
+                if (!response.IsSuccessStatusCode)
+                {
+                    await ErrorHandler.HandleErrorResponseAsync(response);
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error updating order: {ex.Message}");
                 throw;
             }
         }
