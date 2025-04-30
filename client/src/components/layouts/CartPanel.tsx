@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import cartIcon from '@/assets/icons/cartIcon.svg'
+import cartIcon from '@/assets/icons/cartBig.svg'
 import '@/assets/styles/layout/cart-panel.css'
 import useCart from "@/state/context/useCart";
 import closeIcon from '@/assets/icons/menuClose.svg'
@@ -44,7 +44,7 @@ const CartPanel: React.FC = () => {
     return (
         <div>
             <img src={cartIcon}
-                className='header__action-icon cursor-pointer'
+                className='cursor-pointer'
                 onClick={() => setIsOpen(true)}
             />
 

@@ -5,7 +5,6 @@ import { fetchBookByIdService } from "@/services/bookService";
 import { addNotification } from "@/state/redux/slices/notificationSlice";
 import { AppDispatch } from "@/state/redux";
 import { useDispatch } from "react-redux";
-import useCart from "@/state/context/useCart";
 import "@/assets/styles/components/common/cart-card.css"
 
 interface CartCardProps {
@@ -18,7 +17,6 @@ interface CartCardProps {
 const CartCard: React.FC<CartCardProps> = ({ item, onAdd, onRemove, onItemClear }) => {
     const dispatch = useDispatch<AppDispatch>()
     const [book, setBook] = useState<Book | null>();
-    const { clearItem } = useCart();
     const [serviceResponse, setServiceResponse] = useState<
         ServiceResponse<Book>
     >({
