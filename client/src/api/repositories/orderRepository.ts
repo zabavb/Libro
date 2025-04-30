@@ -15,7 +15,7 @@ export const getAllOrders = async (body: {
     };
 }): Promise<GraphQLResponse<{ allOrders: PaginatedResponse<Order> }>> => {
     const response = await axios.post<GraphQLResponse<{ allOrders: PaginatedResponse<Order> }>>(GRAPHQL, body, {
-        headers: getAuthHeaders(),
+        headers: getAuthHeaders("application/json"),
     });
     return response.data;
 }
