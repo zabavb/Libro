@@ -29,6 +29,8 @@ import UserCartPage from './pages/main/user/UserCartPage';
 import UserCheckoutPage from './pages/main/user/UserCheckoutPage';
 import UserOrdersPage from './pages/main/user/UserOrdersPage';
 import OrderDetailsPage from './pages/Admin/OrderRelated/Orders/OrderDetailsPage';
+import BookDetailsPage from './pages/Main/book/BookDetailsPage';
+import BookCatalogPage from './pages/Main/book/BooksCatalogPage';
 
 
 const AppRoutes = () => (
@@ -49,6 +51,8 @@ const AppRoutes = () => (
         <Route path='/cart/checkout' element={<UserCheckoutPage />} />
         <Route path='/orders' element={<UserOrdersPage />} />
         <Route path='/orders/:orderId' element={<OrderDetailsPage /> }/>
+        <Route path='/catalog' element={<BookCatalogPage/>}/>
+        <Route path='/books/:bookId' element={<BookDetailsPage/>}/>
         <Route element={<PrivateRoute />}>
           {/* Admin */}
           <Route path='/admin' element={<AdminLayout />}>

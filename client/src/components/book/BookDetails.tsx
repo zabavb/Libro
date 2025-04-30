@@ -1,8 +1,11 @@
-import { Book } from "@/types"
-import { CartItem } from "@/types/types/cart/CartItem"
-import "@/assets/styles/components/book/book-details.css"
-import starIcon from "@/assets/icons/ratingStar.svg"
-import FeedbackCard from "./FeedbackCard"
+import { Book } from '@/types'
+import { CartItem } from '@/types/types/cart/CartItem'
+import '@/assets/styles/components/book/book-details.css'
+import starIcon from '@/assets/icons/ratingStar.svg'
+import truckIcon from '@/assets/icons/truckIcon.svg'
+import CartIcon from '@/assets/icons/cartIcon.svg'
+import FeedbackCard from './FeedbackCard'
+
 interface BookDetailsProps {
     onAddItem: (item: CartItem) => void
     book: Book
@@ -38,11 +41,11 @@ const BookDetails: React.FC<BookDetailsProps> = ({ onAddItem, book, loading }) =
                         <div className="flex gap-5">
                             <div className="booktype-btn active">
                                 <p>Physical</p>
-                                <p className="font-semibold">{book.price}</p>
+                                <p className="font-semibold">{book.price} UAH</p>
                             </div>
                             <div className="booktype-btn">
                                 <p>Digital</p>
-                                <p className="font-semibold">{book.price}</p>
+                                <p className="font-semibold">{book.price} UAH</p>
                             </div>
                         </div>
                     </div>
@@ -102,10 +105,30 @@ const BookDetails: React.FC<BookDetailsProps> = ({ onAddItem, book, loading }) =
                     </div>
                 </div>
                 {/* Cart column */}
-                <div>
-
+                <div className="buy-container">
+                    <div className="flex flex-col gap-2.5">
+                        <h1>{book.price} UAH</h1>
+                        {/* Update later */}
+                        <div className="flex">
+                            <img src={truckIcon}/>
+                            <p className='text-[#9C9C97]'>{book.quantity} pcs. in stock</p>
+                        </div>
+                    </div>
+                    <div className="flex flex-col gap-[17px]">
+                        <button className="btn-cart">
+                            <div className='flex items-center gap-2.5' 
+                            onClick={() => onAddItem({ bookId: book.bookId, amount: 1, name: book.title, price: book.price })}>
+                                <img src={CartIcon} className='invert w-[14px] h-[14px]'/>
+                                <p>Add to cart</p>
+                            </div>
+                        </button>
+                        <button className="btn-buy">    
+                            <p>Buy now</p>
+                        </button>
+                    </div>
                 </div>
             </div>
+
             {/* History */}
             <div>
 

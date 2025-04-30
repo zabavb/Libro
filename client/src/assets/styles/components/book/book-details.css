@@ -44,3 +44,25 @@
     @apply bg-[#1A1D23] py-6 px-52 text-white;
     border-radius: 48px;
 }
+
+.buy-container{
+    @apply flex flex-col w-[320px] h-72 rounded-[30px] bg-[#1A1D23] py-10 px-[30px] text-white gap-[31px];
+}
+
+.buy-header{
+    @apply font-bold;
+}
+
+.btn-cart{
+    @apply rounded-[30px] flex py-3 px-[60px];
+    border: 1px solid white;
+    font-size: 13px;
+    line-height: 16px;
+}
+
+.btn-buy{
+    @apply rounded-[30px] flex py-3 px-[81px] bg-[#FF642E] text-[#1A1D23];
+    border: 1px solid #1A1D23;
+    font-size: 13px;
+    line-height: 16px;
+}
