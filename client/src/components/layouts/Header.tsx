@@ -1,15 +1,17 @@
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faCartShopping,
-  faHeart,
-  faUser,
-  faMagnifyingGlass,
-} from "@fortawesome/free-solid-svg-icons";
 import { useNavigate } from "react-router-dom"; 
+import { useState } from "react";
+
 import CatalogMenu from "./CatalogMenu";
+
+import userIcon from '@/assets/icons/headerUser.svg'
+import heartIcon from '@/assets/icons/headerHeart.svg'
+import magnifyingGlass from '@/assets/icons/magnifyingGlass.svg'
+import CartPanel from "./CartPanel";
 
 export default function Header() {
   const navigate = useNavigate(); 
+
+  const [isProfileOpen, setIsProfileOpen] = useState<boolean>(false);
 
   return (
     <header className='header'>
@@ -28,27 +30,16 @@ export default function Header() {
           placeholder='Search on website'
           className='header__input'
         />
-        <FontAwesomeIcon icon={faMagnifyingGlass} className='header__icon' />
+        <img src={magnifyingGlass} className='header__icon'/>
       </div>
 
       {/* Header__right */}
       <div className='header__right'>
-        <FontAwesomeIcon
-          icon={faCartShopping}
-          className='header__action-icon cursor-pointer' // Додаємо cursor-pointer для кращого UX
-          onClick={() => navigate('/cart')} // Навігація до /cart
-        />
-        <FontAwesomeIcon icon={faHeart} className='header__action-icon' />
-        <FontAwesomeIcon
-          icon={faUser}
-          className='header__action-icon cursor-pointer'
-          onClick={() => navigate('/profile')}
-        />
-        <FontAwesomeIcon
-          icon={faUser}
-          className='header__action-icon cursor-pointer' // Додаємо cursor-pointer
-          onClick={() => navigate('/admin')} // Навігація до /admin
-        />
+        <CartPanel/>
+        <img src={heartIcon}/>
+        <img src={userIcon}
+                  className='header__action-icon cursor-pointer'
+                  onClick={() => navigate('/profile')}/>
         <div className='header__lang'>
           <span className='header__lang--active'>UA</span>
           <span>ENG</span>
