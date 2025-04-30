@@ -2,9 +2,7 @@
 using Library.Common;
 using Library.DTOs.UserRelated.User;
 using Library.Interfaces;
-using SixLabors.ImageSharp;
 using UserAPI.Models;
-using UserAPI.Repositories;
 using UserAPI.Repositories.Interfaces;
 using UserAPI.Services.Interfaces;
 
@@ -14,7 +12,7 @@ namespace UserAPI.Services
         IUserRepository repository,
         ISubscriptionRepository subscriptionRepository,
         IPasswordRepository passwordRepository,
-        AvatarService avatarService,
+        IAvatarService avatarService,
         IS3StorageService storageService,
         IMapper mapper,
         ILogger<IUserService> logger
@@ -24,10 +22,8 @@ namespace UserAPI.Services
         private readonly ISubscriptionRepository _subscriptionRepository = subscriptionRepository;
         private readonly IPasswordRepository _passwordRepository = passwordRepository;
 
-        private readonly AvatarService _avatarService = avatarService;
+        private readonly IAvatarService _avatarService = avatarService;
         private readonly IS3StorageService _storageService = storageService;
-        private const string Folder = "user/images/";
-        private static readonly Size Size = new Size(200, 200);
 
         private readonly IMapper _mapper = mapper;
         private readonly ILogger<IUserService> _logger = logger;
@@ -71,8 +67,8 @@ namespace UserAPI.Services
             if (dto.Id == Guid.Empty)
                 dto.Id = Guid.NewGuid();
 
-            var image = await GenerateAvatarAsync(dto.LastName, dto.FirstName);
-            dto.ImageUrl = await UploadAvatarAsync(image, Folder, dto.Id);
+            var image = await _avatarService.GenerateAvatarAsync(dto.FirstName, dto.LastName);
+            dto.ImageUrl = await UploadAvatarAsync(image, GlobalDefaults.UserImagesFolder, dto.Id);
 
             var user = _mapper.Map<User>(dto);
             await _repository.CreateAsync(user);
@@ -96,29 +92,10 @@ namespace UserAPI.Services
             _logger.LogInformation($"User with ID [{id}] successfully deleted.");
         }
 
-        private async Task<IFormFile?> GenerateAvatarAsync(string? lastName, string firstName)
-        {
-            try
-            {
-                byte[] avatarImage = await _avatarService.GenerateAvatarAsync(firstName, lastName);
-                var stream = new MemoryStream(avatarImage);
-                IFormFile formFile = new FormFile(stream, 0, avatarImage.Length, "file", "avatar.png")
-                {
-                    Headers = new HeaderDictionary(),
-                    ContentType = "image/png"
-                };
-
-                return formFile;
-            }
-            catch (Exception ex)
-            {
-                throw new InvalidOperationException("Database error for user's avatar generation.", ex);
-            }
-        }
-
         private async Task<string> UploadAvatarAsync(IFormFile? image, string folder, Guid id) =>
             image != null && image.Length > 0
-                ? await _storageService.UploadAsync(GlobalDefaults.BucketName, folder, id, image, Size)
+                ? await _storageService.UploadAsync(GlobalDefaults.BucketName, folder, id, image,
+                    GlobalDefaults.UserImagesSize)
                 : string.Empty;
 
         private async Task DeleteAvatarAsync(Guid id)
@@ -126,7 +103,7 @@ namespace UserAPI.Services
             _ = await _repository.GetByIdAsync(id) ??
                 throw new KeyNotFoundException($"User with ID [{id}] not found for deletion.");
 
-            string fileKey = $"{Folder}{id}.png";
+            string fileKey = $"{GlobalDefaults.UserImagesFolder}{id}.png";
             await _storageService.DeleteAsync(GlobalDefaults.BucketName, fileKey);
         }
     }

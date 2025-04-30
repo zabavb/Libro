@@ -20,8 +20,6 @@ namespace UserAPI.Services
         private readonly ISubscriptionRepository _repository = repository;
 
         private readonly IS3StorageService _storageService = storageService;
-        private const string Folder = "subscription/images/";
-        private static readonly Size Size = new(190, 190);
 
         private readonly IMapper _mapper = mapper;
         private readonly ILogger<ISubscriptionService> _logger = logger;
@@ -72,7 +70,8 @@ namespace UserAPI.Services
             var id = Guid.NewGuid();
             if (dto.Image != null)
                 dto.ImageUrl =
-                    await _storageService.UploadAsync(GlobalDefaults.BucketName, Folder, id, dto.Image, Size);
+                    await _storageService.UploadAsync(GlobalDefaults.BucketName,
+                        GlobalDefaults.SubscriptionImagesFolder, id, dto.Image, GlobalDefaults.SubscriptionImagesSize);
 
             var subscription = _mapper.Map<Subscription>(dto);
             subscription.SubscriptionId = id;
@@ -95,7 +94,9 @@ namespace UserAPI.Services
                     await _storageService.DeleteAsync(GlobalDefaults.BucketName, existingSubscription.ImageUrl);
 
                 dto.ImageUrl =
-                    await _storageService.UploadAsync(GlobalDefaults.BucketName, Folder, dto.Id, dto.Image, Size);
+                    await _storageService.UploadAsync(GlobalDefaults.BucketName,
+                        GlobalDefaults.SubscriptionImagesFolder, dto.Id, dto.Image,
+                        GlobalDefaults.SubscriptionImagesSize);
             }
 
             var subscription = _mapper.Map<Subscription>(dto);

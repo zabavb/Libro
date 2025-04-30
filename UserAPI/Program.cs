@@ -26,6 +26,7 @@ builder.Services.AddDbContext<UserDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.AddScoped<AvatarService>();
+builder.Services.AddScoped<IAvatarService, AvatarService>();
 builder.Services.AddScoped<IS3StorageService, S3StorageService>();
 
 builder.Services.AddScoped<IAuthService, AuthService>();
