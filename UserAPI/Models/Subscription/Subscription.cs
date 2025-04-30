@@ -12,10 +12,21 @@
 
         public ICollection<UserSubscription>? UserSubscriptions { get; set; }
 
+        public Subscription(string title, int expirationDays, float price, string subdescription, string? description)
+        {
+            SubscriptionId = Guid.NewGuid();
+            Title = title;
+            ExpirationDays = expirationDays;
+            Price = price;
+            Subdescription = subdescription;
+            Description = description;
+        }
+
         public Subscription()
         {
             SubscriptionId = Guid.NewGuid();
             Title = string.Empty;
+            Subdescription = string.Empty;
             ImageUrl = string.Empty;
         }
     }
