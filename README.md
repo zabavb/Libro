@@ -1,5 +1,5 @@
 <p align="center">
-	<img src="client/src/assets/logoLibro.svg" alt="Libro Logo" width="300"/>
+	<img src="client/src/assets/logoLibro.svg" alt="Libro Logo" width="200"/>
 </p>
 <h1 align="center">Libro – Online Bookstore Web Application</h1>
 
