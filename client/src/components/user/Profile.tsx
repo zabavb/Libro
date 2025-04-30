@@ -50,8 +50,6 @@ const Profile: React.FC<ProfileProps> = ({
     keyof UserProfileFormData | null
   >(null);
 
-  // const watchedPassword = watch('password');
-
   useEffect(() => {
     if (user) {
       setValue('lastName', user.lastName ?? '');
@@ -198,13 +196,6 @@ const Profile: React.FC<ProfileProps> = ({
           {renderField('First name', 'firstName', 'text', 'First name')}
           {renderField('Email', 'email', 'email', 'Email')}
           {renderField('Phone number', 'phoneNumber', 'tel', 'Phone number')}
-          {/* {renderField('Change password', 'password', 'password', 'Password')}
-          {renderField(
-            'Confirm password',
-            'confirmPassword',
-            'password',
-            'Confirm password',
-          )} */}
           {renderPasswordFields()}
           {renderField('Date of birth', 'dateOfBirth', 'date', 'Date of birth')}
         </div>

@@ -66,7 +66,7 @@
     public class SubscriptionForUserDetails
     {
         public string Title { get; set; }
-        public string? Description { get; set; }
+        public string Subdescription { get; set; }
         public string ImageUrl { get; set; }
 
         public SubscriptionForUserDetails()

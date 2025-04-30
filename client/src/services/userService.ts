@@ -154,7 +154,7 @@ export const fetchUserByIdService = async (
           }
           subscriptions {
             title
-            description
+            subdescription
             imageUrl
           }
         }
