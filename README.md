@@ -1,7 +1,9 @@
 <p align="center">
 	<img src="client/src/assets/logoLibro.svg" alt="Libro Logo" width="200"/>
 </p>
-<h1 align="center">Libro – Online Bookstore Web Application</h1>
+<h1 align="center">Libro – Online Bookstore Web Application
+	<span>(<i><a href="Libro - Cover letter.pdf">Cover letter</a></i>)</span>
+</h1>
 
 <p>
   <strong>Libro</strong> is a full-stack web application modeled after the Ukrainian book store <a href="https://www.yakaboo.ua/">Yakaboo</a>.
