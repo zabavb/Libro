@@ -2,12 +2,10 @@
 using System.Text.Json.Serialization;
 using Library.Common;
 using Library.Common.Middleware;
-using Library.DTOs.UserRelated.User;
-using Library.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using StackExchange.Redis;
 using UserAPI.Data;
-using UserAPI.Models;
+using UserAPI.Models.Filters;
 using UserAPI.Models.Subscription;
 using UserAPI.Repositories.Interfaces;
 
@@ -34,6 +32,7 @@ namespace UserAPI.Repositories
                     ReferenceHandler = ReferenceHandler.Preserve,
                     WriteIndented = true
                 };
+
                 string cacheKey = $"{CacheKeyPrefix}All_Page:{pageNumber}_Size:{pageSize}_Search:{searchTerm}";
                 var cachedSubscriptions = await _redisDatabase.HashGetAllAsync(cacheKey);
 
@@ -42,6 +41,7 @@ namespace UserAPI.Repositories
                 {
                     subscriptions = cachedSubscriptions
                         .Select(entry => JsonSerializer.Deserialize<Subscription>(entry.Value!, options)!)
+                        .ToList()
                         .AsQueryable()
                         .AsNoTracking();
 
@@ -52,31 +52,31 @@ namespace UserAPI.Repositories
                     subscriptions = _context.Subscriptions.AsNoTracking();
                     _logger.LogInformation("Fetched from DB.");
 
-                    var hashEntries = subscriptions.ToDictionary(
+                    if (!string.IsNullOrWhiteSpace(searchTerm))
+                        subscriptions = subscriptions.SearchBy(searchTerm, s => s.Title);
+
+                    var hashEntries = await subscriptions.ToDictionaryAsync(
                         subscription => subscription.SubscriptionId.ToString(),
                         subscription => JsonSerializer.Serialize(subscription, options)
                     );
 
                     await _redisDatabase.HashSetAsync(
                         cacheKey,
-                        [.. hashEntries.Select(kvp => new HashEntry(kvp.Key, kvp.Value))]
+                        hashEntries.Select(kvp => new HashEntry(kvp.Key, kvp.Value)).ToArray()
                     );
                     await _redisDatabase.KeyExpireAsync(cacheKey, _cacheExpiration);
                     _logger.LogInformation("Set to CACHE.");
                 }
 
-                if (subscriptions.Any() && !string.IsNullOrWhiteSpace(searchTerm))
-                    subscriptions = subscriptions.SearchBy(searchTerm, s => s.Title);
-
-                var total = await subscriptions.CountAsync();
-                var paginatedUsers = await subscriptions
+                var total = subscriptions.Count();
+                var paginatedSubscriptions = subscriptions
                     .Skip((pageNumber - 1) * pageSize)
                     .Take(pageSize)
-                    .ToListAsync();
+                    .ToList();
 
                 return new PaginatedResult<Subscription>
                 {
-                    Items = paginatedUsers,
+                    Items = paginatedSubscriptions,
                     TotalCount = total,
                     PageNumber = pageNumber,
                     PageSize = pageSize
@@ -84,7 +84,7 @@ namespace UserAPI.Repositories
             }
             catch (Exception ex)
             {
-                throw new RepositoryException("Error while fetching susbscriptions.", ex);
+                throw new RepositoryException("Error while fetching subscriptions.", ex);
             }
         }
 
@@ -128,30 +128,6 @@ namespace UserAPI.Repositories
                 throw new RepositoryException($"Database error while fetching subscription by ID [{id}].", ex);
             }
         }
-
-        /*public async Task<CollectionSnippet<SubscriptionDetailsSnippet>> GetAllByUserIdAsync(Guid id)
-        {
-            try
-            {
-                var subscriptions = await _context.UserSubscriptions
-                    .AsNoTracking()
-                    .Where(us => us.UserId == id)
-                    .Include(us => us.Subscription)
-                    .Select(us => new SubscriptionDetailsSnippet
-                    {
-                        Title = us.Subscription.Title,
-                        Description = us.Subscription.Description,
-                        ImageUrl = us.Subscription.ImageUrl
-                    })
-                    .ToListAsync();
-
-                return new CollectionSnippet<SubscriptionDetailsSnippet>(false, subscriptions);
-            }
-            catch
-            {
-                return new CollectionSnippet<SubscriptionDetailsSnippet>(true, new List<SubscriptionDetailsSnippet>());
-            }
-        }*/
 
         public async Task CreateAsync(Subscription subscription)
         {
@@ -251,8 +227,63 @@ namespace UserAPI.Repositories
             }
         }
 
-        private async Task<(UserSubscription? Existing, int ExpirationDays)> CheckForSubscriptionAsync(Guid userId,
-            Guid subscriptionId)
+        public async Task<ICollection<BySubscription>> GetAllForFilterContentAsync()
+        {
+            try
+            {
+                var options = new JsonSerializerOptions
+                {
+                    ReferenceHandler = ReferenceHandler.Preserve,
+                    WriteIndented = true
+                };
+                string cacheKey = $"{CacheKeyPrefix}All";
+                var cachedSubscriptions = await _redisDatabase.HashGetAllAsync(cacheKey);
+
+                IQueryable<BySubscription> subscriptions;
+                if (cachedSubscriptions.Length > 0)
+                {
+                    subscriptions = cachedSubscriptions
+                        .Select(entry => JsonSerializer.Deserialize<BySubscription>(entry.Value!, options)!)
+                        .AsQueryable()
+                        .AsNoTracking();
+
+                    _logger.LogInformation("Fetched from CACHE.");
+                }
+                else
+                {
+                    subscriptions = _context.Subscriptions
+                        .Select(s => new BySubscription()
+                        {
+                            Id = s.SubscriptionId,
+                            Title = s.Title
+                        })
+                        .AsNoTracking();
+                    _logger.LogInformation("Fetched from DB.");
+
+                    var hashEntries = subscriptions.ToDictionary(
+                        subscription => subscription.Id.ToString(),
+                        subscription => JsonSerializer.Serialize(subscription, options)
+                    );
+
+                    await _redisDatabase.HashSetAsync(
+                        cacheKey,
+                        [.. hashEntries.Select(kvp => new HashEntry(kvp.Key, kvp.Value))]
+                    );
+                    await _redisDatabase.KeyExpireAsync(cacheKey, _cacheExpiration);
+                    _logger.LogInformation("Set to CACHE.");
+                }
+
+                return subscriptions.ToList();
+            }
+            catch (Exception ex)
+            {
+                throw new RepositoryException("Error while fetching subscriptions.", ex);
+            }
+        }
+
+        private async Task<(UserSubscription? Existing, int ExpirationDays)> CheckForSubscriptionAsync(
+            Guid subscriptionId,
+            Guid userId)
         {
             var user = await _context.Users.FindAsync(userId)
                        ?? throw new KeyNotFoundException($"User with ID [{userId}] not found.");

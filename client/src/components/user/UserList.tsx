@@ -1,6 +1,10 @@
 import React from 'react';
 import { FixedSizeList as List } from 'react-window';
-import { UserCard } from '../../types';
+import {
+  UserCard,
+  UserSort as UserSortType,
+  UserViewFilter,
+} from '../../types';
 import UserCardContainer from '../../containers/user/UserCardContainer';
 import UserFilter from './UserFilter';
 import UserSort from './UserSort';
@@ -16,9 +20,9 @@ interface UserListProps {
   onNavigate: (path: string) => void;
   onSearchTermChange: (searchTerm: string) => void;
   searchTerm: string;
-  onFilterChange: (filters: UserFilter) => void;
-  filters: UserFilter;
-  onSortChange: (field: keyof UserSort) => void;
+  onFilterChange: (filters: UserViewFilter) => void;
+  filters: UserViewFilter;
+  onSortChange: (sorts: UserSortType) => void;
   sort: UserSort;
 }
 

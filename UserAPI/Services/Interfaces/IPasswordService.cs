@@ -2,6 +2,6 @@
 {
     public interface IPasswordService
     {
-        Task<bool> UpdateAsync(Dto user, string oldPassword, string newPassword);
+        Task<bool> UpdateAsync(Guid userId, string newPassword);
     }
 }

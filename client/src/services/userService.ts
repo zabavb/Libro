@@ -6,6 +6,7 @@ import {
   UserCard,
   UserForm,
   ServiceResponse,
+  Bool,
 } from '../types';
 import {
   getAllUsers,
@@ -14,7 +15,6 @@ import {
   updateUser,
   deleteUser,
 } from '../api/repositories/userRepository';
-import { roleEnumToNumber } from '../api/adapters/userAdapter';
 
 /**
  * Fetch a paginated list of users with optional search term, filters, and sorting.
@@ -33,23 +33,76 @@ export const fetchUsersService = async (
   };
 
   try {
-    const formattedSort = Object.fromEntries(
-      Object.entries(sort ?? {}).map(([key, value]) => [key, value ? 1 : 2]),
-    );
-
-    const params = {
-      searchTerm,
-      ...filters,
-      role:
-        filters?.role !== undefined
-          ? roleEnumToNumber(filters.role).toString()
-          : undefined,
-      ...formattedSort,
+    const defaultFilter: UserFilter = {
+      email: null,
+      roleFilter: null,
+      subscriptionId: null,
     };
 
-    response.data = await getAllUsers(pageNumber, pageSize, params);
+    const defaultSort = {
+      alphabetical: Bool.NULL,
+      youngest: Bool.NULL,
+      roleSort: Bool.NULL,
+    } as UserSort;
+
+    const body = {
+      query: `
+        query GetAllUsers(
+          $pageNumber: Int!,
+          $pageSize: Int!,
+          $searchTerm: String,
+          $filter: UserFilterInput!,
+          $sort: UserSortInput!
+        ) {
+          allUsers(
+            pageNumber: $pageNumber,
+            pageSize: $pageSize,
+            searchTerm: $searchTerm,
+            filter: $filter,
+            sort: $sort
+          ) {
+            items {
+              id
+              fullName
+              email
+              phoneNumber
+              role
+              order {
+                ordersCount
+                lastOrder
+              }
+            }
+            pageNumber
+            pageSize
+            totalCount
+            totalPages
+          }
+        }`,
+      variables: {
+        pageNumber,
+        pageSize,
+        searchTerm: searchTerm ?? null,
+        filter: {
+          ...defaultFilter,
+          ...filters,
+        },
+        sort: {
+          ...defaultSort,
+          ...sort,
+        },
+      },
+    };
+
+    const graphQLResponse = await getAllUsers(body);
+    if (graphQLResponse.errors)
+      throw new Error(
+        `${graphQLResponse.errors[0].message} Status code: ${graphQLResponse.errors[0].extensions?.status}`,
+      );
+
+    response.data = graphQLResponse.data
+      ?.allUsers as PaginatedResponse<UserCard>;
   } catch (error) {
-    console.error('Failed to fetch users', error);
+    console.error(error instanceof Error ? error.message : String(error));
     response.error =
       'An error occurred while fetching users. Please try again later.';
   } finally {
@@ -72,9 +125,54 @@ export const fetchUserByIdService = async (
   };
 
   try {
-    response.data = await getUserById(id);
+    const body = {
+      query: `query(
+        $id: UUID!
+      ) {
+        user(
+          id: $id
+        ) {
+          id
+          lastName
+          firstName
+          email
+          phoneNumber
+          dateOfBirth
+          role
+          imageUrl
+          orders {
+            orderUiId
+            bookNames
+            price
+          }
+          feedbacksCount
+          feedbacks {
+            headLabel
+            rating
+            comment
+            date
+          }
+          subscriptions {
+            title
+            subdescription
+            imageUrl
+          }
+        }
+      }`,
+      variables: {
+        id: id,
+      },
+    };
+
+    const graphQLResponse = await getUserById(body);
+    if (graphQLResponse.errors)
+      throw new Error(
+        `${graphQLResponse.errors[0].message} Status code: ${graphQLResponse.errors[0].extensions?.status}`,
+      );
+
+    response.data = graphQLResponse.data?.user as UserForm;
   } catch (error) {
-    console.error(`Failed to fetch user ID [${id}]`, error);
+    console.error(error instanceof Error ? error.message : String(error));
     response.error =
       'An error occurred while fetching the user. Please try again later.';
   } finally {

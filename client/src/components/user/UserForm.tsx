@@ -2,9 +2,9 @@ import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { UserFormData, userSchema } from '../../utils';
-import { Role, UserForm as UserFormType } from '../../types';
+import { RoleView, UserForm as UserFormType } from '../../types';
 import { dateToString } from '../../api/adapters/commonAdapters';
-import { roleNumberToEnum } from '../../api/adapters/userAdapter';
+import { numberToRoleView } from '../../api/adapters/userAdapter';
 
 interface UserFormProps {
   existingUser?: UserFormType;
@@ -35,7 +35,7 @@ const UserForm: React.FC<UserFormProps> = ({
       dateOfBirth: dateToString(new Date(new Date().getFullYear() - 18)),
       email: '',
       phoneNumber: '',
-      role: Role.USER,
+      role: RoleView.USER,
     },
   });
 
@@ -49,7 +49,7 @@ const UserForm: React.FC<UserFormProps> = ({
         'dateOfBirth',
         existingUser.dateOfBirth ? dateToString(existingUser.dateOfBirth) : '',
       );
-      setValue('role', roleNumberToEnum(existingUser.role));
+      setValue('role', numberToRoleView(existingUser.role));
     }
   }, [existingUser, setValue]);
 
@@ -111,7 +111,7 @@ const UserForm: React.FC<UserFormProps> = ({
 
           <select {...register('role')}>
             <option value=''>Select Role</option>
-            {Object.entries(Role).map(([key, value]) => (
+            {Object.entries(RoleView).map(([key, value]) => (
               <option key={key} value={value}>
                 {value}
               </option>
@@ -125,48 +125,62 @@ const UserForm: React.FC<UserFormProps> = ({
         </form>
       </div>
 
-      {existingUser && (
-        <>
-          <p>All orders</p>
-          <div>
-            {existingUser.orders ? (
-              existingUser.orders.map((order) => (
-                <div>
-                  <div>{order.bookNames}</div>
-                  <div>{order.orderUiId}</div>
-                  <div>{order.price}</div>
-                </div>
-              ))
-            ) : (
-              <p>No orders yet...</p>
-            )}
-          </div>
-        </>
-      )}
-
-      {existingUser && (
+      <div>
+        <p>All orders</p>
         <div>
-          {existingUser.feedbacksCount === 0 ? (
-            <p>No feedbacks yet...</p>
-          ) : (
-            <>
-              <p>Feedbacks ({existingUser.feedbacksCount})</p>
+          {existingUser &&
+          existingUser.orders &&
+          existingUser.orders.length > 0 ? (
+            existingUser.orders.map((order) => (
               <div>
-                {existingUser.feedbacksCount === 1 ? (
-                  <>
-                    <div>{existingUser.feedbacks[0].rating}</div>
-                    <div>{existingUser.feedbacks[0].comment}</div>
-                    <div>{existingUser.feedbacks[0].headLabel}</div>
-                    <div>{dateToString(existingUser.feedbacks[0].date)}</div>
-                  </>
-                ) : (
-                  <>{feedbacksHandler}</>
-                )}
+                <div>{order.bookNames}</div>
+                <div>{order.orderUiId}</div>
+                <div>{order.price}</div>
               </div>
-            </>
+            ))
+          ) : (
+            <p>No orders yet...</p>
           )}
         </div>
-      )}
+      </div>
+
+      <div>
+        <p>Feedbacks ({existingUser?.feedbacksCount ?? 0})</p>
+        <div>
+          {existingUser &&
+          existingUser.feedbacksCount &&
+          existingUser.feedbacksCount > 0 ? (
+            existingUser.feedbacksCount === 1 ? (
+              <>
+                <div>{existingUser.feedbacks[0].rating}</div>
+                <div>{existingUser.feedbacks[0].comment}</div>
+                <div>{existingUser.feedbacks[0].headLabel}</div>
+                <div>{dateToString(existingUser.feedbacks[0].date)}</div>
+              </>
+            ) : (
+              <>{feedbacksHandler}</>
+            )
+          ) : (
+            <div>No feedbacks yet...</div>
+          )}
+        </div>
+      </div>
+
+      <div>
+        {existingUser && existingUser.subscriptions.length > 0 ? (
+          <>
+            {existingUser?.subscriptions.map((subscription) => (
+              <div key={subscription.title}>
+                <img src={subscription.imageUrl} alt={subscription.title} />
+                <div>{subscription.title}</div>
+                <div>{subscription.description}</div>
+              </div>
+            ))}
+          </>
+        ) : (
+          <p>No subscriptions yet...</p>
+        )}
+      </div>
     </>
   );
 };

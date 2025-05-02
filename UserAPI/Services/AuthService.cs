@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
 using Google.Apis.Auth;
-using Library.DTOs.User;
 using Library.DTOs.UserRelated.User;
 using UserAPI.Models;
 using UserAPI.Models.Auth;
@@ -10,31 +9,45 @@ using UserAPI.Services.Interfaces;
 
 namespace UserAPI.Services
 {
-    public class AuthService(IAuthRepository authRepository, IUserRepository userRepository, IPasswordRepository passwordRepository, IMapper mapper, ILogger<IAuthService> logger) : IAuthService
+    public class AuthService(
+        IAuthRepository authRepository,
+        IUserService userService,
+        IUserRepository userRepository,
+        IPasswordRepository passwordRepository,
+        IMapper mapper,
+        ILogger<IAuthService> logger) : IAuthService
     {
         private readonly IAuthRepository _authRepository = authRepository;
+        private readonly IUserService _userService = userService;
         private readonly IUserRepository _userRepository = userRepository;
         private readonly IPasswordRepository _passwordRepository = passwordRepository;
-        
+
         private readonly IMapper _mapper = mapper;
         private readonly ILogger<IAuthService> _logger = logger;
 
         public async Task<Dto?> AuthenticateAsync(LoginRequest request)
         {
-            var user = request.Identifier.Contains('@') ?
-                await _authRepository.GetUserByEmailAsync(request) :
-                await _authRepository.GetUserByPhoneNumberAsync(request);
+            var user = request.Identifier.Contains('@')
+                ? await _authRepository.GetUserByEmailAsync(request)
+                : await _authRepository.GetUserByPhoneNumberAsync(request);
 
-            return await IsRightPasswordAsync(user!, request.Password) ? _mapper.Map<Dto>(user) : null;
+            Guid passwordId;
+            var password = await _passwordRepository.GetByUserIdAsync(user!.UserId);
+            if (password != null)
+                passwordId = password.PasswordId;
+            else
+            {
+                passwordId = Guid.NewGuid();
+                await _passwordRepository.AddAsync(passwordId, request.Password, user.UserId);
+            }
+
+            return await IsRightPasswordAsync(passwordId, request.Password) ? _mapper.Map<Dto>(user) : null;
         }
 
         public async Task RegisterAsync(RegisterRequest request)
         {
             if (request == null)
                 throw new ArgumentException("User data is required.", nameof(request));
-
-            var passwordId = Guid.NewGuid();
-            var password = request.Password;
 
             User user = new()
             {
@@ -43,12 +56,11 @@ namespace UserAPI.Services
                 LastName = request.LastName,
                 Email = request.Email,
                 PhoneNumber = request.PhoneNumber,
-                Role = RoleType.USER,
-                PasswordId = passwordId
-            }; 
-            
-            await _passwordRepository.AddAsync(passwordId, password, user);
-            await _userRepository.CreateAsync(user);
+                Role = RoleType.USER
+            };
+
+            await _userService.CreateAsync(_mapper.Map<Dto>(user));
+            await _passwordRepository.AddAsync(Guid.NewGuid(), request.Password, user.UserId);
             _logger.LogInformation("Successful user registration.");
         }
 
@@ -57,25 +69,23 @@ namespace UserAPI.Services
             var payload = await GoogleJsonWebSignature.ValidateAsync(token, settings);
 
             var user = _mapper.Map<Dto>(await _userRepository.GetByEmailAsync(payload.Email)) ?? new Dto
-                {
-                    FirstName = payload.GivenName,
-                    LastName = payload.FamilyName,
-                    Email = payload.Email,
-                    Role = RoleType.USER,
-                };
+            {
+                Id = Guid.Empty,
+                FirstName = payload.GivenName,
+                LastName = payload.FamilyName,
+                Email = payload.Email,
+                Role = RoleType.USER,
+            };
 
             _logger.LogInformation("OAuthAsync() => return {user}", user);
 
             return user;
         }
 
-        private async Task<bool> IsRightPasswordAsync(User user, string password)
+        private async Task<bool> IsRightPasswordAsync(Guid passwordId, string password)
         {
-            if (user != null && !string.IsNullOrWhiteSpace(password))
-            {
-                Guid passwordId = user.PasswordId;
+            if (!string.IsNullOrWhiteSpace(password))
                 return await _passwordRepository.VerifyAsync(passwordId, password);
-            }
 
             return false;
         }

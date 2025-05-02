@@ -1,5 +1,18 @@
 {
   "Routes": [
+    //======================================= APIComposer (GraphQL) =======================================
+    {
+      "DownstreamPathTemplate": "/graphql",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7020
+        }
+      ],
+      "UpstreamPathTemplate": "/gateway/graphql",
+      "UpstreamHttpMethod": [ "POST" ]
+    },
     //======================================= UserAPI =======================================
     //======================= Authentication =======================
     {
@@ -63,8 +76,6 @@
       "UpstreamPathTemplate": "/gateway/users/{id}",
       "UpstreamHttpMethod": [ "GET", "PUT", "DELETE" ]
     },
-    //======================= Password entity =======================
-    
     //======================= Subscription entity =======================
     {
       "DownstreamPathTemplate": "/api/subscriptions",
@@ -114,6 +125,31 @@
       "UpstreamPathTemplate": "/gateway/subscriptions/unsubscribe",
       "UpstreamHttpMethod": [ "POST" ]
     },
+    {
+      "DownstreamPathTemplate": "/api/subscriptions/filter",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7007
+        }
+      ],
+      "UpstreamPathTemplate": "/gateway/subscriptions/filter",
+      "UpstreamHttpMethod": [ "GET" ]
+    },
+    //======================= Password entity =======================
+    {
+      "DownstreamPathTemplate": "/api/password/{userId}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7007
+        }
+      ],
+      "UpstreamPathTemplate": "/gateway/password/{userId}",
+      "UpstreamHttpMethod": [ "PUT" ]
+    },
     //======================================= BookAPI =======================================
     //======================= Book entity =======================
     {
@@ -139,6 +175,18 @@
       ],
       "UpstreamPathTemplate": "/gateway/books/{id}",
       "UpstreamHttpMethod": [ "GET", "DELETE", "PUT" ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/books/for-user/details",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7084
+        }
+      ],
+      "UpstreamPathTemplate": "/gateway/books/for-user/details",
+      "UpstreamHttpMethod": [ "GET" ]
     },
     //======================= Author entity =======================
     {
@@ -215,6 +263,18 @@
       "UpstreamPathTemplate": "/gateway/feedbacks/{id}",
       "UpstreamHttpMethod": [ "GET", "DELETE", "PUT" ]
     },
+    {
+      "DownstreamPathTemplate": "/api/feedbacks/for-user/details/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7084
+        }
+      ],
+      "UpstreamPathTemplate": "/gateway/feedbacks/for-user/details/{id}",
+      "UpstreamHttpMethod": [ "GET" ]
+    },
     //======================= Publisher entity =======================
     {
       "DownstreamPathTemplate": "/api/publishers",
@@ -290,6 +350,30 @@
       ],
       "UpstreamPathTemplate": "/gateway/orders/{id}",
       "UpstreamHttpMethod": [ "GET", "DELETE", "PUT" ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/orders/for-user/card/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7051
+        }
+      ],
+      "UpstreamPathTemplate": "/gateway/orders/for-user/card/{id}",
+      "UpstreamHttpMethod": [ "GET" ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/orders/for-user/details/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7051
+        }
+      ],
+      "UpstreamPathTemplate": "/gateway/orders/for-user/details/{id}",
+      "UpstreamHttpMethod": [ "GET" ]
     },
     //======================= Delivery type entity =======================
     {

@@ -11,7 +11,7 @@ export interface UserForm {
   orders: OrderDetailsSnippet[];
   feedbacksCount: number;
   feedbacks: FeedbackDetailsSnippet[];
-  // Subscriptions: SubscriptionDetailsSnippet[];
+  subscriptions: SubscriptionDetailsSnippet[];
 }
 interface OrderDetailsSnippet {
   orderUiId: string;
@@ -26,8 +26,8 @@ interface FeedbackDetailsSnippet {
   date: Date;
 }
 
-/* interface SubscriptionDetailsSnippet {
+interface SubscriptionDetailsSnippet {
   title: string;
   description: string;
   imageUrl: string;
-} */
+}

@@ -4,6 +4,7 @@ using UserAPI.Services.Interfaces;
 using Library.Common;
 using Library.DTOs.UserRelated.Subscription;
 using Microsoft.AspNetCore.Authorization;
+using UserAPI.Models.Filters;
 using UserAPI.Models.Subscription;
 
 namespace UserAPI.Controllers
@@ -59,7 +60,6 @@ namespace UserAPI.Controllers
         /// <response code="401">If request is unauthorized.</response>
         /// <response code="404">If the subscription with the specified ID is not found or ID was not specified.</response>
         /// <response code="500">If an unexpected error occurred.</response>
-        [Authorize(Roles = "ADMIN, MODERATOR")]
         [HttpGet("{id}")]
         public async Task<ActionResult<SubscriptionDto>> GetById(Guid id)
         {
@@ -141,8 +141,8 @@ namespace UserAPI.Controllers
         /// <response code="400">The request data is invalid.</response>
         /// <response code="401">The request is unauthorized.</response>
         /// <response code="500">An unexpected server error occurred.</response>
-        // [Authorize(Roles = "USER")]
-        [HttpPost("[action]")]
+        [Authorize(Roles = "USER")]
+        [HttpPost("subscribe")]
         public async Task<IActionResult> Subscribe([FromBody] SubscribeRequest request)
         {
             if (!ModelState.IsValid)
@@ -161,8 +161,8 @@ namespace UserAPI.Controllers
         /// <response code="400">The request data is invalid.</response>
         /// <response code="401">The request is unauthorized.</response>
         /// <response code="500">An unexpected server error occurred.</response>
-        // [Authorize(Roles = "USER")]
-        [HttpPost("[action]")]
+        [Authorize(Roles = "USER")]
+        [HttpPost("unsubscribe")]
         public async Task<IActionResult> Unsubscribe([FromBody] SubscribeRequest request)
         {
             if (!ModelState.IsValid)
@@ -170,6 +170,22 @@ namespace UserAPI.Controllers
 
             await _service.UnsubscribeAsync(request);
             return Ok();
+        }
+
+        /// <summary>
+        /// Retrieves all low-weight subscriptions' data.
+        /// </summary>
+        /// <returns>A confirmation that subscriptions were successfully fetched.</returns>
+        /// <response code="200">Subscriptions were successfully fetched.</response>
+        /// <response code="400">The request data is invalid.</response>
+        /// <response code="401">The request is unauthorized.</response>
+        /// <response code="500">An unexpected server error occurred.</response>
+        [Authorize(Roles = "ADMIN")]
+        [HttpGet("filter")]
+        public async Task<ActionResult<ICollection<BySubscription>>> GetAllForFilterContent()
+        {
+            var subscriptions = await _service.GetAllForFilterContentAsync();
+            return Ok(subscriptions);
         }
     }
 }

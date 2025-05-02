@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace Library.DTOs.UserRelated.User
 {
@@ -30,15 +29,13 @@ namespace Library.DTOs.UserRelated.User
         [Required(ErrorMessage = "Role is required.")]
         public RoleType Role { get; set; }
 
-        [Required(ErrorMessage = "Image url is required.")]
-        public string ImageUrl { get; set; }
+        public string? ImageUrl { get; set; }
 
         public UserDto()
         {
             Id = Guid.NewGuid();
             FirstName = string.Empty;
             Role = RoleType.USER;
-            ImageUrl = string.Empty;
         }
     }
 }

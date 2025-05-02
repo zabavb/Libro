@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.EntityFrameworkCore;
-using UserAPI.Models;
 using UserAPI.Models.Subscription;
 
 namespace UserAPI.Data.Configurations
@@ -14,12 +13,16 @@ namespace UserAPI.Data.Configurations
 
             builder.Property(s => s.Title)
                 .IsRequired()
-                .HasMaxLength(50)
-                .HasColumnType("nvarchar(50)");
+                .HasMaxLength(30)
+                .HasColumnType("nvarchar(30)");
 
             builder.Property(s => s.Price)
-                .HasColumnType("money")
-                .IsRequired();
+                .IsRequired()
+                .HasColumnType("money");
+
+            builder.Property(s => s.Subdescription)
+                .HasMaxLength(40)
+                .HasColumnType("nvarchar(40)");
 
             builder.Property(s => s.Description)
                 .HasMaxLength(500)

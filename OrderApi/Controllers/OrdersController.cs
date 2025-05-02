@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Library.DTOs.UserRelated.User;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using OrderApi.Services;
 
 namespace OrderApi.Controllers
@@ -28,7 +30,8 @@ namespace OrderApi.Controllers
         /// <response code="200">Returns the paginated list of orders.</response>
         /// <response code="500">an unexpected error occured.</response>
         [HttpGet]
-        public async Task<IActionResult> GetAll([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10, [FromQuery] string? searchTerm = null, [FromQuery] Filter? filter = null, [FromQuery] Sort? sort = null)
+        public async Task<IActionResult> GetAll([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10,
+            [FromQuery] string? searchTerm = null, [FromQuery] Filter? filter = null, [FromQuery] Sort? sort = null)
         {
             try
             {
@@ -36,11 +39,11 @@ namespace OrderApi.Controllers
                 _logger.LogInformation("Orders successfully fetched.");
                 return Ok(orders);
             }
-            catch (Exception ex) {
+            catch (Exception ex)
+            {
                 _logger.LogError(ex.Message);
                 return StatusCode(StatusCodes.Status500InternalServerError, new { message = ex.Message });
             }
-
         }
 
         /// <summary>
@@ -52,7 +55,6 @@ namespace OrderApi.Controllers
         /// <response code="404">Could not find the order</response>
         /// <response code="500">an unexpected error occured.</response>
         [HttpGet("{id}")]
-
         public async Task<IActionResult> GetById(Guid id)
         {
             try
@@ -80,6 +82,44 @@ namespace OrderApi.Controllers
         }
 
         /// <summary>
+        /// Retrieves Order data for user's card for users' list page by ID.
+        /// </summary>
+        /// <param name="id">The unique identifier of the user.</param>
+        /// <returns>Snippet of order data which ID matches with provided one in parameters.</returns>
+        /// <response code="200">Retrieval successful, return the order snippet.</response>
+        /// <response code="404">Could not find the order.</response>
+        /// <response code="500">An unexpected error occured.</response>
+        [Authorize(Roles = "ADMIN, MODERATOR")]
+        [HttpGet("for-user/card/{id}")]
+        public async Task<ActionResult<OrderForUserCard>> GetForUserCardAsync(Guid id)
+        {
+            if (id == Guid.Empty)
+                return NotFound($"User ID [{id}] was not provided.");
+
+            var user = await _orderService.GetForUserCardAsync(id);
+            return Ok(user);
+        }
+
+        /// <summary>
+        /// Retrieves Orders data for user's details page by ID.
+        /// </summary>
+        /// <param name="id">The unique identifier of the user.</param>
+        /// <returns>Snippets of order data which user ID matches with provided one in parameters.</returns>
+        /// <response code="200">Retrieval successful, return the order snippets.</response>
+        /// <response code="404">Could not find the user.</response>
+        /// <response code="500">An unexpected error occured.</response>
+        [Authorize(Roles = "ADMIN, MODERATOR")]
+        [HttpGet("for-user/details/{id}")]
+        public async Task<ActionResult<ICollection<OrderForUserDetails>>> GetAllForUserDetailsAsync(Guid id)
+        {
+            if (id == Guid.Empty)
+                return NotFound($"User ID [{id}] was not provided.");
+
+            var snippets = await _orderService.GetAllForUserDetailsAsync(id);
+            return Ok(snippets);
+        }
+
+        /// <summary>
         /// Creates a new order
         /// </summary>
         /// <param name="orderDto">Order data</param>
@@ -88,7 +128,7 @@ namespace OrderApi.Controllers
         /// <response code="400">Invalid input data.</response>
         /// <response code="500"> an unexpected error occured.</response>
         [HttpPost]
-        public async Task<ActionResult<OrderDto>> Create([FromBody]OrderDto orderDto)
+        public async Task<ActionResult<OrderDto>> Create([FromBody] OrderDto orderDto)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);

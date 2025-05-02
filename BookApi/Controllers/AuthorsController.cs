@@ -1,9 +1,7 @@
-﻿using BookAPI;
-using BookAPI.Models.Filters;
+﻿using BookAPI.Models.Filters;
 using BookAPI.Models.Sortings;
 using BookAPI.Services.Interfaces;
 using Library.Common;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BookAPI.Controllers
@@ -40,13 +38,13 @@ namespace BookAPI.Controllers
         /// <response code="400">If the page number or page size is invalid.</response>
         /// <response code="404">If no authors are found.</response>
         [HttpGet]
-        public async Task<ActionResult<PaginatedResult<AuthorDto>>> GetAuthors(
-           [FromQuery] int pageNumber = GlobalConstants.DefaultPageNumber,
+        public async Task<ActionResult<PaginatedResult<AuthorDto>>> GetAll(
+            [FromQuery] int pageNumber = GlobalConstants.DefaultPageNumber,
             [FromQuery] int pageSize = GlobalConstants.DefaultPageSize,
             [FromQuery] string? searchTerm = null,
             [FromQuery] AuthorFilter? filter = null,
             [FromQuery] AuthorSort? sort = null
-            )
+        )
         {
             if (pageNumber < 1 || pageSize < 1)
             {
@@ -56,7 +54,7 @@ namespace BookAPI.Controllers
 
             try
             {
-                var authors = await _authorService.GetAuthorsAsync(pageNumber, pageSize, searchTerm, filter, sort);
+                var authors = await _authorService.GetAllAsync(pageNumber, pageSize, searchTerm, filter, sort);
 
                 if (authors == null || authors.Items == null || authors.Items.Count == 0)
                 {
@@ -65,7 +63,7 @@ namespace BookAPI.Controllers
                 }
 
                 _logger.LogInformation("Authors successfully fetched.");
-                return Ok(authors); 
+                return Ok(authors);
             }
             catch (Exception ex)
             {
@@ -82,11 +80,11 @@ namespace BookAPI.Controllers
         /// <response code="200">Returns the requested author.</response>
         /// <response code="404">If the author is not found.</response>
         [HttpGet("{id}")]
-        public async Task<ActionResult<AuthorDto>> GetAuthorById(Guid id)
+        public async Task<ActionResult<AuthorDto>> GetById(Guid id)
         {
             try
             {
-                var author = await _authorService.GetAuthorByIdAsync(id);
+                var author = await _authorService.GetByIdAsync(id);
 
                 if (author == null)
                 {
@@ -97,7 +95,6 @@ namespace BookAPI.Controllers
             }
             catch (Exception ex)
             {
-                
                 return StatusCode(StatusCodes.Status500InternalServerError, new { message = ex.Message });
             }
         }
@@ -120,8 +117,10 @@ namespace BookAPI.Controllers
 
             try
             {
-                var created = await _authorService.CreateAuthorAsync(authorDto);
-                return CreatedAtAction(nameof(GetAuthorById), new { id = created.AuthorId }, created);
+                /*var created = */
+                await _authorService.CreateAsync(authorDto);
+                // return CreatedAtAction(nameof(GetById), new { id = created.AuthorId }, created);
+                return CreatedAtAction(nameof(GetById), new { id = authorDto.AuthorId }, authorDto);
             }
             catch (Exception ex)
             {
@@ -140,23 +139,25 @@ namespace BookAPI.Controllers
         /// <response code="400">If the provided data is invalid.</response>
         /// <response code="404">If the author is not found.</response>
         [HttpPut("{id}")]
-        public async Task<ActionResult<AuthorDto>> UpdateAuthor(Guid id, [FromBody] AuthorDto authorDto)
+        public async Task<ActionResult<AuthorDto>> Update(Guid id, [FromBody] AuthorDto authorDto)
         {
             if (authorDto == null)
             {
                 _logger.LogWarning("Invalid author data provided for update.");
                 return BadRequest("Invalid data.");
             }
+
             try
             {
-                var updated = await _authorService.UpdateAuthorAsync(id, authorDto);
+                /*var updated = */
+                await _authorService.UpdateAsync(authorDto);
 
-                if (updated == null)
+                /*if (updated == null)
                 {
                     return NotFound($"Author with id {id} not found.");
-                }
+                }*/
 
-                return Ok(updated);
+                return Ok( /*updated*/);
             }
             catch (Exception ex)
             {
@@ -177,12 +178,13 @@ namespace BookAPI.Controllers
         {
             try
             {
-                var isDeleted = await _authorService.DeleteAuthorAsync(id);
+                /*var isDeleted = */
+                await _authorService.DeleteAsync(id);
 
-                if (!isDeleted)
+                /*if (!isDeleted)
                 {
                     return NotFound($"Author with id {id} not found.");
-                }
+                }*/
 
                 return NoContent();
             }
