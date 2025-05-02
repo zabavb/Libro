@@ -27,7 +27,7 @@ const SubscriptionCard: React.FC<SubscriptionCardProps> = ({
           alt={subscription.title}
         />
         <div>{subscription.title}</div>
-        <div>{subscription.description}</div>
+        <div>{subscription.subdescription}</div>
 
         <div>Edit</div>
         <div

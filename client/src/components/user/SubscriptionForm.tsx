@@ -42,6 +42,7 @@ const SubscriptionForm: React.FC<SubscriptionFormProps> = ({
         existingSubscription.expirationDays ?? undefined,
       );
       setValue('price', existingSubscription.price ?? undefined);
+      setValue('subdescription', existingSubscription.subdescription ?? undefined);
       setValue('description', existingSubscription.description ?? undefined);
       setImagePreview(existingSubscription.imageUrl ?? undefined);
     }
@@ -65,6 +66,7 @@ const SubscriptionForm: React.FC<SubscriptionFormProps> = ({
     formData.append('title', data.title);
     formData.append('expirationDays', data.expirationDays.toString());
     formData.append('price', data.price.toString());
+    formData.append('subdescription', data.subdescription ?? '');
     formData.append('description', data.description ?? '');
     formData.append('image', data.image ?? '');
     if (existingSubscription)
@@ -117,6 +119,9 @@ const SubscriptionForm: React.FC<SubscriptionFormProps> = ({
 
         <input type='number' {...register('price')} placeholder='Price' />
         <p>{errors.price?.message}</p>
+
+        <input {...register('subdescription')} placeholder='subdescription' />
+        <p>{errors.subdescription?.message}</p>
 
         <input {...register('description')} placeholder='description' />
         <p>{errors.description?.message}</p>

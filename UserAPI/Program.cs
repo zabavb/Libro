@@ -25,7 +25,9 @@ builder.Services.AddSingleton<S3StorageService>();
 builder.Services.AddDbContext<UserDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-builder.Services.AddScoped<AvatarService>();
+builder.Services.AddScoped<DataSeeder>();
+
+builder.Services.AddScoped<IAvatarService, AvatarService>();
 builder.Services.AddScoped<IS3StorageService, S3StorageService>();
 
 builder.Services.AddScoped<IAuthService, AuthService>();
@@ -133,7 +135,13 @@ var app = builder.Build();
 
 using (var scope = app.Services.CreateScope())
 {
-    var dbContext = scope.ServiceProvider.GetRequiredService<UserDbContext>();
+    scope.ServiceProvider.GetRequiredService<UserDbContext>();
+}
+
+using (var scope = app.Services.CreateScope())
+{
+    var seeder = scope.ServiceProvider.GetRequiredService<DataSeeder>();
+    await seeder.SeedAsync();
 }
 
 if (app.Environment.IsDevelopment())
@@ -151,4 +159,4 @@ app.UseAuthorization();
 app.UseExceptionMiddleware();
 app.MapControllers();
 
-app.Run();
+await app.RunAsync();

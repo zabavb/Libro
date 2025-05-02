@@ -18,30 +18,7 @@ namespace UserAPI.Repositories
             _logger = logger;
         }
 
-        public static string HashPassword(string password, string salt)
-        {
-            using var sha256 = SHA256.Create();
-            var combined = Encoding.UTF8.GetBytes(password + salt);
-            var hash = sha256.ComputeHash(combined);
-            var result = Convert.ToBase64String(hash);
-            return result.Substring(0, result.Length - 1);
-        }
-
-        // size -> size % 8 == 0
-        public static string? GenerateSalt(int size = 8)
-        {
-            if (size % 8 != 0)
-                return null;
-
-            var saltBytes = new byte[size];
-            using (var rng = RandomNumberGenerator.Create())
-            {
-                rng.GetBytes(saltBytes);
-            }
-
-            string result = Convert.ToBase64String(saltBytes);
-            return result.Substring(0, result.Length - (size / 8));
-        }
+        
 
         public async Task<Password?> GetByIdAsync(Guid passwordId) =>
             await _context.Passwords.AsNoTracking().FirstOrDefaultAsync(p => p.PasswordId == passwordId);
@@ -55,7 +32,7 @@ namespace UserAPI.Repositories
             var password = await GetByUserIdAsync(userId)
                            ?? throw new KeyNotFoundException($"Password by user ID [{userId}] not found.");
 
-            password.PasswordHash = HashPassword(newPassword, password.PasswordSalt);
+            password.PasswordHash = PasswordExtensions.HashPassword(newPassword, password.PasswordSalt);
 
             var result = await _context.SaveChangesAsync();
             return result > 0;
@@ -66,14 +43,14 @@ namespace UserAPI.Repositories
             var passwordEntity = await GetByIdAsync(passwordId);
             if (passwordEntity == null) return false;
 
-            var hashedInput = HashPassword(plainPassword, passwordEntity.PasswordSalt);
+            var hashedInput = PasswordExtensions.HashPassword(plainPassword, passwordEntity.PasswordSalt);
             return hashedInput == passwordEntity.PasswordHash;
         }
 
         public async Task<bool> AddAsync(Guid id, string password, Guid userId)
         {
-            var salt = GenerateSalt();
-            var hash = HashPassword(password, salt);
+            var salt = PasswordExtensions.GenerateSalt();
+            var hash = PasswordExtensions.HashPassword(password, salt);
 
             var passwordEntity = new Password
             {

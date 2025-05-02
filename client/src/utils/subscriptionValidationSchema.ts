@@ -4,7 +4,7 @@ export const subscriptionSchema = z.object({
   title: z
     .string()
     .min(2, 'Title must be at least 2 characters')
-    .max(50, 'Title too long'),
+    .max(30, 'Title too long'),
   expirationDays: z.coerce
     .number()
     .int()
@@ -14,10 +14,15 @@ export const subscriptionSchema = z.object({
     .number()
     .min(0, 'Price must be at least 0')
     .max(5000, 'Price is too high'),
+  subdescription: z
+    .string()
+    .min(2, 'Subdescription must be at least 2 characters')
+    .max(40, 'Subdescription is too long')
+    .optional(),
   description: z
     .string()
     .min(2, 'Description must be at least 2 characters')
-    .max(50, 'Description is too long')
+    .max(500, 'Description is too long')
     .optional(),
   image: z.instanceof(File, { message: 'An Image is required.' }).refine(
     (file) => {

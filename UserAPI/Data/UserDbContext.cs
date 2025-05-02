@@ -49,7 +49,7 @@ namespace UserAPI.Data
                 .Property(p => p.PasswordSalt)
                 .HasColumnType("nvarchar(30)");
 
-            DataSeeder.Seed(modelBuilder);
+            // DataSeeder.Seed(modelBuilder);
         }
     }
 }
