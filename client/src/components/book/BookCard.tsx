@@ -29,7 +29,12 @@ const BookCard: React.FC<BookAdminCardProps> = ({ onAddItem, book, onNavigate })
     };
     return (
         <div className="card-container">
-            <img className="card-image" src={`https://picsum.photos/seed/${book.bookId}/220/340`} />
+            <img className="card-image cursor-pointer" 
+            onClick={(e) => {
+                        e.stopPropagation()
+                        onNavigate()
+                    }}
+            src={`https://picsum.photos/seed/${book.bookId}/220/340`} />
             <div>
                 <div 
                     className="card-info">
@@ -47,7 +52,7 @@ const BookCard: React.FC<BookAdminCardProps> = ({ onAddItem, book, onNavigate })
             </div>
             <div className="card-footer">
                 <div>
-                <p className="book-price">{book.price} ₴</p>
+                <p className="book-price">{book.price} UAH</p>
                 {book.quantity > 0 ? (<p className="book-availability">Available</p>) : (<p className="book-availability">Not Available</p>)}
                 </div>
                 <button

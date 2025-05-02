@@ -31,6 +31,8 @@ import SubscriptionFormPage from './pages/admin/userRelated/subscriptions/Subscr
 import UserCartPage from './pages/main/user/UserCartPage';
 import UserCheckoutPage from './pages/main/user/UserCheckoutPage';
 import UserOrdersPage from './pages/main/user/UserOrdersPage';
+import BookDetailsPage from './pages/main/book/BookDetailsPage';
+import BookCatalogPage from './pages/main/book/BooksCatalogPage';
 import OrderDetailsPage from './pages/admin/orderRelated/orders/OrderDetailsPage';
 import ProfilePage from './pages/common/ProfilePage';
 
@@ -47,6 +49,8 @@ const AppRoutes = () => (
         <Route path='/cart' element={<UserCartPage />} />
         <Route path='/cart/checkout' element={<UserCheckoutPage />} />
         <Route path='/orders' element={<UserOrdersPage />} />
+        <Route path='/catalog' element={<BookCatalogPage/>}/>
+        <Route path='/books/:bookId' element={<BookDetailsPage/>}/>
         <Route path='/orders/:orderId' element={<OrderDetailsPage />} />
         <Route
           path='/subscriptions/:subscriptionId'
