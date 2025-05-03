@@ -17,6 +17,9 @@ import wHamburger from '@/assets/icons/hamburgerIcon.svg'
 import wLogout from '@/assets/icons/logoutIcon.svg'
 import bMagnifyingGlass from '@/assets/icons/magnifyingGlass.svg'
 import gMenuClose from '@/assets/icons/menuClose.svg'
+import telegram from '@/assets/icons/socialTelegram.svg'
+import instagram from '@/assets/icons/socialInstagram.svg'
+import facebook from '@/assets/icons/socialFacebook.svg'
 export const icons = {
     wUser,
     wBonus,
@@ -36,5 +39,8 @@ export const icons = {
     wHamburger,
     wLogout,
     bMagnifyingGlass,
-    gMenuClose
+    gMenuClose,
+    telegram,
+    instagram,
+    facebook
 }
