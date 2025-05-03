@@ -1,10 +1,9 @@
 import { useNavigate } from "react-router-dom";
 import CatalogMenu from "./CatalogMenu";
-import userIcon from '@/assets/icons/headerUser.svg'
-import heartIcon from '@/assets/icons/headerHeart.svg'
-import magnifyingGlass from '@/assets/icons/magnifyingGlass.svg'
 import CartPanel from "./CartPanel";
 import libroLogo from '@/assets/logoLibro.svg'
+import UserPanel from "./UserPanel";
+import { icons } from '@/lib/icons'
 export default function Header() {
   const navigate = useNavigate();
 
@@ -23,7 +22,7 @@ export default function Header() {
       </div>
       <div className="flex gap-[62px] px-[40px] py-6 items-center">
         <div>
-          <img src={libroLogo} className="invert w-[108px] h-[42px]" />
+          <img src={libroLogo} className="invert w-[108px] h-[42px] cursor-pointer" onClick={() => navigate('/')}/>
         </div>
         <div className="flex gap-[54px] items-center flex-1">
           <div className='header__catalog'>
@@ -35,14 +34,12 @@ export default function Header() {
               placeholder='Search on website'
               className='header__input'
             />
-            <img src={magnifyingGlass} className='header__icon' />
+            <img src={icons.bMagnifyingGlass} className='header__icon' />
           </div>
           <div className="header__nav">
             <CartPanel />
-            <img src={heartIcon} />
-            <img src={userIcon}
-              className='cursor-pointer'
-              onClick={() => navigate('/profile')} />
+            <img src={icons.bHeart} />
+            <UserPanel/>
           </div>
           <div className='header__lang'>
             <span>UA</span>
