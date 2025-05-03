@@ -11,9 +11,6 @@
     @apply flex justify-between items-center cursor-pointer font-bold;
 }
 
-.filter-main {}
-
-
 
 .price-limit {
     @apply font-medium;
@@ -29,24 +26,25 @@
 }
 
 .price-btn {
-    @apply text-[#FF642E] border-[#FF642E] py-2.5 rounded-lg flex-1;
+    @apply text-accent border-[#FF642E] py-2.5 rounded-lg items-center justify-center flex;
     transition: all;
     transition-duration: 300ms;
+    width: calc(50% - 5px);
     border-width: 1px;
     padding-left: 38px;
     padding-right: 38px;
 }
 
 .price-btn-active{
-    @apply bg-[#FF642E] text-[#1A1D23];
+    @apply bg-[#FF642E] text-dark;
 }
 
 .price-btn:hover{
-    @apply bg-[#FF642E] text-[#1A1D23];
+    @apply bg-[#FF642E] text-dark;
 }
 
 .apply-btn {
-    @apply text-[#1A1D23] bg-[#FF642E] rounded-lg py-2.5 flex-1;
+    @apply text-dark bg-[#FF642E] rounded-lg py-2.5 flex-1;
     padding-left: 38px;
     padding-right: 38px;
 }

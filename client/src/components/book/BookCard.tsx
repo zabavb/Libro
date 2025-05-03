@@ -4,7 +4,8 @@ import "react-lazy-load-image-component/src/effects/blur.css"
 import { likeBook, unlikeBook, isBookLiked, } from "../../services/likedBooksStorage";
 import { CartItem } from "@/types/types/cart/CartItem"
 import "@/assets/styles/components/book/card.css"
-import cartIcon from "@/assets/icons/cartIcon.svg"
+import { icons } from '@/lib/icons';
+
 interface BookAdminCardProps {
     book: BookView
     onNavigate: () => void
@@ -27,6 +28,7 @@ const BookCard: React.FC<BookAdminCardProps> = ({ onAddItem, book, onNavigate })
         }
         setLiked(!liked);
     };
+
     return (
         <div className="card-container">
             <img className="card-image" src={`https://picsum.photos/seed/${book.bookId}/220/340`} />
@@ -53,7 +55,7 @@ const BookCard: React.FC<BookAdminCardProps> = ({ onAddItem, book, onNavigate })
                 <button
                     onClick={() => onAddItem({ bookId: book.bookId, amount: 1, name: book.title, price: book.price })}
                     className="book-cart-btn">
-                    <img src={cartIcon}></img>
+                    <img src={icons.bCart}></img>
                 </button>
             </div>
         </div>

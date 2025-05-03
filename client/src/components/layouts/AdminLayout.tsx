@@ -1,15 +1,8 @@
 import { Outlet, useLocation } from 'react-router-dom';
 import '@/assets/styles/layout/admin-layout.css';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTruck } from '@fortawesome/free-solid-svg-icons';
-
+import { icons } from '@/lib/icons'
 import logoUrl from '@/assets/logoLibro.svg';
-import homeIcon from '@/assets/icons/adminMain.svg';
-import bookIcon from '@/assets/icons/adminBook.svg';
-import userIcon from '@/assets/icons/adminUser.svg';
-import orderIcon from '@/assets/icons/adminOrder.svg';
-import subscriptionIcon from '@/assets/icons/adminSubscription.svg';
-import logoutIcon from '@/assets/icons/logoutIcon.svg';
+
 const AdminLayout: React.FC = () => {
   const location = useLocation();
   const currentPath = location.pathname;
@@ -27,7 +20,7 @@ const AdminLayout: React.FC = () => {
             </li>
             <li className={isActive('/admin') ? 'active-link link' : 'link'}>
               <img
-                src={homeIcon}
+                src={icons.wDiagram}
                 className={isActive('/admin') ? 'invert' : ''}
               />
               <a href='/admin'>Home</a>
@@ -36,7 +29,7 @@ const AdminLayout: React.FC = () => {
               className={isActive('/admin/books') ? 'active-link link' : 'link'}
             >
               <img
-                src={bookIcon}
+                src={icons.wBook}
                 className={isActive('/admin/books') ? 'invert' : ''}
               />
               <a href='/admin/books'>Books</a>
@@ -45,7 +38,7 @@ const AdminLayout: React.FC = () => {
               className={isActive('/admin/users') ? 'active-link link' : 'link'}
             >
               <img
-                src={userIcon}
+                src={icons.wUser}
                 className={isActive('/admin/users') ? 'invert' : ''}
               />
               <a href='/admin/users'>Users</a>
@@ -56,7 +49,7 @@ const AdminLayout: React.FC = () => {
               }
             >
               <img
-                src={orderIcon}
+                src={icons.wFile}
                 className={isActive('/admin/orders') ? 'invert' : ''}
               />
               <a href='/admin/orders'>Orders</a>
@@ -66,7 +59,10 @@ const AdminLayout: React.FC = () => {
                 isActive('/admin/delivery') ? 'active-link link' : 'link'
               }
             >
-              <FontAwesomeIcon icon={faTruck} />
+                <img
+                src={icons.wTruck}
+                className={isActive('/admin/subscriptions') ? 'invert' : ''}
+              />
               <a href='/admin/delivery'>Deliveries</a>
             </li>
             <li
@@ -76,14 +72,14 @@ const AdminLayout: React.FC = () => {
             >
               {/* <FontAwesomeIcon icon={faCreditCard} /> */}
               <img
-                src={subscriptionIcon}
+                src={icons.wCredit}
                 className={isActive('/admin/subscriptions') ? 'invert' : ''}
               />
               <a href='/admin/subscriptions'>Subscriptions</a>
             </li>
           </ul>
           <div className='link logout-item'>
-            <img src={logoutIcon} />
+            <img src={icons.wLogout} />
 
             <a>Logout</a>
           </div>
