@@ -34,8 +34,6 @@ const BookCatalog: React.FC<BookCatalogProps> = ({
     return(
         <div className="catalog-container">
             <aside className="options-panel overflow-scroll">
-                {/* Temporary text, to be replaced 
-                with actual components in the future */}
                 <CatalogFilter filters={filters} onFilterChange={onFilterChange}/>
             </aside>
             <main className="books-panel">

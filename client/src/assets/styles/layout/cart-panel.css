@@ -1,0 +1,27 @@
+.dim{
+    @apply fixed inset-0 z-20 bg-black opacity-80;
+}
+
+.cart-panel{
+    @apply z-30 h-dvh bg-primary fixed top-0 transition-all duration-500 ease-in-out text-white;
+    width: 445px;
+}
+
+.cart-main{
+    @apply flex flex-col gap-5 overflow-scroll;
+    padding: 30px;
+    height: 60%;
+}
+
+.cart-footer{
+    @apply flex flex-col p-[30px] bg-dark h-[23%] gap-2.5;
+}
+
+.close-icon{
+    @apply top-[32px] right-[38px] absolute cursor-pointer;
+}
+
+.checkout-btn{
+    @apply text-dark bg-[#FF642E] py-3.5 px-20 w-full;
+    border-radius: 44px;
+}

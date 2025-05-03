@@ -56,7 +56,11 @@ const useCart = () => {
         setCart([])
     }
 
-    return { cart, addItem, removeItem, clearItem, clearCart }
+    const getTotalPrice = () => {
+        return cart.reduce((sum, item) => sum + item.price * item.amount, 0);
+    };
+
+    return { cart, addItem, removeItem, clearItem, clearCart, getTotalPrice }
     
 }
 

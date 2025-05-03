@@ -1,13 +1,17 @@
+import Footer from "@/components/layouts/Footer";
+import Header from "@/components/layouts/Header";
 import BookCatalogContainer from "@/containers/books/BookCatalogContainer";
 
 const BookCatalogPage = () => {
 
     return (
-        <div>
-            <main>
-                <BookCatalogContainer/>
-            </main>
-        </div>
+    <div className="flex flex-col min-h-screen">
+      <Header />
+      <main className="flex-1 overflow-auto">
+        <BookCatalogContainer/>
+      </main>
+      <Footer />
+    </div>
     );
 };
 
