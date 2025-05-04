@@ -10,9 +10,8 @@ import { CartItem } from "@/types/types/cart/CartItem";
 import CheckoutListing from "../common/CheckoutListing";
 import CartCheckoutCard from "../common/CartCheckoutCard";
 import { icons } from '@/lib/icons'
-import { watch } from "fs";
 
-interface UserCheckoutFormProps {
+interface OrderCheckoutFormProps {
     books: Record<string, number>
     deliveryTypes?: DeliveryType[]
     price: number
@@ -25,7 +24,7 @@ interface UserCheckoutFormProps {
     onItemClear: (bookId: string) => void;
 }
 
-const UserCheckoutForm: React.FC<UserCheckoutFormProps> = ({ onAdd, onItemClear, onRemove, cart, books, price, deliveryTypes, onAddOrder, loading, user }) => {
+const OrderCheckoutForm: React.FC<OrderCheckoutFormProps> = ({ onAdd, onItemClear, onRemove, cart, books, price, deliveryTypes, onAddOrder, loading, user }) => {
     const [userId, setUserId] = useState<string>("");
     const [edit, setEdit] = useState<boolean>(false);
     const [paymentMethod, setPaymentMethod] = useState<string>("");
@@ -282,4 +281,4 @@ const UserCheckoutForm: React.FC<UserCheckoutFormProps> = ({ onAdd, onItemClear,
     )
 }
 
-export default UserCheckoutForm
+export default OrderCheckoutForm

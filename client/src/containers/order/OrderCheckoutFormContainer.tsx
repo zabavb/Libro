@@ -4,14 +4,14 @@ import { useNavigate } from "react-router-dom"
 import React, { useCallback, useEffect, useMemo, useState } from "react"
 import { addNotification } from "../../state/redux/slices/notificationSlice"
 import { DeliveryType, Order, User } from "../../types"
-import UserCheckoutForm from "../../components/user/UserCheckoutForm"
+import OrderCheckoutForm from "../../components/order/OrderCheckoutForm"
 import useCart from "../../state/context/useCart"
 import { addOrderService, fetchDeliveryTypesService } from "../../services"
 import { getUserFromStorage } from "@/utils/storage"
 import { CartItem } from "@/types/types/cart/CartItem"
 
 
-const UserCheckoutFormContainer: React.FC = () => {
+const OrderCheckoutFormContainer: React.FC = () => {
     const dispatch = useDispatch<AppDispatch>()
     const booksObjs = useMemo(() => ({} as Record<string, number>), []);
     const [price, setPrice] = useState<number>(0)
@@ -121,7 +121,7 @@ const UserCheckoutFormContainer: React.FC = () => {
 
 
     return (
-        <UserCheckoutForm
+        <OrderCheckoutForm
             price={price}
             cart={cart}
             books={booksObjs}
@@ -137,4 +137,4 @@ const UserCheckoutFormContainer: React.FC = () => {
 
 }
 
-export default UserCheckoutFormContainer
+export default OrderCheckoutFormContainer
