@@ -201,6 +201,7 @@ namespace BookAPI.Controllers
                     /*_ =*/
                     await _discountService.UpdateAsync(discount);
                 }
+                bookDto.DiscountId = (Guid)(discount?.DiscountId);
 
                 return Ok( /*updatedBook*/);
             }
