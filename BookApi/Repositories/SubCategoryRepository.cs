@@ -20,7 +20,7 @@ namespace BookAPI.Repositories
         private readonly TimeSpan _cacheExpiration = TimeSpan.FromMinutes(GlobalConstants.DefaultCacheExpirationTime);
         private readonly JsonSerializerOptions _jsonOptions = new JsonSerializerOptions
         {
-            ReferenceHandler = ReferenceHandler.IgnoreCycles, 
+            ReferenceHandler = ReferenceHandler.Preserve, 
             DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull, // Ігнорування null значень
         };
         public SubCategoryRepository(BookDbContext context,
