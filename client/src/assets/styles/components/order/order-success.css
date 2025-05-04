@@ -1,0 +1,17 @@
+.order-success{
+    @apply text-center text-[#FF642E] text-4xl font-semibold;
+}
+
+.bonus-club{
+    @apply flex bg-dark text-white flex-col text-center p-10 items-center;
+    border-radius: 30px;
+    border: 1px solid black;
+    gap:21px;
+}
+
+.more-info{
+    @apply bg-[#FF642E] px-10 text-dark flex gap-5 w-fit;
+    padding-top: 19px;
+    padding-bottom: 19px;
+    border-radius: 46px;
+}
