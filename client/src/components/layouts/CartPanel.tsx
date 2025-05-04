@@ -11,13 +11,13 @@ const CartPanel: React.FC = () => {
     const [isOpen, setIsOpen] = useState<boolean>(false);
     const [total, setTotal] = useState<number>(0);
     const { cart, removeItem, addItem, clearCart, clearItem, getTotalPrice } = useCart();
-    
+
     const handleAdd = (item: CartItem) => {
-        addItem({ bookId: item.bookId, amount: 1, name: item.name, price:item.price});
+        addItem({ bookId: item.bookId, amount: 1, name: item.name, price: item.price });
     };
-    
+
     const handleRemove = (item: CartItem) => {
-        removeItem({ bookId: item.bookId, amount: 1, name: item.name, price:item.price});
+        removeItem({ bookId: item.bookId, amount: 1, name: item.name, price: item.price });
     };
 
     const handleClear = (bookId: string) => {
@@ -34,12 +34,12 @@ const CartPanel: React.FC = () => {
         } else {
             document.body.style.overflow = '';
         }
-    
+
         return () => {
             document.body.style.overflow = '';
         };
     }, [isOpen])
-    
+
 
     return (
         <div>
@@ -58,21 +58,34 @@ const CartPanel: React.FC = () => {
                 <div className="p-[30px] bg-dark h-[17%]">
                     <img src={closeIcon} className="close-icon" onClick={() => setIsOpen(false)} />
                     <h1 className="font-semibold text-2xl">Cart</h1>
-                    <div className="flex justify-between">
-                        <p className="text-gray">{cart.length} psc.</p>
-                        <p className="text-gray cursor-pointer" onClick={clearCart}>Clear cart</p>
-                    </div>
+
+                    {cart.length > 0 ? (
+                        <div className="flex justify-between">
+                            <p className="text-gray">{cart.length} psc.</p>
+                            <p className="text-gray cursor-pointer" onClick={clearCart}>Clear cart</p>
+                        </div>
+                    ) : ""}
                 </div>
                 <div className="cart-main">
-                    {cart.map((item) => (
-                            <CartCard 
+                    {cart.length > 0 ? 
+                        cart.map((item) => (
+                            <CartCard
                                 key={item.bookId}
                                 item={item}
                                 onAdd={handleAdd}
                                 onRemove={handleRemove}
-                                onItemClear={handleClear}/>
-                    ))}
+                                onItemClear={handleClear} />
+                        ))
+                    :
+                    (
+                        <div className="font-semibold text-lg text-dark"> 
+                            <p className="text-[#FF642E]">Your cart is empty.</p>
+                            <p>Don't hesitate and browse our catalog to find something good for you!</p>
+                        </div>
+                    )
+                    }
                 </div>
+                {cart.length > 0 ? (
                 <div className="cart-footer">
                     <div className="flex justify-between font-semibold text-2xl">
                         <p>Total</p>
@@ -82,6 +95,7 @@ const CartPanel: React.FC = () => {
                         <button className="checkout-btn" onClick={() => navigate("/checkout")}>To Checkout</button>
                     </div>
                 </div>
+                ) : ""}
             </div>
         </div>
     );
