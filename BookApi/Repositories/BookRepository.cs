@@ -44,6 +44,7 @@ namespace BookAPI.Repositories
             BookFilter? filter,
             BookSort? sort)
         {
+            await _cacheService.RemoveAsync($"{_cacheKeyPrefix}All");
             List<Book> books;
             string cacheKey = $"{_cacheKeyPrefix}All";
             var cachedBooks = await _cacheService.GetAsync<List<Book>>(cacheKey, _jsonOptions);
@@ -175,6 +176,8 @@ namespace BookAPI.Repositories
 
         public async Task UpdateAsync(Book entity)
         {
+            var a = _context.Books.ToList();
+            var b = entity.Id;
             var existingBook = await _context.Books.FirstOrDefaultAsync(b => b.Id == entity.Id)
                                ?? throw new KeyNotFoundException("Book not found");
 
