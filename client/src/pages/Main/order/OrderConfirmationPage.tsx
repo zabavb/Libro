@@ -6,6 +6,7 @@ import { useLocation } from "react-router-dom";
 const OrderConfirmationPage = () => {
     const { state } = useLocation();
     const { order, user } = state || {};
+
     return (
         <div className="flex flex-col min-h-screen">
             <Header />

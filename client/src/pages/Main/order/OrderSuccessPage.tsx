@@ -2,8 +2,17 @@ import Footer from "@/components/layouts/Footer";
 import Header from "@/components/layouts/Header";
 import {icons} from '@/lib/icons'
 import "@/assets/styles/components/order/order-success.css"
+import { Navigate, useLocation } from "react-router-dom";
 const OrderSuccessPage = () => {
+    const location = useLocation();
 
+    const cameFromRedirect = location.state?.fromRedirect;
+    console.log(location.state?.fromRedirect)
+
+    if (!cameFromRedirect) {
+        console.log("REDIRECT")
+      return <Navigate to="/" replace />;
+    }
     return (
         <div className="flex flex-col min-h-screen">
             <Header />

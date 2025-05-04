@@ -11,11 +11,11 @@ interface OrderConfirmationContainerProps {
 }
 
 const OrderConfirmationContainer: React.FC<OrderConfirmationContainerProps> = ({order, user}) => {
-    const navigate = useNavigate(); 
+    const navigate = useNavigate();    
     const [total, setTotal] = useState<number>(0);
     const {clearCart, cart, getTotalPrice} = useCart();
     const handleNavigate = useCallback(
-        (route: string) => navigate(route),
+        (route: string) => navigate(route, {state: {fromRedirect: true}}),
         [navigate],
     );
 
@@ -23,8 +23,8 @@ const OrderConfirmationContainer: React.FC<OrderConfirmationContainerProps> = ({
         async(order: Order) => {
             const response = await addOrderService(order);
             if (!response.error) {
-                clearCart();
                 handleNavigate('/checkout/success');
+                clearCart();
             }
         },
         [handleNavigate, clearCart]

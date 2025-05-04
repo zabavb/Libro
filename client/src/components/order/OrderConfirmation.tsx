@@ -3,10 +3,12 @@ import "@/assets/styles/components/order/checkout-confirmation.css"
 import { icons } from "@/lib/icons"
 import { CartItem } from "@/types/types/cart/CartItem";
 import CheckoutBookCard from "../common/CheckoutBookCard";
+import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
 
 interface OrderConfirmationProps {
-    order: Order
-    user: User
+    order: Order | undefined
+    user: User | undefined
     cart: CartItem[]
     onConfirm: (order: Order) => void;
     total: number
@@ -14,6 +16,11 @@ interface OrderConfirmationProps {
 
 
 const OrderConfirmation: React.FC<OrderConfirmationProps> = ({ order, user, onConfirm, cart, total }) => {
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        if (!order || !user) navigate('/')
+    }, [])
     return (
         <div className="form-container">
             <p className="text-[#F4F0E5] text-2xl font-semibold">Placing an order</p>
@@ -21,7 +28,7 @@ const OrderConfirmation: React.FC<OrderConfirmationProps> = ({ order, user, onCo
                 <div className="flex justify-between">
                     <div>
                         {cart.map((item) => (
-                            <CheckoutBookCard item={item}/>
+                            <CheckoutBookCard item={item} />
                         ))}
                     </div>
                     <div className="price-container">
@@ -37,24 +44,24 @@ const OrderConfirmation: React.FC<OrderConfirmationProps> = ({ order, user, onCo
                                 <div className="display-row">
                                     <p>Name</p>
                                     <div className="input-display">
-                                        <p>{user.firstName}</p>
+                                        <p>{user?.firstName}</p>
                                     </div>
                                 </div>
                                 <div className="display-row">
                                     <p className="input-label">Surname</p>
-                                    <p className="input-display">{user.lastName}</p>
+                                    <p className="input-display">{user?.lastName}</p>
                                 </div>
                             </div>
                             <div className="flex gap-11">
                                 <div className="display-row">
                                     <p>Email</p>
                                     <div className="input-display">
-                                        <p>{user.email}</p>
+                                        <p>{user?.email}</p>
                                     </div>
                                 </div>
                                 <div className="display-row">
                                     <p className="input-label">Phone number</p>
-                                    <p className="input-display">+{user.phoneNumber}</p>
+                                    <p className="input-display">+{user?.phoneNumber}</p>
                                 </div>
                             </div>
                         </div>
@@ -64,19 +71,19 @@ const OrderConfirmation: React.FC<OrderConfirmationProps> = ({ order, user, onCo
                                 <div className="display-row">
                                     <p>Region</p>
                                     <div className="input-display">
-                                        <p>{order.region}</p>
+                                        <p>{order?.region}</p>
                                     </div>
                                 </div>
                                 <div className="display-row">
                                     <p className="input-label">City</p>
-                                    <p className="input-display">{order.city}</p>
+                                    <p className="input-display">{order?.city}</p>
                                 </div>
                             </div>
                             <div className="flex gap-11">
                                 <div className="display-row">
                                     <p>Address</p>
                                     <div className="input-display">
-                                        <p>{order.address}</p>
+                                        <p>{order?.address}</p>
                                     </div>
                                 </div>
                                 <div className="display-row">
@@ -116,13 +123,17 @@ const OrderConfirmation: React.FC<OrderConfirmationProps> = ({ order, user, onCo
                         <label htmlFor="call_check" className="font-semibold">I have a question, call me back.</label>
                     </div>
                     <div className="flex justify-center">
-                        <button className="confirm-btn" onClick={() => onConfirm(order)}>
-                            Confirm Order
-                        </button>
+                        {order ? (
+                            <button className="confirm-btn" onClick={() => onConfirm(order)}>
+                                Confirm Order
+                            </button>
+                        ) : ""
+                        }
+
                     </div>
                     <div className="flex justify-center">
                         <a className="text-[#FF642E] text-lg font-semibold"
-                         href="/checkout">Cancel</a>
+                            href="/checkout">Cancel</a>
                     </div>
                 </div>
             </div>
