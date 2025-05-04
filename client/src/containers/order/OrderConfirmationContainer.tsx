@@ -2,7 +2,7 @@ import OrderConfirmation from "@/components/order/OrderConfirmation"
 import { addOrderService } from "@/services"
 import useCart from "@/state/context/useCart"
 import { Order, User } from "@/types"
-import { useCallback } from "react"
+import { useCallback, useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
 
 interface OrderConfirmationContainerProps {
@@ -12,14 +12,8 @@ interface OrderConfirmationContainerProps {
 
 const OrderConfirmationContainer: React.FC<OrderConfirmationContainerProps> = ({order, user}) => {
     const navigate = useNavigate(); 
-    const {clearCart} = useCart();
-    // const handleMessage = useCallback(
-    //     (message: string, type: 'success' | 'error') => {
-    //     dispatch(addNotification({ message, type }));
-    //     },
-    //     [dispatch],
-    // );
-
+    const [total, setTotal] = useState<number>(0);
+    const {clearCart, cart, getTotalPrice} = useCart();
     const handleNavigate = useCallback(
         (route: string) => navigate(route),
         [navigate],
@@ -28,7 +22,6 @@ const OrderConfirmationContainer: React.FC<OrderConfirmationContainerProps> = ({
     const handleConfirmOrder = useCallback(
         async(order: Order) => {
             const response = await addOrderService(order);
-            console.log(response)
             if (!response.error) {
                 clearCart();
                 handleNavigate('/checkout/success');
@@ -37,10 +30,19 @@ const OrderConfirmationContainer: React.FC<OrderConfirmationContainerProps> = ({
         [handleNavigate, clearCart]
     )
 
-    
+    useEffect(() => {
+        setTotal(getTotalPrice())
+    },[cart, getTotalPrice])    
+
+
     return (
         <div>
-            <OrderConfirmation onConfirm={handleConfirmOrder} order={order} user={user}/>
+            <OrderConfirmation
+            onConfirm={handleConfirmOrder}
+            order={order}
+            user={user}
+            cart={cart}
+            total={total}/>
         </div>
     )
 }

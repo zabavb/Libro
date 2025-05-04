@@ -31,3 +31,7 @@
     padding-bottom: 22px;
     border-radius: 46px;
 }
+
+.price-container{
+    @apply flex flex-col gap-2 font-semibold text-[#FF642E] text-end;
+}

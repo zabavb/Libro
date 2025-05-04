@@ -1,21 +1,33 @@
 import { Order, User } from "@/types";
 import "@/assets/styles/components/order/checkout-confirmation.css"
 import { icons } from "@/lib/icons"
+import { CartItem } from "@/types/types/cart/CartItem";
+import CheckoutBookCard from "../common/CheckoutBookCard";
 
 interface OrderConfirmationProps {
     order: Order
     user: User
+    cart: CartItem[]
     onConfirm: (order: Order) => void;
+    total: number
 }
 
 
-const OrderConfirmation: React.FC<OrderConfirmationProps> = ({ order, user, onConfirm }) => {
+const OrderConfirmation: React.FC<OrderConfirmationProps> = ({ order, user, onConfirm, cart, total }) => {
     return (
         <div className="form-container">
             <p className="text-[#F4F0E5] text-2xl font-semibold">Placing an order</p>
             <div className="checkout-section">
-                <div>
-
+                <div className="flex justify-between">
+                    <div>
+                        {cart.map((item) => (
+                            <CheckoutBookCard item={item}/>
+                        ))}
+                    </div>
+                    <div className="price-container">
+                        <h1 className="text-3xl">To be paid:</h1>
+                        <h1 className="text-5xl">{total} UAH</h1>
+                    </div>
                 </div>
                 <div className="flex flex-col justify-between gap-16">
                     <div className="flex gap-32">
