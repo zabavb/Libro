@@ -46,8 +46,7 @@ const AppRoutes = () => (
         {/* Main */}
         <Route path='/' element={<MainPage />} />
         <Route path='/profile' element={<ProfilePage />} />
-        <Route path='/cart' element={<UserCartPage />} />
-        <Route path='/cart/checkout' element={<UserCheckoutPage />} />
+        <Route path='/checkout' element={<UserCheckoutPage />} />
         <Route path='/orders' element={<UserOrdersPage />} />
         <Route path='/catalog' element={<BookCatalogPage/>}/>
         <Route path='/books/:bookId' element={<BookDetailsPage/>}/>

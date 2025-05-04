@@ -31,7 +31,6 @@ const CartCard: React.FC<CartCardProps> = ({ item, onAdd, onRemove, onItemClear 
             setServiceResponse(response);
             if (response.error)
                 dispatch(addNotification({ message: response.error, type: 'error' }));
-            console.log(response)
             setBook(response.data);
         })();
     }, [item, dispatch])
