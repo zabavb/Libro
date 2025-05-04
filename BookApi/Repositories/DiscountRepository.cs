@@ -48,7 +48,7 @@ namespace BookAPI.Repositories
 
         public async Task /*<bool>*/ UpdateAsync(Discount newDiscount)
         {
-            var discountEntity = await GetByIdAsync(newDiscount.DiscountId);
+            var discountEntity = await GetByBookIdAsync((Guid)newDiscount.BookId);
             if (discountEntity == null)
             {
                 // return false;
