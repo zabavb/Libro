@@ -24,7 +24,7 @@ namespace BookAPI.Repositories
 
         private readonly JsonSerializerOptions _jsonOptions = new JsonSerializerOptions
         {
-            ReferenceHandler = ReferenceHandler.Preserve, // Ігнорування циклічних посилань
+            ReferenceHandler = ReferenceHandler.IgnoreCycles, // Ігнорування циклічних посилань
             DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull, // Ігнорування null значень
         };
 
