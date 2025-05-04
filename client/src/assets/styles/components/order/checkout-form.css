@@ -1,3 +1,7 @@
+.form-container{
+    @apply bg-dark py-5 px-[60px] flex flex-col gap-6;
+}
+
 .checkout-section {
     @apply flex flex-col bg-primary p-10 gap-5 text-dark;
     border-radius: 30px;

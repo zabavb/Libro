@@ -1,12 +1,11 @@
 import { useDispatch } from "react-redux"
 import { AppDispatch } from "../../state/redux"
-import { useNavigate } from "react-router-dom"
 import React, { useCallback, useEffect, useMemo, useState } from "react"
 import { addNotification } from "../../state/redux/slices/notificationSlice"
-import { DeliveryType, Order, User } from "../../types"
+import { DeliveryType, User } from "../../types"
 import OrderCheckoutForm from "../../components/order/OrderCheckoutForm"
 import useCart from "../../state/context/useCart"
-import { addOrderService, fetchDeliveryTypesService } from "../../services"
+import { fetchDeliveryTypesService } from "../../services"
 import { getUserFromStorage } from "@/utils/storage"
 import { CartItem } from "@/types/types/cart/CartItem"
 
@@ -15,8 +14,7 @@ const OrderCheckoutFormContainer: React.FC = () => {
     const dispatch = useDispatch<AppDispatch>()
     const booksObjs = useMemo(() => ({} as Record<string, number>), []);
     const [price, setPrice] = useState<number>(0)
-    const {getTotalPrice, cart, clearCart, clearItem, addItem, removeItem } = useCart();
-    const navigate = useNavigate()
+    const {getTotalPrice, cart, clearItem, addItem, removeItem } = useCart();
     const [deliveryTypes, setDeliveryTypes] = useState<DeliveryType[]>([])
     const [loading, setLoading] = useState<boolean>(true);
     const [pagination, setPagination] = useState({
@@ -39,32 +37,32 @@ const OrderCheckoutFormContainer: React.FC = () => {
         clearItem(bookId)
     }    
 
-    const handleMessage = useCallback(
-        (message: string, type: 'success' | 'error') => {
-        dispatch(addNotification({ message, type }));
-        },
-        [dispatch],
-    );
+    // const handleMessage = useCallback(
+    //     (message: string, type: 'success' | 'error') => {
+    //     dispatch(addNotification({ message, type }));
+    //     },
+    //     [dispatch],
+    // );
 
-    const handleNavigate = useCallback(
-        (route: string) => navigate(route),
-        [navigate],
-    );
+    // const handleNavigate = useCallback(
+    //     (route: string) => navigate(route),
+    //     [navigate],
+    // );
 
-    const handleAddOrder = useCallback(
-        async(order: Order) => {
-            const response = await addOrderService(order);
+    // const handleAddOrder = useCallback(
+    //     async(order: Order) => {
+    //         const response = await addOrderService(order);
 
-            if (response.error) handleMessage(response.error, 'error');
-            else {
-                handleMessage('Order Placed successfully!', 'success');
-                clearCart();
-                handleNavigate('/');
+    //         if (response.error) handleMessage(response.error, 'error');
+    //         else {
+    //             handleMessage('Order Placed successfully!', 'success');
+    //             clearCart();
+    //             handleNavigate('/');
 
-            }
-        },
-        [handleMessage, handleNavigate,clearCart]
-    )
+    //         }
+    //     },
+    //     [handleMessage, handleNavigate,clearCart]
+    // )
 
    const paginationMemo = useMemo(() => ({...pagination}), [pagination]);
 
@@ -126,7 +124,6 @@ const OrderCheckoutFormContainer: React.FC = () => {
             cart={cart}
             books={booksObjs}
             deliveryTypes={deliveryTypes}
-            onAddOrder={handleAddOrder}
             loading={loading}
             user={user}
             onAdd={handleAdd}

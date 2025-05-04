@@ -16,7 +16,6 @@ interface OrderCheckoutFormProps {
     deliveryTypes?: DeliveryType[]
     price: number
     cart: CartItem[]
-    onAddOrder: (order: Order) => void
     loading: boolean
     user: User | null
     onAdd: (item: CartItem) => void;
@@ -24,7 +23,7 @@ interface OrderCheckoutFormProps {
     onItemClear: (bookId: string) => void;
 }
 
-const OrderCheckoutForm: React.FC<OrderCheckoutFormProps> = ({ onAdd, onItemClear, onRemove, cart, books, price, deliveryTypes, onAddOrder, loading, user }) => {
+const OrderCheckoutForm: React.FC<OrderCheckoutFormProps> = ({ onAdd, onItemClear, onRemove, cart, books, price, deliveryTypes, loading, user }) => {
     const [userId, setUserId] = useState<string>("");
     const [edit, setEdit] = useState<boolean>(false);
     const [paymentMethod, setPaymentMethod] = useState<string>("");
@@ -87,14 +86,14 @@ const OrderCheckoutForm: React.FC<OrderCheckoutFormProps> = ({ onAdd, onItemClea
             status: statusEnumToNumber(data.status)
         }
 
-        onAddOrder(order)
+        navigate('/checkout/confirm', {state: {order: order, user: user}})
     }
 
     if (cart.length <= 0) navigate("/")
     if (loading) return <p>Loading...</p>
     return (
-        <div className="bg-dark py-5 px-[60px] flex flex-col gap-6">
-            <p className="text-[#F4F0E5] text-2xl font-semibold">Placing an order</p>
+        <div className="form-container">
+            <p className="text-[#F4F0E5] text-2xl font-semibold">Order confirmation</p>
             <form onSubmit={handleSubmit(onSubmit)}>
                 <>
                     <input type="hidden" {...register("userId")} />
