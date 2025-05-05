@@ -1,10 +1,13 @@
 import { dateToString } from '@/api/adapters/commonAdapters';
-import { ComplicatedLoading, Subscription, User } from '@/types';
+import { ComplicatedLoading, Role, Subscription, User } from '@/types';
 import { UserProfileFormData, userProfileSchema } from '@/utils';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-
+import '@/assets/styles/components/common/profile.css'
+import { icons } from '@/lib/icons'
+import NewsletterAdvert from '../common/NewsletterAdvert';
+import { roleEnumToNumber } from '@/api/adapters/userAdapter';
 interface ProfileProps {
   user: User;
   onEditUser: (
@@ -17,6 +20,7 @@ interface ProfileProps {
   loading: ComplicatedLoading<UserProfileFormData>;
   onNavigate: (route: string) => void;
 }
+
 
 const Profile: React.FC<ProfileProps> = ({
   user,
@@ -46,6 +50,8 @@ const Profile: React.FC<ProfileProps> = ({
     },
   });
 
+
+  
   const [editableField, setEditableField] = useState<
     keyof UserProfileFormData | null
   >(null);
@@ -88,27 +94,29 @@ const Profile: React.FC<ProfileProps> = ({
     type: string = 'text',
     placeholder: string = '',
   ) => (
-    <div>
-      <label>{label}</label>
+    <div className='flex flex-col gap-1.5'>
+      <p className='text-dark text-sm'>{label}</p>
       <div
         style={
           loading.isLoading && loading.fieldName === fieldName
             ? { opacity: 0.5 }
             : {}
         }
+        className='input-field'
       >
         <input
+          className='input-area'
           type={type}
           {...register(fieldName)}
           placeholder={placeholder}
           disabled={editableField !== fieldName}
         />
         {editableField === fieldName ? (
-          <button type='button' onClick={() => handleSave(fieldName)}>
+          <button className='input-btn' type='button' onClick={() => handleSave(fieldName)}>
             Save
           </button>
         ) : (
-          <button type='button' onClick={() => handleEditClick(fieldName)}>
+          <button className='input-btn' type='button' onClick={() => handleEditClick(fieldName)}>
             Edit
           </button>
         )}
@@ -120,16 +128,18 @@ const Profile: React.FC<ProfileProps> = ({
   const renderPasswordFields = () => (
     <>
       {/* Password field */}
-      <div>
-        <label>Change password</label>
+      <div className='flex flex-col gap-1.5'>
+        <p className='text-dark text-sm'>Change password</p>
         <div
           style={
             loading.isLoading && loading.fieldName === 'password'
               ? { opacity: 0.5 }
               : {}
           }
+          className='input-field'
         >
           <input
+            className='input-area'
             type='password'
             {...register('password')}
             placeholder='Password'
@@ -137,13 +147,14 @@ const Profile: React.FC<ProfileProps> = ({
           />
           {editableField === 'password' ? (
             <button
+              className='input-btn'
               type='button'
               onClick={() => setEditableField('confirmPassword')}
             >
               Next
             </button>
           ) : (
-            <button type='button' onClick={() => handleEditClick('password')}>
+            <button className='input-btn' type='button' onClick={() => handleEditClick('password')}>
               Change
             </button>
           )}
@@ -161,13 +172,15 @@ const Profile: React.FC<ProfileProps> = ({
                 ? { opacity: 0.5 }
                 : {}
             }
+            className='input-field'
           >
             <input
+              className='input-area'
               type='password'
               {...register('confirmPassword')}
               placeholder='Confirm password'
             />
-            <button type='button' onClick={() => handleSave('password')}>
+            <button className='input-btn' type='button' onClick={() => handleSave('password')}>
               Save
             </button>
           </div>
@@ -178,73 +191,90 @@ const Profile: React.FC<ProfileProps> = ({
   );
 
   return (
-    <>
-      <h1>Profile editing</h1>
+    <div className='form-container'>
+      <h1 className='text-2xl text-[#F4F0E5] font-semibold'>Profile editing</h1>
 
-      <hr />
-
-      <div>
-        <h3>Information</h3>
-        <div
-          style={
-            loading.isLoading && loading.fieldName === 'all'
-              ? { opacity: 0.5 }
-              : {}
-          }
-        >
-          {renderField('Last name', 'lastName', 'text', 'Last name')}
-          {renderField('First name', 'firstName', 'text', 'First name')}
-          {renderField('Email', 'email', 'email', 'Email')}
-          {renderField('Phone number', 'phoneNumber', 'tel', 'Phone number')}
-          {renderPasswordFields()}
-          {renderField('Date of birth', 'dateOfBirth', 'date', 'Date of birth')}
+      <div className='flex gap-[18px]'>
+        <div className='form-section w-[70%]'>
+          <h3 className='font-semibold text-xl text-dark'>Information</h3>
+          <div
+            style={
+              loading.isLoading && loading.fieldName === 'all'
+                ? { opacity: 0.5 }
+                : {}
+            }
+            className='flex flex-col gap-5'
+          >
+            {renderField('Last name', 'lastName', 'text', 'Last name')}
+            {renderField('First name', 'firstName', 'text', 'First name')}
+            {renderField('Email', 'email', 'email', 'Email')}
+            {renderField('Phone number', 'phoneNumber', 'tel', 'Phone number')}
+            {renderPasswordFields()}
+            {renderField('Date of birth', 'dateOfBirth', 'date', 'Date of birth')}
+          </div>
+        </div>
+        <div className='flex flex-col gap-[13px] w-[30%]'>
+          {user.role === roleEnumToNumber(Role.ADMIN) ||
+           user.role === roleEnumToNumber(Role.ADMIN) &&
+           (
+            <a href='#' className='admin-btn'>
+            <div className='flex gap-4 justify-center'>
+              <img src={icons.bPen} />
+              <p>Go to admin panel</p>
+            </div>
+          </a>
+           )}
+          <div className='form-section'>
+            <div className='flex justify-between items-center'>
+              <h3 className='font-semibold text-xl text-dark'>Delivery 365</h3>
+              <div>
+                {isSubscribedFor365 ? (
+                  <div className='sub-active'>
+                    Active
+                  </div>
+                ) : (
+                  <div className='sub-inactive'>
+                    Inactive
+                  </div>
+                )}
+              </div>
+            </div>
+            <div className='flex gap-1.5'>
+              <div className='sub-image-container'>
+                <p className='sub-image'>365</p>
+              </div>
+              <div>
+                <p className='sub-desc'>Subscription for free delivery of orders from Libro
+                  throughout Ukraine. Valid for all orders over UAH 100
+                  for 1 year from the moment of registration.
+                  There are no restrictions on the number of orders.</p>
+              </div>
+            </div>
+          </div>
+          <div className='form-section'>
+            <div className='flex justify-between items-center'>
+              <h3 className='font-semibold text-xl text-dark'>Newsletter subscription</h3>
+              <div>
+                {subscription ? (
+                  <div className='sub-active'>
+                    Active
+                  </div>
+                ) : (
+                  <div className='sub-inactive'>
+                    Inactive
+                  </div>
+                )}
+              </div>
+            </div>
+            <div>
+            <p className='sub-desc'>We exchange emails for book trends,
+            information about new releases, book collections, secret promo codes</p>
+            </div>
+          </div>
         </div>
       </div>
-
-      <hr />
-
-      {subscription && (
-        <div>
-          <h3>{subscription.title}</h3>
-          <img width='44' height='44' src={subscription.imageUrl} />
-          <div>{isSubscribedFor365 ? 'Present' : 'Unpresent'}</div>
-          <p>{subscription.description}</p>
-          <input
-            type='button'
-            value='More about delivery'
-            onClick={() => onNavigate(`/subscriptions/${subscription.id}`)}
-          />
-        </div>
-      )}
-
-      <hr />
-
-      <div>
-        <h3>Newsletter subscription</h3>
-        <div>Unpresent</div>
-        <p>
-          We change email to book trends Information about new releases, book
-          selections, secret promo codes
-        </p>
-      </div>
-
-      <hr />
-
-      <div>
-        <h2>
-          <span>-15%</span>
-          discounts on the first purchase for subscribing to the newsletter
-        </h2>
-        <p>
-          Приєднуйтеся до нашої спільноти, щоб отримувати інформацію про
-          найновіші акції та товари
-        </p>
-        <div>
-          <input type='text' placeholder='Enter email' />
-          <input type='button' value='Subscribe' />
-        </div>
-      </div>
-    </>
+      <NewsletterAdvert/>
+    </div>
   );
 };
 
