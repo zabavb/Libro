@@ -4,12 +4,16 @@ import CartPanel from "./CartPanel";
 import libroLogo from '@/assets/logoLibro.svg'
 import UserPanel from "./UserPanel";
 import { icons } from '@/lib/icons'
+import { useState } from "react";
+import AuthPanelContainer from "@/containers/auth/AuthPanelContainer";
 export default function Header() {
   const navigate = useNavigate();
 
   const location = useLocation();
   const currentPath = location.pathname;
 
+  const [isAuthOpen, setIsAuthOpen] = useState<boolean>(false);
+  const toggleAuth = () => setIsAuthOpen(!isAuthOpen);
   const isActive = (path: string) => currentPath === path;
 
   return (
@@ -28,7 +32,7 @@ export default function Header() {
       </div>)
       : ""
       }
-
+      <AuthPanelContainer isOpen={isAuthOpen} setIsAuthOpen={setIsAuthOpen}/>
       <div className="flex gap-[62px] px-[40px] py-6 items-center">
         <div>
           <img src={libroLogo} className="invert w-[108px] h-[42px] cursor-pointer" onClick={() => navigate('/')}/>
@@ -48,7 +52,7 @@ export default function Header() {
           <div className="header__nav">
             <CartPanel />
             <img src={icons.bHeart} />
-            <UserPanel/>
+            <UserPanel onLoginOpen={toggleAuth}/>
           </div>
           <div className='header__lang'>
             <span>UA</span>

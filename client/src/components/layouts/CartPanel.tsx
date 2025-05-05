@@ -48,12 +48,11 @@ const CartPanel: React.FC = () => {
                 onClick={() => setIsOpen(true)}
             />
 
-            {isOpen && (
-                <div
-                    className='dim'
-                    onClick={() => setIsOpen(false)}
-                />
-            )}
+            <div
+                className={`dim ${isOpen && 'visible'}`}
+                aria-hidden={!isOpen}
+                onClick={() => setIsOpen(false)}
+            />
             <div className={`cart-panel ${isOpen ? 'right-0' : 'right-[-445px]'}`}>
                 <div className="p-[30px] bg-dark h-[17%]">
                     <img src={closeIcon} className="close-icon" onClick={() => setIsOpen(false)} />
@@ -67,7 +66,7 @@ const CartPanel: React.FC = () => {
                     ) : ""}
                 </div>
                 <div className="cart-main">
-                    {cart.length > 0 ? 
+                    {cart.length > 0 ?
                         cart.map((item) => (
                             <CartCard
                                 key={item.bookId}
@@ -76,25 +75,25 @@ const CartPanel: React.FC = () => {
                                 onRemove={handleRemove}
                                 onItemClear={handleClear} />
                         ))
-                    :
-                    (
-                        <div className="font-semibold text-lg text-dark"> 
-                            <p className="text-[#FF642E]">Your cart is empty.</p>
-                            <p>Don't hesitate and browse our catalog to find something good for you!</p>
-                        </div>
-                    )
+                        :
+                        (
+                            <div className="font-semibold text-lg text-dark">
+                                <p className="text-[#FF642E]">Your cart is empty.</p>
+                                <p>Don't hesitate and browse our catalog to find something good for you!</p>
+                            </div>
+                        )
                     }
                 </div>
                 {cart.length > 0 ? (
-                <div className="cart-footer">
-                    <div className="flex justify-between font-semibold text-2xl">
-                        <p>Total</p>
-                        <p>{total} UAH</p>
+                    <div className="cart-footer">
+                        <div className="flex justify-between font-semibold text-2xl">
+                            <p>Total</p>
+                            <p>{total} UAH</p>
+                        </div>
+                        <div>
+                            <button className="checkout-btn" onClick={() => navigate("/checkout")}>To Checkout</button>
+                        </div>
                     </div>
-                    <div>
-                        <button className="checkout-btn" onClick={() => navigate("/checkout")}>To Checkout</button>
-                    </div>
-                </div>
                 ) : ""}
             </div>
         </div>
