@@ -23,6 +23,7 @@ import facebook from '@/assets/icons/socialFacebook.svg'
 import bPen from '@/assets/icons/bPen.svg'
 import bMoney from '@/assets/icons/bMoney.svg'
 import bArrowRight from '@/assets/icons/bArrowRight.svg'
+import bLetter from '@/assets/icons/bLetter.svg'
 export const icons = {
     wUser,
     wBonus,
@@ -48,5 +49,6 @@ export const icons = {
     facebook,
     bPen,
     bMoney,
-    bArrowRight
+    bArrowRight,
+    bLetter
 }
