@@ -59,7 +59,7 @@ const Login: React.FC<loginProps> = ({ setIsRegistration, onOAuth, onSubmit }) =
                     <input
                         {...register('identifier')}
                         placeholder="Email or Phone Number"
-                        className="auth-input-field"
+                        className={`auth-input-field ${errors.identifier ? "border-[#FF642E]" : "border-[#9C9C97]"}`}
                     />
                     {errors.identifier && (
                         <span className="mt-1 text-red-500 text-xs block">
@@ -80,7 +80,7 @@ const Login: React.FC<loginProps> = ({ setIsRegistration, onOAuth, onSubmit }) =
                         {...register('password')}
                         type={showPassword ? 'text' :'password'}
                         placeholder="Password"
-                        className="auth-input-field"
+                        className={`auth-input-field ${errors.password ? "border-[#FF642E]" : "border-[#9C9C97]"}`}
                     />
                       <button
                             type="button"
