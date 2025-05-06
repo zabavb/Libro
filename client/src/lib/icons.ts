@@ -25,6 +25,7 @@ import bMoney from '@/assets/icons/bMoney.svg'
 import bArrowRight from '@/assets/icons/bArrowRight.svg'
 import bLetter from '@/assets/icons/bLetter.svg'
 import gVisibility from '@/assets/icons/gVisibility.svg'
+import bCheck from '@/assets/icons/check-solid.svg'
 export const icons = {
     wUser,
     wBonus,
@@ -52,5 +53,6 @@ export const icons = {
     bMoney,
     bArrowRight,
     bLetter,
-    gVisibility
+    gVisibility,
+    bCheck,
 }

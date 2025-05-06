@@ -21,6 +21,7 @@ const Register: React.FC<RegisterProps> = ({ data, onSubmit }) => {
     resolver: zodResolver(registerSchema),
   });
 
+
   return (
     <div className="flex justify-center items-center min-h-screen bg-gray-100">
       <div className="p-6 w-full max-w-md rounded-lg shadow-md" style={{ backgroundColor: '#F4F0E5' }}> 

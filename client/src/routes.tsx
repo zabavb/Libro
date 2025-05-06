@@ -41,9 +41,6 @@ const AppRoutes = () => (
   <AuthProvider>
     <BrowserRouter>
       <Routes>
-        {/* Authentication */}
-        <Route path='/login' element={<LoginPage />} />
-        <Route path='/register' element={<RegisterPage />} />
         {/* Main */}
         <Route path='/' element={<MainPage />} />
         <Route path='/profile' element={<ProfilePage />} />

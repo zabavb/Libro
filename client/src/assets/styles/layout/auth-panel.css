@@ -60,8 +60,8 @@
 }
 
 .auth-input-field{
-    @apply py-3 bg-transparent rounded-lg w-full;
+    @apply py-3 bg-transparent rounded-lg w-full border;
     padding-left: 30px;
     padding-right: 30px;
-    border: 1px solid #9C9C97;
 }
+

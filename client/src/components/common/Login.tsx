@@ -86,7 +86,7 @@ const Login: React.FC<loginProps> = ({ setIsRegistration, onOAuth, onSubmit }) =
                             type="button"
                             onClick={() => setShowPassword((prev) => !prev)}
                             className="absolute right-6 top-1/2 transform -translate-y-1/2 text-gray-500 text-sm"
-                            tabIndex={-1} // avoids tab focus
+                            tabIndex={-1} 
                         >
                             <img src={icons.gVisibility}/>
                         </button>
