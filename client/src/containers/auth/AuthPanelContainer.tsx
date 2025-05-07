@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import '@/assets/styles/layout/auth-panel.css';
 import { AppDispatch } from "@/state/redux";
 import { useDispatch } from "react-redux";
@@ -24,12 +24,15 @@ const AuthPanelContainer: React.FC<AuthPanelContainerProps> = ({ setIsAuthOpen, 
 
     const location = useLocation();
     const user = location.state?.user as User | undefined;
-
+    
+    useEffect(() => {
+        setIsRegistration(location.state?.isRegister === true);
+    },[location.state])
     const handleOAuth = async (token: string | undefined) => {
         const data = await oAuth(token);
 
         // If it is new user
-        if (data as User) navigate('/register', { state: { user: data as User } });
+        if (data as User) navigate('/', { state: { authOpen:true,isRegister:true, user: data as User }, replace: true, });
 
         if ((data as NotificationData).type === 'success')
             handleSuccess({ type: 'success', message: 'Login successful!' });

@@ -21,7 +21,7 @@ const Login: React.FC<loginProps> = ({ setIsRegistration, onOAuth, onSubmit }) =
     });
 
     const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
-
+    
     const [showPassword, setShowPassword] = useState<boolean>(false);
 
     const watchedFields = watch(['identifier', 'password']);
