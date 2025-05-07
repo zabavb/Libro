@@ -3,10 +3,10 @@ using Microsoft.EntityFrameworkCore;
 using OrderApi.Data;
 using OrderApi.Models;
 using OrderAPI;
-using OrderAPI.Repository;
 using StackExchange.Redis;
 using System.Text.Json;
 using Library.Sorts;
+using OrderAPI.Repository.Interfaces;
 
 namespace OrderApi.Repository
 {

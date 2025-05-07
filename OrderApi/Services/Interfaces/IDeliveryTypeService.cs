@@ -2,7 +2,7 @@
 using Library.Interfaces;
 using OrderAPI;
 
-namespace OrderApi.Services
+namespace OrderAPI.Services.Interfaces
 {
     public interface IDeliveryTypeService : IManageable<DeliveryTypeDto,DeliveryTypeDto>
     {

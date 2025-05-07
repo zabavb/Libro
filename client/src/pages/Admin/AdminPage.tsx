@@ -1,14 +1,9 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { useNavigate } from 'react-router-dom';
 import '../Admin/AdminDashboardStyle.css';
+import { fetchActiveSubscriptionsCount } from '../../services/subscriptionService';
 
-
-const salesData = [
-  { name: 'Січень', value: 400 },
-  { name: 'Лютий', value: 300 },
-  { name: 'Березень', value: 650 }
-];
 
 const topSales = [
   'Бріджертони',
@@ -23,8 +18,28 @@ const topSales = [
 ];
 
 
+type PeriodType = 'day' | 'week' | 'month';
+
 const AdminPage: React.FC = () => {
     const navigate = useNavigate();
+    const [activeSubCount, setActiveSubCount] = useState<number>(0);
+    const [period, setPeriod] = useState<PeriodType>('month');
+    const [salesData, setSalesData] = useState<SalesDataItem[]>([]);
+    const [lastUpdated, setLastUpdated] = useState<string>("");
+
+    useEffect(() => {
+        const loadActiveCount = async () => {
+            try {
+                const count = await fetchActiveSubscriptionsCount();
+                setActiveSubCount(count);
+                const response = await axios.get(`/api/statistics/orders/counts?period=${period}`);
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+        };
+    
+        loadActiveCount();
+    }, []);
     return (
         <div className="dashboard-container">
 
@@ -57,8 +72,8 @@ const AdminPage: React.FC = () => {
                 </div>
                 <div className="bottom-grid">
                     <div className="listeners-box stat-box">
-                        <h4>Прослуховування</h4>
-                        <p>784</p>
+                        <h4>Активні підписники</h4>
+                        <p>{activeSubCount}</p>
                     </div>
 
                     <div className="new-users-box stat-box">

@@ -8,7 +8,10 @@ using Library.Interfaces;
 using Library.Sorts;
 using Microsoft.EntityFrameworkCore;
 using OrderApi.Models;
+using OrderApi.Repository;
 using OrderAPI;
+using OrderAPI.Models;
+using OrderAPI.Services.Interfaces;
 
 namespace OrderApi.Services
 {
@@ -198,6 +201,10 @@ namespace OrderApi.Services
             {
                 return new CollectionSnippet<OrderDetailsSnippet>(true, new List<OrderDetailsSnippet>());
             }
+        }
+        public async Task<List<int>> GetOrderCountsForLastThreePeriodsAsync(PeriodType periodType)
+        {
+            return await _repository.GetOrderCountsForLastThreePeriodsAsync(periodType);
         }
     }
 }

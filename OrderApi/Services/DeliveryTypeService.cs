@@ -2,7 +2,8 @@
 using Library.Common;
 using OrderApi.Models;
 using OrderAPI;
-using OrderAPI.Repository;
+using OrderAPI.Repository.Interfaces;
+using OrderAPI.Services.Interfaces;
 
 namespace OrderApi.Services
 {

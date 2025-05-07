@@ -3,7 +3,7 @@ using BookAPI.Services.Interfaces;
 using Library.Common;
 using Library.DTOs.UserRelated.User;
 using Library.Interfaces;
-using OrderApi.Services;
+using OrderAPI.Services.Interfaces;
 using UserAPI.Models;
 using UserAPI.Repositories;
 using UserAPI.Repositories.Interfaces;

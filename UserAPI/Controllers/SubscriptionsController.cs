@@ -5,6 +5,7 @@ using Library.Common;
 using Library.DTOs.UserRelated.Subscription;
 using Microsoft.AspNetCore.Authorization;
 using UserAPI.Models.Subscription;
+using Microsoft.EntityFrameworkCore;
 
 namespace UserAPI.Controllers
 {
@@ -172,14 +173,26 @@ namespace UserAPI.Controllers
             return Ok();
         }
 
+        /// <summary>
+        /// Retrieves the total count of active subscriptions (ExpirationDays > 0).
+        /// </summary>
+        /// <returns>The count of active subscriptions.</returns>
+        /// <response code="200">Returns the number of active subscriptions.</response>
+        /// <response code="401">If request is unauthorized.</response>
+        /// <response code="500">If an unexpected error occurred.</response>
+        //[Authorize(Roles = "ADMIN, MODERATOR")]
         [HttpGet("active-count")]
         public async Task<ActionResult<int>> GetActiveSubscriptionsCount()
         {
-            
-            var count = await _context.Subscriptions
-                .CountAsync(s => s.ExpirationDays > 0);
-
-            return Ok(count);
+            try
+            {
+                var count = await _service.GetActiveSubscriptionsCountAsync();
+                return Ok(count);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"An error occurred: {ex.Message}");
+            }
         }
     }
 }

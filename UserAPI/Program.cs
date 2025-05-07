@@ -27,6 +27,7 @@ using Library.Common.Middleware;
 using OrderApi.Data;
 using OrderApi.Repository;
 using OrderApi.Services;
+using OrderAPI.Services.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 

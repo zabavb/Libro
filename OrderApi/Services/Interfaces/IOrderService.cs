@@ -1,8 +1,9 @@
 ﻿using Library.Common;
 using Library.DTOs.UserRelated.User;
 using Library.Interfaces;
+using OrderAPI.Models;
 
-namespace OrderApi.Services
+namespace OrderAPI.Services.Interfaces
 {
     public interface IOrderService : IManageable<OrderDto,OrderDto>
     {
@@ -10,5 +11,6 @@ namespace OrderApi.Services
         Task DeleteAsync(Guid id);
         Task<SingleSnippet<OrderCardSnippet>> GetCardSnippetByUserIdAsync(Guid id);
         Task<CollectionSnippet<OrderDetailsSnippet>> GetAllByUserIdAsync(Guid id, int pageNumber = 1);
+        Task<List<int>> GetOrderCountsForLastThreePeriodsAsync(PeriodType periodType);
     }
 }

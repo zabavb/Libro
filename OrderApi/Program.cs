@@ -7,7 +7,6 @@ using System.Reflection;
 using OrderApi.Repository;
 using OrderApi.Profiles;
 using StackExchange.Redis;
-using OrderAPI.Repository;
 using BookAPI.Data;
 using BookAPI.Repositories.Interfaces;
 using BookAPI.Repositories;
@@ -15,6 +14,8 @@ using BookAPI.Services.Interfaces;
 using BookAPI.Services;
 using Library.Common;
 using BookAPI.Data.CachHelper;
+using OrderAPI.Repository.Interfaces;
+using OrderAPI.Services.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
