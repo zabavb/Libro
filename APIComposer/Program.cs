@@ -23,8 +23,8 @@ builder.Services
     .AddHttpClient()
     .AddGraphQLServer()
     .ModifyRequestOptions(opt => opt.IncludeExceptionDetails = true)
-    .AddQueryType<UserQuery>()
-    .AddTypeExtension<OrderQuery>();
+    .AddQueryType<UserQuery>();
+    // .AddTypeExtension<OrderQuery>();
 
 builder.Services.AddSwaggerGen();
 
