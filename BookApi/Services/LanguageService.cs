@@ -1,5 +1,6 @@
 ﻿using BookAPI.Models;
 using BookAPI.Services.Interfaces;
+using Library.DTOs.Book;
 
 namespace BookAPI.Services
 {

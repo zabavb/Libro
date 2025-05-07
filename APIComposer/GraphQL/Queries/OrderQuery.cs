@@ -1,4 +1,5 @@
-﻿using Amazon.S3.Model;
+﻿/*
+using Amazon.S3.Model;
 using APIComposer.GraphQL.Services.Interfaces;
 using AutoMapper;
 using HotChocolate.Validation;
@@ -173,3 +174,4 @@ namespace APIComposer.GraphQL.Queries
         }
     }
 }  
+*/
