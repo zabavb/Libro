@@ -10,5 +10,6 @@ namespace UserAPI.Services.Interfaces
         Task<PaginatedResult<SubscriptionCardDto>> GetAllAsync(int pageNumber, int pageSize, string? searchTerm);
         Task SubscribeAsync(SubscribeRequest request);
         Task UnsubscribeAsync(SubscribeRequest request);
+        Task<int> GetActiveSubscriptionsCountAsync();
     }
 }

@@ -171,5 +171,15 @@ namespace UserAPI.Controllers
             await _service.UnsubscribeAsync(request);
             return Ok();
         }
+
+        [HttpGet("active-count")]
+        public async Task<ActionResult<int>> GetActiveSubscriptionsCount()
+        {
+            
+            var count = await _context.Subscriptions
+                .CountAsync(s => s.ExpirationDays > 0);
+
+            return Ok(count);
+        }
     }
 }

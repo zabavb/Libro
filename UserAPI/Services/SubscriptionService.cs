@@ -122,5 +122,9 @@ namespace UserAPI.Services
             _logger.LogInformation("User with ID [{id}] successfully UNsubscribed from ID [{id}].", request.UserId,
                 request.SubscriptionId);
         }
+        public async Task<int> GetActiveSubscriptionsCountAsync()
+        {
+            return await _repository.GetActiveSubscriptionsCountAsync();
+        }
     }
 }

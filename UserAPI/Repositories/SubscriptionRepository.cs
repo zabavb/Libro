@@ -265,5 +265,10 @@ namespace UserAPI.Repositories
 
             return (existingSubscription, subscription.ExpirationDays);
         }
+        public async Task<int> GetActiveSubscriptionsCountAsync()
+        {
+            return await _context.Subscriptions
+                .CountAsync(s => s.ExpirationDays > 0);
+        }
     }
 }
