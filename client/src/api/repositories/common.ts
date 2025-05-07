@@ -4,7 +4,6 @@ export const getAuthHeaders = (contentType: string) => {
     console.error('No token found!');
     return {};
   }
-  console.log(token)
   return {
     Authorization: `Bearer ${token}`,
     'Content-Type': contentType,
