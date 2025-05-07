@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import '@/assets/styles/components/search-bar.css';
+import {icons} from '@/lib/icons'
 interface SearchProps {
   searchTerm: string;
   onSearchTermChange: (searchTerm: string) => void;
@@ -13,8 +14,12 @@ const Search: React.FC<SearchProps> = ({ searchTerm, onSearchTermChange }) => {
   };
 
   return (
-    <div className='search-container'>
+    <label htmlFor='search' className='search-container'>
+      <label htmlFor='search'>
+        <img src={icons.bMagnifyingGlass}/>
+      </label>
       <input
+        id='search'
         className='search'
         type='text'
         placeholder='Search'
@@ -22,7 +27,7 @@ const Search: React.FC<SearchProps> = ({ searchTerm, onSearchTermChange }) => {
         onChange={(e) => setInputValue(e.target.value)}
         onKeyDown={(e) => handleSearch(e)}
       />
-    </div>
+    </label>
   );
 };
 

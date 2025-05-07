@@ -1,6 +1,6 @@
 import React from 'react';
-import { FixedSizeList as List } from 'react-window';
 import {
+  User,
   UserCard,
   UserSort as UserSortType,
   UserViewFilter,
@@ -11,7 +11,10 @@ import UserSort from './UserSort';
 import Pagination from '../common/Pagination';
 import Search from '../common/Search';
 import Loading from '../common/Loading';
-
+import "@/assets/styles/base/table-styles.css"
+import "@/assets/styles/components/list-styles.css"
+import { getUserFromStorage } from '@/utils/storage';
+import { icons } from '@/lib/icons'
 interface UserListProps {
   users?: UserCard[];
   loading: boolean;
@@ -39,46 +42,79 @@ const UserList: React.FC<UserListProps> = ({
   onSortChange,
   onNavigate,
 }) => {
-  const Card = ({
-    index,
-    style,
-  }: {
-    index: number;
-    style: React.CSSProperties;
-  }) => (
-    <div style={style}>
-      <UserCardContainer user={users[index]} />
-    </div>
-  );
+  const user: User | null = getUserFromStorage();
 
   return (
     <div>
-      <p onClick={() => onNavigate('/admin')}>Back to Admin Dashboard</p>
-      <p onClick={() => onNavigate('/admin/users/add')}>Add User</p>
-      <h1>User List</h1>
-
-      <Search searchTerm={searchTerm} onSearchTermChange={onSearchTermChange} />
-      <UserFilter filters={filters} onFilterChange={onFilterChange} />
-      <UserSort sort={sort} onSortChange={onSortChange} />
-
-      {loading ? (
-        <Loading />
-      ) : users.length > 0 ? (
-        <List
-          height={600}
-          itemCount={users.length}
-          itemSize={100}
-          width={'100%'}
-        >
-          {Card}
-        </List>
-      ) : (
-        <p>No users found.</p>
-      )}
-
-      <hr />
-
-      <Pagination pagination={pagination} onPageChange={onPageChange} />
+      <header className="header-container">
+        <Search
+          searchTerm={searchTerm}
+          onSearchTermChange={onSearchTermChange}
+        />
+        <button className="add-button" onClick={() => onNavigate("/admin/user/add")}>
+          <img src={icons.bPlus} />
+          <p>
+            Add User
+          </p>
+        </button>
+        <div className="profile-icon">
+          <div className="icon-container-pfp">
+            <img src={user?.imageUrl ? user.imageUrl : icons.bUser} className="panel-icon" />
+          </div>
+          <p className="profile-name">{user?.firstName ?? "Unknown User"} {user?.lastName}</p>
+        </div>
+      </header>
+      <main className='main-container'>
+        {users.length > 0 ? (
+          <div className="flex flex-col w-full">
+            <div className="flex flex-row-reverse">
+              <p className="counter">
+                ({pagination.totalCount}) users
+              </p>
+            </div>
+            <div className="table-wrapper">
+              <table>
+                <thead className="m-5">
+                  <tr>
+                    <th style={{ width: "30%" }} className='table-header'>Name and Surname</th>
+                    <th style={{ width: "20%" }} className='table-header'>E-mail</th>
+                    <th style={{ width: "15%" }} className='table-header'>Phone Number</th>
+                    <th style={{ width: "15%" }} className='table-header text-center'>Order amnt</th>
+                    <th style={{ width: "10%" }} className='table-header'></th>
+                  </tr>
+                </thead>
+                {loading ? (
+                  <tr>
+                    <td colSpan={5} style={{ textAlign: "center", height: `${users.length * 65}px` }}>
+                      Loading...
+                    </td>
+                  </tr>
+                )
+                  : (
+                    <tbody>
+                      {users.map((user) => (
+                        <UserCardContainer
+                          key={user.id}
+                          user={user}
+                        />
+                      ))}
+                    </tbody>
+                  )}
+              </table>
+            </div>
+          </div>
+        ) : (
+          loading ? (<p>Loading...</p>) : (<p>No users found.</p>)
+        )}
+      </main>
+      <footer>
+        <div className="pagination-container">
+          <Pagination
+            pagination={pagination}
+            onPageChange={onPageChange}
+          />
+        </div>
+      </footer>
     </div>
   );
 };
