@@ -2,17 +2,21 @@ import React, { useEffect, useState } from "react";
 import '@/assets/styles/layout/user-panel.css'
 import closeIcon from '@/assets/icons/menuClose.svg'
 import { useNavigate } from "react-router-dom";
-import {icons} from '@/lib/icons'
+import { icons } from '@/lib/icons'
 import { getUserFromStorage } from "@/utils/storage";
 import { User } from "@/types";
 
+interface UserPanelProps {
+    onLoginOpen?: () => void;
+}
+
 const censorPhonenumber = (phoneNumber: string | null | undefined) => {
-    if(!phoneNumber) return "";
+    if (!phoneNumber) return "";
 
     return `+${phoneNumber.split('-')[0]} ******* ${phoneNumber.split('-')[2].slice(-2)}`;
 }
 
-const UserPanel: React.FC = () => {
+const UserPanel: React.FC<UserPanelProps> = ({ onLoginOpen }) => {
     const navigate = useNavigate();
     const [isOpen, setIsOpen] = useState<boolean>(false);
     const user: User | null = getUserFromStorage();
@@ -29,7 +33,11 @@ const UserPanel: React.FC = () => {
         };
     }, [isOpen])
 
-
+    // Opens login instead of profile panel
+    if (isOpen && !user && onLoginOpen) {
+        setIsOpen(false);
+        onLoginOpen();
+    }
     return (
         <div>
             <img src={icons.bUser}
@@ -37,21 +45,21 @@ const UserPanel: React.FC = () => {
                 onClick={() => setIsOpen(true)}
             />
 
-            {isOpen && (
-                <div
-                    className='dim'
-                    onClick={() => setIsOpen(false)}
-                />
-            )}
+            <div
+                className={`dim ${isOpen && 'visible'}`}
+                aria-hidden={!isOpen}
+                onClick={() => setIsOpen(false)}
+            />
             <div className={`user-panel ${isOpen ? 'right-0' : 'right-[-445px]'}`}>
                 <div className="p-[30px] bg-dark h-[17%] flex flex-col gap-[23px]">
                     <div>
                         <img src={closeIcon} className="close-icon" onClick={() => setIsOpen(false)} />
-                    <h1 className="font-semibold text-2xl">Profile</h1>
+                        <h1 className="font-semibold text-2xl">Profile</h1>
                     </div>
                     <div className="flex gap-[23px]">
+
                         <div className="icon-container-pfp">
-                            <img src={user?.imageUrl ? user.imageUrl : icons.bUser} className="panel-icon"/>
+                            <img src={user?.imageUrl ? user.imageUrl : icons.bUser} className="panel-icon" />
                         </div>
                         <div>
                             <div className="flex flex-col gap-1">
@@ -59,6 +67,8 @@ const UserPanel: React.FC = () => {
                                 <p>{censorPhonenumber(user?.phoneNumber)}</p>
                             </div>
                         </div>
+
+
                     </div>
                 </div>
                 <div className="user-main">

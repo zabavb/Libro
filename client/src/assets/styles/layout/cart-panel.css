@@ -1,5 +1,10 @@
 .dim{
-    @apply fixed inset-0 z-20 bg-black opacity-80;
+    @apply fixed inset-0 z-20 bg-black opacity-0 pointer-events-none;
+    transition: all 0.4s;
+}
+
+.dim.visible{
+    @apply opacity-80 pointer-events-auto;
 }
 
 .cart-panel{
