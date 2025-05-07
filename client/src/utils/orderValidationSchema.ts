@@ -42,11 +42,11 @@ export const orderSchema = z.
         price: z
             .coerce
             .number()
-            .positive(),
+            .nonnegative(),
         deliveryPrice: z
             .coerce
             .number()
-            .positive(),
+            .nonnegative(),
         status: z
             .nativeEnum(Status, {errorMap: () => ({message: "Invalid status selected"}) })
     })

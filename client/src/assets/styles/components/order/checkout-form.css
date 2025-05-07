@@ -1,0 +1,93 @@
+.form-container{
+    @apply bg-dark py-5 px-[60px] flex flex-col gap-6;
+}
+
+.checkout-section {
+    @apply flex flex-col bg-primary p-10 gap-5 text-dark;
+    border-radius: 30px;
+}
+
+.checkout-content {
+    @apply flex flex-col;
+    gap: 15px;
+}
+
+.content-row {
+    @apply flex;
+    gap: 46px;
+}
+
+.checkout-form {
+    @apply flex flex-col;
+    width: 70%;
+    gap: 17px;
+}
+
+.input-container {
+    @apply flex flex-col gap-1.5;
+}
+
+.checkout-input {
+    @apply bg-dim-gray rounded-lg p-2.5;
+}
+
+.checkout-side {
+    @apply flex flex-col;
+    width: 30%;
+    gap: 17px;
+}
+
+.radio-group {
+    @apply flex gap-2.5 rounded-lg p-2.5 text-lg font-medium items-center transition-all;
+    line-height: 130%;
+    border: 1px solid #DEDBD1;
+}
+
+.radio-selected{
+    @apply bg-dim-gray;
+}
+
+.radio-container{
+    @apply w-6 h-6 flex justify-center items-center;
+}
+
+
+input[type="radio"] {
+    width: 18px;
+    height: 18px;
+    accent-color: #FF642E;
+    transform: scale(0.75);
+    cursor: pointer;
+}
+
+label {
+    cursor: pointer;
+}
+
+.checkout-comment{
+    @apply rounded-lg p-2.5 resize-none text-dark bg-primary; 
+    border:2px solid #DEDBD1;
+}
+
+.cart-section {
+    @apply flex flex-col bg-primary p-10 gap-[31px] text-dark;
+    border-radius: 30px;
+}
+
+.confirm-btn{
+    @apply text-white px-20 bg-[#FF642E] font-semibold;
+    font-size: 18px;
+    line-height: 16px;
+    padding-top: 22px;
+    padding-bottom: 22px;
+    border-radius: 46px;
+}
+
+.edit-btn{
+    @apply p-3 cursor-pointer bg-dim-gray transition-all duration-500;
+    border-radius: 9px;
+}
+
+.active{
+    @apply bg-[#FF642E]
+}

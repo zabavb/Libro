@@ -20,6 +20,9 @@ import gMenuClose from '@/assets/icons/menuClose.svg'
 import telegram from '@/assets/icons/socialTelegram.svg'
 import instagram from '@/assets/icons/socialInstagram.svg'
 import facebook from '@/assets/icons/socialFacebook.svg'
+import bPen from '@/assets/icons/bPen.svg'
+import bMoney from '@/assets/icons/bMoney.svg'
+import bArrowRight from '@/assets/icons/bArrowRight.svg'
 export const icons = {
     wUser,
     wBonus,
@@ -42,5 +45,8 @@ export const icons = {
     gMenuClose,
     telegram,
     instagram,
-    facebook
+    facebook,
+    bPen,
+    bMoney,
+    bArrowRight
 }

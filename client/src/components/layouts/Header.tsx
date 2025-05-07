@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import CatalogMenu from "./CatalogMenu";
 import CartPanel from "./CartPanel";
 import libroLogo from '@/assets/logoLibro.svg'
@@ -7,9 +7,15 @@ import { icons } from '@/lib/icons'
 export default function Header() {
   const navigate = useNavigate();
 
+  const location = useLocation();
+  const currentPath = location.pathname;
+
+  const isActive = (path: string) => currentPath === path;
+
   return (
     <header className='flex flex-col gap-2.5'>
-      <div className="header__proposals">
+      {isActive("/") ? (      
+        <div className="header__proposals">
           <p>Discounts</p>
           <div className="line"/>
           <p>Paper Books</p>
@@ -19,7 +25,10 @@ export default function Header() {
           <p>Audio Books</p>
           <div className="line"/>
           <p>Other</p>
-      </div>
+      </div>)
+      : ""
+      }
+
       <div className="flex gap-[62px] px-[40px] py-6 items-center">
         <div>
           <img src={libroLogo} className="invert w-[108px] h-[42px] cursor-pointer" onClick={() => navigate('/')}/>
