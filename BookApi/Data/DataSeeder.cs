@@ -173,7 +173,6 @@
 
 
 using Microsoft.EntityFrameworkCore;
-using BookAPI.Models;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -181,6 +180,14 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Amazon.Runtime.Internal.Transform;
 using Library.Common;
+using Library.DTOs.Book;
+using Author = BookAPI.Models.Author;
+using Book = BookAPI.Models.Book;
+using Category = BookAPI.Models.Category;
+using Discount = BookAPI.Models.Discount;
+using Feedback = BookAPI.Models.Feedback;
+using Publisher = BookAPI.Models.Publisher;
+using SubCategory = BookAPI.Models.SubCategory;
 
 namespace BookAPI.Data
 {
@@ -323,7 +330,7 @@ namespace BookAPI.Data
                     Language = Language.UKRAINIAN,
                     Year = new DateTime(2022, 1, 1),
                     Description = "Детективний роман з несподіваною розв'язкою.",
-                    Cover = CoverType.SOFT_COVER,
+                    Cover = CoverType.SOFTCOVER,
                     Quantity = 3,
                     //IsAvaliable = true,
                     //ImageUrl = await UploadImageAsync(storageService, imagePaths["Тіні минулого"], bookIds[1]) 
