@@ -1,3 +1,5 @@
+@import "../base/_colors.css";
+
 .dim{
     @apply fixed inset-0 z-20 bg-black opacity-0 pointer-events-none;
     transition: all 0.4s;
