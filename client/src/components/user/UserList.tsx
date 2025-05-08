@@ -10,7 +10,6 @@ import UserFilter from './UserFilter';
 import UserSort from './UserSort';
 import Pagination from '../common/Pagination';
 import Search from '../common/Search';
-import Loading from '../common/Loading';
 import "@/assets/styles/base/table-styles.css"
 import "@/assets/styles/components/list-styles.css"
 import { getUserFromStorage } from '@/utils/storage';
@@ -67,6 +66,10 @@ const UserList: React.FC<UserListProps> = ({
       <main className='main-container'>
         {users.length > 0 ? (
           <div className="flex flex-col w-full">
+            <div className='flex gap-[22px]'>
+              <UserFilter onFilterChange={onFilterChange} filters={filters}/>
+              <UserSort onSortChange={onSortChange} sort={sort}/>
+            </div>
             <div className="flex flex-row-reverse">
               <p className="counter">
                 ({pagination.totalCount}) users
