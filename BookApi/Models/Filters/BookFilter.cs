@@ -7,7 +7,7 @@ namespace BookAPI.Models.Filters
     public class BookFilter : IFilter<Book>
     {
         public string? Title { get; set; }
-        public Guid? AuthorId { get; set; }
+        public Guid? AuthorId { get; set; }     
         public float? MinPrice { get; set; }
         public float? MaxPrice { get; set; }
         public DateTime? MinYear { get; set; }
@@ -15,6 +15,7 @@ namespace BookAPI.Models.Filters
         public Language? Language { get; set; }
         public CoverType? Cover { get; set; }
         //public bool IsAvaliable { get; set; }
+        public bool? HasAudio { get; set; }
         public int Quantity { get; set; }
         public Guid? CategoryId { get; set; }
 
@@ -53,6 +54,9 @@ namespace BookAPI.Models.Filters
 
             if (CategoryId.HasValue)
                 books = books.Where(b => b.CategoryId == CategoryId.Value);
+
+            if (HasAudio == true)
+                books = books.Where(b => !string.IsNullOrEmpty(b.AudioFileUrl));
 
             return books;
         }
