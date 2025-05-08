@@ -3,7 +3,8 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContaine
 import { useNavigate } from 'react-router-dom';
 import '../Admin/AdminDashboardStyle.css';
 import { fetchActiveSubscriptionsCount } from '../../services/subscriptionService';
-
+import { PeriodType } from '../../types/types/order/PeriodType';
+import { getOrderCounts } from '../../api/repositories/orderRepository';
 
 const topSales = [
   'Бріджертони',
@@ -17,29 +18,55 @@ const topSales = [
   'Книга 9'
 ];
 
+type SalesDataItem = {
+    name: string;
+    value: number;
+};
 
-type PeriodType = 'day' | 'week' | 'month';
+
 
 const AdminPage: React.FC = () => {
     const navigate = useNavigate();
     const [activeSubCount, setActiveSubCount] = useState<number>(0);
     const [period, setPeriod] = useState<PeriodType>('month');
     const [salesData, setSalesData] = useState<SalesDataItem[]>([]);
-    const [lastUpdated, setLastUpdated] = useState<string>("");
-
+    //const [lastUpdated, setLastUpdated] = useState<string>("");
+    
     useEffect(() => {
+        // Fetch order statistics
+        
+        const fetchData  = async () => {
+            try {
+                //const counts = await getOrderCounts(period);
+                const mockCounts = [122, 280, 178];
+                const labels = period === 'day'
+                  ? ['Позавчора', 'Вчора', 'Сьогодні']
+                  : period === 'week'
+                  ? ['2 тижні тому', 'Минулого тижня', 'Цього тижня']
+                  : ['2 міс. тому', 'Минулого місяця', 'Цього місяця'];
+                const formattedData = mockCounts.map((value, index) => ({
+                  name: labels[index],
+                  value,
+                }));
+                setSalesData(formattedData);
+              } catch (error) {
+                console.error('Error fetching order statistics:', error);
+            }
+        };
+
+        // Fetch active subscriptions count
         const loadActiveCount = async () => {
             try {
                 const count = await fetchActiveSubscriptionsCount();
                 setActiveSubCount(count);
-                const response = await axios.get(`/api/statistics/orders/counts?period=${period}`);
             } catch (error) {
                 console.error('Error fetching data:', error);
             }
         };
-    
+
+        fetchData();
         loadActiveCount();
-    }, []);
+    }, [period]);
     return (
         <div className="dashboard-container">
 
@@ -54,10 +81,14 @@ const AdminPage: React.FC = () => {
                 <div className="sales-chart">
                     <div className='chart-header'>
                         <h3>Статистика продажів</h3>
-                        <select className="time-filter">
-                            <option>Щомісяця</option>
-                            <option>Щотижня</option>
-                            <option>Щодня</option>
+                        <select
+                            className="time-filter"
+                            value={period}
+                            onChange={(e) => setPeriod(e.target.value as PeriodType)}
+                        >
+                            <option value="month">Щомісяця</option>
+                            <option value="week">Щотижня</option>
+                            <option value="day">Щодня</option>
                         </select>
                     </div>
                     <ResponsiveContainer width="100%" height="100%">
@@ -93,9 +124,7 @@ const AdminPage: React.FC = () => {
                     ))}
                 </div>
             </div>
-
-
-            
+  
             </div>
         </main>
         </div>

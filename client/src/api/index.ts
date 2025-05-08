@@ -1,3 +1,4 @@
+import { PeriodType } from '@/types/types/order/PeriodType';
 import { API_ROUTES } from './config/apiConfig';
 
 // ================= AUTHENTICATION =================
@@ -27,6 +28,8 @@ export const ORDERS_PAGINATED = (
 ) => API_ROUTES.ORDERS.PAGINATED(pageNumber, pageSize);
 
 export const ORDER_BY_ID = API_ROUTES.ORDERS.BY_ID;
+
+export const GET_ORDER_COUNTS = (period: PeriodType) => API_ROUTES.ORDERS.ORDER_COUNTS(period);
 
 // ================= DELIVERY TYPE =================
 

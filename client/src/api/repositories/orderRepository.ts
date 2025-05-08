@@ -1,6 +1,7 @@
 import axios from "axios";
-import { ORDERS_PAGINATED, ORDERS, ORDER_BY_ID } from "..";
+import { ORDERS_PAGINATED, ORDERS, ORDER_BY_ID, GET_ORDER_COUNTS } from "..";
 import { Order, PaginatedResponse } from "../../types";
+import { PeriodType } from "@/types/types/order/PeriodType";  
 
 export const getAllOrders = async (
     pageNumber: number = 1,
@@ -39,3 +40,10 @@ export const updateOrder = async (id: string, order: Partial<Order>): Promise<Or
 export const deleteOrder = async (id: string): Promise<void> => {
     await axios.delete(ORDER_BY_ID(id))
 }
+
+export const getOrderCounts = async (period: PeriodType): Promise<number[]> => {
+    console.log('AAACounts:dsfdsdfssdffdssd');
+    const response = await axios.get<number[]>(GET_ORDER_COUNTS(period));
+    console.log('BBBCounts:dsfdsdfssdffdssd');
+    return response.data;
+};

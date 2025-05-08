@@ -1,3 +1,5 @@
+import { PeriodType } from "@/types/types/order/PeriodType";
+
 const GATEWAY = `https://localhost:7102/gateway`;
 const AUTH = `${GATEWAY}/auth`;
 const USERS = `${GATEWAY}/users`;
@@ -22,6 +24,7 @@ export const API_ROUTES = {
     PAGINATED: (pageNumber: number, pageSize: number) =>
       `${ORDERS}?pageNumber=${pageNumber}&pageSize=${pageSize}`,
     BY_ID: (id: string) => `${ORDERS}/${id}`,
+    ORDER_COUNTS: (period: PeriodType) => `${ORDERS}/counts/${period}`,
   },
   DELIVERY: {
     BASE: DELIVERY,

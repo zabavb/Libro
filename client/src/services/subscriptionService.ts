@@ -3,11 +3,6 @@ import { Subscription, SubscriptionPlan, PaginatedResponse } from "../types";
 
 const API_URL = "https://your-api.com/api/subscriptions"; 
 
-export const getOrderCounts = async (period: PeriodType): Promise<number[]> => {
-    const response = await axios.get<number[]>(`/api/statistics/orders/counts?period=${period}`);
-    return response.data;
-};
-
 
 export const fetchActiveSubscriptionsCount = async (): Promise<number> => {
     const res = await axios.get(API_URL);
