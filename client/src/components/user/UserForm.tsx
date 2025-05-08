@@ -142,7 +142,7 @@ const UserForm: React.FC<UserFormProps> = ({
               <div className="user-icon-container-pfp">
                 <img src={existingUser?.imageUrl ? existingUser.imageUrl : icons.bUser} className="user-icon" />
               </div>
-              <p className="user-name">{existingUser?.firstName ?? "Unknown User"} {existingUser?.lastName}</p>
+              <p className="user-name">{existingUser?.firstName ?? "New User"} {existingUser?.lastName}</p>
             </div>
           </div>
           <div className='flex gap-16 w-full'>
