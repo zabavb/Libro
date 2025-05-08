@@ -15,4 +15,5 @@ export interface BookFilter {
   discountRate?: number;
   startDate?: Date;
   endDate?: Date;
+  hasAudio?: boolean;
 }
