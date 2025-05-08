@@ -18,11 +18,6 @@
     gap:27px;
 }
 
-.user-icon-container{
-    @apply p-2.5 bg-dark;
-    border-radius: 30px;
-}
-
 .user-icon-container-pfp{
     @apply p-2.5 bg-transparent;
     border-radius: 30px;

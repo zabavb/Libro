@@ -29,8 +29,7 @@
 }
 
 .user-icon-container{
-    @apply p-2.5 bg-[#FF642E] flex-none;
-    border-radius: 30px;
+    @apply p-2.5 bg-[#FF642E] flex-none rounded-full;
 }
 
 .user-icon{
