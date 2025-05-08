@@ -1,9 +1,11 @@
+
 .catalog-container{
     @apply flex gap-4 px-16 py-4;
 }
 
 .options-panel{
-    @apply flex flex-col w-1/6 bg-dark text-white py-9 px-6;
+    @apply flex flex-col w-1/6 text-white py-9 px-6;
+    background-color: #1A1D23;
     min-width: 250px;
     border-radius: 30px;
     gap: 30px;
@@ -45,3 +47,27 @@
 .books-panel-header{
     @apply flex justify-between;
 }
+
+.options-panel.audio-only {
+    background-color: #F5CB2E;
+    color: #ffffff;
+    border-right: 1px solid #2c2f36;
+  }
+  
+  .books-panel.audio-only {
+    background-color: #fef8e2;
+    border-color: #2c2f36;
+    padding: 30px 62px;
+  }
+  
+  .books-panel-header.audio-only {
+    padding-bottom: 12px;
+  }
+  
+  .books-counter.audio-only {
+    color: #1a1d23;
+    font-weight: 700;
+  }
+  
+
+  
