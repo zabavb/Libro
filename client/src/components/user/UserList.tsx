@@ -50,7 +50,7 @@ const UserList: React.FC<UserListProps> = ({
           searchTerm={searchTerm}
           onSearchTermChange={onSearchTermChange}
         />
-        <button className="add-button" onClick={() => onNavigate("/admin/user/add")}>
+        <button className="add-button" onClick={() => onNavigate("/admin/users/add")}>
           <img src={icons.bPlus} />
           <p>
             Add User

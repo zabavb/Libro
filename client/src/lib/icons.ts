@@ -29,6 +29,7 @@ import bCheck from '@/assets/icons/check-solid.svg'
 import wPen from '@/assets/icons/wPen.svg'
 import oTrash from '@/assets/icons/oTrash.svg'
 import bPlus from '@/assets/icons/bPlus.svg'
+import oArrowLeft from '@/assets/icons/oArrowLeft.svg'
 export const icons = {
     wUser,
     wBonus,
@@ -60,5 +61,6 @@ export const icons = {
     bCheck,
     wPen,
     oTrash,
-    bPlus
+    bPlus,
+    oArrowLeft
 }
