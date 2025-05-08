@@ -4,22 +4,49 @@ import Header from "@/components/layouts/Header";
 import Footer from "@/components/layouts/Footer";
 import { CarouselOffers } from "@/components/common/CarouselOffers";
 import { useAuth } from "../../state/context";
-
+import BookCatalogContainer from "@/containers/books/BookCatalogContainer";
+import React from "react";
+import BookOfTheWeek from "@/components/book/BookOfTheWeek";
+import testPhoto from "@/assets/BookImage.svg";
+import SubscribePromo from "@/components/book/SubscribePromo";
+import LibroBonusClub from "@/components/book/LibroBonusClub";
 const MainPage: React.FC = () => {
-  const navigate = useNavigate();
-  const { logout } = useAuth();
+
+
+  const handleOrder = () => {
+    console.log("Order placed for Book of the Week!");
+  };
+  const handleFavorite = () => {
+    console.log("Book added to favorites!");
+  };
 
   return (
     <div className="flex flex-col min-h-screen">
       <Header />
       <main className="flex-1">
-        <div className="px-10 py-10">
+        <div className="px-16 py-10">
           <CarouselOffers />
         </div>
 
-        <div className="max-w-5xl mx-auto px-4 py-6 space-y-6">
-         
+          <BookCatalogContainer />
+          <div className={"bg-[#1A1D23] py-10 px-16"}>
+          <BookCatalogContainer isAudioOnly />
+          </div>
+          <BookOfTheWeek
+            title="I SEE YOU'RE INTERSTED IN DARKNESS"
+            author="Ilarion Pavliuk"
+            price={580}
+            coverImage={testPhoto}
+            onOrder={handleOrder}
+            onFavorite={handleFavorite}
+          />
+          <div className="bg-[#1A1D23] py-10 px-16">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <SubscribePromo />
+            <LibroBonusClub />
+          </div>
         </div>
+
       </main>
       <Footer />
     </div>
