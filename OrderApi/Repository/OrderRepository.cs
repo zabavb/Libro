@@ -221,7 +221,7 @@ namespace OrderApi.Repository
         public async Task<List<int>> GetOrderCountsForLastThreePeriodsAsync(PeriodType periodType)
         {
             var now = DateTime.Now;
-            var result = new List<int>();
+            List<int> result = [];
 
             for (int i = 0; i < 3; i++)
             {
@@ -251,6 +251,8 @@ namespace OrderApi.Repository
 
                 result.Add(count);
             }
+
+            result.Reverse();
 
             return result;
         }

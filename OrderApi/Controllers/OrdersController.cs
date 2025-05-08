@@ -192,8 +192,8 @@ namespace OrderApi.Controllers
         /// <response code="200">Retrieval successful, returns a list of counts</response>
         /// <response code="400">Invalid period type provided</response>
         /// <response code="500">An unexpected error occurred</response>
-        [HttpGet("orders/counts")]
-        public async Task<IActionResult> GetOrderCounts([FromQuery] PeriodType period)
+        [HttpGet("counts/{period}")]
+        public async Task<IActionResult> GetOrderCounts(PeriodType period)
         {
             try
             {
