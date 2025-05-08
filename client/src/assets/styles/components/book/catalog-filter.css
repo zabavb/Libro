@@ -11,13 +11,12 @@
     @apply flex justify-between items-center cursor-pointer font-bold;
 }
 
-
 .price-limit {
     @apply font-medium;
     font-size: 12px;
 }
 
-.filter-main>* {
+.filter-main > * {
     @apply ml-4;
 }
 
@@ -25,26 +24,46 @@
     @apply w-[12px] h-[6px];
 }
 
+/* Default style */
 .price-btn {
-    @apply text-accent border-[#FF642E] py-2.5 rounded-lg items-center justify-center flex;
+    @apply text-accent py-2.5 rounded-lg items-center justify-center flex;
     transition: all;
     transition-duration: 300ms;
     width: calc(50% - 5px);
     border-width: 1px;
     padding-left: 38px;
     padding-right: 38px;
+    border-color: #FF642E;
 }
 
-.price-btn-active{
-    @apply bg-[#FF642E] text-dark;
-}
-
-.price-btn:hover{
-    @apply bg-[#FF642E] text-dark;
+/* Active & hover use same styles */
+.price-btn-active,
+.price-btn:hover {
+    background-color: #FF642E;
+    color: #1A1D23;
 }
 
 .apply-btn {
-    @apply text-dark bg-[#FF642E] rounded-lg py-2.5 flex-1;
+    background-color: #FF642E;
+    color: #1A1D23;
+    @apply rounded-lg py-2.5 flex-1;
     padding-left: 38px;
     padding-right: 38px;
+}
+
+.filter-panel-container.audio-only {
+    background-color: #F5CB2E;
+    color: #1A1D23;
+}
+
+.filter-panel-container.audio-only .price-btn {
+    border-color: #1A1D23;
+    color: #1A1D23;
+}
+
+.filter-panel-container.audio-only .price-btn-active,
+.filter-panel-container.audio-only .price-btn:hover,
+.filter-panel-container.audio-only .apply-btn {
+    background-color: #1A1D23;
+    color: #F5CB2E;
 }
