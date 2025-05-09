@@ -2,8 +2,8 @@
 {
     public enum PeriodType
     {
-        Day,
-        Week,
-        Month
+        day,
+        week,
+        month
     }
 }

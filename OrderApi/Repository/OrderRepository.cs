@@ -229,15 +229,15 @@ namespace OrderApi.Repository
 
                 switch (periodType)
                 {
-                    case PeriodType.Day:
+                    case PeriodType.day:
                         periodStart = now.Date.AddDays(-i - 1);
                         periodEnd = now.Date.AddDays(-i);
                         break;
-                    case PeriodType.Week:
+                    case PeriodType.week:
                         periodStart = now.Date.AddDays(-7 * (i + 1));
                         periodEnd = now.Date.AddDays(-7 * i);
                         break;
-                    case PeriodType.Month:
+                    case PeriodType.month:
                         periodStart = now.Date.AddMonths(-i - 1);
                         periodEnd = now.Date.AddMonths(-i);
                         break;
