@@ -38,15 +38,15 @@ const AdminPage: React.FC = () => {
         const fetchData  = async () => {
             try {
                 //const counts = await getOrderCounts(period);
-                const mockCounts = [122, 280, 178];
+                const mockCounts = [200, 140, 180];
                 const labels = period === 'day'
                   ? ['Позавчора', 'Вчора', 'Сьогодні']
                   : period === 'week'
                   ? ['2 тижні тому', 'Минулого тижня', 'Цього тижня']
                   : ['2 міс. тому', 'Минулого місяця', 'Цього місяця'];
-                const formattedData = mockCounts.map((value, index) => ({
-                  name: labels[index],
-                  value,
+                  const formattedData = mockCounts.map((value: number, index: number) => ({
+                    name: labels[index],
+                    value,
                 }));
                 setSalesData(formattedData);
               } catch (error) {
