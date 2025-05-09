@@ -1,3 +1,4 @@
+
 .dim{
     @apply fixed inset-0 z-20 bg-black opacity-0 pointer-events-none;
     transition: all 0.4s;
@@ -28,8 +29,7 @@
 }
 
 .user-icon-container{
-    @apply p-2.5 bg-[#FF642E] flex-none;
-    border-radius: 30px;
+    @apply p-2.5 bg-[#FF642E] flex-none rounded-full;
 }
 
 .user-icon{

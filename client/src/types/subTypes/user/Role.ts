@@ -1,5 +1,6 @@
 export enum Role {
-  ADMIN,
-  MODERATOR,
-  USER,
+  ADMIN = "ADMIN",
+  MODERATOR = "MODERATOR",
+  USER = "USER",
 }
+// PENDING = "Pending",
