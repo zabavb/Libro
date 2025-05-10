@@ -37,41 +37,104 @@ namespace BookAPI.Repositories
             _logger = logger;
         }
 
-        public async Task<PaginatedResult<Book>> GetAllAsync(
-            int pageNumber,
-            int pageSize,
-            string searchTerm,
-            BookFilter? filter,
-            BookSort? sort)
-        {
-            await _cacheService.RemoveAsync($"{_cacheKeyPrefix}All");
-            List<Book> books;
-            string cacheKey = $"{_cacheKeyPrefix}All";
-            var cachedBooks = await _cacheService.GetAsync<List<Book>>(cacheKey, _jsonOptions);
+        //public async Task<PaginatedResult<Book>> GetAllAsync(
+        //    int pageNumber,
+        //    int pageSize,
+        //    string searchTerm,
+        //    BookFilter? filter,
+        //    BookSort? sort)
+        //{
+        //    await _cacheService.RemoveAsync($"{_cacheKeyPrefix}All");
+        //    List<Book> books;
+        //    string cacheKey = $"{_cacheKeyPrefix}All";
+        //    var cachedBooks = await _cacheService.GetAsync<List<Book>>(cacheKey, _jsonOptions);
 
-            if (cachedBooks != null && cachedBooks.Count > 0)
-            {
-                books = cachedBooks;
-                _logger.LogInformation("Fetched from CACHE.");
-            }
-            else
+        //    if (cachedBooks != null && cachedBooks.Count > 0)
+        //    {
+        //        books = cachedBooks;
+        //        _logger.LogInformation("Fetched from CACHE.");
+        //    }
+        //    else
+        //    {
+        //        books = await _context.Books
+        //            .Include(b => b.Category)
+        //            .Include(b => b.Publisher)
+        //            .Include(b => b.Feedbacks)
+        //            .Include(b => b.Subcategories)
+        //            .ToListAsync();
+        //        _logger.LogInformation("Fetched from DB.");
+
+        //        await _cacheService.SetAsync(cacheKey, books, _cacheExpiration, _jsonOptions);
+        //        _logger.LogInformation("Set to CACHE.");
+        //    }
+
+        //    IQueryable<Book> bookQuery = books.AsQueryable();
+
+        //    if (!string.IsNullOrWhiteSpace(searchTerm))
+        //    {
+        //        bookQuery = cachedBooks != null
+        //            ? bookQuery.InMemorySearch(searchTerm, b => b.Title, b => b.Author.Name)
+        //            : bookQuery.SearchBy(searchTerm, b => b.Title, b => b.Author.Name);
+        //    }
+
+
+        //    if (filter != null)
+        //        bookQuery = filter.Apply(bookQuery);
+
+        //    if (sort != null)
+        //        bookQuery = sort.Apply(bookQuery);
+
+        //    var totalBooks = bookQuery.Count();
+        //    var paginatedBooks = bookQuery.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList();
+
+        //    return new PaginatedResult<Book>
+        //    {
+        //        Items = paginatedBooks,
+        //        TotalCount = totalBooks,
+        //        PageNumber = pageNumber,
+        //        PageSize = pageSize
+        //    };
+        //}
+
+        public async Task<PaginatedResult<Book>> GetAllAsync(
+    int pageNumber,
+    int pageSize,
+    string searchTerm,
+    BookFilter? filter,
+    BookSort? sort)
+        {
+            string cacheKey = $"{_cacheKeyPrefix}All";
+            List<Book>? books = await _cacheService.GetAsync<List<Book>>(cacheKey, _jsonOptions);
+            bool isFromCache = books != null && books.Count > 0;
+
+            if (!isFromCache)
             {
                 books = await _context.Books
                     .Include(b => b.Category)
                     .Include(b => b.Publisher)
                     .Include(b => b.Feedbacks)
+                    .Include(b=>b.Author)
                     .Include(b => b.Subcategories)
                     .ToListAsync();
-                _logger.LogInformation("Fetched from DB.");
 
+                _logger.LogInformation("Fetched from DB.");
                 await _cacheService.SetAsync(cacheKey, books, _cacheExpiration, _jsonOptions);
                 _logger.LogInformation("Set to CACHE.");
+                isFromCache = true;
+            }
+            else
+            {
+                _logger.LogInformation("Fetched from CACHE.");
             }
 
             IQueryable<Book> bookQuery = books.AsQueryable();
 
             if (!string.IsNullOrWhiteSpace(searchTerm))
-                bookQuery = bookQuery.SearchBy(searchTerm, b => b.Title, b => b.Author.Name);
+            {
+                bookQuery = isFromCache
+                    ? bookQuery.InMemorySearch(searchTerm, b => b.Title, b => b.Author.Name).AsQueryable()
+                    : bookQuery.SearchBy(searchTerm, b => b.Title, b => b.Author.Name);
+            }
 
             if (filter != null)
                 bookQuery = filter.Apply(bookQuery);
@@ -79,8 +142,11 @@ namespace BookAPI.Repositories
             if (sort != null)
                 bookQuery = sort.Apply(bookQuery);
 
-            var totalBooks = bookQuery.Count();
-            var paginatedBooks = bookQuery.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList();
+            int totalBooks = bookQuery.Count();
+            List<Book> paginatedBooks = bookQuery
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToList();
 
             return new PaginatedResult<Book>
             {
@@ -90,6 +156,7 @@ namespace BookAPI.Repositories
                 PageSize = pageSize
             };
         }
+
 
         public async Task<Book?> GetByIdAsync(Guid id)
         {

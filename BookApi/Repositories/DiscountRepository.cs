@@ -33,7 +33,7 @@ namespace BookAPI.Repositories
 
         public async Task<Discount?> GetByBookIdAsync(Guid id)
         {
-            var res = await _context.Discounts.FirstOrDefaultAsync(p => p.BookId == id);
+            var res = await _context.Discounts.AsNoTracking().FirstOrDefaultAsync(p => p.BookId == id);
             if (res == null)
             {
                 _logger.LogInformation($"Discount not found by BookId {id}");
@@ -53,7 +53,7 @@ namespace BookAPI.Repositories
             {
                 // return false;
             }
-
+            newDiscount.DiscountId = discountEntity.DiscountId; 
             discountEntity = newDiscount;
             _context.Discounts.Update(discountEntity);
             if (await _context.SaveChangesAsync() < 1)
