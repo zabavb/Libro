@@ -1,22 +1,22 @@
 import { useDispatch } from "react-redux";
-import { DeliveryType } from "../../types";
+import { Author } from "../../types";
 import { AppDispatch } from "../../state/redux";
 import { useNavigate } from "react-router-dom";
 import { addNotification } from "../../state/redux/slices/notificationSlice";
-import DeliveryTypeAdminCard from "../../components/order/admin/DeliveryTypeAdminCard";
-import { removeDeliveryTypeService } from "../../services";
+import { deleteAuthorService } from "@/services/authorService";
+import AuthorAdminCard from "@/components/book/admin/AuthorAdminCard";
 
-interface DeliveryAdminCardContainerProps{
-    deliveryType: DeliveryType
+interface AuthorAdminCardContainerProps{
+    author: Author
 }
 
-const DeliveryTypeAdminCardContainer: React.FC<DeliveryAdminCardContainerProps> = ({deliveryType}) => {
+const AuthorAdminCardContainer: React.FC<AuthorAdminCardContainerProps> = ({author}) => {
     const dispatch = useDispatch<AppDispatch>()
     const navigate = useNavigate()
 
     const handleDelete = async (e: React.MouseEvent) => {
         e.stopPropagation()
-        const response = await removeDeliveryTypeService(deliveryType.id)
+        const response = await deleteAuthorService(author.id)
         dispatch(
               response.error
                 ? addNotification({
@@ -24,23 +24,23 @@ const DeliveryTypeAdminCardContainer: React.FC<DeliveryAdminCardContainerProps> 
                     type: 'error',
                   })
                 : addNotification({
-                    message: 'Delivery type successfully deleted.',
+                    message: 'Author successfully deleted.',
                     type: 'success',
                   }),
             );
     }
 
     const handleNavigate = () => {
-        navigate(`/admin/delivery/${deliveryType.id}`)
+        navigate(`/admin/bookRelated/author/${author.id}`)
     }
 
     return (
-        <DeliveryTypeAdminCard 
-            deliveryType={deliveryType}
+        <AuthorAdminCard
+            author={author} 
             onNavigate={handleNavigate}
             onDelete={handleDelete}
             />
     )
 }
 
-export default DeliveryTypeAdminCardContainer
+export default AuthorAdminCardContainer

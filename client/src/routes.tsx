@@ -36,6 +36,8 @@ import OrderDetailsPage from './pages/admin/orderRelated/orders/OrderDetailsPage
 import ProfilePage from './pages/common/ProfilePage';
 import OrderConfirmationPage from './pages/Main/order/OrderConfirmationPage';
 import OrderSuccessPage from './pages/Main/order/OrderSuccessPage';
+import BookListPage from './pages/Admin/BookRelated/Books/BooksListPage';
+import AuthorsListPage from './pages/Admin/BookRelated/Authors/AuthorsListPage';
 
 const AppRoutes = () => (
   <AuthProvider>
@@ -90,7 +92,8 @@ const AppRoutes = () => (
               element={<DeliveryTypeFormPage />}
             />
             {/*BOOKS*/}
-            <Route path='/admin/books' element={<BookListContainer />} />
+            <Route path='/admin/booksRelated/books' element={<BookListPage />} />
+            <Route path='/admin/booksRelated/authors' element={<AuthorsListPage />} />
             {/* Other */}
             <Route path='*' element={<NotFoundPage />} />
           </Route>

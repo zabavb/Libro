@@ -72,3 +72,23 @@ export const BOOKS_PAGINATED = (
 ) => API_ROUTES.BOOKS.PAGINATED(pageNumber, pageSize);
 
 export const BOOK_BY_ID = API_ROUTES.BOOKS.BY_ID;
+
+// ================= AUTHOR =================
+export const AUTHORS = API_ROUTES.AUTHORS.BASE;
+
+export const AUTHORS_PAGINATED = (
+  pageNumber: number = 1,
+  pageSize: number = 10,
+) => API_ROUTES.AUTHORS.PAGINATED(pageNumber,pageSize);
+
+export const AUTHOR_BY_ID = API_ROUTES.AUTHORS.BY_ID;
+
+// ================= PUBLISHER =================
+export const PUBLISHERS = API_ROUTES.PUBLISHERS.BASE;
+
+export const PUBLISHERS_PAGINATED = (
+  pageNumber: number = 1,
+  pageSize: number = 10,
+) => API_ROUTES.PUBLISHERS.PAGINATED(pageNumber, pageSize);
+
+export const PUBLISHER_BY_ID = API_ROUTES.PUBLISHERS.BY_ID;

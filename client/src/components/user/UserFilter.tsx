@@ -1,7 +1,7 @@
 import React from 'react';
 import { EmailViewDomen, RoleView, UserViewFilter } from '../../types';
 import SubscriptionDropdown from './SubscriptionDropdown';
-import '@/assets/styles/components/user/user-filter.css'
+import '@/assets/styles/components/common/filter.css'
 
 interface UserFilterProps {
   filters: UserViewFilter;
