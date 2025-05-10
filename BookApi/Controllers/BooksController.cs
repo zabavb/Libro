@@ -6,6 +6,7 @@ using Library.DTOs.Book;
 using System.Linq.Expressions;
 using Microsoft.AspNetCore.Authorization;
 
+
 namespace BookAPI.Controllers
 {
     /// <summary>
@@ -90,14 +91,35 @@ namespace BookAPI.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, new { message = ex.Message });
             }
         }
+        [HttpGet("discount/{bookId}")]
+        public async Task<ActionResult<DiscountDTO>> GetDiscountByBookId(Guid bookId)
+        {
+            try
+            {
+                if (bookId == Guid.Empty)
+                    return BadRequest("Некоректний ідентифікатор книги.");
 
-        /// <summary>
-        /// Retrieves Book names for user's details page by ID.
-        /// </summary>
-        /// <param name="ids">The unique identifiers of books which titles to retrieve.</param>
-        /// <returns>Books' titles which IDs matches with provided ones in parameters.</returns>
-        /// <response code="200">Retrieval successful, return the book titles.</response>
-        /// <response code="500">An unexpected error occured.</response>
+                var discount = await _bookService.GetDiscountByBookIdAsync(bookId);
+
+                if (discount == null)
+                    return NotFound($"Знижка для книги з ID {bookId} не знайдена.");
+
+                return Ok(discount);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error occurred while retrieving book with id {bookId}.");
+                return StatusCode(StatusCodes.Status500InternalServerError, new { message = ex.Message });
+            }
+        }
+
+            /// <summary>
+            /// Retrieves Book names for user's details page by ID.
+            /// </summary>
+            /// <param name="ids">The unique identifiers of books which titles to retrieve.</param>
+            /// <returns>Books' titles which IDs matches with provided ones in parameters.</returns>
+            /// <response code="200">Retrieval successful, return the book titles.</response>
+            /// <response code="500">An unexpected error occured.</response>
         [Authorize(Roles = "ADMIN, MODERATOR")]
         [HttpGet("for-user/details")]
         public async Task<ActionResult<ICollection<string>>> GetAllForUserDetailsAsync(

@@ -8,7 +8,6 @@ namespace BookAPI.Services.Interfaces
 {
     public interface IBookService
     {
-        // Renamed from "GetBooksAsync" to "GetAllAsync"
         public Task<PaginatedResult<BookDto>> GetAllAsync(
             int pageNumber,
             int pageSize,
@@ -26,5 +25,7 @@ namespace BookAPI.Services.Interfaces
         // temporary?
         Task<List<BookDto>> GetBooksByConditionAsync(Expression<Func<Models.Book, bool>> condition);
         Task UpdateWithDiscountAsync(Guid id, UpdateBookRequest request, IDiscountService discountService);
+        Task<DiscountDTO?> GetDiscountByBookIdAsync(Guid bookId);
+
     }
 }

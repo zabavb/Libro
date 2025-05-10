@@ -9,11 +9,12 @@ using Library.Common;
 using System.Linq.Expressions;
 using Library.DTOs.Book;
 using Book = BookAPI.Models.Book;
+using Library.Sorts;
 
 namespace BookAPI.Services
 {
     public class BookService(
-        IBookRepository bookRepository,
+        IBookRepository bookRepository, IDiscountRepository discountRepository,
         IMapper mapper,
         ILogger<BookService> logger,
         S3StorageService storageService) : IBookService
@@ -72,6 +73,21 @@ namespace BookAPI.Services
             {
                 return null;
             }
+        }
+        public async Task<DiscountDTO?> GetDiscountByBookIdAsync(Guid bookId)
+        {
+            if (bookId == Guid.Empty)
+                throw new ArgumentException("Book ID не може бути порожнім", nameof(bookId));
+
+            var discount = await discountRepository.GetByBookIdAsync(bookId);
+
+            if (discount == null)
+            {
+                _logger.LogWarning($"Знижка для книги з ID {bookId} не знайдена.");
+                return null;
+            }
+
+            return _mapper.Map<DiscountDTO>(discount);
         }
 
         public async Task /*<BookDto>*/ CreateAsync(BookRequest request)
