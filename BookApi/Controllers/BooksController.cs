@@ -110,32 +110,10 @@ namespace BookAPI.Controllers
         /// <summary>
         /// Creates a new book.
         /// </summary>
-        /// <param name="bookDto">Book data.</param>
+        /// <param name="request">Book data.</param>
         /// <returns>The created book.</returns>
         /// <response code="201">Book successfully created.</response>
         /// <response code="400">Invalid input data.</response>
-        //[HttpPost]
-        //public async Task<ActionResult<BookDto>> Create([FromForm] BookDto bookDto)
-        //{
-        //    if (bookDto == null)
-        //    {
-        //        _logger.LogWarning("Invalid book data provided.");
-        //        return BadRequest("Invalid data.");
-        //    }
-
-        //    try
-        //    {
-        //        /*var createdBook = */
-        //        await _bookService.CreateAsync(bookDto);
-        //        // var createdDiscount = await _discountService.AddAsync(new DiscountDTO { BookId = createdBook.BookId, DiscountRate = 0 });
-        //        return CreatedAtAction(nameof(GetById), new { id = bookDto.BookId }, bookDto);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        _logger.LogError(ex, "Error occurred while creating a new book.");
-        //        return StatusCode(StatusCodes.Status500InternalServerError, new { message = ex.Message });
-        //    }
-        //}
 
         [HttpPost]
         [Consumes("multipart/form-data")] 
@@ -190,13 +168,7 @@ namespace BookAPI.Controllers
         {
             try
             {
-                /*var isDeleted = */
                 await _bookService.DeleteAsync(id);
-
-                /*if (!isDeleted)
-                {
-                    return NotFound($"Book with id {id} not found.");
-                }*/
 
                 var discount = await _discountService.GetByBookIdAsync(id);
                 if (discount == null)
@@ -204,14 +176,7 @@ namespace BookAPI.Controllers
                     return NotFound($"Discount with id {id} not found.");
                 }
 
-                /*var isDeletedDiscount = */
                 await _discountService.DeleteAsync(id);
-
-                /*if (!isDeletedDiscount)
-                {
-                    return NotFound($"Discount with id {discount.BookId} was not deleted.");
-                }*/
-
                 return NoContent();
             }
             catch (Exception ex)
@@ -275,19 +240,19 @@ namespace BookAPI.Controllers
 		/// <response code="500">Internal server error.</response>
 		/// 
 
-		[HttpGet("GetBooksByCondition")]
-		public async Task<List<BookDto>> GetBooksByConditionAsync(Expression<Func<Models.Book, bool>> condition)
-        {
-            try
-            {
-                var books = await _bookService.GetBooksByConditionAsync(condition);
-                return books;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error occurred while retrieving books by condition.");
-                throw;
-            }
-        }
+		//[HttpGet("GetBooksByCondition")]
+		//public async Task<List<BookDto>> GetBooksByConditionAsync(Expression<Func<Models.Book, bool>> condition)
+  //      {
+  //          try
+  //          {
+  //              var books = await _bookService.GetBooksByConditionAsync(condition);
+  //              return books;
+  //          }
+  //          catch (Exception ex)
+  //          {
+  //              _logger.LogError(ex, "Error occurred while retrieving books by condition.");
+  //              throw;
+  //          }
+  //      }
     }
 }
