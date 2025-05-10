@@ -296,5 +296,25 @@ namespace OrderApi.Repository
             _context.Orders.Remove(order);
             await _context.SaveChangesAsync();
         }
+
+        public async Task<List<Guid>> MostOrderedBooksAsync(int days)
+        {
+            DateTime cutoff = DateTime.UtcNow.AddDays(-days);
+
+            var orders = await _context.Orders.ToListAsync();
+            _logger.LogInformation("Fetched from DB.");
+
+            var top9 = orders
+                .Where(o => o.OrderDate >= cutoff)
+                .SelectMany(o => o.Books)
+                .GroupBy(b => b.Key)
+                .Select(group => new { Id = group.Key, Total = group.Sum(p => p.Value) })
+                .OrderByDescending(x => x.Total)
+                .Take(9)
+                .ToList();
+            
+            var top9Ids = top9.Select(x => x.Id).ToList();
+            return top9Ids;
+        }
     }
 }
