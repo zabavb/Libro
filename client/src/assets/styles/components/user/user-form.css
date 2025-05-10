@@ -1,0 +1,54 @@
+.form-back{
+    @apply border-[1px] border-[#FF642E] p-2.5 rounded-lg;
+}
+
+.form-edit-btn{
+    @apply bg-[#FF642E] py-3.5 text-white rounded-lg font-semibold transition-all;
+    padding-left: 30px;
+    padding-right: 30px;
+    border-width: 1px;
+}
+
+.form-edit-btn.edit-active{
+    @apply bg-transparent border-[#FF642E] text-[#FF642E] ;
+}
+
+.user-profile-icon{
+    @apply flex items-center;
+    gap:27px;
+}
+
+.user-icon-container-pfp{
+    @apply p-2.5 bg-transparent;
+    border-radius: 30px;
+}
+
+.user-icon{
+    @apply rounded-full;
+    width: 64px;
+    height: 64px;
+}
+
+.user-name{
+    @apply text-2xl font-semibold text-[#1A1D23];
+}
+
+.input-field {
+    @apply flex justify-between bg-dim-gray rounded-lg p-2.5;
+}
+
+.input-row{
+    @apply flex flex-col gap-2;
+}
+
+.orders-row{
+    @apply text-[#0D1E31];
+    font-size: 20px;
+    border-bottom: 1px solid #0D1E31;
+}
+
+.feedback-item{
+    @apply bg-[#DEDBD1] py-2.5 rounded-lg;
+    padding-left: 15px;
+    padding-right: 15px;
+}

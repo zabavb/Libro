@@ -28,29 +28,33 @@ import DeliveriesListPage from './pages/admin/orderRelated/deliveries/Deliveries
 import SubscriptionPage from './pages/main/user/SubscriptionPage';
 import SubscriptionListPage from './pages/admin/userRelated/subscriptions/SubscriptionListPage';
 import SubscriptionFormPage from './pages/admin/userRelated/subscriptions/SubscriptionFormPage';
-import UserCartPage from './pages/main/user/UserCartPage';
-import UserCheckoutPage from './pages/main/user/UserCheckoutPage';
+import OrderCheckoutPage from './pages/Main/order/OrderCheckoutPage';
 import UserOrdersPage from './pages/main/user/UserOrdersPage';
+import BookDetailsPage from './pages/main/book/BookDetailsPage';
+import BookCatalogPage from './pages/main/book/BooksCatalogPage';
 import OrderDetailsPage from './pages/admin/orderRelated/orders/OrderDetailsPage';
+import ProfilePage from './pages/common/ProfilePage';
+import OrderConfirmationPage from './pages/Main/order/OrderConfirmationPage';
+import OrderSuccessPage from './pages/Main/order/OrderSuccessPage';
 
 const AppRoutes = () => (
   <AuthProvider>
     <BrowserRouter>
       <Routes>
-        {/* Authentication */}
-        <Route path='/login' element={<LoginPage />} />
-        <Route path='/register' element={<RegisterPage />} />
-        {/* Subscription */}
+        {/* Main */}
+        <Route path='/' element={<MainPage />} />
+        <Route path='/profile' element={<ProfilePage />} />
+        <Route path='/checkout' element={<OrderCheckoutPage />} />
+        <Route path='/checkout/confirm' element={<OrderConfirmationPage />} />
+        <Route path='/checkout/success' element={<OrderSuccessPage/>} />
+        <Route path='/orders' element={<UserOrdersPage />} />
+        <Route path='/catalog' element={<BookCatalogPage/>}/>
+        <Route path='/books/:bookId' element={<BookDetailsPage/>}/>
+        <Route path='/orders/:orderId' element={<OrderDetailsPage />} />
         <Route
           path='/subscriptions/:subscriptionId'
           element={<SubscriptionPage />}
         />
-        {/* Main */}
-        <Route path='/' element={<MainPage />} />
-        <Route path='/cart' element={<UserCartPage />} />
-        <Route path='/cart/checkout' element={<UserCheckoutPage />} />
-        <Route path='/orders' element={<UserOrdersPage />} />
-        <Route path='/orders/:orderId' element={<OrderDetailsPage />} />
         <Route element={<PrivateRoute />}>
           {/* Admin */}
           <Route path='/admin' element={<AdminLayout />}>

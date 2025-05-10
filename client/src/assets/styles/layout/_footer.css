@@ -1,0 +1,38 @@
+.footer-container{
+    @apply bg-[##F4F0E5] text-gray-700;
+    padding-left: 100px;
+    padding-right: 100px;
+    padding-top: 50px;
+    padding-bottom: 20px;
+}
+
+.footer-content{
+    @apply flex justify-between;
+}
+
+.footer-socials{
+    @apply flex flex-col;
+    gap:31px;
+}
+
+.footer-logo{
+    @apply invert;
+    width: 190px;
+    height: 75px;
+}
+
+.footer-info{
+    /* @apply flex flex-col gap-5 text-dark  justify-end; */
+    font-size: 22px;
+}
+
+.payment-icon{
+    @apply p-2.5;
+    border-radius: 10px;
+    border: 1px solid #1A1D23;
+}
+
+.copyright{
+    @apply font-normal text-center mt-14;
+    font-size: 14.9px;
+}

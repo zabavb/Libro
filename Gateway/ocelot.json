@@ -137,6 +137,19 @@
       "UpstreamPathTemplate": "/gateway/subscriptions/filter",
       "UpstreamHttpMethod": [ "GET" ]
     },
+    //======================= Password entity =======================
+    {
+      "DownstreamPathTemplate": "/api/password/{userId}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7007
+        }
+      ],
+      "UpstreamPathTemplate": "/gateway/password/{userId}",
+      "UpstreamHttpMethod": [ "PUT" ]
+    },
     //======================================= BookAPI =======================================
     //======================= Book entity =======================
     {

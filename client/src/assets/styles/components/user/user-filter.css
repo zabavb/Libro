@@ -1,0 +1,8 @@
+.filters-container{
+    @apply flex gap-[22px];
+}
+
+.filter-item{
+    @apply rounded-lg bg-[#C8C6BE];
+    padding: 15px;
+}

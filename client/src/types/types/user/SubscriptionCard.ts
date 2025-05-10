@@ -1,6 +1,6 @@
 export interface SubscriptionCard {
   id: string;
   title: string;
-  description: string;
+  subdescription: string; 
   imageUrl: string;
 }

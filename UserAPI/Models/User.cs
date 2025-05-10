@@ -13,9 +13,21 @@ namespace UserAPI.Models
         public string? PhoneNumber { get; set; }
         public RoleType Role { get; set; }
         public string ImageUrl { get; set; }
-        public Password Password { get; set; }
+        public Password? Password { get; set; }
         public ICollection<Guid>? SubscriptionIds { get; set; }
         public ICollection<UserSubscription>? UserSubscriptions { get; set; }
+
+        public User(string firstName, string? lastName, DateTime? dateOfBirth, string emailDomen,
+            string? phoneNumber, RoleType role = RoleType.USER)
+        {
+            UserId = Guid.NewGuid();
+            FirstName = firstName;
+            LastName = lastName;
+            DateOfBirth = dateOfBirth;
+            Email = $"{firstName}.{lastName}@{emailDomen}.com";
+            PhoneNumber = phoneNumber;
+            Role = role;
+        }
 
         public User()
         {
@@ -25,7 +37,6 @@ namespace UserAPI.Models
             DateOfBirth = DateTime.Today;
             ImageUrl = string.Empty;
             Role = RoleType.USER;
-            Password = null!;
         }
     }
 }

@@ -1,6 +1,10 @@
+using Amazon.S3.Model;
 using System.Net.Http.Headers;
 using APIComposer.GraphQL.Services.Interfaces;
+using Library.Common;
+using Library.DTOs.Order;
 using Library.DTOs.UserRelated.User;
+using System.Text;
 
 namespace APIComposer.GraphQL.Services
 {
@@ -45,6 +49,110 @@ namespace APIComposer.GraphQL.Services
             catch (Exception)
             {
                 return new List<OrderForUserDetails>();
+            }
+        }
+
+        public async Task<Order?> GetOrderByIdAsync(Guid orderId)
+        {
+            try
+            {
+                var response = await _http.GetAsync($"orders/{orderId}");
+
+                if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
+                {
+                    return null;
+                }
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    await ErrorHandler.HandleErrorResponseAsync(response);
+                    return null;
+                }
+
+                return await response.Content.ReadFromJsonAsync<Order>();
+            }
+            catch (Exception ex)
+            {
+
+                Console.WriteLine($"Error fetching order by ID {orderId}: {ex.Message}");
+                throw;
+            }
+        }
+
+        public async Task<PaginatedResult<Order>?> GetAllOrdersAsync(
+            int pageNumber = 1,
+            int pageSize = 10,
+            string? searchTerm = null,
+            Filter? filter = null,
+            OrderAPI.OrderSort? sort = null)
+        {
+            try
+            {
+                // add BuildQuery
+                var queryString = new StringBuilder($"orders?pageNumber={pageNumber}&pageSize={pageSize}");
+                if (!string.IsNullOrEmpty(searchTerm))
+                {
+                    queryString.Append($"&searchTerm={Uri.EscapeDataString(searchTerm)}");
+                }
+                if (filter != null && !string.IsNullOrEmpty(filter.S3KeyFilter.ToString()))
+                {
+                    queryString.Append($"&filterProperty={filter.S3KeyFilter}");
+                }
+               
+                //if (sort != null)
+                //{
+                //    // add sorting to query ?
+                //}
+
+                var response = await _http.GetAsync(queryString.ToString());
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    await ErrorHandler.HandleErrorResponseAsync(response);
+                    return null;
+                }
+
+                return (await response.Content.ReadFromJsonAsync<PaginatedResult<Order>>())!;
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
+        public async Task CreateOrderAsync(Order order)
+        {
+            try
+            {
+                SetAuthHeader();
+                var response = await _http.PostAsJsonAsync("orders", order);
+                if (!response.IsSuccessStatusCode)
+                {
+                    await ErrorHandler.HandleErrorResponseAsync(response);
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error creating order: {ex.Message}");
+                throw;
+            }
+        }
+
+        public async Task UpdateOrderAsync(Order order)
+        {
+            try
+            {
+                SetAuthHeader();
+                var response = await _http.PutAsJsonAsync($"orders/{order.Id}", order);
+                if (!response.IsSuccessStatusCode)
+                {
+                    await ErrorHandler.HandleErrorResponseAsync(response);
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error updating order: {ex.Message}");
+                throw;
             }
         }
     }

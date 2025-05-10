@@ -2,11 +2,17 @@
     .text-dark {
       color: #1A1D23;
     }
-    .bg-primary {
-      background-color: #F4F0E5;
+    .text-gray {
+      color:#9C9C97
     }
     .text-accent {
       color: #FF642E;
+    }
+    .bg-primary {
+      background-color: #F4F0E5;
+    }
+    .bg-dim-gray{
+      background-color: #DEDBD1;
     }
     .bg-dark {
       background-color: #1A1D23;

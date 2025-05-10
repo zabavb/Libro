@@ -38,8 +38,8 @@ namespace UserAPI.Data
 
             modelBuilder.Entity<UserSubscription>()
                 .Property(s => s.ExpirationDate)
-                .HasColumnType("datetime")
-                .IsRequired();
+                .IsRequired()
+                .HasColumnType("datetime");
 
             modelBuilder.Entity<Password>()
                 .Property(p => p.PasswordHash)
@@ -49,7 +49,7 @@ namespace UserAPI.Data
                 .Property(p => p.PasswordSalt)
                 .HasColumnType("nvarchar(30)");
 
-            DataSeeder.Seed(modelBuilder);
+            // DataSeeder.Seed(modelBuilder);
         }
     }
 }

@@ -1,6 +1,7 @@
 import React from "react";
 import { OrderView } from "../../../types/types/order/OrderView";
 import "@/assets/styles/base/status-display.css"
+import {icons} from '@/lib/icons'
 interface OrderAdminCardProps {
     order: OrderView
     onDelete: (e: React.MouseEvent) => void
@@ -36,13 +37,10 @@ const OrderAdminCard: React.FC<OrderAdminCardProps> = ({ order, onDelete, onNavi
                     <div className={`status ${order.status.toLowerCase()}`}>{order.status}</div>
                 </td>
                 <td>
-                    <button
-                        onClick={(e) => {
-                            e.stopPropagation()
-                            onDelete(e)
-                        }}>
-                        <img width="25" height="25" src="https://img.icons8.com/ios-filled/50/trash.png" alt="delete"/>
-                    </button>
+                    <div className='flex gap-2'>
+                        <button onClick={onNavigate} className='p-2.5 bg-[#FF642E] rounded-lg'><img src={icons.wPen} /></button>
+                        <button onClick={onDelete} className='p-2.5 border-[1px] border-[#FF642E] rounded-lg'><img src={icons.oTrash} /></button>
+                    </div>
                 </td>
             </tr>
         </>

@@ -23,42 +23,49 @@ const SubscriptionListContainer: React.FC = () => {
   const paginationMemo = useMemo(() => ({ ...pagination }), [pagination]);
 
   const fetchSubscriptionList = useCallback(async () => {
-    setLoading(true);
-    try {
-      const response = await fetchSubscriptionsService(
-        paginationMemo.pageNumber,
-        paginationMemo.pageSize,
-        searchTerm,
-      );
+    (async () => {
+      setLoading(true);
+      try {
+        const response = await fetchSubscriptionsService(
+          (paginationMemo.pageNumber = 1),
+          (paginationMemo.pageSize = 10),
+          searchTerm,
+        );
 
-      if (response.error)
+        if (response.data) {
+          const paginatedData = response.data;
+
+          setSubscriptions((prev) =>
+            JSON.stringify(prev) === JSON.stringify(paginatedData.items)
+              ? prev
+              : paginatedData.items,
+          );
+          setPagination((prev) => {
+            if (
+              prev.pageNumber === paginatedData.pageNumber &&
+              prev.pageSize === paginatedData.pageSize &&
+              prev.totalCount === paginatedData.totalCount
+            ) {
+              return prev;
+            }
+            return {
+              pageNumber: paginatedData.pageNumber,
+              pageSize: paginatedData.pageSize,
+              totalCount: paginatedData.totalCount,
+            };
+          });
+        } else if (response.error) throw Error(response.error);
+      } catch (error) {
         dispatch(
           addNotification({
-            message: response.error,
+            message: error instanceof Error ? error.message : String(error),
             type: 'error',
           }),
         );
-
-      if (response && response.data) {
-        const paginatedData = response.data;
-
-        setSubscriptions(paginatedData.items);
-        setPagination({
-          pageNumber: paginatedData.pageNumber,
-          pageSize: paginatedData.pageSize,
-          totalCount: paginatedData.totalCount,
-        });
-      } else throw new Error('Invalid response structure');
-    } catch (error) {
-      dispatch(
-        addNotification({
-          message: error instanceof Error ? error.message : String(error),
-          type: 'error',
-        }),
-      );
-      setSubscriptions([]);
-    }
-    setLoading(false);
+        setSubscriptions([]);
+      }
+      setLoading(false);
+    })();
   }, [paginationMemo, searchTerm, dispatch]);
 
   useEffect(() => {

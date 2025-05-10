@@ -23,6 +23,7 @@ namespace BookAPI.Services
         private readonly IMapper _mapper = mapper;
         private readonly ILogger<BookService> _logger = logger;
         private readonly S3StorageService _storageService = storageService;
+        private static readonly Size Size = new Size(500, 400);
 
         public async Task<PaginatedResult<BookDto>> GetAllAsync(
             int pageNumber,
@@ -198,22 +199,6 @@ namespace BookAPI.Services
         }
 
 
-        // example of condition: b => b.Quantity > 0
-        public async Task<List<BookDto>> GetBooksByConditionAsync(Expression<Func<Book, bool>> condition)
-        {
-
-            var books = await _bookRepository.GetBooksByConditionAsync(condition);
-
-            if (books == null || books.Count == 0)
-            {
-                _logger.LogWarning("No books matched the given condition");
-                throw new InvalidOperationException("No matching books found.");
-            }
-
-            _logger.LogInformation("Found {Count} books", books.Count);
-
-            return _mapper.Map<List<BookDto>>(books);
-        }
 
         public async Task UpdateWithDiscountAsync(Guid id, UpdateBookRequest request, IDiscountService discountService)
         {
@@ -265,29 +250,5 @@ namespace BookAPI.Services
             _logger.LogInformation($"Successfully updated book with id {id} and processed discount.");
         }
 
-        public async Task<int> GetQuantityById(Guid id)
-        {
-            var quantity = await _bookRepository.GetQuantityById(id);
-            if (quantity == 0)
-            {
-                _logger.LogWarning($"No book with id {id}");
-                throw new InvalidOperationException($"No book with id {id}");
-            }
-            _logger.LogInformation($"Successfully found quantity of book with id {id}");
-            return quantity;
-        }
-
-        public async Task AddQuantityById(Guid id, int quantity)
-        {
-            var book = await _bookRepository.GetByIdAsync(id);
-            if (book == null)
-            {
-                _logger.LogWarning($"No book with id {id}");
-                throw new InvalidOperationException($"No book with id {id}");
-            }
-            book.Quantity += quantity;
-            await _bookRepository.UpdateAsync(book);
-            _logger.LogInformation($"Successfully added {quantity} to book with id {id}");
-        }
     }
 }

@@ -52,8 +52,9 @@ const SubscriptionDropdown: React.FC<{
   };
 
   return (
-    <div>
-      <select
+    <div className='flex'>
+      <select 
+        className='filter-item'
         id='subscription-select'
         value={selectedId ?? ''}
         onChange={handleChange}

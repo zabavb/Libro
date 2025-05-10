@@ -1,0 +1,30 @@
+.error-page-container{
+    @apply flex flex-col justify-center h-dvh text-[#FF642E] text-center;
+}
+
+.error-container{
+    @apply flex flex-col items-center;
+}
+
+.error-image{
+    @apply absolute rotate-3;
+    bottom: 94px;
+    left: 75px;
+}
+
+.error{
+    @apply font-semibold relative w-fit;
+    line-height: 100%;
+    font-size: 150px;
+}
+
+.error-sub{
+    @apply font-medium text-4xl;
+}
+
+.error-nav-btn{
+    @apply bg-[#FF642E] text-lg text-white m-24;
+    border-radius: 46px;
+    padding: 16px 30px;
+    line-height: 16px;
+}

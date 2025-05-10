@@ -35,6 +35,21 @@ namespace APIComposer.GraphQL.Services
             }
         }
 
+        public async Task<Library.DTOs.Book.Book> GetBookAsync(Guid id)
+        {
+            try
+            {
+                SetAuthHeader();
+                var response = await _http.GetFromJsonAsync<Library.DTOs.Book.Book>($"books/{id}");
+                return response ?? new Library.DTOs.Book.Book();
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
+        }
+
+
         public async Task<ICollection<FeedbackForUserDetails>> GetAllFeedbacksAsync(Guid userId)
         {
             try

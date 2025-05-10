@@ -5,6 +5,7 @@ using UserAPI.Repositories;
 using UserAPI.Services;
 using UserAPI.Data;
 using UserAPI.Models;
+using UserAPI.Repositories.Interfaces;
 
 namespace UserAPI.Tests.Services
 {

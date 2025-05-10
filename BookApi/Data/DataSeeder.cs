@@ -2,6 +2,14 @@
 using Microsoft.EntityFrameworkCore;
 using BookAPI.Models;
 using Library.Common;
+using Library.DTOs.Book;
+using Author = BookAPI.Models.Author;
+using Book = BookAPI.Models.Book;
+using Category = BookAPI.Models.Category;
+using Discount = BookAPI.Models.Discount;
+using Feedback = BookAPI.Models.Feedback;
+using Publisher = BookAPI.Models.Publisher;
+using SubCategory = BookAPI.Models.SubCategory;
 
 namespace BookAPI.Data
 {
@@ -206,7 +214,7 @@ namespace BookAPI.Data
                     Language = Language.UKRAINIAN,
                     Year = new DateTime(2022, 1, 1),
                     Description = "Детективний роман з несподіваною розв'язкою.",
-                    Cover = CoverType.SOFT_COVER,
+                    Cover = CoverType.SOFTCOVER,
                     Quantity = 3,
                     DiscountId = discounts[1].DiscountId,
                     AudioFileUrl = await filesHelper.UploadAudioAsync(localAudioPath, bookIds[1]),

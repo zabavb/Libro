@@ -5,6 +5,11 @@
 @tailwind components;
 @tailwind utilities;
 
+@font-face {
+  font-family: 'Gilroy';
+  src: url('/src/assets/fonts/Gilroy-Medium.ttf') format('truetype');
+}
+
 @layer base {
   :root {
     --background: 0 0% 100%;
@@ -64,6 +69,7 @@
 @layer base {
   * {
     @apply border-border;
+    font-family: 'Gilroy';
   }
   body {
     @apply bg-background text-foreground;

@@ -5,21 +5,21 @@ namespace Library.DTOs.Book
     public enum Language
     {
         [Display(Name = "Англійська")]
-        English,
+        ENGLISH,
 
         [Display(Name = "Українська")]
-        Ukrainian,
+        UKRAINIAN,
 
         [Display(Name = "Іспанська")]
-        Spanish,
+        SPANISH,
 
         [Display(Name = "Французька")]
-        French,
+        FRENCH,
 
         [Display(Name = "Німецька")]
-        German,
+        GERMAN,
 
         [Display(Name = "Other")]
-        Other
+        OTHER
     }
 }

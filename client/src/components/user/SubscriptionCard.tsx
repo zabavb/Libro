@@ -6,7 +6,7 @@ interface SubscriptionCardProps {
   onDelete: (e: React.MouseEvent) => void;
 }
 
-const UserCard: React.FC<SubscriptionCardProps> = ({
+const SubscriptionCard: React.FC<SubscriptionCardProps> = ({
   subscription,
   onNavigate,
   onDelete,
@@ -20,9 +20,15 @@ const UserCard: React.FC<SubscriptionCardProps> = ({
           onNavigate();
         }}
       >
-        <img src={subscription.imageUrl} alt={subscription.title} />
+        <img
+          width={44}
+          height={44}
+          src={subscription.imageUrl}
+          alt={subscription.title}
+        />
         <div>{subscription.title}</div>
-        <div>{subscription.description}</div>
+        <div>{subscription.subdescription}</div>
+
         <div>Edit</div>
         <div
           onClick={(e) => {
@@ -37,4 +43,4 @@ const UserCard: React.FC<SubscriptionCardProps> = ({
   );
 };
 
-export default UserCard;
+export default SubscriptionCard;

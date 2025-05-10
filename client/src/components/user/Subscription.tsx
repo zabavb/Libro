@@ -4,6 +4,7 @@ interface SubscriptionFormProps {
   subscription: SubscriptionType;
   isSubscribed: boolean;
   onSubscribe: (id: string) => Promise<void>;
+  onUnSubscribe: (id: string) => Promise<void>;
   loading: boolean;
 }
 
@@ -11,6 +12,7 @@ const Subscription: React.FC<SubscriptionFormProps> = ({
   subscription,
   isSubscribed,
   onSubscribe,
+  onUnSubscribe,
   loading,
 }) => {
   return (
@@ -21,9 +23,18 @@ const Subscription: React.FC<SubscriptionFormProps> = ({
       <p>Expiration Days: {subscription.expirationDays}</p>
       <p>Description: {subscription.description}</p>
 
-      <button disabled={loading} onClick={() => onSubscribe(subscription.id)}>
-        {isSubscribed ? 'Unsubscribe' : 'Subscribe'}
-      </button>
+      {isSubscribed ? (
+        <button
+          disabled={loading}
+          onClick={() => onUnSubscribe(subscription.id)}
+        >
+          Unsubscribe
+        </button>
+      ) : (
+        <button disabled={loading} onClick={() => onSubscribe(subscription.id)}>
+          Subscribe
+        </button>
+      )}
     </>
   );
 };

@@ -60,7 +60,6 @@ namespace UserAPI.Controllers
         /// <response code="401">If request is unauthorized.</response>
         /// <response code="404">If the subscription with the specified ID is not found or ID was not specified.</response>
         /// <response code="500">If an unexpected error occurred.</response>
-        [Authorize(Roles = "ADMIN, MODERATOR")]
         [HttpGet("{id}")]
         public async Task<ActionResult<SubscriptionDto>> GetById(Guid id)
         {
@@ -143,7 +142,7 @@ namespace UserAPI.Controllers
         /// <response code="401">The request is unauthorized.</response>
         /// <response code="500">An unexpected server error occurred.</response>
         [Authorize(Roles = "USER")]
-        [HttpPost("[action]")]
+        [HttpPost("subscribe")]
         public async Task<IActionResult> Subscribe([FromBody] SubscribeRequest request)
         {
             if (!ModelState.IsValid)
@@ -163,7 +162,7 @@ namespace UserAPI.Controllers
         /// <response code="401">The request is unauthorized.</response>
         /// <response code="500">An unexpected server error occurred.</response>
         [Authorize(Roles = "USER")]
-        [HttpPost("[action]")]
+        [HttpPost("unsubscribe")]
         public async Task<IActionResult> Unsubscribe([FromBody] SubscribeRequest request)
         {
             if (!ModelState.IsValid)

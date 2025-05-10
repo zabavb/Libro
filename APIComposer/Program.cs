@@ -24,6 +24,7 @@ builder.Services
     .AddGraphQLServer()
     .ModifyRequestOptions(opt => opt.IncludeExceptionDetails = true)
     .AddQueryType<UserQuery>();
+    // .AddTypeExtension<OrderQuery>();
 
 builder.Services.AddSwaggerGen();
 

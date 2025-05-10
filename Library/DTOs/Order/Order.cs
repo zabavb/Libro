@@ -9,7 +9,7 @@ namespace Library.DTOs.Order
 
         public Guid UserId { get; set; }
 
-        public Dictionary<Guid,int> Books { get; set; }
+        public Dictionary<Guid,int> Books { get; set; } // Dictionary of BookId and Quantity
 
         public string Region { get; set; }
 

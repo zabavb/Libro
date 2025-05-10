@@ -30,15 +30,18 @@ const UserSort: React.FC<UserSortProps> = ({ onSortChange, sort }) => {
   };
 
   return (
-    <div>
-      <button onClick={() => handleClick('alphabetical')}>
-        Alphabetical {getArrow(sort.alphabetical)}
+    <div className='flex gap-[22px]'>
+      <button onClick={() => handleClick('alphabetical')}
+        className='rounded-lg bg-[#C8C6BE] p-[15px]'>
+        Sort by Name {getArrow(sort.alphabetical)}
       </button>
-      <button onClick={() => handleClick('youngest')}>
-        Age {getArrow(sort.youngest)}
+      <button onClick={() => handleClick('youngest')}
+        className='rounded-lg bg-[#C8C6BE] p-[15px]'>
+        Sort by Age {getArrow(sort.youngest)}
       </button>
-      <button onClick={() => handleClick('roleSort')}>
-        Role {getArrow(sort.roleSort)}
+      <button onClick={() => handleClick('roleSort')}
+        className='rounded-lg bg-[#C8C6BE] p-[15px]'>
+        Sort by Role {getArrow(sort.roleSort)}
       </button>
     </div>
   );

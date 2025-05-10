@@ -41,3 +41,4 @@ export { EmailDomen } from './subTypes/user/EmailDomen';
 export { EmailViewDomen } from './subTypes/user/EmailViewDomen';
 export { Bool } from './subTypes/Bool';
 export type { Notification, NotificationData } from './subTypes/Notification';
+export type { ComplicatedLoading } from './subTypes/ComplicatedLoading';

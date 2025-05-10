@@ -17,7 +17,7 @@ import {
   FromUserViewFilterToUserFilter,
 } from '@/api/adapters/userAdapter';
 
-const UserListContainer = () => {
+const UserListContainer: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
 
@@ -111,9 +111,10 @@ const UserListContainer = () => {
   };
 
   const handlePageChange = (pageNumber: number) => {
-    setPagination((prev) => ({ ...prev, pageNumber }));
-  };
-
+    
+    setPagination((prev) => ({...prev, pageNumber}))
+  }
+  
   return (
     <UserList
       users={users}

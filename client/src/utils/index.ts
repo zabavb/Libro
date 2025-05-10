@@ -4,6 +4,9 @@ export type { LoginFormData, RegisterFormData } from './authValidationShema';
 export { userSchema } from './userValidationSchema';
 export type { SubscriptionFormData } from './subscriptionValidationSchema';
 
+export { userProfileSchema } from './userValidationSchema';
+export type { UserProfileFormData } from './userValidationSchema';
+
 export { subscriptionSchema } from './subscriptionValidationSchema';
 export type { UserFormData } from './userValidationSchema';
 

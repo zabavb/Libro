@@ -25,7 +25,7 @@ const SubscriptionForm: React.FC<SubscriptionFormProps> = ({
   } = useForm<SubscriptionFormData>({
     resolver: zodResolver(subscriptionSchema),
     defaultValues: {
-      title: 'Subscription',
+      title: '',
       expirationDays: 14,
       price: 0,
       description: '',
@@ -42,6 +42,7 @@ const SubscriptionForm: React.FC<SubscriptionFormProps> = ({
         existingSubscription.expirationDays ?? undefined,
       );
       setValue('price', existingSubscription.price ?? undefined);
+      setValue('subdescription', existingSubscription.subdescription ?? undefined);
       setValue('description', existingSubscription.description ?? undefined);
       setImagePreview(existingSubscription.imageUrl ?? undefined);
     }
@@ -65,9 +66,11 @@ const SubscriptionForm: React.FC<SubscriptionFormProps> = ({
     formData.append('title', data.title);
     formData.append('expirationDays', data.expirationDays.toString());
     formData.append('price', data.price.toString());
+    formData.append('subdescription', data.subdescription ?? '');
     formData.append('description', data.description ?? '');
     formData.append('image', data.image ?? '');
-    formData.append('imageUrl', existingSubscription?.imageUrl ?? '');
+    if (existingSubscription)
+      formData.append('imageUrl', existingSubscription.imageUrl ?? '');
 
     if (existingSubscription) onEditSubscription(formData);
     else onAddSubscription(formData);
@@ -108,14 +111,17 @@ const SubscriptionForm: React.FC<SubscriptionFormProps> = ({
         <p>{errors.title?.message}</p>
 
         <input
-          type='date'
+          type='number'
           {...register('expirationDays')}
           placeholder='expirationDays'
         />
         <p>{errors.expirationDays?.message}</p>
 
-        <input {...register('price')} placeholder='Price' />
+        <input type='number' {...register('price')} placeholder='Price' />
         <p>{errors.price?.message}</p>
+
+        <input {...register('subdescription')} placeholder='subdescription' />
+        <p>{errors.subdescription?.message}</p>
 
         <input {...register('description')} placeholder='description' />
         <p>{errors.description?.message}</p>
