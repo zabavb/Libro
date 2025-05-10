@@ -39,7 +39,6 @@ export const fetchAuthorsService = async (
     } finally {
         response.loading = false;
     }
-
     return response;
 };
 

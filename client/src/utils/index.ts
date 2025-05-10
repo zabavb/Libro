@@ -15,3 +15,6 @@ export type { OrderFormData } from './orderValidationSchema';
 
 export { deliveryTypeSchema } from './deliveryTypeValidationSchema';
 export type { DeliveryTypeFormData } from './deliveryTypeValidationSchema';
+
+export { authorSchema } from './authorValidationSchema'
+export type { AuthorFormData } from './authorValidationSchema' 

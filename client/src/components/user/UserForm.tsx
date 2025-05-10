@@ -58,19 +58,6 @@ const UserForm: React.FC<UserFormProps> = ({
     }
   },[isEdit,existingUser])
 
-  const formatDate = (input: Date | string | undefined): string => {
-    if (input === undefined) return ``;
-
-    const date = input instanceof Date ? input : new Date(input);
-    if (isNaN(date.getTime())) return 'Invalid date';
-
-    const mm = String(date.getMonth() + 1).padStart(2, '0');
-    const dd = String(date.getDate()).padStart(2, '0');
-    const yyyy = date.getFullYear();
-
-    return `${mm}/${dd}/${yyyy}`;
-  };
-
   const loggedUser: User | null = getUserFromStorage();
 
   useEffect(() => {
@@ -147,26 +134,26 @@ const UserForm: React.FC<UserFormProps> = ({
           </div>
           <div className='flex gap-16 w-full'>
             <form onSubmit={handleSubmit(onSubmit)} className='flex flex-col gap-4 w-full'>
-              {localEdit ?
-                (
-                  <>
                     <div className='input-row'>
                       <label className='text-sm'>Last name</label>
-                      <input {...register('lastName')}
+                      <input disabled={!localEdit} {...register('lastName')}
                         className='input-field'
                         placeholder='Last Name' />
                       <p>{errors.lastName?.message}</p>
                     </div>
                     <div className='input-row'>
                       <label className='text-sm'>First name</label>
-                      <input {...register('firstName')}
+                      <input disabled={!localEdit} 
+                      {...register('firstName')}
                         className='input-field'
                         placeholder='First Name' />
                       <p>{errors.firstName?.message}</p>
                     </div>
                     <div className='input-row'>
                       <label className='text-sm'>E-mail</label>
-                      <input type='email' {...register('email')}
+                      <input disabled={!localEdit} 
+                        type='email' 
+                        {...register('email')}
                         className='input-field'
                         placeholder='Email' />
                       <p>{errors.email?.message}</p>
@@ -174,6 +161,7 @@ const UserForm: React.FC<UserFormProps> = ({
                     <div className='input-row'>
                       <label className='text-sm'>Phone number</label>
                       <input
+                        disabled={!localEdit}
                         className='input-field'
                         type='tel'
                         {...register('phoneNumber')}
@@ -184,6 +172,7 @@ const UserForm: React.FC<UserFormProps> = ({
                     <div className='input-row'>
                       <label className='text-sm'>Birth day</label>
                       <input
+                        disabled={!localEdit}
                         className='input-field'
                         type='date'
                         {...register('dateOfBirth')}
@@ -193,7 +182,9 @@ const UserForm: React.FC<UserFormProps> = ({
                     </div>
                     <div className='input-row'>
                       <label className='text-sm'>Role</label>
-                      <select className='input-field' {...register('role')}>
+                      <select
+                        disabled={!localEdit}
+                        className='input-field' {...register('role')}>
                         <option value=''>Select Role</option>
                         {Object.entries(RoleView).map(([key, value]) => (
                           <option key={key} value={value}>
@@ -203,44 +194,6 @@ const UserForm: React.FC<UserFormProps> = ({
                       </select>
                       <p>{errors.role?.message}</p>
                     </div>
-                  </>
-                )
-
-                :
-                (
-                  <>
-                    <div className='input-row'>
-                      <label className='text-sm'>Last name</label>
-                      <p className='input-field'>{existingUser?.lastName}</p>
-                      <p>{errors.lastName?.message}</p>
-                    </div>
-                    <div className='input-row'>
-                      <p className='text-sm'>First name</p>
-                      <p className='input-field'>{existingUser?.firstName}</p>
-                      <p>{errors.firstName?.message}</p>
-                    </div>
-                    <div className='input-row'>
-                      <p className='text-sm'>E-mail</p>
-                      <p className='input-field'>{existingUser?.email}</p>
-                      <p>{errors.email?.message}</p>
-                    </div>
-                    <div className='input-row'>
-                      <p className='text-sm'>Phone number</p>
-                      <p className='input-field'>{existingUser?.phoneNumber}</p>
-                      <p>{errors.phoneNumber?.message}</p>
-                    </div>
-                    <div className='input-row'>
-                      <p className='text-sm'>Birthday</p>
-                      <p className='input-field'>{formatDate(existingUser?.dateOfBirth?.toString())}</p>
-                      <p>{errors.dateOfBirth?.message}</p>
-                    </div>
-                    <div className='input-row'>
-                      <p className='text-sm'>Role</p>
-                      <p className='input-field'>{existingUser?.role}</p>
-                      <p>{errors.role?.message}</p>
-                    </div>
-                  </>)
-              }
               <button type='submit' disabled={loading} className='form-edit-btn fixed bottom-6 right-14'>
                 {existingUser ? 'Save changes' : 'Add User'}
               </button>

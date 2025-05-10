@@ -16,7 +16,7 @@ const AuthorAdminCardContainer: React.FC<AuthorAdminCardContainerProps> = ({auth
 
     const handleDelete = async (e: React.MouseEvent) => {
         e.stopPropagation()
-        const response = await deleteAuthorService(author.id)
+        const response = await deleteAuthorService(author.authorId)
         dispatch(
               response.error
                 ? addNotification({
@@ -31,7 +31,7 @@ const AuthorAdminCardContainer: React.FC<AuthorAdminCardContainerProps> = ({auth
     }
 
     const handleNavigate = () => {
-        navigate(`/admin/bookRelated/author/${author.id}`)
+        navigate(`/admin/booksRelated/author/${author.authorId}`)
     }
 
     return (

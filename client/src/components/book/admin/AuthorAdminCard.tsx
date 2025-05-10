@@ -11,7 +11,7 @@ const AuthorAdminCard: React.FC<AuthorAdminCardProps> = ({author, onDelete,onNav
         <>
             <tr>
                 <td className="flex justify-center">
-                    <img src={`https://picsum.photos/seed/${author.id}/50/70`} />
+                    <img className="w-[50px] h-[70px]" src={`https://picsum.photos/seed/${author.authorId}/50/70`} />
                 </td>
                 <td>
                     {author.name}

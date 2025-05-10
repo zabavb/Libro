@@ -83,7 +83,7 @@ const AuthorList: React.FC<AuthorListProps> = ({
                                     : (
                                         <tbody>
                                             {authors.map((author) => (
-                                                <AuthorAdminCardContainer author={author} key={author.id}/>
+                                                <AuthorAdminCardContainer author={author} key={author.authorId}/>
                                             ))}
                                         </tbody>
                                     )}

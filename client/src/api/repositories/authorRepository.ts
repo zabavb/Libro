@@ -18,6 +18,8 @@ export const getAllAuthors = async (
 ): Promise<PaginatedResponse<Author>> => {
     const url = AUTHORS_PAGINATED(pageNumber, pageSize)
     const response = await axios.get<PaginatedResponse<Author>>(url, { params })
+    
+    console.log(response)
     return response.data
 }
 
