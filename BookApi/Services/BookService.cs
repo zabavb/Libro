@@ -199,6 +199,55 @@ namespace BookAPI.Services
             return _mapper.Map<List<BookDto>>(books);
         }
 
+        public async Task UpdateWithDiscountAsync(Guid id, UpdateBookRequest request, IDiscountService discountService)
+        {
+            var bookDto = request.Book;
+            var discount = request.Discount;
+
+            if (bookDto == null)
+            {
+                _logger.LogWarning("Invalid book data provided for update.");
+                throw new ArgumentException("Invalid book data.");
+            }
+
+            var existingDiscount = await discountService.GetByBookIdAsync(bookDto.BookId);
+            var discountId = existingDiscount?.DiscountId ?? Guid.Empty;
+
+            if (discount != null)
+            {
+                discount.BookId = bookDto.BookId;
+
+                if (existingDiscount != null)
+                {
+                    bookDto.DiscountId = discountId;
+                    await discountService.UpdateAsync(discount);
+                }
+                else
+                {
+                    await discountService.CreateAsync(discount);
+                    var createdDiscount = await discountService.GetByBookIdAsync(bookDto.BookId);
+                    if (createdDiscount != null)
+                    {
+                        bookDto.DiscountId = createdDiscount.DiscountId;
+                    }
+                }
+            }
+            else if (existingDiscount != null && existingDiscount.DiscountId != Guid.Empty)
+            {
+                await discountService.DeleteAsync(existingDiscount.DiscountId);
+            }
+
+            var existingBook = await _bookRepository.GetByIdAsync(id);
+            if (existingBook == null)
+            {
+                _logger.LogWarning($"Book with id {id} not found.");
+                throw new InvalidOperationException($"Book with id {id} not found.");
+            }
+
+            _mapper.Map(bookDto, existingBook);
+            await _bookRepository.UpdateAsync(existingBook);
+            _logger.LogInformation($"Successfully updated book with id {id} and processed discount.");
+        }
 
         public async Task<int> GetQuantityById(Guid id)
         {

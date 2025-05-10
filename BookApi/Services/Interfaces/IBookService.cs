@@ -25,5 +25,6 @@ namespace BookAPI.Services.Interfaces
         Task AddQuantityById(Guid id, int quantity);
         // temporary?
         Task<List<BookDto>> GetBooksByConditionAsync(Expression<Func<Models.Book, bool>> condition);
+        Task UpdateWithDiscountAsync(Guid id, UpdateBookRequest request, IDiscountService discountService);
     }
 }
