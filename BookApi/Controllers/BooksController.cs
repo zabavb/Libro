@@ -161,56 +161,22 @@ namespace BookAPI.Controllers
         }
 
 
-        /// <summary>
-        /// Updates an existing book.
-        /// </summary>
-        /// <param name="id">Book ID.</param>
-        /// <param name="bookDto">Updated book data.</param>
-        /// <returns>The updated book.</returns>
-        /// <response code="200">Book successfully updated.</response>
-        /// <response code="400">Invalid input data.</response>
-        /// <response code="404">Book not found.</response>
-        /// 
         [HttpPut("{id}")]
         [Consumes("multipart/form-data")]
-
-        public async Task<ActionResult<BookDto>> Update(Guid id, [FromForm] UpdateBookRequest request)
+        public async Task<ActionResult> Update(Guid id, [FromForm] UpdateBookRequest request)
         {
-            var bookDto = request.Book;
-            var discount = request.Discount;
-            if (bookDto == null)
-            {
-                _logger.LogWarning("Invalid book data provided for update.");
-                return BadRequest("Invalid data.");
-            }
-
             try
             {
-                /*var updatedBook = */
-                await _bookService.UpdateAsync(id, bookDto);
-
-                /*if (updatedBook == null)
-                {
-                    return NotFound($"Book with id {id} not found.");
-                }*/
-
-                //discount.BookId = updatedBook.BookId;
-
-                if (discount != null)
-                {
-                    /*_ =*/
-                    await _discountService.UpdateAsync(discount);
-                }
-                bookDto.DiscountId = (Guid)(discount?.DiscountId);
-
-                return Ok( /*updatedBook*/);
+                await _bookService.UpdateWithDiscountAsync(id, request, _discountService);
+                return Ok();
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Error occurred while updating book with id {id}.");
-                return StatusCode(StatusCodes.Status500InternalServerError, new { message = ex.Message });
+                _logger.LogError(ex, "Failed to update book with discount");
+                return BadRequest(ex.Message);
             }
         }
+
 
         /// <summary>
         /// Deletes a book by its ID.
