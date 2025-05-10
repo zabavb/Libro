@@ -55,23 +55,7 @@ namespace BookAPI
             }
         }
 
-        public static string GetAudioContentType(string fileExtension)
-        {
-            return fileExtension.ToLower() switch
-            {
-                ".mp3" => "audio/mpeg",
-                ".mp4" => "audio/mp4",
-                ".ogg" => "audio/ogg",
-                ".wav" => "audio/wav",
-                ".aac" => "audio/aac",
-                ".webm" => "audio/webm",
-                ".flac" => "audio/flac",
-                ".m4a" => "audio/m4a",
-                _ => "application/octet-stream"
-            };
-        }
-        
-
+        //з дженерейт 
         public async Task<string> UploadPdfAsync(string localFilePath, Guid entityId)
         {
             const string contentType = "application/pdf";
@@ -98,25 +82,6 @@ namespace BookAPI
             }
             return null;
         }
-
-        //public async Task<string> UploadAudioAsync(
-        //    string localFilePath,
-        //    Guid entityId,
-        //    string bookTitle)
-        //{
-        //    var fileExtension = Path.GetExtension(localFilePath).ToLower();
-        //    var contentType = GetAudioContentType(fileExtension);
-        //    var filepath = await UploadFileAsync(localFilePath, entityId, "book/audios/", contentType);
-        //    var uri = new Uri(filepath);
-        //    var fileKey = uri.AbsolutePath.TrimStart('/');
-
-        //    if (!string.IsNullOrEmpty(fileKey))
-        //    {
-        //        return _storageService.GenerateSignedUrl(_bucketName, fileKey);
-        //    }
-
-        //    return null;
-        //}
 
 
         public async Task<string> UploadImageAsync(string imageUrl, Guid entityId)
@@ -190,10 +155,8 @@ namespace BookAPI
                     return null;
                 }
 
-                // Генеруємо унікальне ім'я для файлу
                 var fileName = $"{entityId}_{Path.GetFileName(file.FileName)}";
 
-                // Завантажуємо файл в storage
                 var formFile = new FormFile(
                     file.OpenReadStream(),
                     0,
