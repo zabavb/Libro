@@ -1,11 +1,9 @@
 ﻿using AutoMapper;
-using BookAPI.Services.Interfaces;
 using Library.Common;
 using Library.DTOs.UserRelated.User;
 using Library.Interfaces;
 using OrderAPI.Services.Interfaces;
 using UserAPI.Models;
-using UserAPI.Repositories;
 using UserAPI.Repositories.Interfaces;
 using UserAPI.Services.Interfaces;
 
@@ -15,9 +13,7 @@ namespace UserAPI.Services
         IUserRepository repository,
         ISubscriptionRepository subscriptionRepository,
         IPasswordRepository passwordRepository,
-        IOrderService orderService,
-        IFeedbackService feedbackService,
-        AvatarService avatarService,
+        IAvatarService avatarService,
         IS3StorageService storageService,
         IMapper mapper,
         ILogger<IUserService> logger
@@ -27,17 +23,13 @@ namespace UserAPI.Services
         private readonly ISubscriptionRepository _subscriptionRepository = subscriptionRepository;
         private readonly IPasswordRepository _passwordRepository = passwordRepository;
 
-        private readonly IOrderService _orderService = orderService;
-        private readonly IFeedbackService _feedbackService = feedbackService;
-
-        private readonly AvatarService _avatarService = avatarService;
+        private readonly IAvatarService _avatarService = avatarService;
         private readonly IS3StorageService _storageService = storageService;
-        private const string Folder = "user/images/";
 
         private readonly IMapper _mapper = mapper;
         private readonly ILogger<IUserService> _logger = logger;
 
-        public async Task<PaginatedResult<CardDto>> GetAllAsync(
+        public async Task<PaginatedResult<Dto>> GetAllAsync(
             int pageNumber,
             int pageSize,
             string? searchTerm,
@@ -47,28 +39,25 @@ namespace UserAPI.Services
         {
             var users = await _repository.GetAllAsync(pageNumber, pageSize, searchTerm, filter, sort);
 
-            if (users.Items.Any())
-                throw new KeyNotFoundException("No users found.");
             _logger.LogInformation("Successfully fetched paginated users.");
 
-            var cards = await MergeForCardAsync(users.Items);
-
-            return new PaginatedResult<CardDto>
+            var dtos = users.Items.Select(user => _mapper.Map<Dto>(user)).ToList();
+            return new PaginatedResult<Dto>
             {
-                Items = cards,
+                Items = dtos,
                 TotalCount = users.TotalCount,
                 PageNumber = users.PageNumber,
                 PageSize = users.PageSize
             };
         }
 
-        public async Task<UserDetailsDto?> GetByIdAsync(Guid id)
+        public async Task<UserWithSubscriptionsDto?> GetByIdAsync(Guid id)
         {
             var user = await _repository.GetByIdAsync(id) ??
                        throw new KeyNotFoundException($"User with ID [{id}] not found.");
             _logger.LogInformation("User with ID [{id}] successfully fetched.", id);
 
-            return await MergeForDetailsAsync(id, user);
+            return _mapper.Map<UserWithSubscriptionsDto>(user);
         }
 
         public async Task CreateAsync(Dto dto)
@@ -76,13 +65,13 @@ namespace UserAPI.Services
             if (dto == null)
                 throw new ArgumentException("User data mast be provided.", nameof(dto));
 
-            var id = Guid.NewGuid();
+            if (dto.Id == Guid.Empty)
+                dto.Id = Guid.NewGuid();
 
-            var image = await GenerateAvatarAsync(dto.LastName, dto.FirstName);
-            dto.ImageUrl = await UploadAvatarAsync(image, Folder, id);
+            var image = await _avatarService.GenerateAvatarAsync(dto.FirstName, dto.LastName);
+            dto.ImageUrl = await UploadAvatarAsync(image, GlobalDefaults.UserImagesFolder, dto.Id);
 
             var user = _mapper.Map<User>(dto);
-            user.UserId = id;
             await _repository.CreateAsync(user);
             _logger.LogInformation("User successfully created.");
         }
@@ -99,83 +88,24 @@ namespace UserAPI.Services
 
         public async Task DeleteAsync(Guid id)
         {
-            var user = await DeleteAvatarAsync(id);
-            await _passwordRepository.DeleteAsync(user.PasswordId);
+            await DeleteAvatarAsync(id);
             await _repository.DeleteAsync(id);
             _logger.LogInformation($"User with ID [{id}] successfully deleted.");
         }
 
-        private async Task<ICollection<CardDto>> MergeForCardAsync(ICollection<User> users)
-        {
-            var tasks = users.Select(async user =>
-            {
-                var orderSnippet = await _orderService.GetCardSnippetByUserIdAsync(user.UserId);
-                return _mapper.Map<CardDto>((user, orderSnippet));
-            });
-
-            return await Task.WhenAll(tasks);
-        }
-
-        private async Task<UserDetailsDto> MergeForDetailsAsync(Guid id, User user)
-        {
-            var ordersSnippetTask = _orderService.GetAllByUserIdAsync(id);
-            var feedbacksSnippetTask = _feedbackService.GetAllByUserIdAsync(id);
-
-            await Task.WhenAll(ordersSnippetTask, feedbacksSnippetTask);
-
-            var ordersSnippet = await ordersSnippetTask;
-            var feedbacksSnippet = await feedbacksSnippetTask;
-
-            // If both failed, return only user data
-            if (ordersSnippet.IsFailedToFetch && feedbacksSnippet.IsFailedToFetch)
-                return _mapper.Map<UserDetailsDto>(user);
-
-            // If only orders failed, return user + feedbacks
-            if (ordersSnippet.IsFailedToFetch)
-                return _mapper.Map<UserDetailsDto>((user, feedbacksSnippet));
-
-            // If only feedbacks failed, return user + orders
-            if (feedbacksSnippet.IsFailedToFetch)
-                return _mapper.Map<UserDetailsDto>((user, ordersSnippet));
-
-            // If both succeeded, return full mapped data
-            return _mapper.Map<UserDetailsDto>((user, ordersSnippet, feedbacksSnippet));
-        }
-
-        private async Task<IFormFile?> GenerateAvatarAsync(string? lastName, string firstName)
-        {
-            try
-            {
-                byte[] avatarImage = await _avatarService.GenerateAvatarAsync(firstName, lastName);
-                var stream = new MemoryStream(avatarImage);
-                IFormFile formFile = new FormFile(stream, 0, avatarImage.Length, "file", "avatar.png")
-                {
-                    Headers = new HeaderDictionary(),
-                    ContentType = "image/png"
-                };
-
-                return formFile;
-            }
-            catch (Exception ex)
-            {
-                throw new InvalidOperationException("Database error for user's avatar generation.", ex);
-            }
-        }
-
         private async Task<string> UploadAvatarAsync(IFormFile? image, string folder, Guid id) =>
             image != null && image.Length > 0
-                ? await _storageService.UploadAsync(GlobalDefaults.BucketName, image, folder, id)
+                ? await _storageService.UploadAsync(GlobalDefaults.BucketName, folder, id, image,
+                    GlobalDefaults.UserImagesSize)
                 : string.Empty;
 
-        private async Task<User> DeleteAvatarAsync(Guid id)
+        private async Task DeleteAvatarAsync(Guid id)
         {
-            var user = await _repository.GetByIdAsync(id) ??
-                       throw new KeyNotFoundException($"User with ID [{id}] not found for deletion.");
+            _ = await _repository.GetByIdAsync(id) ??
+                throw new KeyNotFoundException($"User with ID [{id}] not found for deletion.");
 
-            string fileKey = $"{Folder}{id}.png";
+            string fileKey = $"{GlobalDefaults.UserImagesFolder}{id}.png";
             await _storageService.DeleteAsync(GlobalDefaults.BucketName, fileKey);
-
-            return user;
         }
     }
 }

@@ -4,7 +4,7 @@ import { addNotification } from "@/state/redux/slices/notificationSlice"
 import { fetchBooksService } from "@/services/bookService"
 import { useDispatch } from "react-redux"
 import { AppDispatch } from "@/state/redux"
-
+import "@/assets/styles/components/order/order-book-search.css"
 interface OrderFormBookSearchProps {
     onBookAdd: (bookId: string) => void
 }
@@ -24,18 +24,18 @@ const OrderFormBookSearch: React.FC<OrderFormBookSearchProps> = ({ onBookAdd }) 
         totalCount: 0,
     })
 
-    const paginationMemo = useMemo(() => ({...pagination}), [pagination]);
+    const paginationMemo = useMemo(() => ({ ...pagination }), [pagination]);
 
     const fetchBookList = useCallback(async () => {
         setLoading(true);
-        try{
+        try {
             const response = await fetchBooksService(
                 paginationMemo.pageNumber,
                 paginationMemo.pageSize,
                 searchTerm,
             );
 
-            if(response.error)
+            if (response.error)
                 dispatch(
                     addNotification({
                         message: response.error,
@@ -50,7 +50,7 @@ const OrderFormBookSearch: React.FC<OrderFormBookSearchProps> = ({ onBookAdd }) 
                 setPagination({
                     pageNumber: paginatedData.pageNumber,
                     pageSize: paginatedData.pageSize,
-                    totalCount:paginatedData.totalCount,
+                    totalCount: paginatedData.totalCount,
                 });
             }
             else throw new Error('invalid response structure');
@@ -69,10 +69,10 @@ const OrderFormBookSearch: React.FC<OrderFormBookSearchProps> = ({ onBookAdd }) 
     useEffect(() => {
         fetchBookList()
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    },[pagination.pageNumber, pagination.pageSize])
+    }, [pagination.pageNumber, pagination.pageSize])
 
-    const handleBookIdSubmit = () => {
-        if(searchTerm != undefined){
+    const handleBookIdSubmit = (event: React.KeyboardEvent<HTMLInputElement>) => {
+        if (event.key === "Enter" && searchTerm != undefined) {
             handleBookAdd(searchTerm)
             setSearchTerm("")
         }
@@ -109,38 +109,40 @@ const OrderFormBookSearch: React.FC<OrderFormBookSearchProps> = ({ onBookAdd }) 
         }));
     }
 
-    if(loading) return <div>loading</div>
+    if (loading) return <div>loading</div>
 
     return (
         <div> {/* Book select container*/}
-            <div style={{display:"flex"}}>
+            <div className="flex w-1/2">
                 <input
+                    className="input-text w-full"
                     placeholder="Book Search"
                     onFocus={() => handleFocus(true)}
                     onBlur={() => handleFocus(false)}
-                    onChange={(e) => {setSearchTerm(e.target.value)}}
+                    onChange={(e) => { setSearchTerm(e.target.value) }}
+                    onKeyDown={(e) => { handleBookIdSubmit(e) }}
                     value={searchTerm}
                 />
-                <p style={{cursor:"pointer"}} onClick={handleBookIdSubmit}>Submit</p>
             </div>
-            {searchFocus === true &&
-                (
-                    <div style={{ cursor: "pointer" }} onFocus={() => handleFocus(true)} onBlur={() => handleFocus(false)}> {/* Book selection container*/}
-                        <div> 
-                            {books.map((book)=> (
-                                <div onClick={() => handleBookAdd(book.bookId)}>
-                                    <p>{book.title}</p>
-                                </div>
-                            ))}
+            <div className="relative">
+                {searchFocus === true &&
+                    (
+                        <div className="search-menu" onFocus={() => handleFocus(true)} onBlur={() => handleFocus(false)}> {/* Book selection container*/}
+                            <div>
+                                {books.map((book) => (
+                                    <div className="book-item" onClick={() => handleBookAdd(book.bookId)}>
+                                        <p>{book.title}</p>
+                                    </div>
+                                ))}
+                            </div>
+                            <div className="search-nav-menu">
+                                <button type="button" onClick={() => onPageChange(pagination.pageNumber - 1)}>&lt;</button>
+                                <p>{pagination.pageNumber}</p>
+                                <button type="button" onClick={() => onPageChange(pagination.pageNumber + 1)}>&gt;</button>
+                            </div>
                         </div>
-                        <hr />
-                        <div style={{ display: "flex" }}>
-                            <button type="button" onClick={() => onPageChange(pagination.pageNumber - 1)}>&lt;</button>
-                            <p>{pagination.pageNumber}</p>
-                            <button type="button" onClick={() => onPageChange(pagination.pageNumber + 1)}>&gt;</button>
-                        </div>
-                    </div>
-                )}
+                    )}
+            </div>
         </div>
     )
 }

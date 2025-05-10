@@ -1,9 +1,11 @@
+﻿import { getUserFromStorage } from "@/utils/storage";
 import OrderAdminCardContainer from "../../../containers/order/OrderAdminCardContainer";
-import { Order } from "../../../types";
+import { Order, OrderFilter, OrderSort, Status, User } from "../../../types";
 import Pagination from "../../common/Pagination";
 import Search from "../../common/Search";
 import "@/assets/styles/base/table-styles.css"
-import "@/assets/styles/components/order-list.css"
+import "@/assets/styles/components/list-styles.css"
+import {icons} from "@/lib/icons"
 interface OrderListProps {
     orders?: Order[]
     loading: boolean
@@ -12,6 +14,10 @@ interface OrderListProps {
     onNavigate: (path: string) => void
     onSearchTermChange: (searchTerm: string) => void
     searchTerm: string
+    onFilterChange: (filters: OrderFilter) => void
+    filters: OrderFilter
+    onSortChange: (sort: OrderSort) => void
+    sort: OrderSort
 }
 
 const OrderList: React.FC<OrderListProps> = ({
@@ -21,36 +27,69 @@ const OrderList: React.FC<OrderListProps> = ({
     onPageChange,
     searchTerm,
     onSearchTermChange,
+    onFilterChange,
+    filters,
+    onSortChange,
+    sort,
 }) => {
+
+    const user: User | null = getUserFromStorage();
+    
     return (
         <div>
             <header className="header-container">
                 <Search
                     searchTerm={searchTerm}
                     onSearchTermChange={onSearchTermChange} />
-                {/* Temporary implementation, replace with user pfp component */}
-                <div style={{marginLeft:"auto",display:'flex',alignItems:'center'}}>
-                    <div style={{borderRadius:"50%",backgroundColor:"grey", height:"43px", width:"43px"}}></div>
-                    <p style={{margin:"0 10px",fontWeight:"400"}}>Name Surname</p>
+                <select
+                    value={filters.status || ""}
+                    onChange={(e) =>
+                        onFilterChange({ ...filters, status: e.target.value as Status })
+                    }
+                    className="ml-4"
+                >
+                    <option value="">All statuses</option>
+                    <option value="pending">Pending</option>
+                    <option value="shipped">Shipped</option>
+                    <option value="delivered">Delivered</option>
+                    <option value="cancelled">Cancelled</option>
+                </select>
+
+                {/* Сортування за ціною */}
+                <select
+                    value={sort.orderPrice ? "price" : ""}
+                    onChange={(e) =>
+                        onSortChange(e.target.value === "price" ? { orderPrice: true } : {})
+                    }
+                    className="ml-4"
+                >
+                    <option value="">Default sort</option>
+                    <option value="price">Sort by Price</option>
+                </select>
+                <div className="profile-icon">
+                    <div className="icon-container-pfp">
+                        <img src={user?.imageUrl ? user.imageUrl : icons.bUser} className="panel-icon" />
+                    </div>
+                    <p className="profile-name">{user?.firstName ?? "Unknown User"} {user?.lastName}</p>
                 </div>
             </header>
             <main className="main-container">
                 {orders.length > 0 ? (
-                    <div style={{ display: "flex", flexDirection: "column" }}>
-                        <div style={{ display: "flex", flexDirection: "row-reverse" }}>
+                    <div className="flex flex-col w-full">
+                        <div className="flex flex-row-reverse">
                             <p className="counter">
                                 ({pagination.totalCount}) orders
                             </p>
                         </div>
                         <div className="table-wrapper">
                             <table>
-                                <thead style={{ margin: "20px" }}>
+                                <thead className="m-5">
                                     <tr>
-                                        <th style={{ width: "30%" }}>Name and Surname</th>
-                                        <th style={{ width: "25%" }}>Order</th>
-                                        <th style={{ width: "10%" }}>Price</th>
-                                        <th style={{ width: "15%", textAlign:"center" }}>Status</th>
-                                        <th style={{ width: "10%" }}></th>
+                                        <th style={{ width: "30%" }}  className='table-header'>Name and Surname</th>
+                                        <th style={{ width: "25%" }}  className='table-header'>Order</th>
+                                        <th style={{ width: "10%" }}  className='table-header'>Price</th>
+                                        <th style={{ width: "15%" }}  className='table-header text-center'>Status</th>
+                                        <th style={{ width: "10%" }}  className='table-header'></th>
                                     </tr>
                                 </thead>
                                 {loading ? (
@@ -78,7 +117,7 @@ const OrderList: React.FC<OrderListProps> = ({
                 )}
             </main>
             <footer>
-                <div style={{ float: "right", padding: "0 5%" }}>
+                <div className="pagination-container">
                     <Pagination
                         pagination={pagination}
                         onPageChange={onPageChange}

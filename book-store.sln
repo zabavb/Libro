@@ -29,6 +29,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BookAPI.Tests", "BookAPI.Te
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrderAPI.Tests", "OrderAPI.Tests\OrderAPI.Tests.csproj", "{141E1373-85D2-44BF-8ABA-E797984B7584}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "APIComposer", "APIComposer\APIComposer.csproj", "{391AB386-1DC1-4064-BA73-862304C3E718}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -77,6 +79,10 @@ Global
 		{141E1373-85D2-44BF-8ABA-E797984B7584}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{141E1373-85D2-44BF-8ABA-E797984B7584}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{141E1373-85D2-44BF-8ABA-E797984B7584}.Release|Any CPU.Build.0 = Release|Any CPU
+		{391AB386-1DC1-4064-BA73-862304C3E718}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{391AB386-1DC1-4064-BA73-862304C3E718}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{391AB386-1DC1-4064-BA73-862304C3E718}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{391AB386-1DC1-4064-BA73-862304C3E718}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

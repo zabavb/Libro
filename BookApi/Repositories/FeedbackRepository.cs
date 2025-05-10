@@ -4,11 +4,9 @@ using BookAPI.Models.Filters;
 using BookAPI.Models.Sortings;
 using BookAPI.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using StackExchange.Redis;
-using System.Text.Json;
-using Microsoft.Extensions.Logging;
 using Library.Common;
 using BookAPI.Data.CachHelper;
+using Library.DTOs.UserRelated.User;
 
 namespace BookAPI.Repositories
 {
@@ -38,7 +36,8 @@ namespace BookAPI.Repositories
             await _cacheService.SetAsync(cacheKey, entity, _cacheExpiration);
 
             string allFeedbacksCacheKey = $"{_cacheKeyPrefix}All";
-            var cachedFeedbacks = await _cacheService.GetAsync<List<Feedback>>(allFeedbacksCacheKey) ?? new List<Feedback>();
+            var cachedFeedbacks = await _cacheService.GetAsync<List<Feedback>>(allFeedbacksCacheKey) ??
+                                  new List<Feedback>();
 
             cachedFeedbacks.Add(entity);
             await _cacheService.SetAsync(allFeedbacksCacheKey, cachedFeedbacks, _cacheExpiration);
@@ -51,7 +50,8 @@ namespace BookAPI.Repositories
             if (id == Guid.Empty)
                 throw new ArgumentException("Id cannot be empty.", nameof(id));
 
-            var feedback = await _context.Feedbacks.FirstOrDefaultAsync(a => a.Id == id) ?? throw new KeyNotFoundException("Feedback not found");
+            var feedback = await _context.Feedbacks.FirstOrDefaultAsync(a => a.Id == id) ??
+                           throw new KeyNotFoundException("Feedback not found");
             _context.Feedbacks.Remove(feedback);
             await _context.SaveChangesAsync();
 
@@ -67,7 +67,8 @@ namespace BookAPI.Repositories
         }
 
 
-        public async Task<PaginatedResult<Feedback>> GetAllAsync(int pageNumber, int pageSize, FeedbackFilter? filter, FeedbackSort? sort)
+        public async Task<PaginatedResult<Feedback>> GetAllAsync(int pageNumber, int pageSize, FeedbackFilter? filter,
+            FeedbackSort? sort)
         {
             List<Feedback> feedbacks;
             string cacheKey = $"{_cacheKeyPrefix}All";
@@ -136,9 +137,42 @@ namespace BookAPI.Repositories
             return feedback;
         }
 
+        public async Task<ICollection<FeedbackForUserDetails>> GetAllForUserDetailsAsync(Guid userId)
+        {
+            string cacheKey = $"{_cacheKeyPrefix}{userId}";
+            var cachedFeedback = await _cacheService.GetAsync<ICollection<FeedbackForUserDetails>>(cacheKey);
+            if (cachedFeedback != null)
+            {
+                _logger.LogInformation("Fetched from CACHE.");
+                return cachedFeedback;
+            }
+
+            var feedbacks = _context.Feedbacks
+                .AsNoTracking()
+                .Where(f => f.UserId == userId)
+                .Include(f => f.Book)
+                .AsEnumerable()
+                .Select(f => new FeedbackForUserDetails()
+                {
+                    HeadLabel = $"{f.Book.Title} - {f.Id.ToString().Split('-')[4]}",
+                    Rating = f.Rating,
+                    Comment = f.Comment,
+                    Date = f.Date
+                }).ToList();
+            _logger.LogInformation("Fetched from DB.");
+
+            if (feedbacks.Count > 0)
+            {
+                await _cacheService.SetAsync(cacheKey, feedbacks, _cacheExpiration);
+            }
+
+            return feedbacks;
+        }
+
         public async Task UpdateAsync(Feedback entity)
         {
-            var feedbackToUpdate = await _context.Feedbacks.FirstOrDefaultAsync(a => a.Id == entity.Id) ?? throw new KeyNotFoundException("Feedback not found");
+            var feedbackToUpdate = await _context.Feedbacks.FirstOrDefaultAsync(a => a.Id == entity.Id) ??
+                                   throw new KeyNotFoundException("Feedback not found");
             _context.Entry(feedbackToUpdate).CurrentValues.SetValues(entity);
             await _context.SaveChangesAsync();
 
@@ -154,8 +188,5 @@ namespace BookAPI.Repositories
 
             _logger.LogInformation("Feedback updated in DB and cached.");
         }
-
     }
 }
-
-

@@ -1,30 +1,30 @@
 ﻿using AutoMapper;
-using BookAPI;
-using BookAPI.Repositories;
-using BookAPI.Repositories.Interfaces;
 using Library.Common;
 using Library.DTOs.UserRelated.User;
-using Library.Interfaces;
-using Library.Sorts;
-using Microsoft.EntityFrameworkCore;
 using OrderApi.Models;
 using OrderApi.Repository;
 using OrderAPI;
 using OrderAPI.Models;
 using OrderAPI.Services.Interfaces;
 
+
 namespace OrderApi.Services
 {
-    public class OrderService(IOrderRepository repository, IMapper mapper, ILogger<IOrderService> logger, IBookRepository bookRepository) : IOrderService
+    public class OrderService(
+        IOrderRepository repository,
+        IMapper mapper,
+        ILogger<IOrderService> logger) : IOrderService
     {
         private readonly IOrderRepository _repository = repository;
         private readonly IMapper _mapper = mapper;
         private readonly ILogger<IOrderService> _logger = logger;
         private string _message = string.Empty;
-        private readonly IBookRepository _bookRepository = bookRepository;
-        public async Task<PaginatedResult<OrderDto>> GetAllAsync(int pageNumber, int pageSize, string searchTerm, Filter? filter, Sort? sort)
+
+        public async Task<PaginatedResult<OrderDto>> GetAllAsync(int pageNumber, int pageSize, string searchTerm,
+            Filter? filter, Sort? sort)
         {
-            var paginatedOrders = await _repository.GetAllPaginatedAsync(pageNumber, pageSize, searchTerm, filter, sort);
+            var paginatedOrders =
+                await _repository.GetAllAsync(pageNumber, pageSize, searchTerm, filter, sort);
 
             if (paginatedOrders == null || paginatedOrders.Items == null)
             {
@@ -60,14 +60,39 @@ namespace OrderApi.Services
             return order == null ? null : _mapper.Map<OrderDto>(order);
         }
 
+        public async Task<OrderForUserCard?> GetForUserCardAsync(Guid id)
+        {
+            try
+            {
+                return await _repository.GetForUserCardAsync(id);
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
+        public async Task<ICollection<OrderForUserDetails>?> GetAllForUserDetailsAsync(Guid id)
+        {
+            try
+            {
+                return await _repository.GetAllForUserDetailsAsync(id);
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
         public async Task CreateAsync(OrderDto entity)
         {
-            if(entity == null)
+            if (entity == null)
             {
                 _message = "Order was not provided for creation.";
                 _logger.LogError(_message);
                 throw new ArgumentNullException(null, _message);
             }
+
             var order = _mapper.Map<Order>(entity);
 
             try
@@ -76,13 +101,12 @@ namespace OrderApi.Services
                 await _repository.CreateAsync(order);
                 _logger.LogInformation("Order successfully created.");
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 _message = $"Error occurred while adding the order with ID [{entity.Id}].";
                 _logger.LogError(_message);
                 throw new InvalidOperationException(_message, ex);
             }
-
         }
 
         public async Task UpdateAsync(OrderDto entity)
@@ -106,13 +130,12 @@ namespace OrderApi.Services
                 _logger.LogError(_message);
                 throw new KeyNotFoundException(_message);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 _message = $"Error occurred while updating the order with ID [{entity.Id}].";
                 _logger.LogError(_message);
                 throw new InvalidOperationException(_message, ex);
             }
-
         }
 
         public async Task DeleteAsync(Guid id)
@@ -128,7 +151,7 @@ namespace OrderApi.Services
                 _logger.LogError(_message);
                 throw new KeyNotFoundException(_message);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 _message = $"Error occurred while deleting the order with ID [{id}].";
                 _logger.LogError(_message);

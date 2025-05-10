@@ -1,17 +1,20 @@
 .search{
-    border-radius: 5px;
-    border: 1px solid #000000;
-    background-color: #F4F0E5;
-    padding: 5px;
-    color: black;
-    min-width: 400px;
+    @apply bg-transparent flex-1;
+}
+
+.search:focus{
+    outline: none;
 }
 
 .search::placeholder{
-    color: black;
-    opacity: 1;
+    @apply opacity-100 text-black;
 }
 
-.serach-container{
-    align-content: center;
+.search-container{
+    @apply py-2 content-center text-black bg-[#F4F0E5] flex rounded-lg; 
+    border: 1px solid #000000;
+    min-width: 400px;
+    padding-right: 30px;
+    padding-left: 16px;
+    gap:17px;
 }

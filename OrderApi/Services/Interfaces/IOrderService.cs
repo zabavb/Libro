@@ -1,16 +1,20 @@
 ﻿using Library.Common;
 using Library.DTOs.UserRelated.User;
 using Library.Interfaces;
-using OrderAPI.Models;
 
-namespace OrderAPI.Services.Interfaces
+namespace OrderApi.Services
 {
-    public interface IOrderService : IManageable<OrderDto,OrderDto>
+    public interface IOrderService : IManageable<OrderDto>
     {
-        Task<PaginatedResult<OrderDto>> GetAllAsync(int pageNumber, int pageSize, string searchTerm, Filter? filter, Sort? sort);
-        Task DeleteAsync(Guid id);
-        Task<SingleSnippet<OrderCardSnippet>> GetCardSnippetByUserIdAsync(Guid id);
-        Task<CollectionSnippet<OrderDetailsSnippet>> GetAllByUserIdAsync(Guid id, int pageNumber = 1);
-        Task<List<int>> GetOrderCountsForLastThreePeriodsAsync(PeriodType periodType);
+        Task<PaginatedResult<OrderDto>> GetAllAsync(
+            int pageNumber,
+            int pageSize,
+            string searchTerm,
+            Filter? filter,
+            Sort? sort
+        );
+
+        Task<OrderForUserCard?> GetForUserCardAsync(Guid id);
+        Task<ICollection<OrderForUserDetails>?> GetAllForUserDetailsAsync(Guid id);
     }
 }

@@ -1,13 +1,23 @@
-import { useEffect, useState, useCallback, useMemo } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import UserList from '../../components/user/UserList';
-import { UserCard, UserFilter, UserSort } from '../../types';
+import {
+  Bool,
+  UserCard,
+  UserFilter,
+  UserSort,
+  UserViewFilter,
+} from '../../types';
 import { fetchUsersService } from '../../services/userService';
 import { useDispatch } from 'react-redux';
 import { AppDispatch } from '../../state/redux';
 import { addNotification } from '../../state/redux/slices/notificationSlice';
+import {
+  FromUserFilterToUserViewFilter,
+  FromUserViewFilterToUserFilter,
+} from '@/api/adapters/userAdapter';
 
-const UserListContainer = () => {
+const UserListContainer: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
 
@@ -15,7 +25,11 @@ const UserListContainer = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [filters, setFilters] = useState<UserFilter>({});
-  const [sort, setSort] = useState<UserSort>({});
+  const [sort, setSort] = useState<UserSort>({
+    alphabetical: Bool.NULL,
+    youngest: Bool.NULL,
+    roleSort: Bool.NULL,
+  });
   const [pagination, setPagination] = useState({
     pageNumber: 1,
     pageSize: 10,
@@ -25,44 +39,52 @@ const UserListContainer = () => {
   const paginationMemo = useMemo(() => ({ ...pagination }), [pagination]);
 
   const fetchUserList = useCallback(async () => {
-    setLoading(true);
-    try {
-      const response = await fetchUsersService(
-        paginationMemo.pageNumber,
-        paginationMemo.pageSize,
-        searchTerm,
-        filters,
-        sort,
-      );
+    (async () => {
+      setLoading(true);
+      try {
+        const response = await fetchUsersService(
+          paginationMemo.pageNumber,
+          paginationMemo.pageSize,
+          searchTerm,
+          filters,
+          sort,
+        );
 
-      if (response.error)
+        if (response.data) {
+          const paginatedData = response.data;
+
+          setUsers((prev) =>
+            JSON.stringify(prev) === JSON.stringify(paginatedData.items)
+              ? prev
+              : paginatedData.items,
+          );
+
+          setPagination((prev) => {
+            if (
+              prev.pageNumber === paginatedData.pageNumber &&
+              prev.pageSize === paginatedData.pageSize &&
+              prev.totalCount === paginatedData.totalCount
+            ) {
+              return prev;
+            }
+            return {
+              pageNumber: paginatedData.pageNumber,
+              pageSize: paginatedData.pageSize,
+              totalCount: paginatedData.totalCount,
+            };
+          });
+        } else if (response.error) throw Error(response.error);
+      } catch (error) {
         dispatch(
           addNotification({
-            message: response.error,
+            message: error instanceof Error ? error.message : String(error),
             type: 'error',
           }),
         );
-
-      if (response && response.data) {
-        const paginatedData = response.data;
-
-        setUsers(paginatedData.items);
-        setPagination({
-          pageNumber: paginatedData.pageNumber,
-          pageSize: paginatedData.pageSize,
-          totalCount: paginatedData.totalCount,
-        });
-      } else throw new Error('Invalid response structure');
-    } catch (error) {
-      dispatch(
-        addNotification({
-          message: error instanceof Error ? error.message : String(error),
-          type: 'error',
-        }),
-      );
-      setUsers([]);
-    }
-    setLoading(false);
+        setUsers([]);
+      }
+      setLoading(false);
+    })();
   }, [paginationMemo, searchTerm, filters, sort, dispatch]);
 
   useEffect(() => {
@@ -76,20 +98,23 @@ const UserListContainer = () => {
     setPagination((prev) => ({ ...prev, pageNumber: 1 }));
   };
 
-  const handleFilterChange = (newFilters: UserFilter) => {
+  const handleFilterChange = (viewFilters: UserViewFilter) => {
+    const newFilters = FromUserViewFilterToUserFilter(viewFilters);
+
     setFilters(newFilters);
     setPagination((prev) => ({ ...prev, pageNumber: 1 }));
   };
 
-  const handleSortChange = (field: keyof UserSort) => {
-    setSort({ [field]: true });
+  const handleSortChange = (newSorts: UserSort) => {
+    setSort(newSorts);
     setPagination((prev) => ({ ...prev, pageNumber: 1 }));
   };
 
   const handlePageChange = (pageNumber: number) => {
-    setPagination((prev) => ({ ...prev, pageNumber }));
-  };
-
+    
+    setPagination((prev) => ({...prev, pageNumber}))
+  }
+  
   return (
     <UserList
       users={users}
@@ -100,7 +125,7 @@ const UserListContainer = () => {
       onSearchTermChange={handleSearchTermChange}
       searchTerm={searchTerm}
       onFilterChange={handleFilterChange}
-      filters={filters}
+      filters={FromUserFilterToUserViewFilter(filters)}
       onSortChange={handleSortChange}
       sort={sort}
     />

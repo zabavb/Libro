@@ -1,8 +1,13 @@
 import { useNavigate } from "react-router-dom";
-import "../../index.css"
+import "../../index.css";
+import Header from "@/components/layouts/Header";
+import Footer from "@/components/layouts/Footer";
+import { CarouselOffers } from "@/components/common/CarouselOffers";
+import { useAuth } from "../../state/context";
 
 const MainPage: React.FC = () => {
   const navigate = useNavigate();
+  const { logout } = useAuth();
 
   return (
     <div>
@@ -19,8 +24,9 @@ const MainPage: React.FC = () => {
       <div>
         <button onClick={() => navigate('/liked')}>Liked Books</button>
       </div>
+
     </div>
   );
-}
+};
 
-export default MainPage
+export default MainPage;

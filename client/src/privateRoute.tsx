@@ -1,13 +1,21 @@
-import { Navigate, Outlet } from "react-router-dom"
-import { useAuth } from "./state/context"
+import { Navigate, Outlet } from 'react-router-dom';
+import { useAuth } from './state/context';
+import { Role, User } from './types';
+import { roleEnumToNumber } from './api/adapters/userAdapter';
 
 const DISABLE_AUTH = true;
 
 const PrivateRoute = () => {
-	const { token } = useAuth()
-	if (DISABLE_AUTH) 
-		{return <Outlet />;}
-	return token ? <Outlet /> : <Navigate to="/login" />
-}
+  const { token } = useAuth();
+  const user = JSON.parse(localStorage.getItem('user') || '{}') as User;
 
-export default PrivateRoute
+  const isPrivileged =
+    token &&
+    user &&
+    (user.role === roleEnumToNumber(Role.ADMIN) ||
+      user.role === roleEnumToNumber(Role.MODERATOR));
+
+  return isPrivileged ? <Outlet /> : <Navigate to='/' state={{ authOpen: true}}/>;
+};
+
+export default PrivateRoute;

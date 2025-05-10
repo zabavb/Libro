@@ -21,7 +21,8 @@ namespace BookAPI.Services
             _logger = logger;
         }
 
-        public async Task<PaginatedResult<AuthorDto>> GetAuthorsAsync(int pageNumber, int pageSize, string? searchTerm, AuthorFilter? filter, AuthorSort? sort)
+        public async Task<PaginatedResult<AuthorDto>> GetAllAsync(int pageNumber, int pageSize, string? searchTerm,
+            AuthorFilter? filter, AuthorSort? sort)
         {
             var authors = await _authorRepository.GetAllAsync(pageNumber, pageSize, searchTerm, filter, sort);
             if (authors == null || authors.Items == null)
@@ -39,7 +40,7 @@ namespace BookAPI.Services
             };
         }
 
-        public async Task<AuthorDto> GetAuthorByIdAsync(Guid id)
+        public async Task<AuthorDto> GetByIdAsync(Guid id)
         {
             var author = await _authorRepository.GetByIdAsync(id);
 
@@ -53,7 +54,7 @@ namespace BookAPI.Services
             return _mapper.Map<AuthorDto>(author);
         }
 
-        public async Task<AuthorDto> CreateAuthorAsync(AuthorDto authorDto)
+        public async Task /*<AuthorDto>*/ CreateAsync(AuthorDto authorDto)
         {
             var author = _mapper.Map<Author>(authorDto);
             try
@@ -66,17 +67,17 @@ namespace BookAPI.Services
                 _logger.LogWarning($"Failed to create author. Error: {ex.Message}");
             }
 
-            return _mapper.Map<AuthorDto>(author);
+            // return _mapper.Map<AuthorDto>(author);
         }
 
-        public async Task<AuthorDto> UpdateAuthorAsync(Guid id, AuthorDto authorDto)
+        public async Task /*<AuthorDto>*/ UpdateAsync( /*Guid id,*/ AuthorDto authorDto)
         {
-            var existingAuthor = await _authorRepository.GetByIdAsync(id);
+            var existingAuthor = await _authorRepository.GetByIdAsync(authorDto.AuthorId);
 
             if (existingAuthor == null)
             {
                 _logger.LogWarning($"UpdateAuthorAsync returns null");
-                return null;
+                // return null;
             }
 
             try
@@ -85,33 +86,34 @@ namespace BookAPI.Services
                 await _authorRepository.UpdateAsync(existingAuthor);
                 _logger.LogInformation($"Successfully updated author with id {authorDto.AuthorId}");
             }
-            catch (Exception ex) 
+            catch (Exception ex)
             {
                 _logger.LogWarning($"Failed to update author. Error: {ex.Message}");
             }
-            return _mapper.Map<AuthorDto>(existingAuthor);
+
+            // return _mapper.Map<AuthorDto>(existingAuthor);
         }
 
-        public async Task<bool> DeleteAuthorAsync(Guid id)
+        public async Task /*<bool>*/ DeleteAsync(Guid id)
         {
             var author = await _authorRepository.GetByIdAsync(id);
 
             if (author == null)
             {
                 _logger.LogWarning($"DeleteAuthorAsync returns null");
-                return false;
+                // return false;
             }
 
             try
             {
                 await _authorRepository.DeleteAsync(id);
                 _logger.LogInformation($"Successfully deleted author with id {id}");
-                return true;
+                // return true;
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 _logger.LogWarning($"Failed to delete autor. Error: {ex.Message}");
-                return false;
+                // return false;
             }
         }
     }

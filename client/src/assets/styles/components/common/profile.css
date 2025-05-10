@@ -1,0 +1,55 @@
+.form-container{
+    @apply bg-dark py-5 px-[60px] flex flex-col gap-6;
+}
+
+.form-section {
+    @apply flex flex-col bg-primary p-10 text-dark gap-5;
+    border-radius: 30px;
+}
+
+.input-field {
+    @apply flex justify-between bg-dim-gray rounded-lg p-2.5;
+}
+
+.input-area{
+    @apply bg-transparent text-lg;
+    flex-grow: 1;
+    flex-shrink: 1;
+    min-width: 0;
+}
+
+.input-btn{
+    @apply shrink-0 text-[#FF642E];
+    font-size: 15px;
+}
+
+.admin-btn{
+    @apply bg-[#F5CB2E] py-5 px-10 text-xl;
+    border-radius: 30px;
+}
+
+.sub-active{
+    @apply rounded-lg p-2.5 bg-[#FF642E] text-white;
+}
+
+.sub-inactive{
+    @apply rounded-lg p-2.5;
+    border:1px solid #FF642E;
+}
+
+.sub-image{
+    @apply  text-white font-semibold;
+    font-size: 15px;
+    line-height: 20px;
+}
+
+.sub-image-container{
+    @apply flex bg-dark items-center justify-center shrink-0;
+    width: 44px;
+    height: 44px;
+    border-radius: 40px;
+}
+
+.sub-desc{
+    font-size: 13px;
+}

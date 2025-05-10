@@ -1,0 +1,26 @@
+.denied-page-container{
+    @apply flex flex-col justify-center h-dvh text-[#FF642E] text-center;
+}
+
+.denied-container{
+    @apply flex flex-col items-center;
+}
+
+.denied{
+    @apply font-semibold text-center relative;
+    font-size: 64px;
+    line-height: 100%;
+}
+
+.denied-image{
+    @apply absolute;
+    top: 100px;
+    left: 25px;
+}
+
+.denied-nav-btn{
+    @apply bg-[#FF642E] text-lg text-white m-52;
+    border-radius: 46px;
+    padding: 16px 30px;
+    line-height: 16px;
+}

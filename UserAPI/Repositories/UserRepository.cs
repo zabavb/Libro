@@ -4,7 +4,6 @@ using Microsoft.EntityFrameworkCore;
 using StackExchange.Redis;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using Library.DTOs.UserRelated.User;
 using UserAPI.Data;
 using UserAPI.Models;
 using UserAPI.Repositories.Interfaces;
@@ -25,8 +24,7 @@ namespace UserAPI.Repositories
             int pageSize,
             string? searchTerm,
             Filter? filter,
-            Sort? sort
-        )
+            Sort? sort)
         {
             try
             {
@@ -40,51 +38,89 @@ namespace UserAPI.Repositories
                 var cachedUsers = await _redisDatabase.HashGetAllAsync(cacheKey);
 
                 IQueryable<User> users;
+
                 if (cachedUsers.Length > 0)
                 {
-                    users = cachedUsers
+                    var usersList = cachedUsers
                         .Select(entry => JsonSerializer.Deserialize<User>(entry.Value!, options)!)
-                        .AsQueryable()
-                        .AsNoTracking();
+                        .ToList();
 
                     _logger.LogInformation("Fetched from CACHE.");
+
+                    IEnumerable<User>? filteredUsers = null;
+                    if (searchTerm is not null)
+                    {
+                        filteredUsers = usersList.Where(u =>
+                            (!string.IsNullOrEmpty(u.FirstName) &&
+                             u.FirstName.Contains(searchTerm!, StringComparison.OrdinalIgnoreCase)) ||
+                            (!string.IsNullOrEmpty(u.LastName) &&
+                             u.LastName.Contains(searchTerm!, StringComparison.OrdinalIgnoreCase)) ||
+                            (!string.IsNullOrEmpty(u.Email) &&
+                             u.Email.Contains(searchTerm!, StringComparison.OrdinalIgnoreCase)) ||
+                            (!string.IsNullOrEmpty(u.PhoneNumber) &&
+                             u.PhoneNumber.Contains(searchTerm!, StringComparison.OrdinalIgnoreCase))
+                        );
+                    }
+
+                    users = filteredUsers is not null
+                        ? filteredUsers.AsQueryable().AsNoTracking()
+                        : usersList.AsQueryable().AsNoTracking();
                 }
                 else
                 {
-                    users = _context.Users.AsNoTracking();
+                    users = _context.Users
+                        .AsNoTracking()
+                        .Select(u => new User()
+                        {
+                            UserId = u.UserId,
+                            FirstName = u.FirstName,
+                            LastName = u.LastName,
+                            DateOfBirth = u.DateOfBirth,
+                            Email = u.Email,
+                            PhoneNumber = u.PhoneNumber,
+                            Role = u.Role,
+                            ImageUrl = u.ImageUrl,
+                            Password = null!,
+                            SubscriptionIds = u.UserSubscriptions!.Select(us => us.SubscriptionId).ToList(),
+                            UserSubscriptions = null
+                        });
                     _logger.LogInformation("Fetched from DB.");
-                    var hashEntries = users.ToDictionary(
+
+                    if (!string.IsNullOrWhiteSpace(searchTerm))
+                        users = users.SearchBy(
+                            searchTerm,
+                            u => u.FirstName,
+                            u => u.LastName!,
+                            u => u.Email!,
+                            u => u.PhoneNumber!
+                        );
+
+                    var hashEntries = await users.ToDictionaryAsync(
                         user => user.UserId.ToString(),
                         user => JsonSerializer.Serialize(user, options)
                     );
 
                     await _redisDatabase.HashSetAsync(
                         cacheKey,
-                        [.. hashEntries.Select(kvp => new HashEntry(kvp.Key, kvp.Value))]
+                        hashEntries.Select(kvp => new HashEntry(kvp.Key, kvp.Value)).ToArray()
                     );
                     await _redisDatabase.KeyExpireAsync(cacheKey, _cacheExpiration);
                     _logger.LogInformation("Set to CACHE.");
                 }
 
-                if (users.Any() && !string.IsNullOrWhiteSpace(searchTerm))
-                    users = users.SearchBy(searchTerm,
-                        u => u.FirstName,
-                        u => u.LastName!,
-                        u => u.Email!,
-                        u => u.PhoneNumber!
-                    );
+                var userList = users.ToList();
+                if (filter is not null)
+                    userList = filter.Apply(userList.AsQueryable()).ToList();
+                users = userList.AsQueryable();
 
-                if (users.Any() && filter != null)
-                    users = filter.Apply(users);
-
-                if (users.Any() && sort != null)
+                if (sort is not null)
                     users = sort.Apply(users);
 
-                var total = await users.CountAsync();
-                var paginatedUsers = await users
+                var total = users.Count();
+                var paginatedUsers = users
                     .Skip((pageNumber - 1) * pageSize)
                     .Take(pageSize)
-                    .ToListAsync();
+                    .ToList();
 
                 return new PaginatedResult<User>
                 {
@@ -158,9 +194,7 @@ namespace UserAPI.Repositories
                     return JsonSerializer.Deserialize<User>(cachedUser!);
                 }
 
-                User? user = null;
-
-                user = await _context.Users
+                var user = await _context.Users
                     .AsNoTracking()
                     .FirstOrDefaultAsync(u => u.Email! == email);
                 _logger.LogInformation("Fetched from DB.");
@@ -190,7 +224,10 @@ namespace UserAPI.Repositories
         {
             try
             {
-                user.UserId = Guid.NewGuid();
+                var exists = await _context.Users.AnyAsync(u => u.Email == user.Email);
+                if (exists)
+                    throw new RepositoryException($"User with such email already exists.");
+
                 await _context.Users.AddAsync(user);
                 await _context.SaveChangesAsync();
             }
@@ -221,7 +258,7 @@ namespace UserAPI.Repositories
         }
 
         public async Task DeleteAsync(Guid id)
-        {   
+        {
             try
             {
                 var user = await _context.Users.FindAsync(id) ??

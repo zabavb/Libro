@@ -2,12 +2,17 @@
 using Library.Interfaces;
 using OrderAPI;
 
-namespace OrderAPI.Services.Interfaces
+namespace OrderApi.Services
 {
-    public interface IDeliveryTypeService : IManageable<DeliveryTypeDto,DeliveryTypeDto>
+    public interface IDeliveryTypeService : IManageable<DeliveryTypeDto>
     {
-        Task<PaginatedResult<DeliveryTypeDto>> GetAllAsync(int pageNumber, int pageSize, string searchTerm, DeliverySort? sort);
+        Task<PaginatedResult<DeliveryTypeDto>> GetAllAsync(
+            int pageNumber,
+            int pageSize,
+            string searchTerm,
+            DeliverySort? sort
+        );
 
-        Task DeleteAsync(Guid id);
+        // Task DeleteAsync(Guid id);
     }
 }

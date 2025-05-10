@@ -23,33 +23,41 @@ import DeliveryTypeFormPage from './pages/admin/orderRelated/deliveries/Delivery
 
 import BookListContainer from './containers/books/BookListContainer';
 
-import NotFoundPage from './pages/common/NotFoundPage'; 
+import NotFoundPage from './pages/common/NotFoundPage';
 import OrderListPage from './pages/admin/orderRelated/orders/OrdersListPage';
 import DeliveriesListPage from './pages/admin/orderRelated/deliveries/DeliveriesListPage';
-import UserCartPage from './pages/main/user/UserCartPage';
-import UserCheckoutPage from './pages/main/user/UserCheckoutPage';
+import SubscriptionPage from './pages/main/user/SubscriptionPage';
+import SubscriptionListPage from './pages/admin/userRelated/subscriptions/SubscriptionListPage';
+import SubscriptionFormPage from './pages/admin/userRelated/subscriptions/SubscriptionFormPage';
+import OrderCheckoutPage from './pages/Main/order/OrderCheckoutPage';
 import UserOrdersPage from './pages/main/user/UserOrdersPage';
 import LikedBooksPage from './pages/main/likedBooksPage';
-
+import BookDetailsPage from './pages/main/book/BookDetailsPage';
+import BookCatalogPage from './pages/main/book/BooksCatalogPage';
+import OrderDetailsPage from './pages/admin/orderRelated/orders/OrderDetailsPage';
+import ProfilePage from './pages/common/ProfilePage';
+import OrderConfirmationPage from './pages/Main/order/OrderConfirmationPage';
+import OrderSuccessPage from './pages/Main/order/OrderSuccessPage';
 
 const AppRoutes = () => (
   <AuthProvider>
     <BrowserRouter>
       <Routes>
-        {/* Authentication */}
-        <Route path='/login' element={<LoginPage />} />
-        {/* Subscription */}
-        {/* <Route 
-				   	path="/subscription" 
-					element={<Subscription />} 
-				/>  */}
-        <Route path='/register' element={<RegisterPage />} />
         {/* Main */}
         <Route path='/' element={<MainPage />} />
-        <Route path='/cart' element={<UserCartPage />} />
-        <Route path='/cart/checkout' element={<UserCheckoutPage />} />
+        <Route path='/profile' element={<ProfilePage />} />
+        <Route path='/checkout' element={<OrderCheckoutPage />} />
+        <Route path='/checkout/confirm' element={<OrderConfirmationPage />} />
+        <Route path='/checkout/success' element={<OrderSuccessPage/>} />
         <Route path='/orders' element={<UserOrdersPage />} />
         <Route path='/liked' element={<LikedBooksPage />} />
+        <Route path='/catalog' element={<BookCatalogPage/>}/>
+        <Route path='/books/:bookId' element={<BookDetailsPage/>}/>
+        <Route path='/orders/:orderId' element={<OrderDetailsPage />} />
+        <Route
+          path='/subscriptions/:subscriptionId'
+          element={<SubscriptionPage />}
+        />
         <Route element={<PrivateRoute />}>
           {/* Admin */}
           <Route path='/admin' element={<AdminLayout />}>
@@ -59,14 +67,24 @@ const AppRoutes = () => (
             <Route path='/admin/users' element={<UserListPage />} />
             <Route path='/admin/users/add' element={<UserFormPage />} />
             <Route path='/admin/users/:userId' element={<UserFormPage />} />
+            {/* Subscription */}
+            <Route
+              path='/admin/subscriptions'
+              element={<SubscriptionListPage />}
+            />
+            <Route
+              path='/admin/subscriptions/add'
+              element={<SubscriptionFormPage />}
+            />
+            <Route
+              path='/admin/subscriptions/:subscriptionId'
+              element={<SubscriptionFormPage />}
+            />
             {/* Order */}
             <Route path='/admin/orders' element={<OrderListPage />} />
             <Route path='/admin/orders/:orderId' element={<OrderFormPage />} />
             {/* Delivery Types */}
-            <Route
-              path='/admin/delivery'
-              element={<DeliveriesListPage />}
-            />
+            <Route path='/admin/delivery' element={<DeliveriesListPage />} />
             <Route
               path='/admin/delivery/add'
               element={<DeliveryTypeFormPage />}

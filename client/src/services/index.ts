@@ -9,6 +9,17 @@ export {
 } from './userService';
 
 export {
+  fetchSubscriptionsService,
+  fetchSubscriptionByIdService,
+  addSubscriptionService,
+  editSubscriptionService,
+  removeSubscriptionService,
+  subscribeService,
+  unSubscribeService,
+  subscriptionsforFilteringService,
+} from './subscriptionService';
+
+export {
   fetchOrdersService,
   fetchOrderByIdService,
   addOrderService,

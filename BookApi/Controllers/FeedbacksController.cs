@@ -1,11 +1,10 @@
-﻿using BookAPI.Models;
-using BookAPI;
-using BookAPI.Models.Filters;
+﻿using BookAPI.Models.Filters;
 using BookAPI.Models.Sortings;
 using BookAPI.Services.Interfaces;
-using FeedbackApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using Library.Common;
+using Library.DTOs.UserRelated.User;
+using Microsoft.AspNetCore.Authorization;
 
 namespace BookAPI.Controllers
 {
@@ -38,12 +37,12 @@ namespace BookAPI.Controllers
         /// <response code="404">Returns an error if no feedbacks are found.</response>
         /// <response code="500">Returns an internal server error if an exception occurs.</response>
         [HttpGet]
-        public async Task<ActionResult<PaginatedResult<FeedbackDto>>> GetFeedbacks(
+        public async Task<ActionResult<PaginatedResult<FeedbackDto>>> GetAll(
             [FromQuery] int pageNumber = GlobalConstants.DefaultPageNumber,
             [FromQuery] int pageSize = GlobalConstants.DefaultPageSize,
             [FromQuery] FeedbackFilter? filter = null,
             [FromQuery] FeedbackSort? sort = null
-            )
+        )
         {
             try
             {
@@ -53,7 +52,7 @@ namespace BookAPI.Controllers
                     return BadRequest("Page number and page size must be greater than 0.");
                 }
 
-                var feedbacks = await _feedbackService.GetFeedbacksAsync(pageNumber, pageSize, filter, sort);
+                var feedbacks = await _feedbackService.GetAllAsync(pageNumber, pageSize, filter, sort);
 
                 if (feedbacks == null || feedbacks.Items == null || !feedbacks.Items.Any())
                 {
@@ -79,11 +78,11 @@ namespace BookAPI.Controllers
         /// <response code="404">Returns an error if the feedback with the specified ID is not found.</response>
         /// <response code="500">Returns an internal server error if an exception occurs.</response>
         [HttpGet("{id}")]
-        public async Task<ActionResult<FeedbackDto>> GetFeedbackById(Guid id)
+        public async Task<ActionResult<FeedbackDto>> GetById(Guid id)
         {
             try
             {
-                var feedback = await _feedbackService.GetFeedbackByIdAsync(id);
+                var feedback = await _feedbackService.GetByIdAsync(id);
 
                 if (feedback == null)
                 {
@@ -96,8 +95,26 @@ namespace BookAPI.Controllers
             {
                 _logger.LogError(ex, $"Error occurred while retrieving feedback with id {id}.");
                 return StatusCode(500, $"Internal server error: {ex.Message}");
-
             }
+        }
+
+        /// <summary>
+        /// Retrieves Feedbacks data for user's details page by ID.
+        /// </summary>
+        /// <param name="id">The unique identifier of the user.</param>
+        /// <returns>Snippets of feedbacks data which user ID matches with provided one in parameters.</returns>
+        /// <response code="200">Retrieval successful, return the feedback snippets.</response>
+        /// <response code="404">Could not find the user.</response>
+        /// <response code="500">An unexpected error occured.</response>
+        [Authorize(Roles = "ADMIN, MODERATOR")]
+        [HttpGet("for-user/details/{id}")]
+        public async Task<ActionResult<ICollection<FeedbackForUserDetails>>> GetAllForUserDetailsAsync(Guid id)
+        {
+            if (id == Guid.Empty)
+                return NotFound($"User ID [{id}] was not provided.");
+
+            var snippets = await _feedbackService.GetAllForUserDetailsAsync(id);
+            return Ok(snippets);
         }
 
         /// <summary>
@@ -109,7 +126,7 @@ namespace BookAPI.Controllers
         /// <response code="400">Returns an error if the provided data is invalid.</response>
         /// <response code="500">Returns an internal server error if an exception occurs.</response>
         [HttpPost]
-        public async Task<ActionResult<FeedbackDto>> CreateFeedback([FromBody] FeedbackDto feedbackDto)
+        public async Task<ActionResult<FeedbackDto>> Create([FromBody] FeedbackDto feedbackDto)
         {
             if (feedbackDto == null)
             {
@@ -119,8 +136,9 @@ namespace BookAPI.Controllers
 
             try
             {
-                var createdFeedback = await _feedbackService.CreateFeedbackAsync(feedbackDto);
-                return CreatedAtAction(nameof(GetFeedbackById), new { id = createdFeedback.FeedbackId }, createdFeedback);
+                /*var createdFeedback = */
+                await _feedbackService.CreateAsync(feedbackDto);
+                return CreatedAtAction(nameof(GetById), new { id = feedbackDto.FeedbackId }, feedbackDto);
             }
             catch (Exception ex)
             {
@@ -130,7 +148,7 @@ namespace BookAPI.Controllers
         }
 
 
-        /// <summary>
+        /*/// <summary>
         /// Updates an existing feedback.
         /// </summary>
         /// <param name="id">The ID of the feedback to update.</param>
@@ -164,7 +182,7 @@ namespace BookAPI.Controllers
                 _logger.LogError(ex, $"Error occurred while updating feedback with id {id}.");
                 return StatusCode(StatusCodes.Status500InternalServerError, new { message = ex.Message });
             }
-        }
+        }*/
 
         /// <summary>
         /// Deletes a feedback by its ID.
@@ -175,16 +193,17 @@ namespace BookAPI.Controllers
         /// <response code="404">Returns an error if the feedback with the specified ID is not found for deletion.</response>
         /// <response code="500">Returns an internal server error if an exception occurs.</response>
         [HttpDelete("{id}")]
-        public async Task<ActionResult> DeleteFeedback(Guid id)
+        public async Task<ActionResult> Delete(Guid id)
         {
             try
             {
-                var isDeleted = await _feedbackService.DeleteFeedbackAsync(id);
+                /*var isDeleted = */
+                await _feedbackService.DeleteAsync(id);
 
-                if (!isDeleted)
+                /*if (!isDeleted)
                 {
                     return NotFound($"Feedback with id {id} not found.");
-                }
+                }*/
 
                 return NoContent();
             }
@@ -194,6 +213,5 @@ namespace BookAPI.Controllers
                 return StatusCode(500, $"Internal server error: {ex.Message}");
             }
         }
-
     }
 }

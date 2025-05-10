@@ -2,18 +2,25 @@
 using BookAPI.Models.Sortings;
 using Library.Common;
 using Library.DTOs.UserRelated.User;
-using Library.Interfaces;
 
 namespace BookAPI.Services.Interfaces
 {
     public interface IFeedbackService
     {
-        Task<PaginatedResult<FeedbackDto>> GetFeedbacksAsync(int pageNumber, int pageSize, FeedbackFilter? filter, FeedbackSort? sort);
-        Task<FeedbackDto> GetFeedbackByIdAsync(Guid id);
-        Task<FeedbackDto> CreateFeedbackAsync(FeedbackDto FeedbackDto);
-        Task<FeedbackDto> UpdateFeedbackAsync(Guid id, FeedbackDto FeedbackDto);
-        Task<bool> DeleteFeedbackAsync(Guid id);
-        Task<CollectionSnippet<FeedbackDetailsSnippet>> GetAllByUserIdAsync(Guid id, int pageNumber = 1);
+        // Simplified function naming 
+        Task<PaginatedResult<FeedbackDto>> GetAllAsync(
+            int pageNumber,
+            int pageSize,
+            FeedbackFilter? filter,
+            FeedbackSort? sort
+        );
 
+        Task<FeedbackDto> GetByIdAsync(Guid id);
+        Task<ICollection<FeedbackForUserDetails>?> GetAllForUserDetailsAsync(Guid userId);
+
+        Task /*<FeedbackDto>*/ CreateAsync(FeedbackDto FeedbackDto);
+
+        // Task<FeedbackDto> UpdateFeedbackAsync(Guid id, FeedbackDto FeedbackDto);     // Should be removed
+        Task /*<bool>*/ DeleteAsync(Guid id);
     }
 }

@@ -19,6 +19,7 @@ interface UserFormContainerProps {
 const UserFormContainer: React.FC<UserFormContainerProps> = ({ id }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const [isEdit, setIsEdit] = useState<boolean>(false);
   const [serviceResponse, setServiceResponse] = useState<
     ServiceResponse<UserFormType>
   >({
@@ -33,7 +34,7 @@ const UserFormContainer: React.FC<UserFormContainerProps> = ({ id }) => {
     (async () => {
       const response = await fetchUserByIdService(id);
       setServiceResponse(response);
-
+      
       if (response.error)
         dispatch(addNotification({ message: response.error, type: 'error' }));
     })();
@@ -68,7 +69,7 @@ const UserFormContainer: React.FC<UserFormContainerProps> = ({ id }) => {
   const handleEditUser = useCallback(
     async (existingUser: UserFormType, userForm: UserFormData) => {
       if (!id) return;
-      const user = UserFormDataToUser(userForm);
+      const user = UserFormDataToUser(userForm, id);
       const margedData: User = { ...existingUser, ...user };
       const response = await editUserService(id, margedData);
 
@@ -84,6 +85,8 @@ const UserFormContainer: React.FC<UserFormContainerProps> = ({ id }) => {
       onAddUser={handleAddUser}
       onEditUser={handleEditUser}
       loading={serviceResponse.loading}
+      isEdit={isEdit}
+      onIsEdit={setIsEdit}
     />
   );
 };

@@ -1,40 +1,46 @@
 import axios from "axios";
-import { ORDERS_PAGINATED, ORDERS, ORDER_BY_ID, GET_ORDER_COUNTS } from "..";
-import { Order, PaginatedResponse } from "../../types";
-import { PeriodType } from "@/types/types/order/PeriodType";  
+import { ORDERS_PAGINATED, ORDERS, ORDER_BY_ID, GET_ORDER_COUNTS, GRAPHQL } from "..";
+import { Order, PaginatedResponse, OrderFilter, OrderSort, GraphQLResponse} from "../../types";
+import { PeriodType } from "@/types/types/order/PeriodType"; 
+import { getAuthHeaders } from "./common";
 
-export const getAllOrders = async (
-    pageNumber: number = 1,
-    pageSize: number = 10,
-    params:{
-        status: string | undefined
-        OrderDateStart?: string
-        OrderDateEnd?: string
-        DeliveryDateStart?: string
-        DeliveryDateEnd?: string
-        DeliveryId?: string
-        UserId?: string
-        searchTerm: string | undefined
-    }
-): Promise<PaginatedResponse<Order>> => {
-    const url = ORDERS_PAGINATED(pageNumber,pageSize)
-    const response = await axios.get<PaginatedResponse<Order>>(url, {params})
-    return response.data
+
+export const getAllOrders = async (body: {
+    query: string;
+    variables: {
+        pageNumber: number;
+        pageSize: number;
+        searchTerm: string | null;
+        filter: OrderFilter;
+        sort: OrderSort;
+    };
+}): Promise<GraphQLResponse<{ allOrders: PaginatedResponse<Order> }>> => {
+    const response = await axios.post<GraphQLResponse<{ allOrders: PaginatedResponse<Order> }>>(GRAPHQL, body, {
+        headers: getAuthHeaders("application/json"),
+    });
+    return response.data;
 }
 
-export const getOrderById = async (id: string): Promise<Order> => {
-    const response = await axios.get(ORDER_BY_ID(id))
-    return response.data
-}
+export const getOrderById = async (body: {
+    query: string;
+    variables: {
+        id: string;
+    };
+}): Promise<GraphQLResponse<{ order: Order }>> => {
+    const response = await axios.post<GraphQLResponse<{ order: Order }>>(GRAPHQL, body, {
+        headers: getAuthHeaders(),
+    });
+    return response.data;
+};
 
 export const createOrder = async (order: Partial<Order>): Promise<Order> => {
-    const response = await axios.post(ORDERS, order)
-    return response.data
+    const response = await axios.post(ORDERS, order);
+    return response.data;
 }
 
 export const updateOrder = async (id: string, order: Partial<Order>): Promise<Order> => {
     const response = await axios.put(ORDER_BY_ID(id), order);
-    return response.data
+    return response.data;
 }
 
 export const deleteOrder = async (id: string): Promise<void> => {

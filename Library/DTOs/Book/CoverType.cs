@@ -5,18 +5,21 @@ namespace Library.DTOs.Book
     public enum CoverType
     {
         [Display(Name = "М'яка")]
-        SoftCover,
+        SOFTCOVER,
 
         [Display(Name = "Тверда")]
-        Hardcover,
+        HARDCOVER,
 
         [Display(Name = "На спіралі")]
-        RingBinding,
+        RINGBINDING,
 
         [Display(Name = "Шкіряна")]
-        Leather,
+        LEATHER,
 
         [Display(Name = "Суперобкладинка")]
-        DustJacket
+        DUSTJACKET,
+        
+        [Display(Name = "Інші")]
+        OTHER
     }
 }

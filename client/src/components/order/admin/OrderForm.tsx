@@ -6,21 +6,26 @@ import React, { useEffect, useState } from "react";
 import { statusEnumToNumber, statusNumberToEnum } from "../../../api/adapters/orderAdapters";
 import { OrderFormData, orderSchema } from "../../../utils";
 import OrderFormBookSearch from "./OrderFormBookSearch";
-import OrderFormBookList from "./OrderFormBookList";
 import { useNavigate } from "react-router-dom";
-
+import "@/assets/styles/components/order/order-form.css"
+import "@/assets/styles/base/status-display.css"
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
+import OrderAdminFormBookList from "./OrderAdminFormBookList";
 interface OrderFormProps {
     existingOrder?: Order;
     onEditOrder: (existingOrder: Order) => Promise<void>;
     loading: boolean;
 }
 
-const OrderForm: React.FC<OrderFormProps> = ({existingOrder, onEditOrder }) => {
-    const [bookObjs, setBookObjs] = useState<Record<string,number>>({})
+const OrderForm: React.FC<OrderFormProps> = ({ existingOrder, onEditOrder }) => {
+    const [bookObjs, setBookObjs] = useState<Record<string, number>>({})
     const navigate = useNavigate();
+
     const {
         register,
         handleSubmit,
+        watch,
         setValue,
         formState: { errors }
     } = useForm<OrderFormData>({
@@ -37,18 +42,20 @@ const OrderForm: React.FC<OrderFormProps> = ({existingOrder, onEditOrder }) => {
             price: 0,
             deliveryPrice: 0,
             deliveryTypeId: "",
-            status: Status.PENDING  
+            status: Status.PENDING
         },
-    })  
+    })
+
+    const statusValue = watch("status");
 
     useEffect(() => {
-        if(existingOrder) {
+        if (existingOrder) {
             setBookObjs(existingOrder.books)
         }
-    },[existingOrder])
+    }, [existingOrder])
 
     useEffect(() => {
-        if(existingOrder) {
+        if (existingOrder) {
             setValue("userId", existingOrder.userId)
             setValue("books", existingOrder.books);
             setValue("region", existingOrder.region)
@@ -61,7 +68,7 @@ const OrderForm: React.FC<OrderFormProps> = ({existingOrder, onEditOrder }) => {
             setValue("deliveryTypeId", existingOrder.deliveryTypeId)
             setValue("status", statusNumberToEnum(existingOrder.status))
         }
-    }, [existingOrder, setValue,navigate])
+    }, [existingOrder, setValue, navigate])
 
     const onSubmit = (data: OrderFormData) => {
         const id = existingOrder?.id ?? "";
@@ -81,15 +88,15 @@ const OrderForm: React.FC<OrderFormProps> = ({existingOrder, onEditOrder }) => {
             status: statusEnumToNumber(data.status)
         }
 
-        if (existingOrder){ 
+        if (existingOrder) {
             onEditOrder(order)
             console.log("Order edited")
         }
-        else{
+        else {
             console.log("Order Does not exist")
-        } 
+        }
     }
-    
+
     const handleBookAdd = (bookId: string) => {
         setBookObjs((prev) => ({
             ...prev,
@@ -102,87 +109,129 @@ const OrderForm: React.FC<OrderFormProps> = ({existingOrder, onEditOrder }) => {
             if (!prev || !prev[bookId]) return prev;
 
             const updatedBooks = { ...prev };
-    
+
             if (updatedBooks[bookId] > 1) {
                 updatedBooks[bookId] -= 1;
             } else {
                 delete updatedBooks[bookId];
             }
-    
+
             return updatedBooks;
         });
     }
-    
+
+    const uid = existingOrder?.id.toString().split('-')[4];
+
     return (
-        <form onSubmit={handleSubmit(onSubmit)}>
-            {/* Hidden values, cannot be edited */}
+        <div>
+            <header className="header-container">
+                <div className="flex h-10 gap-2.5">
+                    <button className="cancel-button" onClick={() => navigate('/admin/orders')}><FontAwesomeIcon icon={faArrowLeft} /></button>
+                    <button className="update-button" type="submit">Update</button>
+                </div>
 
-            <input type="hidden" {...register("userId")}/>
-            <p>{errors.userId?.message}</p>
+                <div className="profile-icon">
+                    <div style={{ borderRadius: "50%", backgroundColor: "grey", height: "43px", width: "43px" }}></div>
+                    <p className="profile-name">Name Surname</p>
+                </div>
+            </header>
+            <form onSubmit={handleSubmit(onSubmit)}>
+                <main className="main-container">
+                    {/* Left form */}
+                    <div className="main-form-container">
+                        <h1 className=" font-semibold text-2xl mb-5">Order № {uid}</h1>
+                        {/* Hidden values, cannot be edited */}
+                        <input className="absolute" type="hidden" {...register("userId")} />
+                        <input className="absolute" type="hidden" {...register("deliveryTypeId")} />
+                        <input className="absolute" type="hidden" {...register("price")} />
+                        <input className="absolute" type="hidden" {...register("deliveryPrice")} />
 
-            <input type="hidden" {...register("deliveryTypeId")}/>
-            <p>{errors.deliveryTypeId?.message}</p>
+                        <div className="input-container">
+                            <p className="input-title">Region</p>
+                            <input
+                                className="input-text"
+                                {...register("region")}
+                                placeholder="Region" />
+                            <p>{errors.region?.message}</p>
+                        </div>
 
-            <input type="hidden" {...register("price")}/>
-            <p>{errors.price?.message}</p>
+                        <div className="input-container">
+                            <p className="input-title">City</p>
+                            <input
+                                className="input-text"
+                                {...register("city")}
+                                placeholder="City" />
+                            <p>{errors.city?.message}</p>
+                        </div>
 
-            <input type="hidden" {...register("deliveryPrice")}/>
-            <p>{errors.deliveryPrice?.message}</p>
+                        <div className="input-container">
+                            <p className="input-title">Address</p>
+                            <input
+                                className="input-text"
+                                {...register("address")}
+                                placeholder="Address" />
+                            <p>{errors.address?.message}</p>
+                        </div>
 
+                        <div className="flex gap-2.5">
+                            <div className="input-container">
+                                <p className="input-title">Order Date</p>
+                                <input
+                                    className="input-date"
+                                    type="date"
+                                    {...register("orderDate")}
+                                    placeholder="Order Date" />
+                                <p>{errors.orderDate?.message}</p>
+                            </div>
+                            <div className="input-container">
+                                <p className="input-title">Delivery Date</p>
+                                <input
+                                    className="input-date"
+                                    type="date"
+                                    {...register("deliveryDate")}
+                                    placeholder="Delivery Date" />
+                                <p>{errors.deliveryDate?.message}</p>
+                            </div>
+                        </div>
+                        <div className="mb-11">
+                            <h1 className=" font-semibold text-2xl mb-1 text-[#FF642E]">Status</h1>
+                            <div>
+                                <div className="status-form-container">
+                                    <select
+                                        className={`input-select ${statusValue.toLowerCase()}`}
+                                        {...register("status")}>
+                                        {Object.entries(Status).map(([key, value]) => (
+                                            <option
+                                                className="select-option"
+                                                key={key}
+                                                value={value}>
+                                                {value}
+                                            </option>
+                                        ))}
+                                    </select>
+                                    <p>{errors.status?.message}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="book-form-container">
 
-            <OrderFormBookSearch
-                onBookAdd={handleBookAdd}
-                />
-
-            <OrderFormBookList
-                books={bookObjs}
-                onBookDelete={handleBookDelete}
-                onBookAdd={handleBookAdd}
-            />
-
-
-            <input {...register("region")}
-            placeholder="Region" />
-            <p>{errors.region?.message}</p>
-
-            <input {...register("city")}
-            placeholder="City" />
-            <p>{errors.city?.message}</p>
-
-            <input {...register("address")}
-            placeholder="Address" />
-            <p>{errors.address?.message}</p>
-
-            <input 
-            type="date"
-            {...register("orderDate")}
-            placeholder="Order Date" />
-            <p>{errors.orderDate?.message}</p>
-
-            <input 
-            type="date"
-            {...register("deliveryDate")}
-            placeholder="Delivery Date" />
-            <p>{errors.deliveryDate?.message}</p>
-
-
-            <select {...register("status")}>
-                <option value="">Select Status</option>
-                {Object.entries(Status).map(([key, value]) => (
-                    <option
-                        key={key}
-                        value={value}>
-                        {value}
-                    </option>
-                ))}
-            </select>
-            <p>{errors.status?.message}</p>
-            
-            <div style={{display:"flex"}}>
-                <button type="submit">Update Order</button>
-                <p style={{cursor:"pointer"}} onClick={() => navigate('/admin/orders')}>Cancel</p>
-            </div>
-        </form>
+                        <div className="mb-3.5">
+                            <OrderFormBookSearch
+                                onBookAdd={handleBookAdd}
+                            />
+                            <div className="overflow-auto" style={{maxHeight:"900px"}}>
+                                <OrderAdminFormBookList
+                                    books={bookObjs}
+                                    onBookDelete={handleBookDelete}
+                                    onBookAdd={handleBookAdd}
+                                />
+                            </div>
+                        </div>
+                    </div>
+                </main>
+            </form>
+        </div>
     )
 }
 

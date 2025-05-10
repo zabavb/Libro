@@ -1,14 +1,8 @@
-﻿using BookAPI;
-using BookAPI.Models.Filters;
+﻿using BookAPI.Models.Filters;
 using BookAPI.Models.Sortings;
 using BookAPI.Services.Interfaces;
 using Library.Common;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace BookAPI.Controllers
 {
@@ -26,14 +20,13 @@ namespace BookAPI.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<PaginatedResult<SubCategoryDto>>> GetSubCategories(
+        public async Task<ActionResult<PaginatedResult<SubCategoryDto>>> GetAll(
             [FromQuery] int pageNumber = GlobalConstants.DefaultPageNumber,
             [FromQuery] int pageSize = GlobalConstants.DefaultPageSize,
             [FromQuery] string? searchTerm = null,
             [FromQuery] SubCategoryFilter? filter = null,
             [FromQuery] SubCategorySort? sort = null
-
-            )
+        )
         {
             try
             {
@@ -43,7 +36,8 @@ namespace BookAPI.Controllers
                     return BadRequest("Page number and page size must be greater than 0.");
                 }
 
-                var subCategories = await _subCategoryService.GetSubCategoriesAsync(pageNumber, pageSize, searchTerm, filter, sort);
+                var subCategories =
+                    await _subCategoryService.GetAllAsync(pageNumber, pageSize, searchTerm, filter, sort);
 
                 if (subCategories == null || subCategories.Items == null || subCategories.Items.Count == 0)
                 {
@@ -62,11 +56,11 @@ namespace BookAPI.Controllers
 
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<SubCategoryDto>> GetSubCategoryById(Guid id)
+        public async Task<ActionResult<SubCategoryDto>> GetById(Guid id)
         {
             try
             {
-                var subCategory = await _subCategoryService.GetSubCategoryByIdAsync(id);
+                var subCategory = await _subCategoryService.GetByIdAsync(id);
 
                 if (subCategory == null)
                 {
@@ -85,7 +79,7 @@ namespace BookAPI.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<SubCategoryDto>> CreateSubCategory([FromBody] SubCategoryDto subCategoryDto)
+        public async Task<ActionResult<SubCategoryDto>> Create([FromBody] SubCategoryDto subCategoryDto)
         {
             try
             {
@@ -95,10 +89,11 @@ namespace BookAPI.Controllers
                     return BadRequest("Invalid data.");
                 }
 
-                var created = await _subCategoryService.CreateSubCategoryAsync(subCategoryDto);
-                _logger.LogInformation($"Subcategory with id {created.SubCategoryId} successfully created.");
+                /*var created = */
+                await _subCategoryService.CreateAsync(subCategoryDto);
+                _logger.LogInformation($"Subcategory with id {subCategoryDto.SubCategoryId} successfully created.");
 
-                return CreatedAtAction(nameof(GetSubCategoryById), new { id = created.SubCategoryId }, created);
+                return CreatedAtAction(nameof(GetById), new { id = subCategoryDto.SubCategoryId }, subCategoryDto);
             }
             catch (Exception ex)
             {
@@ -108,7 +103,8 @@ namespace BookAPI.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<ActionResult<SubCategoryDto>> UpdateSubCategory(Guid id, [FromBody] SubCategoryDto subCategoryDto)
+        public async Task<ActionResult<SubCategoryDto>> Update(Guid id,
+            [FromBody] SubCategoryDto subCategoryDto)
         {
             try
             {
@@ -118,16 +114,17 @@ namespace BookAPI.Controllers
                     return BadRequest("Invalid data.");
                 }
 
-                var updated = await _subCategoryService.UpdateSubCategoryAsync(id, subCategoryDto);
+                /*var updated = */
+                await _subCategoryService.UpdateAsync(subCategoryDto);
 
-                if (updated == null)
+                /*if (updated == null)
                 {
                     _logger.LogWarning($"Subcategory with id {id} not found for update.");
                     return NotFound("Subcategory not found.");
-                }
+                }*/
 
                 _logger.LogInformation($"Subcategory with id {id} successfully updated.");
-                return Ok(updated);
+                return Ok( /*updated*/);
             }
             catch (Exception ex)
             {
@@ -141,13 +138,14 @@ namespace BookAPI.Controllers
         {
             try
             {
-                var isDeleted = await _subCategoryService.DeleteSubCategoryAsync(id);
+                /*var isDeleted = */
+                await _subCategoryService.DeleteAsync(id);
 
-                if (!isDeleted)
+                /*if (!isDeleted)
                 {
                     _logger.LogWarning($"Subcategory with id {id} not found for deletion.");
                     return NotFound("Subcategory not found.");
-                }
+                }*/
 
                 _logger.LogInformation($"Subcategory with id {id} successfully deleted.");
                 return NoContent();

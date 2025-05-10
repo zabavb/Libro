@@ -9,13 +9,6 @@ using StackExchange.Redis;
 using System.Reflection;
 using System.Security.Claims;
 using System.Text;
-using BookAPI.Data;
-using BookAPI.Data.CachHelper;
-using BookAPI.Repositories;
-using BookAPI.Repositories.Interfaces;
-using BookAPI.Services;
-using BookAPI.Services.Interfaces;
-using FeedbackApi.Services;
 using UserAPI.Data;
 using UserAPI.Models.Auth;
 using UserAPI.Profiles;
@@ -29,35 +22,21 @@ using OrderApi.Repository;
 using OrderApi.Services;
 using OrderAPI.Services.Interfaces;
 
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddSingleton<S3StorageService>();
 
-builder.Services.AddDbContext<BookDbContext>((serviceProvider, options) =>
-{
-    var storageService = serviceProvider.GetRequiredService<S3StorageService>();
-    options.UseSqlServer(builder.Configuration.GetConnectionString("BookDbConnection"));
-});
-builder.Services.AddDbContext<OrderDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("OrderDbConnection")));
 builder.Services.AddDbContext<UserDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-builder.Services.AddScoped<AvatarService>();
+builder.Services.AddScoped<DataSeeder>();
+
+builder.Services.AddScoped<IAvatarService, AvatarService>();
 builder.Services.AddScoped<IS3StorageService, S3StorageService>();
 
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IAuthRepository, AuthRepository>();
-
-builder.Services.AddScoped<ICacheService, CacheService>();
-builder.Services.AddScoped<IBookRepository, BookRepository>();
-builder.Services.AddScoped<IBookService, BookService>();
-
-builder.Services.AddScoped<IOrderService, OrderService>();
-builder.Services.AddScoped<IOrderRepository, OrderRepository>();
-
-builder.Services.AddScoped<IFeedbackService, FeedbackService>();
-builder.Services.AddScoped<IFeedbackRepository, FeedbackRepository>();
 
 builder.Services.AddScoped<ISubscriptionService, SubscriptionService>();
 builder.Services.AddScoped<ISubscriptionRepository, SubscriptionRepository>();
@@ -161,7 +140,13 @@ var app = builder.Build();
 
 using (var scope = app.Services.CreateScope())
 {
-    var dbContext = scope.ServiceProvider.GetRequiredService<UserDbContext>();
+    scope.ServiceProvider.GetRequiredService<UserDbContext>();
+}
+
+using (var scope = app.Services.CreateScope())
+{
+    var seeder = scope.ServiceProvider.GetRequiredService<DataSeeder>();
+    await seeder.SeedAsync();
 }
 
 if (app.Environment.IsDevelopment())
@@ -179,4 +164,4 @@ app.UseAuthorization();
 app.UseExceptionMiddleware();
 app.MapControllers();
 
-app.Run();
+await app.RunAsync();

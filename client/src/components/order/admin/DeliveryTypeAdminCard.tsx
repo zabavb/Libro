@@ -1,5 +1,5 @@
 import { DeliveryType } from "../../../types";
-
+import { icons } from '@/lib/icons'
 interface DeliveryTypeAdminCardProps {
     deliveryType: DeliveryType
     onDelete: (e: React.MouseEvent) => void
@@ -10,12 +10,7 @@ const DeliveryTypeAdminCard: React.FC<DeliveryTypeAdminCardProps> = ({deliveryTy
     const deliveryUid = deliveryType.id.split('-')[4];
     return(
         <>
-            <tr
-                onClick={(e) => {
-                    e.stopPropagation()
-                    onNavigate()
-                }}
-                style={{textAlign:"center"}}>
+            <tr>
                 <td>
                     {deliveryType.serviceName}
                 </td>
@@ -23,13 +18,10 @@ const DeliveryTypeAdminCard: React.FC<DeliveryTypeAdminCardProps> = ({deliveryTy
                     {deliveryUid}...
                 </td>
                 <td>
-                    <button
-                        onClick={(e) => {
-                            e.stopPropagation()
-                            onDelete(e)
-                        }}>
-                        <img width="25" height="25" src="https://img.icons8.com/ios-filled/50/trash.png" alt="delete"/>
-                    </button>
+                    <div className='flex gap-2'>
+                        <button onClick={onNavigate} className='p-2.5 bg-[#FF642E] rounded-lg'><img src={icons.wPen} /></button>
+                        <button onClick={onDelete} className='p-2.5 border-[1px] border-[#FF642E] rounded-lg'><img src={icons.oTrash} /></button>
+                    </div>
                 </td>
             </tr>
         </>

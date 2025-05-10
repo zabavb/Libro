@@ -78,6 +78,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     localStorage.removeItem('token');
     localStorage.removeItem('token_expiry');
     localStorage.removeItem('user');
+    localStorage.removeItem('subscriptions');
     setUser(null);
     setToken(null);
   };
@@ -89,6 +90,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       String(Date.now() + data.expiresIn * 60 * 1000),
     );
     localStorage.setItem('user', JSON.stringify(data.user));
+    localStorage.setItem('subscriptions', JSON.stringify([]));
 
     setToken(data.token);
     setUser(data.user);

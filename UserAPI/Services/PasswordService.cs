@@ -1,5 +1,6 @@
 using AutoMapper;
 using UserAPI.Repositories;
+using UserAPI.Repositories.Interfaces;
 using UserAPI.Services.Interfaces;
 
 namespace UserAPI.Services
@@ -17,17 +18,17 @@ namespace UserAPI.Services
             _logger = logger;
         }
 
-        public async Task<bool> UpdateAsync(Dto user, string oldPassword, string newPassword)
+        public async Task<bool> UpdateAsync(Guid userId, string newPassword)
         {
             try
             {
-                _logger.LogInformation("Updating password for user {UserId}", user.Id);
-                await _repositoryPassword.UpdateAsync(user.Id, oldPassword, newPassword);
+                _logger.LogInformation("Updating password for user {UserId}", userId);
+                await _repositoryPassword.UpdateAsync(userId, newPassword);
                 return true;
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error updating password for user {UserId}", user.Id);
+                _logger.LogError(ex, "Error updating password for user {UserId}", userId);
                 return false;
             }
         }

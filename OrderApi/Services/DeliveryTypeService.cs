@@ -24,7 +24,7 @@ namespace OrderApi.Services
 
         public async Task<PaginatedResult<DeliveryTypeDto>> GetAllAsync(int pageNumber, int pageSize, string searchTerm, DeliverySort? sort)
         {
-            var paginatedDeliveryTypes = await _repository.GetAllPaginatedAsync(pageNumber,pageSize,searchTerm, sort);
+            var paginatedDeliveryTypes = await _repository.GetAllAsync(pageNumber,pageSize,searchTerm, sort);
 
             if (paginatedDeliveryTypes == null || paginatedDeliveryTypes.Items == null)
             {

@@ -1,6 +1,6 @@
 import { statusEnumToNumber } from "../api/adapters/orderAdapters";
 import { createOrder, deleteOrder, getAllOrders, getOrderById, updateOrder } from "../api/repositories/orderRepository";
-import { Order, OrderFilter, OrderSort, PaginatedResponse, ServiceResponse } from "../types";
+import { Order, OrderFilter, OrderSort, PaginatedResponse, ServiceResponse, Bool } from "../types";
 
 
 export const fetchOrdersService = async (
@@ -17,21 +17,69 @@ export const fetchOrdersService = async (
     };
 
     try{
-        const formattedSort = Object.fromEntries(
-            Object.entries(sort || {}).map(([key, value]) => [key, value ? 1 : 2])
-        )
-    
-        const params = {
-            searchTerm,
-            ...filters,
-            status: filters?.status !== undefined ? statusEnumToNumber(filters.status).toString() : undefined,
-            ...formattedSort,
-        }
+        const defaultFilter: OrderFilter = {
+            orderDateStart: undefined,
+            orderDateEnd: undefined,
+            deliveryDateStart: undefined,
+            deliveryDateEnd: undefined,
+            status: undefined,
+            deliveryId: undefined,
+            userId: undefined
+        };
 
-        response.data = await getAllOrders(pageNumber, pageSize, params)
+        const defaultSort = {
+            orderDate: Bool.NULL,
+            orderPrice: Bool.NULL,
+            deliveryDate: Bool.NULL,
+        } as OrderSort;
+
+        const body = {
+            query: `
+            query AllOrders($pageNumber: Int!, $pageSize: Int!,
+                $searchTerm: String, $filter: OrderFilter, $sort: OrderSort)
+            {
+                    allOrders(pageNumber: $pageNumber, pageSize: $pageSize,
+                        searchTerm: $searchTerm, filter: $filter, sort: $sort)
+                    {
+                        items {
+                            id
+                            orderDate
+                            deliveryDate
+                            status
+                            totalPrice
+                            userId
+                            deliveryId
+                        }
+                        pageNumber
+                        pageSize
+                        totalCount
+                        totalPages
+                    }
+            }
+            `,
+            variables: {
+                pageNumber,
+                pageSize,
+                searchTerm: searchTerm ?? null,
+                filter: {
+                    ...defaultFilter,
+                    ...filters,
+                },
+                sort: { ...defaultSort, ...sort },
+            },
+        };
+
+        const graphQLResponse = await getAllOrders(body);
+        if (graphQLResponse.errors)
+            throw new Error(
+                `${graphQLResponse.errors[0].message} Status code: ${graphQLResponse.errors[0].extensions?.status}`,
+            );
+
+        response.data = graphQLResponse.data
+            ?.allOrders as PaginatedResponse<Order>;
     }
     catch(error) {
-        console.error('Failed to fetch orders', error);
+        console.error(error instanceof Error ? error.message : String(error));
         response.error =
             'An error occurred while fetching orders. Please try again later.';
     } finally {
@@ -50,7 +98,31 @@ export const fetchOrderByIdService = async (id: string) : Promise<ServiceRespons
     };
 
     try { 
-        response.data = await getOrderById(id);
+        const body = {
+            query: `
+                query Order($id: String!) {
+                    order(id: $id) {
+                        id
+                        orderDate
+                        deliveryDate
+                        status
+                        totalPrice
+                        userId
+                        deliveryId
+                    }
+                }
+            `,
+            variables: {
+                id,
+            },
+        };
+
+        const graphQLResponse = await getOrderById(body);
+        if (graphQLResponse.errors)
+            throw new Error(
+                `${graphQLResponse.errors[0].message} Status code: ${graphQLResponse.errors[0].extensions?.status}`,
+            );
+        response.data = graphQLResponse.data?.order as Order;
     } catch(error){
         console.error(`Failed to fetch order ID [${id}]`, error);
         response.error =
