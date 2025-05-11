@@ -13,12 +13,9 @@ namespace BookAPI.Models
         public string Description { get; set; } = null!;
         public CoverType Cover { get; set; }
         public int Quantity { get; set; } = 0;
-        //public bool IsAvaliable { get; set; } = true;
         public string? ImageUrl { get; set; }
         public string? AudioFileUrl { get; set; }
         public string? PdfFileUrl { get; set; }
-        [NotMapped]
-        public bool HasAudio => !string.IsNullOrEmpty(AudioFileUrl);
         public Guid CategoryId { get; set; }
         public Category Category { get; set; } = null!;
         public Guid PublisherId { get; set; }
