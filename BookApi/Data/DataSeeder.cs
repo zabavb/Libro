@@ -19,81 +19,73 @@ namespace BookAPI.Data
         {
             var filesHelper = new FilesHelper(storageService, "libro-book");
 
-            var bookIds = new List<Guid>
-            {
-                Guid.NewGuid(),
-                Guid.NewGuid(),
-                Guid.NewGuid(),
-                Guid.NewGuid(),
-                Guid.NewGuid(),
-                Guid.NewGuid(),
-                Guid.NewGuid(),
-                Guid.NewGuid(),
-                Guid.NewGuid(),
-                Guid.NewGuid(),
-                Guid.NewGuid(),
-                Guid.NewGuid(),
-                Guid.NewGuid(),
-                Guid.NewGuid(),
-                Guid.NewGuid()
-            };
+            var bookIds = Enumerable.Range(0, 15).Select(_ => Guid.NewGuid()).ToList();
+
             var imagePaths = new Dictionary<string, string>
-{
-    { "Місто зі скла", "Data/Files/Images/місто_зі_скла.jpeg" },
-    { "Тіні минулого", "Data/Files/Images/тіні_минулого.jpeg" },
-    { "Емоційний інтелект", "Data/Files/Images/емоційний_інтелект.jpeg" },
-    { "У пошуках світла", "Data/Files/Images/у_пошуках_світла.jpeg" },
-    { "Поза межами розуму", "Data/Files/Images/поза_межами_розуму.jpeg" },
-    { "Код надії", "Data/Files/Images/код_надії.jpeg" },
-    { "Таємниця лісу", "Data/Files/Images/таємниця_лісу.jpeg" },
-    { "Історії з майбутнього", "Data/Files/Images/історії_з_майбутнього.jpeg" },
-    { "Психологія впливу", "Data/Files/Images/психологія_впливу.jpeg" },
-    { "Книга мандрівника", "Data/Files/Images/книга_мандрівника.jpeg" },
-    { "Фізика для допитливих", "Data/Files/Images/фізика_для_допитливих.jpeg" },
-    { "Біологія життя", "Data/Files/Images/біологія_життя.jpeg" },
-    { "Магія свідомості", "Data/Files/Images/магія_свідомості.jpeg" },
-    { "Кохання у віртуальному світі", "Data/Files/Images/кохання_у_віртуальному_світі.jpeg" },
-    { "Всесвіт всередині нас", "Data/Files/Images/всесвіт_всередині_нас.jpeg" }
-};
+            {
+                { "Місто зі скла", "Data/Files/Images/місто_зі_скла.jpeg" },
+                { "Тіні минулого", "Data/Files/Images/тіні_минулого.jpeg" },
+                { "Емоційний інтелект", "Data/Files/Images/емоційний_інтелект.jpeg" },
+                { "У пошуках світла", "Data/Files/Images/у_пошуках_світла.jpeg" },
+                { "Поза межами розуму", "Data/Files/Images/поза_межами_розуму.jpeg" },
+                { "Код надії", "Data/Files/Images/код_надії.jpeg" },
+                { "Таємниця лісу", "Data/Files/Images/таємниця_лісу.jpeg" },
+                { "Історії з майбутнього", "Data/Files/Images/історії_з_майбутнього.jpeg" },
+                { "Психологія впливу", "Data/Files/Images/психологія_впливу.jpeg" },
+                { "Книга мандрівника", "Data/Files/Images/книга_мандрівника.jpeg" },
+                { "Фізика для допитливих", "Data/Files/Images/фізика_для_допитливих.jpeg" },
+                { "Біологія життя", "Data/Files/Images/біологія_життя.jpeg" },
+                { "Магія свідомості", "Data/Files/Images/магія_свідомості.jpeg" },
+                { "Кохання у віртуальному світі", "Data/Files/Images/кохання_у_віртуальному_світі.jpeg" },
+                { "Всесвіт всередині нас", "Data/Files/Images/всесвіт_всередині_нас.jpeg" }
+            };
 
 
             var pdfPaths = new Dictionary<string, string>
-{
-    { "Місто зі скла", "Data/Files/Pdfs/місто_зі_скла.pdf" },
-    { "Тіні минулого", "Data/Files/Pdfs/тіні_минулого.pdf" },
-    { "Емоційний інтелект", "Data/Files/Pdfs/емоційний_інтелект.pdf" },
-    { "У пошуках світла", "Data/Files/Pdfs/у_пошуках_світла.pdf" },
-    { "Поза межами розуму", "Data/Files/Pdfs/поза_межами_розуму.pdf" },
-    { "Код надії", "Data/Files/Pdfs/код_надії.pdf" },
-    { "Таємниця лісу", "Data/Files/Pdfs/таємниця_лісу.pdf" },
-    { "Історії з майбутнього", "Data/Files/Pdfs/історії_з_майбутнього.pdf" },
-    { "Психологія впливу", "Data/Files/Pdfs/психологія_впливу.pdf" },
-    { "Книга мандрівника", "Data/Files/Pdfs/книга_мандрівника.pdf" },
-    { "Фізика для допитливих", "Data/Files/Pdfs/фізика_для_допитливих.pdf" },
-    { "Біологія життя", "Data/Files/Pdfs/біологія_життя.pdf" },
-    { "Магія свідомості", "Data/Files/Pdfs/магія_свідомості.pdf" },
-    { "Кохання у віртуальному світі", "Data/Files/Pdfs/кохання_у_віртуальному_світі.pdf" },
-    { "Всесвіт всередині нас", "Data/Files/Pdfs/всесвіт_всередині_нас.pdf" }
-};
+            {
+                { "Місто зі скла", "Data/Files/Pdfs/місто_зі_скла.pdf" },
+                { "Тіні минулого", "Data/Files/Pdfs/тіні_минулого.pdf" },
+                { "Емоційний інтелект", "Data/Files/Pdfs/емоційний_інтелект.pdf" },
+                { "У пошуках світла", "Data/Files/Pdfs/у_пошуках_світла.pdf" },
+                { "Поза межами розуму", "Data/Files/Pdfs/поза_межами_розуму.pdf" },
+                { "Код надії", "Data/Files/Pdfs/код_надії.pdf" },
+                { "Таємниця лісу", "Data/Files/Pdfs/таємниця_лісу.pdf" },
+                { "Історії з майбутнього", "Data/Files/Pdfs/історії_з_майбутнього.pdf" },
+                { "Психологія впливу", "Data/Files/Pdfs/психологія_впливу.pdf" },
+                { "Книга мандрівника", "Data/Files/Pdfs/книга_мандрівника.pdf" },
+                { "Фізика для допитливих", "Data/Files/Pdfs/фізика_для_допитливих.pdf" },
+                { "Біологія життя", "Data/Files/Pdfs/біологія_життя.pdf" },
+                { "Магія свідомості", "Data/Files/Pdfs/магія_свідомості.pdf" },
+                { "Кохання у віртуальному світі", "Data/Files/Pdfs/кохання_у_віртуальному_світі.pdf" },
+                { "Всесвіт всередині нас", "Data/Files/Pdfs/всесвіт_всередині_нас.pdf" }
+            };
 
             var audioPaths = new Dictionary<string, string>
-{
-    { "Місто зі скла", "Data/Files/Audios/місто_зі_скла.mp3" },
-    { "Тіні минулого", "Data/Files/Audios/тіні_минулого.mp3" },
-    { "Емоційний інтелект", "Data/Files/Audios/емоційний_інтелект.mp3" },
-    { "У пошуках світла", "Data/Files/Audios/у_пошуках_світла.mp3" },
-    { "Поза межами розуму", "Data/Files/Audios/поза_межами_розуму.mp3" },
-    { "Код надії", "Data/Files/Audios/код_надії.mp3" },
-    { "Таємниця лісу", "Data/Files/Audios/таємниця_лісу.mp3" },
-    { "Історії з майбутнього", "Data/Files/Audios/історії_з_майбутнього.mp3" },
-    { "Психологія впливу", "Data/Files/Audios/психологія_впливу.mp3" },
-    { "Книга мандрівника", "Data/Files/Audios/книга_мандрівника.mp3" },
-    { "Фізика для допитливих", "Data/Files/Audios/фізика_для_допитливих.mp3" },
-    { "Біологія життя", "Data/Files/Audios/біологія_життя.mp3" },
-    { "Магія свідомості", "Data/Files/Audios/магія_свідомості.mp3" },
-    { "Кохання у віртуальному світі", "Data/Files/Audios/кохання_у_віртуальному_світі.mp3" },
-    { "Всесвіт всередині нас", "Data/Files/Audios/всесвіт_всередині_нас.mp3" }
-};
+            {
+                { "Місто зі скла", "Data/Files/Audios/місто_зі_скла.mp3" },
+                { "Тіні минулого", "Data/Files/Audios/тіні_минулого.mp3" },
+                { "Емоційний інтелект", "Data/Files/Audios/емоційний_інтелект.mp3" },
+                { "У пошуках світла", "Data/Files/Audios/у_пошуках_світла.mp3" },
+                { "Поза межами розуму", "Data/Files/Audios/поза_межами_розуму.mp3" },
+                { "Код надії", "Data/Files/Audios/код_надії.mp3" },
+                { "Таємниця лісу", "Data/Files/Audios/таємниця_лісу.mp3" },
+                { "Історії з майбутнього", "Data/Files/Audios/історії_з_майбутнього.mp3" },
+                { "Психологія впливу", "Data/Files/Audios/психологія_впливу.mp3" },
+                { "Книга мандрівника", "Data/Files/Audios/книга_мандрівника.mp3" },
+                { "Фізика для допитливих", "Data/Files/Audios/фізика_для_допитливих.mp3" },
+                { "Біологія життя", "Data/Files/Audios/біологія_життя.mp3" },
+                { "Магія свідомості", "Data/Files/Audios/магія_свідомості.mp3" },
+                { "Кохання у віртуальному світі", "Data/Files/Audios/кохання_у_віртуальному_світі.mp3" },
+                { "Всесвіт всередині нас", "Data/Files/Audios/всесвіт_всередині_нас.mp3" }
+            };
+            var authorImagePaths = new Dictionary<string, string>
+            {
+                { "Джон Сміт", "Data/Files/Images/джон_сміт.jpeg" },
+                { "Анна Браун", "Data/Files/Images/анна_браун.jpeg" },
+                { "Марія Коваль", "Data/Files/Images/марія_коваль.jpeg" },
+                { "Петро Іванов", "Data/Files/Images/петро_іванов.jpeg" },
+                { "Олександр Мельник", "Data/Files/Images/олександр_мельник.jpeg" }
+            };
 
 
 
@@ -218,9 +210,16 @@ namespace BookAPI.Data
                     Name = "Олександр Мельник",
                     Biography = "Філософ, автор книг про етику та мораль.",
                     DateOfBirth = new DateTime(1979, 10, 10),
-                    Citizenship = "Україна"
+                    Citizenship = "Україна",
                 }
             };
+            foreach (var author in authors)
+            {
+                var imageFilePath = authorImagePaths[author.Name];
+                var imageFile = filesHelper.GetFormFileFromPath(imageFilePath, "image/jpeg");
+                var imageUrl = await filesHelper.UploadImageFromFormAsync(imageFile, author.Id, GlobalConstants.authorFolderImage);
+                author.ImageUrl = imageUrl;
+            }
 
             modelBuilder.Entity<Author>().HasData(authors);
             var random = new Random();
@@ -232,6 +231,7 @@ namespace BookAPI.Data
                 StartDate = DateTime.UtcNow,
                 EndDate = DateTime.UtcNow.AddMonths(1)
             }).ToList();
+
             modelBuilder.Entity<Discount>().HasData(discounts);
             var books = new List<Book>
             {
@@ -461,7 +461,6 @@ namespace BookAPI.Data
                      DiscountId = discounts[4].DiscountId,
                  }
             };
-            modelBuilder.Entity<Book>().HasData(books);
 
             foreach (var book in books)
             {
@@ -473,24 +472,66 @@ namespace BookAPI.Data
                 var pdfFile = filesHelper.GetFormFileFromPath(pdfFilePath, "application/pdf");
                 var audioFile = filesHelper.GetFormFileFromPath(audioFilePath, "audio/mpeg");
 
-                var imageUrl = await filesHelper.UploadImageFromFormAsync(imageFile, book.Id);
-                var pdfUrl = await filesHelper.UploadPdfFromFormAsync(pdfFile, book.Id);
-                var audioUrl = await filesHelper.UploadAudioFromFormAsync(audioFile, book.Id);
+                var imageUrl = await filesHelper.UploadImageFromFormAsync(imageFile, book.Id, GlobalConstants.booksFolderImage);
+                var pdfUrl = await filesHelper.UploadPdfFromFormAsync(pdfFile, book.Id, GlobalConstants.booksFolderPdf);
+                var audioUrl = await filesHelper.UploadAudioFromFormAsync(audioFile, book.Id, GlobalConstants.booksFolderAudio);
 
                 book.ImageUrl = imageUrl;
                 book.PdfFileUrl = pdfUrl;
                 book.AudioFileUrl = audioUrl;
             }
+            modelBuilder.Entity<Book>().HasData(books);
 
 
             modelBuilder.Entity("BookSubCategory").HasData(
-                new { BookId = books[0].Id, SubCategoryId = subCategories[0].Id },
-                new { BookId = books[0].Id, SubCategoryId = subCategories[1].Id },
-                new { BookId = books[0].Id, SubCategoryId = subCategories[2].Id },
-                new { BookId = books[1].Id, SubCategoryId = subCategories[3].Id },
-                new { BookId = books[1].Id, SubCategoryId = subCategories[4].Id },
-                new { BookId = books[2].Id, SubCategoryId = subCategories[12].Id }
+                // Місто зі скла – фантастика
+                new { BookId = books[0].Id, SubCategoryId = subCategories[0].Id }, // Космічна фантастика
+                new { BookId = books[0].Id, SubCategoryId = subCategories[1].Id }, // Фентезі
+
+                // Тіні минулого – детектив
+                new { BookId = books[1].Id, SubCategoryId = subCategories[3].Id }, // Кримінальний детектив
+                new { BookId = books[1].Id, SubCategoryId = subCategories[4].Id }, // Трилер
+
+                // Емоційний інтелект – психологія
+                new { BookId = books[2].Id, SubCategoryId = subCategories[12].Id }, // Емоційний інтелект
+
+                // У пошуках світла – історія
+                new { BookId = books[3].Id, SubCategoryId = subCategories[9].Id }, // Стародавній світ
+
+                // Поза межами розуму – психологія
+                new { BookId = books[4].Id, SubCategoryId = subCategories[13].Id }, // Саморозвиток
+
+                // Код надії – фантастика
+                new { BookId = books[5].Id, SubCategoryId = subCategories[2].Id }, // Альтернативна історія
+
+                // Таємниця лісу – детектив
+                new { BookId = books[6].Id, SubCategoryId = subCategories[5].Id }, // Поліцейський детектив
+
+                // Історії з майбутнього – фантастика
+                new { BookId = books[7].Id, SubCategoryId = subCategories[0].Id }, // Космічна фантастика
+
+                // Психологія впливу – психологія
+                new { BookId = books[8].Id, SubCategoryId = subCategories[14].Id }, // Психологія стосунків
+
+                // Книга мандрівника – історія
+                new { BookId = books[9].Id, SubCategoryId = subCategories[10].Id }, // Середньовіччя
+
+                // Фізика для допитливих – наукова література
+                new { BookId = books[10].Id, SubCategoryId = subCategories[6].Id }, // Фізика
+
+                // Біологія життя – наукова література
+                new { BookId = books[11].Id, SubCategoryId = subCategories[7].Id }, // Біологія
+
+                // Магія свідомості – психологія
+                new { BookId = books[12].Id, SubCategoryId = subCategories[12].Id }, // Емоційний інтелект
+
+                // Кохання у віртуальному світі – детектив
+                new { BookId = books[13].Id, SubCategoryId = subCategories[4].Id }, // Трилер
+
+                // Всесвіт всередині нас – наукова література
+                new { BookId = books[14].Id, SubCategoryId = subCategories[8].Id } // Астрономія
             );
+
 
             var feedbacks = new List<Feedback>
             {
