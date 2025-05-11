@@ -70,13 +70,12 @@ namespace BookAPI.Repositories
         public async Task<PaginatedResult<Feedback>> GetAllAsync(int pageNumber, int pageSize, FeedbackFilter? filter,
             FeedbackSort? sort)
         {
-            List<Feedback> feedbacks;
             string cacheKey = $"{_cacheKeyPrefix}All";
-            var cachedFeedbacks = await _cacheService.GetAsync<List<Feedback>>(cacheKey);
+            List<Feedback>? feedbacks = await _cacheService.GetAsync<List<Feedback>>(cacheKey);
+            bool isFromCache = feedbacks != null && feedbacks.Count > 0;
 
-            if (cachedFeedbacks != null && cachedFeedbacks.Count > 0)
+            if (isFromCache)
             {
-                feedbacks = cachedFeedbacks;
                 _logger.LogInformation("Fetched from CACHE.");
             }
             else
