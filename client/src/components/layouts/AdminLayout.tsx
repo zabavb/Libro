@@ -48,7 +48,7 @@ const AdminLayout: React.FC = () => {
                     <a className={`${isActive('/admin/booksRelated/publishers') && 'underline'}`} href='/admin/booksRelated/publishers'>Publishers</a>
                   </li>
                   <li className='flex py-[5px] px-[7px] text-base'>
-                    <a className={`${isActive('/admin/booksRelated/Feedbacks') && 'underline'}`} href='/admin/booksRelated/feedbacks'>Feedbacks</a>
+                    <a className={`${isActive('/admin/booksRelated/feedbacks') && 'underline'}`} href='/admin/booksRelated/feedbacks'>Feedbacks</a>
                   </li>
                 </AdminDropdownWrapper>
               </ul>

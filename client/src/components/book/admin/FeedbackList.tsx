@@ -1,31 +1,32 @@
 import React from "react";
-import { User } from "../../../types";
+import { Feedback, FeedbackFilter, FeedbackSort, User } from "../../../types";
 import Pagination from "../../common/Pagination";
 import Search from "../../common/Search";
 import "@/assets/styles/base/table-styles.css"
 import "@/assets/styles/components/list-styles.css"
 import { icons } from "@/lib/icons"
 import { getUserFromStorage } from "@/utils/storage";
-import { Publisher } from "@/types/types/book/Publisher";
-import PublisherAdminCardContainer from "@/containers/books/PublisherAdminCardContainer";
-interface PublisherListProps {
-    publishers?: Publisher[];
+import FeedbackAdminCard from "./FeedbackAdminCard";
+interface FeedbackListProps {
+    feedbacks?: Feedback[];
     loading: boolean;
     pagination: { pageNumber: number; pageSize: number; totalCount: number };
     onPageChange: (pageNumber: number) => void;
-    onNavigate: (path: string) => void;
+    onSortChange: (field: keyof FeedbackSort) => void;
+    sort: FeedbackSort;
+    onFilterChange: (filters: FeedbackFilter) => void;
+    filters: FeedbackFilter;
     onSearchTermChange: (searchTerm: string) => void;
     searchTerm: string;
 }
 
-const PublisherList: React.FC<PublisherListProps> = ({
-    publishers = [],
+const FeedbackList: React.FC<FeedbackListProps> = ({
+    feedbacks = [],
     loading,
     pagination,
     onPageChange,
     searchTerm,
     onSearchTermChange,
-    onNavigate,
 }) => {
     const user: User | null = getUserFromStorage();
     if (loading) return <p>Loading...</p>
@@ -35,12 +36,6 @@ const PublisherList: React.FC<PublisherListProps> = ({
                 <Search
                     searchTerm={searchTerm}
                     onSearchTermChange={onSearchTermChange} />
-                <button className="add-button" onClick={() => onNavigate("/admin/booksRelated/publisher/add")}>
-                    <img src={icons.bPlus} />
-                    <p>
-                        Add Publisher
-                    </p>
-                </button>
                 <div className="profile-icon">
                     <div className="icon-container-pfp">
                         <img src={user?.imageUrl ? user.imageUrl : icons.bUser} className="panel-icon" />
@@ -50,31 +45,25 @@ const PublisherList: React.FC<PublisherListProps> = ({
 
             </header>
             <main className="main-container">
-                {publishers.length > 0 ? (
+                {feedbacks.length > 0 ? (
                     <div className="flex flex-col w-full gap-6">
-                        <p className="w-full text-[#FF642E] text-2xl font-semibold">
-                            All publishers
-                        </p>
                         <div className="flex flex-col gap-2.5">
-                        {loading ? (
+                            {loading ? (
                                 <div style={{ textAlign: "center", height: `${pagination.pageSize * 65}px` }}>
                                     Loading...
                                 </div>
-                        )
-                            : (
-                                <>
-                                    {publishers.map((publisher) => (
-                                        <PublisherAdminCardContainer publisher={publisher} key={publisher.publisherId} />
-                                    ))}
-                                </>
-                            )}
+                            )
+                                : (
+                                    <>
+                                        {feedbacks.map((feedback) => (
+                                            <FeedbackAdminCard feedback={feedback}/>
+                                        ))}
+                                    </>
+                                )}
                         </div>
                     </div>
                 ) : (
                     <>
-                        <p className="w-full text-[#FF642E] text-2xl font-semibold">
-                            All publishers
-                        </p>
                         <p>No publishers found.</p>
                     </>
                 )}
@@ -93,4 +82,4 @@ const PublisherList: React.FC<PublisherListProps> = ({
 
 }
 
-export default PublisherList;
+export default FeedbackList;

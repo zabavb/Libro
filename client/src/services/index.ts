@@ -42,3 +42,11 @@ export {
   editPublisherService,
   removePublisherService,
 } from './publisherService';
+
+export {
+  fetchFeedbacksService,
+  fetchFeedbackByIdService,
+  addFeedbackService,
+  editFeedbackService,
+  removeFeedbackService,
+} from './feedbackService';

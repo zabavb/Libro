@@ -41,6 +41,7 @@ import AuthorsListPage from './pages/Admin/BookRelated/Authors/AuthorsListPage';
 import AuthorFormPage from './pages/Admin/BookRelated/Authors/AuthorFormPage';
 import PublishersListPage from './pages/Admin/BookRelated/Publishers/PublishersListPage';
 import PublisherFormPage from './pages/Admin/BookRelated/Publishers/PublisherFormPage';
+import FeedbacklistPage from './pages/Admin/BookRelated/Feedbacks/FeedbacksListPage';
 
 const AppRoutes = () => (
   <AuthProvider>
@@ -101,9 +102,11 @@ const AppRoutes = () => (
             <Route path='/admin/booksRelated/author/add' element={<AuthorFormPage />} />
             <Route path='/admin/booksRelated/author/:authorId' element={<AuthorFormPage />} />
             {/* PUBLISHER */}
-             <Route path='/admin/booksRelated/publishers' element={<PublishersListPage />} />
+            <Route path='/admin/booksRelated/publishers' element={<PublishersListPage />} />
             <Route path='/admin/booksRelated/publisher/add' element={<PublisherFormPage />} />
             <Route path='/admin/booksRelated/publisher/:publisherId' element={<PublisherFormPage />} />
+            {/* FEEDBACK */}
+            <Route path='/admin/booksRelated/feedbacks' element={<FeedbacklistPage />} />
             {/* Other */}
             <Route path='*' element={<NotFoundPage />} />
           </Route>

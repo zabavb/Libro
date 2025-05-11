@@ -92,3 +92,13 @@ export const PUBLISHERS_PAGINATED = (
 ) => API_ROUTES.PUBLISHERS.PAGINATED(pageNumber, pageSize);
 
 export const PUBLISHER_BY_ID = API_ROUTES.PUBLISHERS.BY_ID;
+
+// ================= FEEDBACK =================
+export const FEEDBACKS = API_ROUTES.FEEDBACKS.BASE;
+
+export const FEEDBACKS_PAGINATED = (
+  pageNumber: number = 1,
+  pageSize: number = 10,
+) => API_ROUTES.FEEDBACKS.PAGINATED(pageNumber,pageSize);
+
+export const FEEDBACK_BY_ID = API_ROUTES.FEEDBACKS.BY_ID;
