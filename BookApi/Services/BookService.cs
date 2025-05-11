@@ -23,7 +23,6 @@ namespace BookAPI.Services
         private readonly IMapper _mapper = mapper;
         private readonly ILogger<BookService> _logger = logger;
         private readonly S3StorageService _storageService = storageService;
-        private static readonly Size Size = new Size(500, 400);
 
         public async Task<PaginatedResult<BookDto>> GetAllAsync(
             int pageNumber,
@@ -100,16 +99,16 @@ namespace BookAPI.Services
 
             if (request.Image != null)
             {
-                book.ImageUrl = await filesHelper.UploadImageFromFormAsync(request.Image, book.Id);
+                book.ImageUrl = await filesHelper.UploadImageFromFormAsync(request.Image, book.Id, GlobalConstants.booksFolderImage);
             }
 
             if (request.Audio != null)
             {
-                book.AudioFileUrl = await filesHelper.UploadAudioFromFormAsync(request.Audio, book.Id);
+                book.AudioFileUrl = await filesHelper.UploadAudioFromFormAsync(request.Audio, book.Id, GlobalConstants.booksFolderAudio);
             }
             if (request.PDF != null)
             {
-                book.PdfFileUrl = await filesHelper.UploadPdfFromFormAsync(request.PDF, book.Id);
+                book.PdfFileUrl = await filesHelper.UploadPdfFromFormAsync(request.PDF, book.Id, GlobalConstants.booksFolderPdf);
             }
 
             try
@@ -147,17 +146,17 @@ namespace BookAPI.Services
                 var filesHelper = new FilesHelper(_storageService, "libro-book");
                 if (request.Image != null)
                 {
-                    existingBook.ImageUrl = await filesHelper.UploadImageFromFormAsync(request.Image, id);
+                    existingBook.ImageUrl = await filesHelper.UploadImageFromFormAsync(request.Image, id, GlobalConstants.booksFolderImage);
                 }
 
                 if (request.Audio != null)
                 {
-                    existingBook.AudioFileUrl = await filesHelper.UploadAudioFromFormAsync(request.Audio, id); 
+                    existingBook.AudioFileUrl = await filesHelper.UploadAudioFromFormAsync(request.Audio, id, GlobalConstants.booksFolderAudio); 
                 }
 
                 if (request.PDF != null)
                 {
-                    existingBook.PdfFileUrl = await filesHelper.UploadPdfFromFormAsync(request.PDF, id);
+                    existingBook.PdfFileUrl = await filesHelper.UploadPdfFromFormAsync(request.PDF, id, GlobalConstants.booksFolderPdf);
                 }
 
                 _mapper.Map(request, existingBook);
