@@ -1,4 +1,5 @@
 ﻿using Library.Common;
+using SixLabors.ImageSharp;
 
 namespace BookAPI
 {
@@ -13,139 +14,22 @@ namespace BookAPI
             _bucketName = bucketName ?? throw new ArgumentNullException(nameof(bucketName));
         }
 
+        public IFormFile GetFormFileFromPath(string filePath, string contentType)
+        {
+            var fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read);
+            return new FormFile(fileStream, 0, fileStream.Length, null, Path.GetFileName(filePath))
+            {
+                Headers = new HeaderDictionary(),
+                ContentType = contentType
+            };
+        }
 
-        public async Task<string> UploadFileAsync(
-            string localFilePath,
+        
+        public async Task<string> UploadFileFromFormAsync(
+            IFormFile file,
             Guid entityId,
             string directoryPath,
-            string contentType)
-        {
-            try
-            {
-                if (!File.Exists(localFilePath))
-                {
-                    Console.WriteLine($"Файл не знайдено: {localFilePath}");
-                    return null;
-                }
-
-                var fileName = Path.GetFileName(localFilePath);
-
-                await using var fileStream = File.OpenRead(localFilePath);
-                var formFile = new FormFile(
-                    fileStream,
-                    0,
-                    fileStream.Length,
-                    "file",
-                    fileName)
-                {
-                    Headers = new HeaderDictionary(),
-                    ContentType = contentType
-                };
-
-                return await _storageService.UploadAsync(
-                    _bucketName,
-                    formFile,
-                    directoryPath,
-                    entityId);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Помилка під час завантаження файлу: {ex.Message}");
-                return null;
-            }
-        }
-
-        //з дженерейт 
-        public async Task<string> UploadPdfAsync(string localFilePath, Guid entityId)
-        {
-            const string contentType = "application/pdf";
-            var filepath = await UploadFileAsync(localFilePath, entityId, "book/e-books/", contentType);
-            var uri = new Uri(filepath);
-            var fileKey = uri.AbsolutePath.TrimStart('/');
-            if (!string.IsNullOrEmpty(fileKey))
-            {
-                return _storageService.GenerateSignedUrl(_bucketName, fileKey);
-            }
-            return null;
-        }
-        public async Task<string> UploadAudioAsync(string localFilePath, Guid entityId)
-        {
-            const string contentType = "audio/mpeg";
-            var filepath = await UploadFileAsync(localFilePath, entityId, "book/audios/", contentType);
-
-            var uri = new Uri(filepath);
-            var fileKey = uri.AbsolutePath.TrimStart('/');
-            if (!string.IsNullOrEmpty(fileKey))
-            {
-                var a = _storageService.GenerateSignedUrl(_bucketName, fileKey);
-                return a;
-            }
-            return null;
-        }
-
-
-        public async Task<string> UploadImageAsync(string imageUrl, Guid entityId)
-        {
-            string tempFileName = null;
-            try
-            {
-                using var httpClient = new HttpClient();
-                var response = await httpClient.GetAsync(imageUrl);
-
-                if (!response.IsSuccessStatusCode)
-                    return null;
-
-                tempFileName = Path.Combine(Path.GetTempPath(), $"{Guid.NewGuid()}{Path.GetExtension(imageUrl)}");
-
-                await using (var fileStream = File.Create(tempFileName))
-                {
-                    await response.Content.CopyToAsync(fileStream);
-                }
-
-                var fileStreamForForm = new FileStream(tempFileName, FileMode.Open, FileAccess.Read);
-                var formFile = new FormFile(
-                    fileStreamForForm,
-                    0,
-                    fileStreamForForm.Length,
-                    "file",
-                    $"{entityId}{Path.GetExtension(imageUrl)}")
-                {
-                    Headers = new HeaderDictionary(),
-                    ContentType = response.Content.Headers.ContentType?.MediaType ?? "application/octet-stream"
-                };
-
-                var s3Url = await _storageService.UploadAsync(
-                    _bucketName,
-                    formFile,
-                    "book/images/",
-                    entityId);
-
-                return s3Url;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error uploading image: {ex.Message}");
-                return null;
-            }
-            finally
-            {
-                if (tempFileName != null && File.Exists(tempFileName))
-                {
-                    try
-                    {
-                        File.Delete(tempFileName);
-                    }
-                    catch { }
-                }
-            }
-
-           
-        }
-        public async Task<string> UploadFileFromFormAsync(
-    IFormFile file,
-    Guid entityId,
-    string directoryPath,
-    string contentType)
+            string contentType, Size? imageSize = null)
         {
             try
             {
@@ -168,11 +52,13 @@ namespace BookAPI
                     ContentType = contentType
                 };
 
+
                 return await _storageService.UploadAsync(
                     _bucketName,
-                    formFile,
                     directoryPath,
-                    entityId);
+                    entityId,
+                    formFile,
+                    imageSize);
             }
             catch (Exception ex)
             {
@@ -181,10 +67,10 @@ namespace BookAPI
             }
         }
 
-        public async Task<string> UploadPdfFromFormAsync(IFormFile pdfFile, Guid entityId)
+        public async Task<string> UploadPdfFromFormAsync(IFormFile pdfFile, Guid entityId, string folder)
         {
             const string contentType = "application/pdf";
-            var filepath = await UploadFileFromFormAsync(pdfFile, entityId, "book/e-books/", contentType);
+            var filepath = await UploadFileFromFormAsync(pdfFile, entityId, folder, contentType);
 
             var uri = new Uri(filepath);
             var fileKey = uri.AbsolutePath.TrimStart('/');
@@ -195,10 +81,10 @@ namespace BookAPI
             return null;
         }
 
-        public async Task<string> UploadAudioFromFormAsync(IFormFile audioFile, Guid entityId)
+        public async Task<string> UploadAudioFromFormAsync(IFormFile audioFile, Guid entityId, string folder)
         {
             const string contentType = "audio/mpeg";
-            var filepath = await UploadFileFromFormAsync(audioFile, entityId, "book/audios/", contentType);
+            var filepath = await UploadFileFromFormAsync(audioFile, entityId, folder, contentType);
 
             var uri = new Uri(filepath);
             var fileKey = uri.AbsolutePath.TrimStart('/');
@@ -209,7 +95,7 @@ namespace BookAPI
             return null;
         }
 
-        public async Task<string> UploadImageFromFormAsync(IFormFile imageFile, Guid entityId)
+        public async Task<string> UploadImageFromFormAsync(IFormFile imageFile, Guid entityId, string folder)
         {
             try
             {
@@ -221,7 +107,6 @@ namespace BookAPI
 
                 var fileName = $"{entityId}{Path.GetExtension(imageFile.FileName)}";
 
-                // Завантажуємо файл в storage
                 var formFile = new FormFile(
                     imageFile.OpenReadStream(),
                     0,
@@ -235,9 +120,10 @@ namespace BookAPI
 
                 var s3Url = await _storageService.UploadAsync(
                     _bucketName,
+                    folder,
+                    entityId,
                     formFile,
-                    "book/images/",
-                    entityId);
+                    new Size(400, 600));
 
                 return s3Url;
             }
