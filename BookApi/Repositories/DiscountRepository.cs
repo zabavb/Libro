@@ -46,56 +46,42 @@ namespace BookAPI.Repositories
             return res;
         }
 
-        public async Task /*<bool>*/ UpdateAsync(Discount newDiscount)
+        public async Task UpdateAsync(Discount newDiscount)
         {
             var discountEntity = await GetByBookIdAsync((Guid)newDiscount.BookId);
-            if (discountEntity == null)
-            {
-                // return false;
-            }
+           
             newDiscount.DiscountId = discountEntity.DiscountId; 
             discountEntity = newDiscount;
             _context.Discounts.Update(discountEntity);
             if (await _context.SaveChangesAsync() < 1)
             {
                 _logger.LogInformation("Failed to update discount rate");
-                // return false;
             }
 
             _logger.LogInformation("Discount rate updated");
-            // return true;
         }
 
-        public async Task /*<bool>*/ DeleteAsync(Guid discountId)
+        public async Task DeleteAsync(Guid discountId)
         {
             var discountEntity = await GetByIdAsync(discountId);
-            if (discountEntity == null)
-            {
-                // return false;
-            }
 
             _context.Discounts.Remove(discountEntity);
             if (await _context.SaveChangesAsync() < 1)
             {
                 _logger.LogInformation("Failed to delete discount");
-                // return false;
             }
 
             _logger.LogInformation("Discount deleted");
-            // return true;
         }
 
-        public async Task /*<bool>*/ CreateAsync(Discount discount)
+        public async Task CreateAsync(Discount discount)
         {
             await _context.Discounts.AddAsync(discount);
             if (await _context.SaveChangesAsync() < 1)
             {
                 _logger.LogInformation("Failed to add discount");
-                // return false;
             }
-
             _logger.LogInformation("Discount added");
-            // return true;
         }
 
         public async Task<List<Discount>> GetAllAsync()
