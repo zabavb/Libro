@@ -2,19 +2,17 @@ import { useEffect, useCallback, useState, useMemo } from "react"
 import { useDispatch } from "react-redux"
 import { AppDispatch } from "../../state/redux/index"
 import { useNavigate } from "react-router-dom"
-import { Author, AuthorFilter, AuthorSort } from "@/types"
-import { fetchAuthorsService } from "@/services/authorService"
 import { addNotification } from "@/state/redux/slices/notificationSlice"
-import AuthorList from "@/components/book/admin/AuthorList"
+import { Publisher } from "@/types/types/book/Publisher"
+import { fetchPublishersService } from "@/services"
+import PublisherList from "@/components/book/admin/PublisherList"
 
-const AuthorListContainer = () => {
+const PublisherListContainer = () => {
 	const dispatch = useDispatch<AppDispatch>()
     const navigate = useNavigate()
-    const [authors, setAuthors] = useState<Author[]>([]);
+    const [publishers, setPublishers] = useState<Publisher[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [searchTerm, setSearchTerm] = useState<string>('');
-    const [sort, setSort] = useState<AuthorSort>({});
-    const [filters, setFilters] = useState<AuthorFilter>({});
     const [pagination, setPagination] = useState({
         pageNumber: 1,
         pageSize: 10,
@@ -23,15 +21,13 @@ const AuthorListContainer = () => {
 
     const paginationMemo = useMemo(() => ({...pagination}), [pagination]);
 
-    const fetchAuthorsList = useCallback(async () => {
+    const fetchPublishersList = useCallback(async () => {
         setLoading(true);
         try{
-            const response = await fetchAuthorsService(
+            const response = await fetchPublishersService(
                 paginationMemo.pageNumber,
                 paginationMemo.pageSize,
                 searchTerm,
-				filters,
-                sort
             );
 
             if(response.error)
@@ -45,7 +41,7 @@ const AuthorListContainer = () => {
             if(response && response.data) {
                 const paginatedData = response.data;
 
-                setAuthors(paginatedData.items);
+                setPublishers(paginatedData.items);
                 setPagination({
                     pageNumber: paginatedData.pageNumber,
                     pageSize: paginatedData.pageSize,
@@ -59,13 +55,13 @@ const AuthorListContainer = () => {
                     type: 'error'
                 })
             )
-            setAuthors([])
+            setPublishers([])
         }
         setLoading(false);
-    }, [paginationMemo, searchTerm, sort, filters, dispatch])
+    }, [paginationMemo, searchTerm, dispatch])
 
     useEffect(() => {
-        fetchAuthorsList();
+        fetchPublishersList();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     },[pagination.pageNumber, searchTerm])
 
@@ -79,33 +75,19 @@ const AuthorListContainer = () => {
         setSearchTerm(newSearchTerm);
         setPagination((prev) => ({ ...prev, pageNumber: 1}));
     }
-
-    const handleSortChange = (field: keyof AuthorSort) => {
-        setSort({ [field]: true});
-        setPagination((prev) => ({ ...prev,pageNumber: 1}));
-    }
-
-		const handleFilterChange = (filters: AuthorFilter) => {
-			setFilters(filters);
-			setPagination((prev) => ({ ...prev, pageNumber: 1 }));
-		};
 	
 
     return (
-		<AuthorList
-			authors={authors}
-			loading={loading}
-			onPageChange={handlePageChange}
-			pagination={pagination}
-			onSortChange={handleSortChange}
-			sort={sort}
-			onFilterChange={handleFilterChange}
-			filters={filters}
-			onNavigate={handleNavigate}
-			onSearchTermChange={handleSearchTermChange}
-			searchTerm={searchTerm}
-		/>
+        <PublisherList
+            publishers={publishers}
+            pagination={pagination}
+            loading={loading}
+            onNavigate={handleNavigate}
+            onPageChange={handlePageChange}
+            onSearchTermChange={handleSearchTermChange}
+            searchTerm={searchTerm}
+        />
     )
 }
 
-export default AuthorListContainer
+export default PublisherListContainer

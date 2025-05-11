@@ -34,3 +34,11 @@ export {
   editDeliveryTypeService,
   removeDeliveryTypeService,
 } from './deliveryTypeService';
+
+export {
+  fetchPublishersService,
+  fetchPublisherByIdService,
+  addPublisherService,
+  editPublisherService,
+  removePublisherService,
+} from './publisherService';

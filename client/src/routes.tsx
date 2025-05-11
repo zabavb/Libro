@@ -39,6 +39,7 @@ import OrderSuccessPage from './pages/Main/order/OrderSuccessPage';
 import BookListPage from './pages/Admin/BookRelated/Books/BooksListPage';
 import AuthorsListPage from './pages/Admin/BookRelated/Authors/AuthorsListPage';
 import AuthorFormPage from './pages/Admin/BookRelated/Authors/AuthorFormPage';
+import PublishersListPage from './pages/Admin/BookRelated/Publishers/PublishersListPage';
 
 const AppRoutes = () => (
   <AuthProvider>
@@ -98,10 +99,13 @@ const AppRoutes = () => (
             <Route path='/admin/booksRelated/authors' element={<AuthorsListPage />} />
             <Route path='/admin/booksRelated/author/add' element={<AuthorFormPage />} />
             <Route path='/admin/booksRelated/author/:authorId' element={<AuthorFormPage />} />
+            {/* PUBLISHER */}
+             <Route path='/admin/booksRelated/publishers' element={<PublishersListPage />} />
             {/* Other */}
             <Route path='*' element={<NotFoundPage />} />
           </Route>
         </Route>
+        <Route path='*' element={<NotFoundPage />} />
       </Routes>
     </BrowserRouter>
   </AuthProvider>
