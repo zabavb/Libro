@@ -15,36 +15,28 @@ using System.Linq.Expressions;
 
 namespace BookAPI.Repositories
 {
-    public class BookRepository : IBookRepository
+    public class BookRepository(
+        BookDbContext context,
+        ICacheService cacheService, ILogger<BookRepository> logger) : IBookRepository
     {
-        private readonly BookDbContext _context;
-        private readonly ILogger<IBookRepository> _logger;
+        private readonly BookDbContext _context = context;
+        private readonly ILogger<IBookRepository> _logger = logger;
         private readonly string _cacheKeyPrefix = "Book_";
         private readonly TimeSpan _cacheExpiration = TimeSpan.FromMinutes(GlobalConstants.DefaultCacheExpirationTime);
-        private readonly ICacheService _cacheService;
+        private readonly ICacheService _cacheService = cacheService;
 
         private readonly JsonSerializerOptions _jsonOptions = new JsonSerializerOptions
         {
             ReferenceHandler = ReferenceHandler.IgnoreCycles,
-            DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull, // Ігнорування null значень
+            DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
         };
 
-        public BookRepository(
-            BookDbContext context,
-            ICacheService cacheService, ILogger<BookRepository> logger)
-        {
-            _context = context;
-            _cacheService = cacheService;
-            _logger = logger;
-        }
-
-      
         public async Task<PaginatedResult<Book>> GetAllAsync(
-    int pageNumber,
-    int pageSize,
-    string searchTerm,
-    BookFilter? filter,
-    BookSort? sort)
+            int pageNumber,
+            int pageSize,
+            string searchTerm,
+            BookFilter? filter,
+            BookSort? sort)
         {
             string cacheKey = $"{_cacheKeyPrefix}All";
             List<Book>? books = await _cacheService.GetAsync<List<Book>>(cacheKey, _jsonOptions);
