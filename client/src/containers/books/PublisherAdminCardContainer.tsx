@@ -16,7 +16,7 @@ const PublisherAdminCardContainer: React.FC<PublisherAdminCardContainerProps> = 
 
     const handleDelete = async (e: React.MouseEvent) => {
         e.stopPropagation()
-        const response = await removePublisherService(publisher.id)
+        const response = await removePublisherService(publisher.publisherId)
         dispatch(
               response.error
                 ? addNotification({
@@ -31,7 +31,7 @@ const PublisherAdminCardContainer: React.FC<PublisherAdminCardContainerProps> = 
     }
 
     const handleNavigate = () => {
-        navigate(`/admin/booksRelated/publisher/${publisher.id}`)
+        navigate(`/admin/booksRelated/publisher/${publisher.publisherId}`)
     }
 
     return (
