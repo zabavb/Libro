@@ -20,7 +20,7 @@ namespace BookAPI.Repositories
         private readonly TimeSpan _cacheExpiration = TimeSpan.FromMinutes(GlobalConstants.DefaultCacheExpirationTime);
         private readonly JsonSerializerOptions _jsonOptions = new JsonSerializerOptions
         {
-            ReferenceHandler = ReferenceHandler.IgnoreCycles, 
+            ReferenceHandler = ReferenceHandler.Preserve, 
             DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull, // Ігнорування null значень
         };
         public SubCategoryRepository(BookDbContext context,
@@ -73,13 +73,12 @@ namespace BookAPI.Repositories
 
         public async Task<PaginatedResult<SubCategory>> GetAllAsync(int pageNumber, int pageSize, string? searchTerm, SubCategoryFilter? filter, SubCategorySort? sort)
         {
-            List<SubCategory> subcategories;
             string cacheKey = $"{_cacheKeyPrefix}All";
-            var cachedSubcategories = await _cacheService.GetAsync<List<SubCategory>>(cacheKey, _jsonOptions);
+            List<SubCategory>? subcategories = await _cacheService.GetAsync<List<SubCategory>>(cacheKey, _jsonOptions);
+            bool isFromCache = subcategories != null && subcategories.Count > 0;
 
-            if (cachedSubcategories != null && cachedSubcategories.Count > 0)
+            if (isFromCache)
             {
-                subcategories = cachedSubcategories;
                 _logger.LogInformation("Fetched from CACHE.");
             }
             else
@@ -91,10 +90,15 @@ namespace BookAPI.Repositories
                 _logger.LogInformation("Set to CACHE.");
             }
 
+
             IQueryable<SubCategory> subcategoryQuery = subcategories.AsQueryable();
 
             if (!string.IsNullOrWhiteSpace(searchTerm))
-                subcategoryQuery = subcategoryQuery.SearchBy(searchTerm, p => p.Name);
+            {
+                subcategoryQuery = isFromCache
+                    ? subcategoryQuery.InMemorySearch(searchTerm, b => b.Name).AsQueryable()
+                    : subcategoryQuery.SearchBy(searchTerm, b => b.Name);
+            }
 
             if (filter != null)
                 subcategoryQuery = filter.Apply(subcategoryQuery);

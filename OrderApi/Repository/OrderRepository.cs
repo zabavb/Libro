@@ -11,6 +11,7 @@ using System.Text.Json;
 using Library.Interfaces;
 using Library.Sorts;
 using Order = OrderApi.Models.Order;
+using OrderAPI.Models;
 
 namespace OrderApi.Repository
 {
@@ -315,6 +316,45 @@ namespace OrderApi.Repository
             
             var top9Ids = top9.Select(x => x.Id).ToList();
             return top9Ids;
+        }
+
+        public async Task<List<int>> GetOrderCountsForLastThreePeriodsAsync(PeriodType periodType)
+        {
+            var now = DateTime.Now;
+            List<int> result = [];
+
+            for (int i = 0; i < 3; i++)
+            {
+                DateTime periodStart, periodEnd;
+
+                switch (periodType)
+                {
+                    case PeriodType.day:
+                        periodStart = now.Date.AddDays(-i - 1);
+                        periodEnd = now.Date.AddDays(-i);
+                        break;
+                    case PeriodType.week:
+                        periodStart = now.Date.AddDays(-7 * (i + 1));
+                        periodEnd = now.Date.AddDays(-7 * i);
+                        break;
+                    case PeriodType.month:
+                        periodStart = now.Date.AddMonths(-i - 1);
+                        periodEnd = now.Date.AddMonths(-i);
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException(nameof(periodType), "Unsupported period type.");
+                }
+
+                var count = await _context.Orders
+                    .Where(o => o.OrderDate >= periodStart && o.OrderDate < periodEnd)
+                    .CountAsync();
+
+                result.Add(count);
+            }
+
+            result.Reverse();
+
+            return result;
         }
     }
 }

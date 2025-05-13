@@ -10,6 +10,7 @@ import { AuthProvider } from './state/context/AuthContext';
 import PrivateRoute from './privateRoute';
 
 import AdminPage from './pages/admin/AdminPage';
+import AdminDashboard from './pages/admin/AdminDashboard';
 
 import AdminLayout from './components/layouts/AdminLayout';
 
@@ -30,6 +31,7 @@ import SubscriptionListPage from './pages/admin/userRelated/subscriptions/Subscr
 import SubscriptionFormPage from './pages/admin/userRelated/subscriptions/SubscriptionFormPage';
 import OrderCheckoutPage from './pages/Main/order/OrderCheckoutPage';
 import UserOrdersPage from './pages/main/user/UserOrdersPage';
+import LikedBooksPage from './pages/main/likedBooksPage';
 import BookDetailsPage from './pages/main/book/BookDetailsPage';
 import BookCatalogPage from './pages/main/book/BooksCatalogPage';
 import OrderDetailsPage from './pages/admin/orderRelated/orders/OrderDetailsPage';
@@ -48,6 +50,7 @@ const AppRoutes = () => (
         <Route path='/checkout/confirm' element={<OrderConfirmationPage />} />
         <Route path='/checkout/success' element={<OrderSuccessPage/>} />
         <Route path='/orders' element={<UserOrdersPage />} />
+        <Route path='/liked' element={<LikedBooksPage />} />
         <Route path='/catalog' element={<BookCatalogPage/>}/>
         <Route path='/books/:bookId' element={<BookDetailsPage/>}/>
         <Route path='/orders/:orderId' element={<OrderDetailsPage />} />
@@ -59,6 +62,7 @@ const AppRoutes = () => (
           {/* Admin */}
           <Route path='/admin' element={<AdminLayout />}>
             <Route index element={<AdminPage />} />
+            <Route path='/admin/dashboard' element={<AdminDashboard />} />
             {/* User */}
             <Route path='/admin/users' element={<UserListPage />} />
             <Route path='/admin/users/add' element={<UserFormPage />} />

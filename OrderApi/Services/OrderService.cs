@@ -2,6 +2,11 @@
 using Library.Common;
 using Library.DTOs.UserRelated.User;
 using OrderApi.Models;
+using OrderApi.Repository;
+using OrderAPI;
+using OrderAPI.Models;
+using OrderAPI.Services.Interfaces;
+
 
 namespace OrderApi.Services
 {
@@ -153,6 +158,7 @@ namespace OrderApi.Services
                 throw new InvalidOperationException(_message, ex);
             }
         }
+
         public async Task<List<Guid>> MostOrderedBooksAsync(int days)
         {
             
@@ -168,6 +174,77 @@ namespace OrderApi.Services
                 _logger.LogError(_message);
                 throw new InvalidOperationException(_message, ex);
             }
+        }
+
+        public async Task<SingleSnippet<OrderCardSnippet>> GetCardSnippetByUserIdAsync(Guid id)
+        {
+            try
+            {
+
+                OrderFilter filter = new OrderFilter() { UserId = id };
+                OrderSort sort = new OrderSort() { OrderDate = Bool.DESCENDING };
+
+                PaginatedResult<Order> orders = await _repository.GetAllPaginatedAsync(GlobalConstants.DefaultPageNumber,1,"",filter,sort);
+
+
+
+                var orderSnippet = new OrderCardSnippet();
+
+                if (orders.TotalCount > 0)
+                {
+                    orderSnippet = new OrderCardSnippet
+                    {
+                        LastOrder = orders.Items.First().OrderId.ToString().Split('-')[4],
+                        OrdersCount = orders.TotalCount
+                    };
+                }
+
+                return new SingleSnippet<OrderCardSnippet>(false, orderSnippet);
+            }
+            catch
+            {
+                return new SingleSnippet<OrderCardSnippet>(true, new OrderCardSnippet());
+            }
+        }
+
+        public async Task<CollectionSnippet<OrderDetailsSnippet>> GetAllByUserIdAsync(Guid id, int pageNumber)
+        {
+            try
+            {
+                var filter = new OrderFilter { UserId = id };
+
+                var orders = await _repository.GetAllPaginatedAsync(pageNumber, GlobalConstants.DefaultPageSize, "", filter,null);
+                var orderDetailsSnippets = new List<OrderDetailsSnippet>();
+
+                foreach (var order in orders.Items)
+                {
+                    var bookNames = new List<string>();
+
+                    foreach (var book in order.Books)
+                    {
+                        var bookObject = await _bookRepository.GetByIdAsync(book.Key);
+                        if (bookObject != null)
+                            bookNames.Add(bookObject.Title);
+                    }
+
+                    orderDetailsSnippets.Add(new OrderDetailsSnippet
+                    {
+                        OrderUiId = order.OrderId.ToString().Split('-')[4],
+                        Price = order.Price + order.DeliveryPrice,
+                        BookNames = bookNames
+                    });
+                }
+
+                return new CollectionSnippet<OrderDetailsSnippet>(false, orderDetailsSnippets);
+            }
+            catch
+            {
+                return new CollectionSnippet<OrderDetailsSnippet>(true, new List<OrderDetailsSnippet>());
+            }
+        }
+        public async Task<List<int>> GetOrderCountsForLastThreePeriodsAsync(PeriodType periodType)
+        {
+            return await _repository.GetOrderCountsForLastThreePeriodsAsync(periodType);
         }
     }
 }

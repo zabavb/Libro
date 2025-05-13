@@ -2,6 +2,7 @@
 using Library.Common;
 using Library.DTOs.UserRelated.User;
 using Library.Interfaces;
+using OrderAPI.Services.Interfaces;
 using UserAPI.Models;
 using UserAPI.Repositories.Interfaces;
 using UserAPI.Services.Interfaces;

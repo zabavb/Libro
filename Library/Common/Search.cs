@@ -63,6 +63,22 @@ namespace Library.Common
             return query.Where(Expression.Lambda<Func<T, bool>>(predicate!, parameter));
         }
 
+        public static IEnumerable<T> InMemorySearch<T>(this IEnumerable<T> source, string searchTerm,
+            params Func<T, string?>[] fields)
+        {
+            if (string.IsNullOrWhiteSpace(searchTerm) || fields.Length == 0)
+                return source;
+
+            searchTerm = searchTerm.ToLower();
+
+            return source.Where(item =>
+                fields.Any(field =>
+                {
+                    var value = field(item);
+                    return value != null && value.Contains(searchTerm, StringComparison.CurrentCultureIgnoreCase);
+                }));
+        }
+        
         // Replaces all instances of `source` in `expression` with `target`
         private static Expression ReplaceParameter(Expression expression, ParameterExpression source, Expression target)
         {
@@ -84,4 +100,7 @@ namespace Library.Common
                 node == _source ? _target : base.VisitParameter(node);
         }
     }
+
+
+
 }

@@ -18,6 +18,14 @@ import {
 } from '../types';
 
 /**
+ * Fetch a number of active subscriptions.
+ */
+export const fetchActiveSubscriptionsCount = async (): Promise<number> => {
+    const res = await axios.get(API_URL);
+    return res.data;
+};
+
+/**
  * Fetch a paginated list of subscriptions with optional search term.
  */
 export const fetchSubscriptionsService = async (

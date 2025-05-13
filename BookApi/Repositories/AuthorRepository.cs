@@ -70,13 +70,12 @@ namespace BookAPI.Repositories
 
         public async Task<PaginatedResult<Author>> GetAllAsync(int pageNumber, int pageSize, string? searchTerm, AuthorFilter? filter, AuthorSort? sort)
         {
-            List<Author> authors;
             string cacheKey = $"{_cacheKeyPrefix}All";
-            var cachedAuthors = await _cacheService.GetAsync<List<Author>>(cacheKey);
+            List<Author> authors = await _cacheService.GetAsync<List<Author>>(cacheKey);
+            bool isFromCache = authors != null && authors.Count > 0;
 
-            if (cachedAuthors != null && cachedAuthors.Count > 0)
+            if (isFromCache)
             {
-                authors = cachedAuthors;
                 _logger.LogInformation("Fetched from CACHE.");
             }
             else
@@ -91,8 +90,11 @@ namespace BookAPI.Repositories
             IQueryable<Author> authorQuery = authors.AsQueryable();
 
             if (!string.IsNullOrWhiteSpace(searchTerm))
-                authorQuery = authorQuery.SearchBy(searchTerm, p => p.Name);
-
+            {
+                authorQuery = isFromCache
+                    ? authorQuery.InMemorySearch(searchTerm, p => p.Name).AsQueryable()
+                    : authorQuery.SearchBy(searchTerm, p => p.Name);
+            }
             if (filter != null)
                 authorQuery = filter.Apply(authorQuery);
 
