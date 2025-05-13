@@ -10,18 +10,21 @@ const MainPage: React.FC = () => {
   const { logout } = useAuth();
 
   return (
-    <div className="flex flex-col min-h-screen">
-      <Header />
-      <main className="flex-1">
-        <div className="px-10 py-10">
-          <CarouselOffers />
-        </div>
+    <div>
+      <h1>Main page</h1>
+      <div>
+        <button onClick={() => navigate("/admin")}>Admin dashboard</button>
+      </div>
+      <div>
+        <button onClick={() => navigate("/cart")}>Cart</button>
+      </div>
+      <div>
+        <button onClick={() => navigate('/catalog')}>Catalog</button>
+      </div>
+      <div>
+        <button onClick={() => navigate('/liked')}>Liked Books</button>
+      </div>
 
-        <div className="max-w-5xl mx-auto px-4 py-6 space-y-6">
-         
-        </div>
-      </main>
-      <Footer />
     </div>
   );
 };

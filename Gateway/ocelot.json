@@ -360,6 +360,7 @@
           "Port": 7051
         }
       ],
+
       "UpstreamPathTemplate": "/gateway/orders/for-user/card/{id}",
       "UpstreamHttpMethod": [ "GET" ]
     },
@@ -398,7 +399,7 @@
         }
       ],
       "UpstreamPathTemplate": "/gateway/deliverytypes/{id}",
-      "UpstreamHttpMethod": [ "GET", "DELETE","PUT" ]
+      "UpstreamHttpMethod": [ "GET", "DELETE", "PUT" ]
     },
     //======================= Status update =======================
     {

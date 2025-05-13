@@ -3,6 +3,8 @@ import { useAuth } from './state/context';
 import { Role, User } from './types';
 import { roleEnumToNumber } from './api/adapters/userAdapter';
 
+const DISABLE_AUTH = true;
+
 const PrivateRoute = () => {
   const { token } = useAuth();
   const user = JSON.parse(localStorage.getItem('user') || '{}') as User;
