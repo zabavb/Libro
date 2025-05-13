@@ -1,7 +1,9 @@
-import { BookView, Book } from '../../types';
+import { BookView, Book, Author } from '../../types';
 import { Language } from '../../types/subTypes/book/Language';
 import { CoverType } from '../../types/subTypes/book/CoverType';
 import { dateToString } from './commonAdapters';
+import { AuthorFormData, PublisherFormData } from '@/utils';
+import { Publisher } from '@/types/types/book/Publisher';
 
 export const languageNumberToEnum = (languageNumber: number): Language => {
   const languageMap: { [key: number]: Language } = {
@@ -73,3 +75,20 @@ export const BookToBookView = (response: Book): BookView => {
     //subcategoryIds: response.subcategoryIds,
   };
 };
+
+export const AuthorFormDataToAuthor = (form: AuthorFormData, id?: string) : Author => ({
+  ...form,
+  authorId: id ?? '00000000-0000-0000-0000-000000000000',
+  name: form.name,
+  biography: form.biography ?? undefined,
+  dateOfBirth: form.dateOfBirth ? new Date(form.dateOfBirth) : undefined,
+  citizenship: form.citizenship ?? undefined,
+});
+
+export const PublisherFormDataToPublisher = (form: PublisherFormData, id?: string) : Publisher => ({
+  ...form,
+  publisherId: id ?? '00000000-0000-0000-0000-000000000000',
+  name: form.name,
+  description: form.description ?? undefined,
+});
+
