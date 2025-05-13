@@ -19,7 +19,74 @@ namespace BookAPI.Data
         {
             var filesHelper = new FilesHelper(storageService, "libro-book");
 
-            var bookIds = Enumerable.Range(0, 15).Select(_ => Guid.NewGuid()).ToList();
+
+            // 60 static ids for books
+            // to add more but automatically use
+            // Enumerable.Range(0, n).Select(_ => Guid.NewGuid()).ToList();
+            List<Guid> bookIds = new List<Guid>
+            {
+                new("df76d28a-1309-4d04-86cc-58eccd373ba3"),
+                new("336618f9-fd33-4775-90ab-c6e895f60b0a"),
+                new("05f3ed9d-05aa-4421-addf-e85906260f64"),
+                new("d0fa5452-d1c7-420d-b0ed-0e7feb55ec4f"),
+                new("a943fd38-91bc-42de-8316-f67ca4d292db"),
+                new("99e2aefe-561e-4de9-8ddc-581b24d49a17"),
+                new("0c322dd3-ff92-4a55-ba5a-fc27f00d9e6e"),
+                new("7869777a-ae20-417d-8574-1b6800e0608f"),
+                new("d7250d33-4736-4d7d-997f-dc445d47c7ce"),
+                new("a0e8c26e-be8c-40d3-8240-cd1c67e3fd08"),
+                new("9d80eb19-a069-4267-befe-9ffd1959312e"),
+                new("048e793f-e796-40a1-b535-7fae46d0cbc6"),
+                new("b1858dc5-4ea0-431e-ae56-d23f75b16830"),
+                new("5f99ca9e-4115-4ed8-8fad-b2d7d9609151"),
+                new("582d1877-1703-445f-afa0-55001225d4fb"),
+                new("a56e4018-dfc7-410c-a670-e68fb2a337c9"),
+                new("8448f8d1-acfa-4e86-a395-c4c2ad8076bd"),
+                new("7d8ce6cd-a68b-434a-97d1-77ea4a1c099e"),
+                new("1cf76a75-54d8-478c-8d22-3d22811f880a"),
+                new("64ce1687-3624-4f97-80e4-142e216f3c5d"),
+                new("9f985d40-16a4-46d8-91c8-d266e18c92c9"),
+                new("398fff8e-7803-46a3-b72e-25b9b56b8789"),
+                new("52b6b0ff-51d9-46a8-b684-f18ef295f7e6"),
+                new("f22e076e-1924-4296-979c-41e5a6111ce6"),
+                new("2c67597b-9900-485d-a557-98df02e16c88"),
+                new("72832bdc-41be-41a2-a1cb-05942832e8f2"),
+                new("142f24c3-271a-4d70-bab4-be0612290e80"),
+                new("8557babd-db43-4530-b69d-75beaf347f04"),
+                new("37dfbb14-b3fc-4d39-ac02-58b2a438a7cf"),
+                new("9b0a735f-593e-41fb-ba99-25d7631d792d"),
+                new("1a54e86a-e5c2-41ab-9ac3-0246b17db4bd"),
+                new("2a6bab6e-7324-4914-9d23-b26726762a1d"),
+                new("553b2b85-cc6e-4dad-b468-8486f5be9a8f"),
+                new("dec7d818-5875-4953-9684-31cf7aa205b5"),
+                new("dfb29769-25b1-4c8c-9da4-31322d620322"),
+                new("edb367dd-3a49-4094-94b4-0425e09ae529"),
+                new("1b0fbde9-5737-4e29-a5ba-b84b3b9e793d"),
+                new("e50a4c5b-83c1-4b2e-b86c-359caf8c081c"),
+                new("7bc7a60d-ea12-463f-b20c-a8213bbda7e1"),
+                new("af053ef5-91cb-4d65-ac43-89436bbe718d"),
+                new("5baf5039-6c47-4601-ba4e-9bbf58412b67"),
+                new("57449f3a-82ab-4e37-bbfc-927b8638fe50"),
+                new("a47b649a-8020-4f9d-9133-8074253c9a50"),
+                new("b9a52a11-c3fb-41c8-a692-3e870aa584a9"),
+                new("188f16a9-07f1-4787-87e4-cad25a653fbc"),
+                new("3dd29e5f-a0bb-4a9d-a693-16fa09dfd32d"),
+                new("4757fed2-bb94-437f-8690-490acc7aa3db"),
+                new("2f50840c-bcb5-4ac6-bb31-e139dc278321"),
+                new("5f93ba8a-1b74-42a4-9066-d92791158d3f"),
+                new("8ec71ef7-8592-4f57-9282-f73ad302b0e9"),
+                new("520f1e61-341b-45fa-a93c-afaec6171199"),
+                new("c8353ff3-ef62-4682-9905-e33249742474"),
+                new("eea2634b-b39a-4b1a-bb69-0a35d07f0e81"),
+                new("379b5533-22f7-4a76-80f7-0248577e14eb"),
+                new("622f712c-3368-4806-b4a3-756d3681dd8c"),
+                new("23c98993-bbae-41df-936f-2e61fedbf357"),
+                new("516bf050-80f3-4507-b0a7-9a16615e28a9"),
+                new("3e5d8ce0-299c-4e5d-a0e8-1a7c1872b425"),
+                new("a130fbc1-d480-49c2-8560-3bd358c636b6"),
+                new("87adae37-1b77-4f00-91ee-28b1733fc514")
+            };
+
 
             var imagePaths = new Dictionary<string, string>
             {
