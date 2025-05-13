@@ -47,6 +47,4 @@ export {
   fetchFeedbacksService,
   fetchFeedbackByIdService,
   addFeedbackService,
-  editFeedbackService,
-  removeFeedbackService,
 } from './feedbackService';

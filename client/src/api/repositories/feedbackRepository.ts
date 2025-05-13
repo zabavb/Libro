@@ -41,18 +41,3 @@ export const addFeedback = async (feedback: Partial<Feedback>): Promise<Feedback
     return response.data;
 };
 
-/**
- * Update an existing feedback by ID.
- */
-export const updateFeedback = async (id: string, updatedFeedback: Partial<Feedback>): Promise<Feedback> => {
-    const response = await axios.put<Feedback>(FEEDBACK_BY_ID(id), updatedFeedback);
-    return response.data;
-};
-
-/**
- * Delete a feedback by ID.
- */
-export const deleteFeedback = async (id: string): Promise<void> => {
-    await axios.delete(FEEDBACK_BY_ID(id));
-};
-

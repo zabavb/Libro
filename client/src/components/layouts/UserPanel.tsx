@@ -64,7 +64,7 @@ const UserPanel: React.FC<UserPanelProps> = ({ onLoginOpen }) => {
                         <div>
                             <div className="flex flex-col gap-1">
                                 <p>{user?.firstName} {user?.lastName}</p>
-                                <p>{censorPhonenumber(user?.phoneNumber)}</p>
+                                <p>{user?.phoneNumber ? censorPhonenumber(user?.phoneNumber) : "Unknown number"}</p>
                             </div>
                         </div>
 

@@ -1,4 +1,4 @@
-import { addFeedback, deleteFeedback, getAllFeedbacks, getFeedbackById, updateFeedback } from "@/api/repositories/feedbackRepository";
+import { addFeedback, getAllFeedbacks, getFeedbackById } from "@/api/repositories/feedbackRepository";
 import { Feedback, FeedbackFilter, FeedbackSort, PaginatedResponse, ServiceResponse } from "@/types";
 
 export const fetchFeedbacksService = async (
@@ -84,55 +84,3 @@ export const addFeedbackService = async (
 
     return response;
 }
-
-/**
- * Update an existing feedback.
- */
-export const editFeedbackService = async (
-    id: string,
-    feedback: Partial<Feedback>
-): Promise<ServiceResponse<Feedback>> => {
-    const response: ServiceResponse<Feedback> = {
-        data: null,
-        loading: true,
-        error: null,
-    };
-
-    try {
-        response.data = await updateFeedback(id,feedback);
-    } catch(error){
-        console.error('Failed to update feedback with ID', {id, error});
-        response.error =
-            'An error occurred while updating the feedback. Please try again later.';
-    } finally {
-        response.loading = false;
-    }
-
-    return response;
-};
-
-/**
- * Delete a feedback by its ID.
- */
-export const removeFeedbackService = async (
-    id: string
-): Promise<ServiceResponse<string>> => {
-    const response: ServiceResponse<string> = {
-        data: null,
-        loading: true,
-        error:null,
-    }
-
-    try {
-        await deleteFeedback(id);
-        response.data = id;
-    } catch (error) {
-        console.error('Failed to delete feedback with ID', {id,error});
-        response.error =
-            'An error occurred while deleting the feedback. Please try again later.';
-    } finally {
-        response.loading = false;
-    }
-
-    return response;
-};
