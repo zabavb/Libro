@@ -44,6 +44,7 @@ import AuthorFormPage from './pages/Admin/BookRelated/Authors/AuthorFormPage';
 import PublishersListPage from './pages/Admin/BookRelated/Publishers/PublishersListPage';
 import PublisherFormPage from './pages/Admin/BookRelated/Publishers/PublisherFormPage';
 import FeedbacklistPage from './pages/Admin/BookRelated/Feedbacks/FeedbacksListPage';
+import UserLibraryPage from './pages/main/user/UserLibraryPage';
 
 const AppRoutes = () => (
   <AuthProvider>
@@ -60,6 +61,7 @@ const AppRoutes = () => (
         <Route path='/catalog' element={<BookCatalogPage/>}/>
         <Route path='/books/:bookId' element={<BookDetailsPage/>}/>
         <Route path='/orders/:orderId' element={<OrderDetailsPage />} />
+        <Route path='/library' element={<UserLibraryPage />} />
         <Route
           path='/subscriptions/:subscriptionId'
           element={<SubscriptionPage />}
