@@ -25,6 +25,7 @@ const OrderConfirmationContainer: React.FC<OrderConfirmationContainerProps> = ({
             if (!response.error) {
                 handleNavigate('/checkout/success');
                 clearCart();
+                localStorage.removeItem('orderCheckout');
             }
         },
         [handleNavigate, clearCart]

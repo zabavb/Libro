@@ -37,33 +37,6 @@ const OrderCheckoutFormContainer: React.FC = () => {
         clearItem(bookId)
     }    
 
-    // const handleMessage = useCallback(
-    //     (message: string, type: 'success' | 'error') => {
-    //     dispatch(addNotification({ message, type }));
-    //     },
-    //     [dispatch],
-    // );
-
-    // const handleNavigate = useCallback(
-    //     (route: string) => navigate(route),
-    //     [navigate],
-    // );
-
-    // const handleAddOrder = useCallback(
-    //     async(order: Order) => {
-    //         const response = await addOrderService(order);
-
-    //         if (response.error) handleMessage(response.error, 'error');
-    //         else {
-    //             handleMessage('Order Placed successfully!', 'success');
-    //             clearCart();
-    //             handleNavigate('/');
-
-    //         }
-    //     },
-    //     [handleMessage, handleNavigate,clearCart]
-    // )
-
    const paginationMemo = useMemo(() => ({...pagination}), [pagination]);
 
     const fetchDeliveryTypeList = useCallback(async () => {
