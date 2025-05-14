@@ -159,6 +159,23 @@ namespace OrderApi.Services
             }
         }
 
+        public async Task<List<Guid>> MostOrderedBooksAsync(int days)
+        {
+            
+            try
+            {
+                var mostOrderedBooks = await _repository.MostOrderedBooksAsync(days);
+                _logger.LogInformation("Successfully fetched most ordered books.");
+                return mostOrderedBooks;
+            }
+            catch (Exception ex)
+            {
+                _message = "Failed to fetch most ordered books.";
+                _logger.LogError(_message);
+                throw new InvalidOperationException(_message, ex);
+            }
+        }
+
         public async Task<SingleSnippet<OrderCardSnippet>> GetCardSnippetByUserIdAsync(Guid id)
         {
             try
