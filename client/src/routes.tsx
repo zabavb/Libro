@@ -42,78 +42,81 @@ import AuthorFormPage from './pages/Admin/BookRelated/Authors/AuthorFormPage';
 import PublishersListPage from './pages/Admin/BookRelated/Publishers/PublishersListPage';
 import PublisherFormPage from './pages/Admin/BookRelated/Publishers/PublisherFormPage';
 import FeedbacklistPage from './pages/Admin/BookRelated/Feedbacks/FeedbacksListPage';
+import { CartProvider } from './state/context/CartContext';
 
 const AppRoutes = () => (
   <AuthProvider>
-    <BrowserRouter>
-      <Routes>
-        {/* Main */}
-        <Route path='/' element={<MainPage />} />
-        <Route path='/profile' element={<ProfilePage />} />
-        <Route path='/checkout' element={<OrderCheckoutPage />} />
-        <Route path='/checkout/confirm' element={<OrderConfirmationPage />} />
-        <Route path='/checkout/success' element={<OrderSuccessPage/>} />
-        <Route path='/orders' element={<UserOrdersPage />} />
-        <Route path='/catalog' element={<BookCatalogPage/>}/>
-        <Route path='/books/:bookId' element={<BookDetailsPage/>}/>
-        <Route path='/orders/:orderId' element={<OrderDetailsPage />} />
-        <Route
-          path='/subscriptions/:subscriptionId'
-          element={<SubscriptionPage />}
-        />
-        <Route element={<PrivateRoute />}>
-          {/* Admin */}
-          <Route path='/admin' element={<AdminLayout />}>
-            <Route index element={<AdminPage />} />
-            {/* User */}
-            <Route path='/admin/users' element={<UserListPage />} />
-            <Route path='/admin/users/add' element={<UserFormPage />} />
-            <Route path='/admin/users/:userId' element={<UserFormPage />} />
-            {/* Subscription */}
-            <Route
-              path='/admin/subscriptions'
-              element={<SubscriptionListPage />}
-            />
-            <Route
-              path='/admin/subscriptions/add'
-              element={<SubscriptionFormPage />}
-            />
-            <Route
-              path='/admin/subscriptions/:subscriptionId'
-              element={<SubscriptionFormPage />}
-            />
-            {/* Order */}
-            <Route path='/admin/orders' element={<OrderListPage />} />
-            <Route path='/admin/orders/:orderId' element={<OrderFormPage />} />
-            {/* Delivery Types */}
-            <Route path='/admin/delivery' element={<DeliveriesListPage />} />
-            <Route
-              path='/admin/delivery/add'
-              element={<DeliveryTypeFormPage />}
-            />
-            <Route
-              path='/admin/delivery/:deliveryTypeId'
-              element={<DeliveryTypeFormPage />}
-            />
-            {/*BOOKS*/}
-            <Route path='/admin/booksRelated/books' element={<BookListPage />} />
-            {/* AUTHOR */}
-            <Route path='/admin/booksRelated/authors' element={<AuthorsListPage />} />
-            <Route path='/admin/booksRelated/author/add' element={<AuthorFormPage />} />
-            <Route path='/admin/booksRelated/author/:authorId' element={<AuthorFormPage />} />
-            {/* PUBLISHER */}
-            <Route path='/admin/booksRelated/publishers' element={<PublishersListPage />} />
-            <Route path='/admin/booksRelated/publisher/add' element={<PublisherFormPage />} />
-            <Route path='/admin/booksRelated/publisher/:publisherId' element={<PublisherFormPage />} />
-            {/* FEEDBACK */}
-            <Route path='/admin/booksRelated/feedbacks' element={<FeedbacklistPage />} />
-            {/* Other */}
-            <Route path='*' element={<NotFoundPage />} />
+    <CartProvider>
+      <BrowserRouter>
+        <Routes>
+          {/* Main */}
+          <Route path='/' element={<MainPage />} />
+          <Route path='/profile' element={<ProfilePage />} />
+          <Route path='/checkout' element={<OrderCheckoutPage />} />
+          <Route path='/checkout/confirm' element={<OrderConfirmationPage />} />
+          <Route path='/checkout/success' element={<OrderSuccessPage />} />
+          <Route path='/orders' element={<UserOrdersPage />} />
+          <Route path='/catalog' element={<BookCatalogPage />} />
+          <Route path='/books/:bookId' element={<BookDetailsPage />} />
+          <Route path='/orders/:orderId' element={<OrderDetailsPage />} />
+          <Route
+            path='/subscriptions/:subscriptionId'
+            element={<SubscriptionPage />}
+          />
+          <Route element={<PrivateRoute />}>
+            {/* Admin */}
+            <Route path='/admin' element={<AdminLayout />}>
+              <Route index element={<AdminPage />} />
+              {/* User */}
+              <Route path='/admin/users' element={<UserListPage />} />
+              <Route path='/admin/users/add' element={<UserFormPage />} />
+              <Route path='/admin/users/:userId' element={<UserFormPage />} />
+              {/* Subscription */}
+              <Route
+                path='/admin/subscriptions'
+                element={<SubscriptionListPage />}
+              />
+              <Route
+                path='/admin/subscriptions/add'
+                element={<SubscriptionFormPage />}
+              />
+              <Route
+                path='/admin/subscriptions/:subscriptionId'
+                element={<SubscriptionFormPage />}
+              />
+              {/* Order */}
+              <Route path='/admin/orders' element={<OrderListPage />} />
+              <Route path='/admin/orders/:orderId' element={<OrderFormPage />} />
+              {/* Delivery Types */}
+              <Route path='/admin/delivery' element={<DeliveriesListPage />} />
+              <Route
+                path='/admin/delivery/add'
+                element={<DeliveryTypeFormPage />}
+              />
+              <Route
+                path='/admin/delivery/:deliveryTypeId'
+                element={<DeliveryTypeFormPage />}
+              />
+              {/*BOOKS*/}
+              <Route path='/admin/booksRelated/books' element={<BookListPage />} />
+              {/* AUTHOR */}
+              <Route path='/admin/booksRelated/authors' element={<AuthorsListPage />} />
+              <Route path='/admin/booksRelated/author/add' element={<AuthorFormPage />} />
+              <Route path='/admin/booksRelated/author/:authorId' element={<AuthorFormPage />} />
+              {/* PUBLISHER */}
+              <Route path='/admin/booksRelated/publishers' element={<PublishersListPage />} />
+              <Route path='/admin/booksRelated/publisher/add' element={<PublisherFormPage />} />
+              <Route path='/admin/booksRelated/publisher/:publisherId' element={<PublisherFormPage />} />
+              {/* FEEDBACK */}
+              <Route path='/admin/booksRelated/feedbacks' element={<FeedbacklistPage />} />
+              {/* Other */}
+              <Route path='*' element={<NotFoundPage />} />
+            </Route>
           </Route>
-        </Route>
-        <Route path='*' element={<NotFoundPage />} />
-      </Routes>
-    </BrowserRouter>
+          <Route path='*' element={<NotFoundPage />} />
+        </Routes>
+      </BrowserRouter>
+    </CartProvider>
   </AuthProvider>
 );
 

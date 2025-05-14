@@ -1,6 +1,6 @@
 import OrderConfirmation from "@/components/order/OrderConfirmation"
 import { addOrderService } from "@/services"
-import useCart from "@/state/context/useCart"
+import { useCart } from "@/state/context/CartContext"
 import { Order, User } from "@/types"
 import { useCallback, useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
