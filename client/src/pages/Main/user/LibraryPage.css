@@ -1,17 +1,7 @@
-/* Appliqué au body si ce composant est la page principale,
-   ou à .library-page-wrapper si ce n'est qu'une section de la page. */
-body {
-    background-color: #1E1E1E; /* 1. Fond général TRÈS FONCÉ */
-    color: #FFFFFF;
-    font-family: 'Arial', sans-serif;
-    margin: 0;
-    padding: 0; /* Important pour éviter des espaces inattendus */
-}
-
 .library-page-wrapper {
-    /* Si le body n'a pas déjà le fond #1E1E1E, décommentez la ligne suivante : */
-    /* background-color: #1E1E1E; */
     padding: 20px;
+    background-color: rgb(13, 13, 13);
+    height: 100vh;
 }
 
 .library-header {
@@ -19,27 +9,26 @@ body {
 }
 
 .library-header h1 {
+    font: Gilroy, sans-serif;
     font-size: 24px;
-    color: #FFFFFF;
-    margin: 0 0 0 20px; /* Ajustez pour l'alignement avec le .library-content-shell */
-    font-weight: 500;
+    color: #F4F0E5;
+    margin: 0 0 0 20px;
+    font-weight: bold;
 }
 
-/* C'EST LA CLÉ POUR LA SÉPARATION VISUELLE DE LA ZONE DES LIVRES */
+
 .library-content-shell {
-    background-color: #2C2C2C; /* 2. Fond GRIS MOYEN pour le conteneur principal des livres et de la sidebar */
+    background-color: rgb(13, 13, 13);
     border-radius: 20px;
     padding: 25px;
     display: flex;
-    min-height: 70vh;
-    /* box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); */ /* Ombre optionnelle */
 }
 
 .sidebar-navigation {
-    background-color: #FDFBF7; /* 3a. Fond BEIGE CLAIR pour la sidebar */
+    background-color: #F4F0E5; 
     width: 220px;
     padding: 20px;
-    border-radius: 12px;
+    border-radius: 20px;
     margin-right: 30px;
     flex-shrink: 0;
     position: sticky;
@@ -68,7 +57,7 @@ body {
 }
 
 .nav-button.active {
-    color: #FF7A00;
+    color: #FF642E;
     font-weight: 600;
 }
 
@@ -77,15 +66,18 @@ body {
 }
 
 .book-display-area {
+    padding-top: 25px;
+    padding-bottom: 25px;
     flex-grow: 1;
-    /* 3b. IMPORTANT: Pas de couleur de fond ici, pour qu'elle hérite de .library-content-shell (#2C2C2C) */
-    /* background-color: transparent; */ /* Explicitement transparent, même si c'est le défaut */
+    background-color: #F4F0E5;
+    border-radius: 20px;
 }
 
 .books-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    gap: 25px;
+    row-gap: 20px;
+    column-gap: 5px;
 }
 
 .book-item {
@@ -93,16 +85,15 @@ body {
     flex-direction: column;
     align-items: center;
     text-align: center;
-    /* Pas de fond ici non plus, pour montrer le fond de .book-display-area (donc #2C2C2C) */
+    width: 300px;
 }
 
 .book-cover-container {
-    width: 150px;
+    width: 220px;
     height: 220px;
-    margin-bottom: 12px;
-    border-radius: 8px;
+    margin-bottom: 12px;;
     overflow: hidden;
-    background-color: #3a3a3a; /* Fallback si l'image ne charge pas ou est transparente */
+    background-color: #3a3a3a;
 }
 
 .book-cover-container img {
@@ -113,8 +104,9 @@ body {
 }
 
 .book-item-title {
+    
     font-size: 0.9em;
-    color: #E0E0E0;
+    color: #1A1D23;
     margin-bottom: 4px;
     font-weight: 500;
     width: 100%;
@@ -125,7 +117,7 @@ body {
 
 .book-item-author {
     font-size: 0.8em;
-    color: #A0A0A0;
+    color: #00000066;
     width: 100%;
     white-space: nowrap;
     overflow: hidden;

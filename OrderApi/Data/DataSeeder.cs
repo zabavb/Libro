@@ -38,7 +38,7 @@ namespace OrderApi.Data
                 {
                     OrderId = Guid.NewGuid(),
                     UserId = Guid.NewGuid(),
-                    Books = new Dictionary<Guid, int>
+                    OrderedBooks = new List<Library.DTOs.Order.OrderedBook>
                     {
                         { Guid.NewGuid(), 1 },
                         { Guid.NewGuid(), 2 }

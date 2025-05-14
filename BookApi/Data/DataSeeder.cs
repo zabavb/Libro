@@ -249,6 +249,7 @@ namespace BookAPI.Data
                     Cover = CoverType.HARDCOVER,
                     Quantity = 5,
                     DiscountId = discounts[0].DiscountId,
+                    Format = BookFormat.PAPER
                 },
                 new Book
                 {
@@ -264,6 +265,7 @@ namespace BookAPI.Data
                     Cover = CoverType.SOFTCOVER,
                     Quantity = 3,
                     DiscountId = discounts[1].DiscountId,
+                    Format = BookFormat.PAPER
                 },
                 new Book
                 {
@@ -279,6 +281,7 @@ namespace BookAPI.Data
                     Cover = CoverType.HARDCOVER,
                     Quantity = 1,
                     DiscountId = discounts[2].DiscountId,
+                    Format = BookFormat.PAPER
                 },
                 new Book
                  {
@@ -294,6 +297,7 @@ namespace BookAPI.Data
                      Cover = CoverType.SOFTCOVER,
                      Quantity = 2,
                      DiscountId = discounts[3].DiscountId,
+                     Format = BookFormat.PAPER
                  },
                  new Book
                  {
@@ -309,6 +313,7 @@ namespace BookAPI.Data
                      Cover = CoverType.HARDCOVER,
                      Quantity = 4,
                      DiscountId = discounts[4].DiscountId,
+                     Format = BookFormat.PAPER
                  },
                  new Book
                  {
@@ -324,6 +329,7 @@ namespace BookAPI.Data
                      Cover = CoverType.SOFTCOVER,
                      Quantity = 7,
                      DiscountId = discounts[0].DiscountId,
+                     Format = BookFormat.PAPER
                  },
                  new Book
                  {
@@ -339,6 +345,7 @@ namespace BookAPI.Data
                      Cover = CoverType.SOFTCOVER,
                      Quantity = 3,
                      DiscountId = discounts[1].DiscountId,
+                     Format = BookFormat.PAPER
                  },
                  new Book
                  {
@@ -354,6 +361,7 @@ namespace BookAPI.Data
                      Cover = CoverType.HARDCOVER,
                      Quantity = 6,
                      DiscountId = discounts[3].DiscountId,
+                     Format = BookFormat.PAPER
                  },
                  new Book
                  {
@@ -369,6 +377,7 @@ namespace BookAPI.Data
                      Cover = CoverType.SOFTCOVER,
                      Quantity = 5,
                      DiscountId = discounts[2].DiscountId,
+                     Format = BookFormat.ELECTRONIC
                  },
                  new Book
                  {
@@ -384,6 +393,7 @@ namespace BookAPI.Data
                      Cover = CoverType.SOFTCOVER,
                      Quantity = 2,
                      DiscountId = discounts[4].DiscountId,
+                     Format = BookFormat.ELECTRONIC
                  },
                  new Book
                  {
@@ -399,6 +409,7 @@ namespace BookAPI.Data
                      Cover = CoverType.HARDCOVER,
                      Quantity = 4,
                      DiscountId = discounts[1].DiscountId,
+                     Format = BookFormat.ELECTRONIC
                  },
                  new Book
                  {
@@ -414,6 +425,7 @@ namespace BookAPI.Data
                      Cover = CoverType.SOFTCOVER,
                      Quantity = 6,
                      DiscountId = discounts[3].DiscountId,
+                     Format = BookFormat.ELECTRONIC
                  },
                  new Book
                  {
@@ -429,6 +441,7 @@ namespace BookAPI.Data
                      Cover = CoverType.HARDCOVER,
                      Quantity = 1,
                      DiscountId = discounts[2].DiscountId,
+                     Format = BookFormat.AUDIO
                  },
                  new Book
                  {
@@ -444,6 +457,7 @@ namespace BookAPI.Data
                      Cover = CoverType.SOFTCOVER,
                      Quantity = 3,
                      DiscountId = discounts[1].DiscountId,
+                     Format = BookFormat.AUDIO
                  },
                  new Book
                  {
@@ -459,6 +473,7 @@ namespace BookAPI.Data
                      Cover = CoverType.HARDCOVER,
                      Quantity = 5,
                      DiscountId = discounts[4].DiscountId,
+                     Format = BookFormat.AUDIO
                  }
             };
 

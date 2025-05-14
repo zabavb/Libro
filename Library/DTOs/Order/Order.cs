@@ -6,11 +6,8 @@ namespace Library.DTOs.Order
     public class Order
     {
         public Guid Id { get; set; }
-
         public Guid UserId { get; set; }
-
-        public Dictionary<Guid,int> Books { get; set; } // Dictionary of BookId and Quantity
-
+        public ICollection<OrderedBook> OrderedBooks { get; set; } = null!;
         public string Region { get; set; }
 
         public string City { get; set; }
@@ -31,12 +28,12 @@ namespace Library.DTOs.Order
 
         public Order()
         {
-            Books = new Dictionary<Guid, int>();
             Region = string.Empty;
             City = string.Empty;
             Address = string.Empty;
             OrderDate = DateTime.Now;
             Status = OrderStatus.PENDING;
+            OrderedBooks = new List<OrderedBook>();
         }
     }
 }

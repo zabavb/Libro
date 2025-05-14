@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import './LibraryPage.css'; // Assurez-vous que ce fichier est bien lié et que les classes correspondent
+import './LibraryPage.css';
 
 interface Book {
     id: string;
@@ -45,7 +45,6 @@ const mockBooks: Book[] = [
         coverImageUrl: 'https://placehold.co/150x220/D3D3D3/000000?text=Cover4&font=roboto',
         bookType: 'electronic',
     },
-    // Ajoutez d'autres livres pour simuler plusieurs lignes
     {
         id: '5',
         title: 'Аудіокнига Приклад',
@@ -56,9 +55,9 @@ const mockBooks: Book[] = [
     },
     {
         id: '6',
-        title: 'Електронна Книга',
-        authorFirstName: 'Автор',
-        authorLastName: 'Шість',
+        title: 'Електронна Книгаadsasdadasdsadsdsadsadsasadsadadssd',
+        authorFirstName: 'Авторasd sad a ssa sa asdsad',
+        authorLastName: 'Шістьdsasadsdasasddsds',
         coverImageUrl: 'https://placehold.co/150x220/D3D3D3/000000?text=Cover6&font=roboto',
         bookType: 'electronic',
     },
@@ -78,6 +77,30 @@ const mockBooks: Book[] = [
         coverImageUrl: 'https://placehold.co/150x220/D3D3D3/000000?text=Cover6&font=roboto',
         bookType: 'electronic',
     },
+    {
+        id: '9',
+        title: 'Електронна Книга4',
+        authorFirstName: 'Автор',
+        authorLastName: '9',
+        coverImageUrl: 'https://placehold.co/150x220/D3D3D3/000000?text=Cover6&font=roboto',
+        bookType: 'electronic',
+    },
+    {
+        id: '10',
+        title: 'Електронна Книга4',
+        authorFirstName: 'Автор',
+        authorLastName: '10',
+        coverImageUrl: 'https://placehold.co/150x220/D3D3D3/000000?text=Cover6&font=roboto',
+        bookType: 'electronic',
+    },
+    {
+        id: '11',
+        title: 'Електронна Книга5',
+        authorFirstName: 'Автор',
+        authorLastName: '11',
+        coverImageUrl: 'https://placehold.co/150x220/D3D3D3/000000?text=Cover6&font=roboto',
+        bookType: 'electronic',
+    },
 ];
 
 
@@ -86,14 +109,11 @@ const LibraryPage: React.FC = () => {
     const filteredBooks = mockBooks.filter(book => book.bookType === currentFilter);
 
     return (
-        // Enveloppe pour le fond général de la page (#1E1E1E via body ou cette classe)
         <div className="library-page-wrapper">
             <div className="library-header">
                 <h1>Бібліотека</h1>
             </div>
 
-            {/* Ce conteneur DOIT avoir le fond #2C2C2C et les coins arrondis. */}
-            {/* Il contient la sidebar ET la zone des livres. */}
             <div className="library-content-shell">
                 <nav className="sidebar-navigation"> {/* Fond beige clair #FDFBF7 */}
                     <button
@@ -110,7 +130,7 @@ const LibraryPage: React.FC = () => {
                     </button>
                 </nav>
 
-                {/* Cette zone des livres DOIT être transparente pour montrer le fond #2C2C2C de .library-content-shell */}
+               
                 <main className="book-display-area">
                     {filteredBooks.length > 0 ? (
                         <div className="books-grid">

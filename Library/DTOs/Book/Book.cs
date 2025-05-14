@@ -21,6 +21,7 @@ namespace Library.DTOs.Book
         public string? ImageUrl { get; set; }
         public string? AudioFileUrl { get; set; }
         public string? PdfFileUrl { get; set; }
+        public BookFormat Format { get; set; }
 
         [JsonIgnore]
         public bool HasAudio => !string.IsNullOrEmpty(AudioFileUrl);

@@ -1,4 +1,5 @@
-﻿using OrderStatus = Library.DTOs.Order.OrderStatus;
+﻿using Library.DTOs.Order;
+using OrderStatus = Library.DTOs.Order.OrderStatus;
 
 namespace OrderApi.Models
 {
@@ -6,8 +7,7 @@ namespace OrderApi.Models
     {
         public Guid OrderId { get; set; }
         public Guid UserId { get; set; }
-        public Dictionary<Guid,int> Books { get; set; }
-
+        public ICollection<OrderedBook> OrderedBooks { get; set; } = null!;
         public string Region { get; set; }
         public string City { get; set; }
         public string Address { get; set; }
@@ -28,7 +28,7 @@ namespace OrderApi.Models
 
         public Order()
         {
-            Books = new Dictionary<Guid, int>();
+            OrderedBooks = new List<OrderedBook>();
             Region = string.Empty;
             City = string.Empty;
             Address = string.Empty;

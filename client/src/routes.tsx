@@ -10,7 +10,6 @@ import { AuthProvider } from './state/context/AuthContext';
 import PrivateRoute from './privateRoute';
 
 import AdminPage from './pages/admin/AdminPage';
-import AdminDashboard from './pages/admin/AdminDashboard';
 
 import AdminLayout from './components/layouts/AdminLayout';
 
@@ -70,7 +69,6 @@ const AppRoutes = () => (
           {/* Admin */}
           <Route path='/admin' element={<AdminLayout />}>
             <Route index element={<AdminPage />} />
-            <Route path='/admin/dashboard' element={<AdminDashboard />} />
             {/* User */}
             <Route path='/admin/users' element={<UserListPage />} />
             <Route path='/admin/users/add' element={<UserFormPage />} />

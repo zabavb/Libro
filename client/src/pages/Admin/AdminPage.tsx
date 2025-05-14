@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { useNavigate } from 'react-router-dom';
-import '../Admin/AdminDashboardStyle.css';
+import '../Admin/AdminPageStyle.css';
 import { fetchActiveSubscriptionsCount } from '../../services/subscriptionService';
 import { PeriodType } from '../../types/types/order/PeriodType';
 import { getOrderCounts } from '../../api/repositories/orderRepository';
