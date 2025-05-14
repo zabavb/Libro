@@ -224,6 +224,30 @@ namespace OrderApi.Controllers
             }
         }
 
+
+        /// <summary>
+        /// Retrieves the list of most frequently ordered books within the specified number of days.
+        /// </summary>
+        /// <param name="days">The number of days in the past to consider when calculating book order frequencies.</param>
+        /// <returns>A list of the top 9 most ordered books within the given timeframe.</returns>
+        /// <response code="200">Retrieval successful, returns the list of most ordered books.</response>
+        /// <response code="500">An unexpected error occurred during processing.</response>
+        //[Authorize(Roles = "ADMIN, MODERATOR")]
+        [HttpGet("most-ordered-books/{days}")]
+        public async Task<IActionResult> MostOrderedBooksAsync(int days)
+        {
+            try
+            {
+                var mostOrderedBooks = await _orderService.MostOrderedBooksAsync(days);
+                return Ok(mostOrderedBooks);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                return StatusCode(StatusCodes.Status500InternalServerError, new { message = ex.Message });
+            }
+        }
+
         /// <summary>
         /// Retrieves order counts for the last three periods based on the given period type.
         /// </summary>
