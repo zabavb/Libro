@@ -17,12 +17,30 @@ const UserOrdersListFilter: React.FC<OrdersListFilterProps> = ({ onFilterChange,
 
     return (
         <div className="user-orders-filter-container">
-            <div className="flex gap-5 cursor-pointer" onClick={() => handleFilterChange(undefined)}>
+            <div className="flex gap-5 cursor-pointer" 
+                tabIndex={0}
+                role="button"
+                onClick={() => handleFilterChange(undefined)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    handleFilterChange(undefined);
+                    }
+                }}>
                 <div className={`w-1 rounded-r-[10px] ${activeStatus === undefined ? 'bg-[#FF642E]' : 'bg-transparent'}`}></div>
                 <p className={`${activeStatus === undefined ? 'text-[#FF642E]' : 'text-[#1A1D23]'}`}>All</p>
             </div>
             {Object.values(Status).map((status) => (
-            <div className="flex gap-5 cursor-pointer" onClick={() => handleFilterChange(status)}>
+            <div className="flex gap-5 cursor-pointer"
+                tabIndex={0}
+                role="button"
+                onClick={() => handleFilterChange(status)}
+                onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    handleFilterChange(status);
+                    }
+                }}>
                 <div className={`w-1 rounded-r-[10px] ${activeStatus === status ? 'bg-[#FF642E]' : 'bg-transparent'}`}></div>
                 <p className={`${activeStatus === status ? 'text-[#FF642E]' : 'text-[#1A1D23]'}`}>{status}</p>
             </div>
