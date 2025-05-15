@@ -1,3 +1,3 @@
 export interface SubCategoryFilter{
-    categoryId: string;
+    categoryId?: string;
 }

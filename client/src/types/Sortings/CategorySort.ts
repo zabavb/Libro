@@ -1,5 +1,5 @@
 export interface CategorySort{
-    name: boolean;
-    subCategoryCount: boolean;
-    bookCount: boolean;
+    name?: boolean;
+    subCategoryCount?: boolean;
+    bookCount?: boolean;
 }

@@ -1,4 +1,4 @@
 export interface SubCategorySort{
-    name:boolean;
-    bookCount:boolean;
+    name?:boolean;
+    bookCount?:boolean;
 }
