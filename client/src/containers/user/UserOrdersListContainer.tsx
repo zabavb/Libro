@@ -79,7 +79,7 @@ const UserOrdersContainer = () => {
 
     useEffect(() => {
         if (!userId) return;
-        setFilters({userId:userId})
+        setFilters({...filters, userId:userId})
     }, [userId])
 
     useEffect(() => {

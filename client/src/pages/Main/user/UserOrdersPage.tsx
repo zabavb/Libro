@@ -1,20 +1,15 @@
+import Footer from '@/components/layouts/Footer';
+import Header from '@/components/layouts/Header';
 import UserOrdersContainer from '@/containers/user/UserOrdersListContainer';
-import { useNavigate } from 'react-router-dom';
 
 const UserOrdersPage = () => {
-  const navigate = useNavigate();
-
   return (
-    <div>
-      <header>
-        <h1>My Orders</h1>
-        <button onClick={() => navigate('/')}>
-          Back
-        </button>
-      </header>
-      <main>
+    <div className="flex flex-col min-h-screen">
+      <Header />
+      <main className="flex-1 overflow-auto">
         <UserOrdersContainer />
       </main>
+      <Footer />
     </div>
   );
 };

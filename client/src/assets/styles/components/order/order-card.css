@@ -1,0 +1,14 @@
+.order-card-container{
+    @apply bg-[#F4F0E5] py-8 px-8 text-[#1A1D23] flex flex-col;
+    border-radius: 30px;
+}
+
+.repeat-btn{
+    @apply bg-[#FF642E] text-white py-3 px-7;
+    border-radius: 46px;
+}
+
+.tosite-btn{
+    @apply bg-[#FF642E] text-[#1A1D23] py-3 px-7 font-bold text-lg;
+    border-radius: 46px;
+}

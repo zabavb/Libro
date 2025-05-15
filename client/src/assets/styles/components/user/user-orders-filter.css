@@ -1,0 +1,4 @@
+.user-orders-filter-container{
+    @apply bg-[#F4F0E5] py-9 flex flex-col gap-3.5 font-bold;
+    border-radius: 30px;
+}
