@@ -8,11 +8,12 @@ namespace Library.DTOs.Order
 {
     public class OrderedBook
     {
-        Guid BookId { get; set; }
-        int Quatity { get; set; }
+        public Guid BookId { get; set; }
+        public int Quantity { get; set; }
 
-        public OrderedBook(int quatity) { 
-
+        public OrderedBook(Guid id, int quantity) {
+            BookId = id;
+            Quantity = quantity;
         }
     }
 }
