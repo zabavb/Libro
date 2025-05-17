@@ -13,49 +13,54 @@ export const fetchSubCategoriesService = async (
         loading: true,
         error: null
     }
+    console.log(filter)
+    try {
 
-    try{
-    
-    const formattedSort = Object.fromEntries(
-        Object.entries(sort || {}).map(([key,value]) => [key, value ? 1 : 2])
-    )
+        const formattedSort = Object.fromEntries(
+            Object.entries(sort || {}).map(([key, value]) => [key, value ? 1 : 2])
+        )
 
-    const params = {
-        searchTerm,
-        filter,
-        ...formattedSort
-    }
+        const params = {
+            searchTerm,
+            ...filter,
+            ...formattedSort
+        }
 
 
-    response.data = await getAllSubCategories(pageNumber, pageSize, params);
-    }catch(error){
-        console.error('Failed to fetch subcategories', error);
-        response.error =
-            'An error occurred while fetching subcategories. Please try again later.';
-    } finally{
+        response.data = await getAllSubCategories(pageNumber, pageSize, params);
+    } catch (error) {
+        if (error instanceof Error && 'response' in error && error.response?.status === 404) {
+            response.data = {pageNumber:1, pageSize:10, items:[], totalCount: 1};
+            console.error('No subcategories found.');
+            response.error = null;
+        } else {
+            console.error(error instanceof Error ? error.message : String(error));
+            response.error = 'An error occurred while fetching subcategories. Please try again later.';
+        }
+    } finally {
         response.loading = false;
     }
 
     return response;
 }
 
-export const fetchSubCategoryByIdService = async (id: string) : Promise<ServiceResponse<SubCategory>> => {
+export const fetchSubCategoryByIdService = async (id: string): Promise<ServiceResponse<SubCategory>> => {
     const response: ServiceResponse<SubCategory> = {
         data: null,
         loading: true,
         error: null,
     }
 
-    if(id == "")
+    if (id == "")
         return response
 
-    try{
+    try {
         response.data = await getSubCategoryById(id);
-    } catch (error){
+    } catch (error) {
         console.error(`Failed to fetch subcategory ID [${id}]`, error);
-        response.error = 
+        response.error =
             'An error occurred while fetching subcategory. Please try again later.';
-    } finally{
+    } finally {
         response.loading = false;
     }
     return response;
@@ -70,9 +75,9 @@ export const addSubCategoryService = async (subCategory: Partial<SubCategory>): 
 
     try {
         response.data = await addSubCategory(subCategory);
-    } catch (error){
+    } catch (error) {
         console.error('Failed to create subcategory', error)
-        response.error = 
+        response.error =
             'An error occurred while adding the subcategory. Please try again later.';
     } finally {
         response.loading = false;
@@ -89,11 +94,11 @@ export const editSubCategoryService = async (
         error: null
     }
 
-    
+
     try {
-        response.data = await updateSubCategory(id,subCategory)
+        response.data = await updateSubCategory(id, subCategory)
         console.log(response)
-    } catch (error){
+    } catch (error) {
         console.error(`Failed to update subcategory ID [${id}]`, error);
         response.error = 'An error occurred while updating the subcategory. Please try again later.';
     } finally {
@@ -107,7 +112,7 @@ export const removeSubCategoryService = async (id: string): Promise<ServiceRespo
     const response: ServiceResponse<string> = {
         data: null,
         loading: true,
-        error:null
+        error: null
     };
 
     try {
