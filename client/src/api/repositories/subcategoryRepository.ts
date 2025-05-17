@@ -48,6 +48,7 @@ export const updateSubCategory = async (id: string, updatedSubCategory: Partial<
  * Delete a subcategory by ID.
  */
 export const deleteSubCategory = async (id: string): Promise<void> => {
+    console.log(id)
     await axios.delete(SUBCATEGORY_BY_ID(id));
 };
 

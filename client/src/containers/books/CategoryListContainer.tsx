@@ -1,19 +1,18 @@
-import { useEffect, useCallback, useState, useMemo } from "react"
-import { useDispatch } from "react-redux"
-import { AppDispatch } from "../../state/redux/index"
-import { Category, CategorySort } from "@/types"
-import { addNotification } from "@/state/redux/slices/notificationSlice"
-import { fetchCategoriesService } from "@/services"
-import CategoryList from "@/components/book/admin/CategoryList"
-import { useNavigate } from "react-router-dom"
+import CategoryList from "@/components/book/admin/CategoryList";
+import { fetchCategoriesService } from "@/services";
+import { AppDispatch } from "@/state/redux";
+import { addNotification } from "@/state/redux/slices/notificationSlice";
+import { Category } from "@/types";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
 
 const CategoryListContainer = () => {
 	const dispatch = useDispatch<AppDispatch>()
-        const navigate = useNavigate()
-    const [categories, setCategories] = useState<Category[]>([]);
+    const navigate = useNavigate()
+    const [category, setCategory] = useState<Category[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [searchTerm, setSearchTerm] = useState<string>('');
-    const [sort, setSort] = useState<CategorySort>({});
     const [pagination, setPagination] = useState({
         pageNumber: 1,
         pageSize: 10,
@@ -29,7 +28,6 @@ const CategoryListContainer = () => {
                 paginationMemo.pageNumber,
                 paginationMemo.pageSize,
                 searchTerm,
-                sort
             );
 
             if(response.error)
@@ -42,8 +40,8 @@ const CategoryListContainer = () => {
 
             if(response && response.data) {
                 const paginatedData = response.data;
-
-                setCategories(paginatedData.items);
+                console.log(paginatedData)
+                setCategory(paginatedData.items);
                 setPagination({
                     pageNumber: paginatedData.pageNumber,
                     pageSize: paginatedData.pageSize,
@@ -57,16 +55,18 @@ const CategoryListContainer = () => {
                     type: 'error'
                 })
             )
-            setCategories([])
+            setCategory([])
         }
         setLoading(false);
-    }, [paginationMemo, searchTerm, sort, dispatch])
+    }, [paginationMemo, searchTerm, dispatch])
 
     useEffect(() => {
         fetchCategoriesList();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     },[pagination.pageNumber, searchTerm])
 
+    const handleNavigate = (path: string) => navigate(path)
+    
     const handlePageChange = (pageNumber: number) => {
         setPagination((prev) => ({...prev, pageNumber}))
     }
@@ -76,26 +76,19 @@ const CategoryListContainer = () => {
         setPagination((prev) => ({ ...prev, pageNumber: 1}));
     }
 
-    const handleSortChange = (field: keyof CategorySort) => {
-        setSort({ [field]: true});
-        setPagination((prev) => ({ ...prev,pageNumber: 1}));
-    }
-
-
-    const handleNavigate = (path: string) => navigate(path)
+ 
+	
 
     return (
-        <CategoryList
-            categories={categories}
-            loading={loading}
-            onSearchTermChange={handleSearchTermChange}
-            searchTerm={searchTerm}
-            onSortChange={handleSortChange}
-            sort={sort}
-            onPageChange={handlePageChange}
-            pagination={pagination}
-            onNavigate={handleNavigate}
-        />
+		<CategoryList
+			categories={category}
+			loading={loading}
+			onPageChange={handlePageChange}
+			pagination={pagination}
+			onNavigate={handleNavigate}
+			onSearchTermChange={handleSearchTermChange}
+			searchTerm={searchTerm}
+		/>
     )
 }
 

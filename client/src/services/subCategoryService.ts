@@ -1,11 +1,9 @@
 import { addSubCategory, deleteSubCategory, getAllSubCategories, getSubCategoryById, updateSubCategory } from "@/api/repositories/subcategoryRepository";
-import { PaginatedResponse, ServiceResponse, SubCategory, SubCategoryFilter, SubCategorySort } from "../types";
+import { PaginatedResponse, ServiceResponse, SubCategory, SubCategoryFilter } from "../types";
 
 export const fetchSubCategoriesService = async (
     pageNumber: number = 1,
     pageSize: number = 10,
-    searchTerm?: string,
-    sort?: SubCategorySort,
     filter?: SubCategoryFilter
 ): Promise<ServiceResponse<PaginatedResponse<SubCategory>>> => {
     const response: ServiceResponse<PaginatedResponse<SubCategory>> = {
@@ -16,14 +14,10 @@ export const fetchSubCategoriesService = async (
     console.log(filter)
     try {
 
-        const formattedSort = Object.fromEntries(
-            Object.entries(sort || {}).map(([key, value]) => [key, value ? 1 : 2])
-        )
+
 
         const params = {
-            searchTerm,
             ...filter,
-            ...formattedSort
         }
 
 

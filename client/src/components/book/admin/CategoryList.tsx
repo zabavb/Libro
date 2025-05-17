@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Category, CategorySort, User } from "../../../types";
+import { Category, User } from "../../../types";
 import Pagination from "../../common/Pagination";
 import Search from "../../common/Search";
 import {icons} from "@/lib/icons"
@@ -12,8 +12,6 @@ interface CategoryListProps {
     pagination: { pageNumber: number; pageSize: number; totalCount: number };
     onPageChange: (pageNumber: number) => void;
     onNavigate: (path: string) => void;
-    onSortChange: (field: keyof CategorySort) => void;
-    sort: CategorySort;
     onSearchTermChange: (searchTerm: string) => void;
     searchTerm: string;
 }
@@ -24,8 +22,6 @@ const CategoryList: React.FC<CategoryListProps> = ({
     pagination,
     onPageChange,
     searchTerm,
-    onSortChange,
-    sort,
     onSearchTermChange,
     onNavigate,
 }) => {
@@ -58,7 +54,9 @@ const CategoryList: React.FC<CategoryListProps> = ({
             <main className="main-container">
                 {categories.length > 0 ? (
                     <div className="flex flex-col w-full gap-2.5">
-                        <button className="add-button" onClick={() => onNavigate("/admin/booksRelated/category/add")}>
+                        
+                        <button className="add-button" 
+                        onClick={() => onNavigate(openCategory ? `/admin/booksRelated/subcategory/add/${openCategory}` : "/admin/booksRelated/category/add" )}>
                             <img src={icons.bPlus}/>
                             <p>
                                 {openCategory ? "Add Subcategory" : "Add Category"}
