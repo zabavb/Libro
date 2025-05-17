@@ -22,7 +22,7 @@
 }
 
 .footer-info{
-    /* @apply flex flex-col gap-5 text-dark  justify-end; */
+    @apply flex flex-col gap-5 text-[#1A1D23]  justify-end;
     font-size: 22px;
 }
 

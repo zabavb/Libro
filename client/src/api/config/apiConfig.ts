@@ -76,13 +76,13 @@ export const API_ROUTES = {
   CATEGORIES: {
     BASE: CATEGORIES,
     PAGINATED: (pageNumber: number, pageSize: number) =>
-      `${CATEGORIES}?pageNumber${pageNumber}&pageSize=${pageSize}`,
+      `${CATEGORIES}?pageNumber=${pageNumber}&pageSize=${pageSize}`,
     BY_ID: (id:string) => `${CATEGORIES}/${id}`,
   },
   SUBCATEGORIES:{
     BASE: SUBCATEGORIES,
     PAGINATED: (pageNumber: number, pageSize: number) =>
-      `${SUBCATEGORIES}?pageNumber${pageNumber}&pageSize=${pageSize}`,
+      `${SUBCATEGORIES}?pageNumber=${pageNumber}&pageSize=${pageSize}`,
     BY_ID: (id:string) => `${SUBCATEGORIES}/${id}`,
   },
 };
