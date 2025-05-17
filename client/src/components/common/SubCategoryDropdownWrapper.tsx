@@ -8,16 +8,20 @@ interface SubCategoryDropdownWrapperProps {
   onStateChange: (id:string) => void;
   triggerLabel: string;
   children: ReactNode;
+  onDelete: (e: React.MouseEvent,id:string) => void
 }
 
-const SubCategoryDropdownWrapper: React.FC<SubCategoryDropdownWrapperProps> = ({ isOpen, id, onStateChange, triggerLabel, children }) => {
+const SubCategoryDropdownWrapper: React.FC<SubCategoryDropdownWrapperProps> = ({ isOpen, id, onStateChange, triggerLabel, children,onDelete }) => {
   return (
     <div className='subcategory-dropdown-wrapper'>
       <div
         onClick={() => onStateChange(id)}
         className="subcategory-dropdown-header"
       >
-        {triggerLabel} 
+       {triggerLabel}  
+       <img src={icons.oTrash} 
+       onClick={(e) => onDelete(e,id)}
+       className='p-2.5 border-[1px] border-[#FF642E] rounded-lg'/>
       </div>
 
       <div 

@@ -1,5 +1,5 @@
 import CategoryList from "@/components/book/admin/CategoryList";
-import { fetchCategoriesService } from "@/services";
+import { fetchCategoriesService, removeCategoryService } from "@/services";
 import { AppDispatch } from "@/state/redux";
 import { addNotification } from "@/state/redux/slices/notificationSlice";
 import { Category } from "@/types";
@@ -76,7 +76,21 @@ const CategoryListContainer = () => {
         setPagination((prev) => ({ ...prev, pageNumber: 1}));
     }
 
- 
+     const handleDelete = async (e: React.MouseEvent, id: string) => {
+         e.stopPropagation()
+         const response = await removeCategoryService(id)
+         dispatch(
+             response.error
+                 ? addNotification({
+                     message: response.error,
+                     type: 'error',
+                 })
+                 : addNotification({
+                     message: 'Category successfully deleted.',
+                     type: 'success',
+                 }),
+         );
+     }
 	
 
     return (
@@ -88,6 +102,7 @@ const CategoryListContainer = () => {
 			onNavigate={handleNavigate}
 			onSearchTermChange={handleSearchTermChange}
 			searchTerm={searchTerm}
+            onDelete={handleDelete}
 		/>
     )
 }

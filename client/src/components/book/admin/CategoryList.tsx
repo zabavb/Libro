@@ -12,6 +12,7 @@ interface CategoryListProps {
     pagination: { pageNumber: number; pageSize: number; totalCount: number };
     onPageChange: (pageNumber: number) => void;
     onNavigate: (path: string) => void;
+    onDelete: (e: React.MouseEvent,id:string) => void
     onSearchTermChange: (searchTerm: string) => void;
     searchTerm: string;
 }
@@ -23,6 +24,7 @@ const CategoryList: React.FC<CategoryListProps> = ({
     onPageChange,
     searchTerm,
     onSearchTermChange,
+    onDelete,
     onNavigate,
 }) => {
     const user: User | null = getUserFromStorage();
@@ -69,6 +71,7 @@ const CategoryList: React.FC<CategoryListProps> = ({
                                     id={category.categoryId}
                                     isOpen={openCategory === category.categoryId}
                                     onStateChange={handleOpenCategory}
+                                    onDelete={onDelete}
                                     triggerLabel={category.name.toUpperCase()}
                                     >
                                        <SubCategoryListContainer categoryId={category.categoryId}/>

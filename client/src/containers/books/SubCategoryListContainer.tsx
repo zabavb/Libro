@@ -13,7 +13,6 @@ interface SubCategoryListContainerProps {
 
 const SubCategoryListContainer: React.FC<SubCategoryListContainerProps> = ({ categoryId }) => {
     const dispatch = useDispatch<AppDispatch>()
-    const navigate = useNavigate()
     const [subCategories, setSubCategories] = useState<SubCategory[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [filters, setFilters] = useState<SubCategoryFilter>({ categoryId:categoryId });
