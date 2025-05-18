@@ -19,7 +19,10 @@
 }
 
 .cart-footer{
-    @apply flex flex-col p-[30px] bg-dark h-[23%] gap-2.5;
+    @apply flex flex-col p-[30px];
+    background-color: #1A1D23;
+    height: 23%;
+    gap: 2.5px;
 }
 
 .close-icon{
@@ -27,6 +30,7 @@
 }
 
 .checkout-btn{
-    @apply text-dark bg-[#FF642E] py-3.5 px-20 w-full;
+    color: #1A1D23;
+    @apply bg-[#FF642E] py-3.5 px-20 w-full;
     border-radius: 44px;
 }
