@@ -15,28 +15,21 @@ using System.Linq.Expressions;
 
 namespace BookAPI.Repositories
 {
-    public class BookRepository : IBookRepository
+    public class BookRepository(
+        BookDbContext context,
+        ICacheService cacheService, ILogger<BookRepository> logger) : IBookRepository
     {
-        private readonly BookDbContext _context;
-        private readonly ILogger<IBookRepository> _logger;
+        private readonly BookDbContext _context = context;
+        private readonly ILogger<IBookRepository> _logger = logger;
         private readonly string _cacheKeyPrefix = "Book_";
         private readonly TimeSpan _cacheExpiration = TimeSpan.FromMinutes(GlobalConstants.DefaultCacheExpirationTime);
-        private readonly ICacheService _cacheService;
+        private readonly ICacheService _cacheService = cacheService;
 
         private readonly JsonSerializerOptions _jsonOptions = new JsonSerializerOptions
         {
             ReferenceHandler = ReferenceHandler.IgnoreCycles,
-            DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull, // Ігнорування null значень
+            DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
         };
-
-        public BookRepository(
-            BookDbContext context,
-            ICacheService cacheService, ILogger<BookRepository> logger)
-        {
-            _context = context;
-            _cacheService = cacheService;
-            _logger = logger;
-        }
 
         public async Task<PaginatedResult<Book>> GetAllAsync(
             int pageNumber,
@@ -45,33 +38,38 @@ namespace BookAPI.Repositories
             BookFilter? filter,
             BookSort? sort)
         {
-            List<Book> books;
             string cacheKey = $"{_cacheKeyPrefix}All";
-            var cachedBooks = await _cacheService.GetAsync<List<Book>>(cacheKey, _jsonOptions);
+            List<Book>? books = await _cacheService.GetAsync<List<Book>>(cacheKey, _jsonOptions);
+            bool isFromCache = books != null && books.Count > 0;
 
-            if (cachedBooks != null && cachedBooks.Count > 0)
-            {
-                books = cachedBooks;
-                _logger.LogInformation("Fetched from CACHE.");
-            }
-            else
+            if (!isFromCache)
             {
                 books = await _context.Books
                     .Include(b => b.Category)
                     .Include(b => b.Publisher)
                     .Include(b => b.Feedbacks)
+                    .Include(b=>b.Author)
                     .Include(b => b.Subcategories)
                     .ToListAsync();
-                _logger.LogInformation("Fetched from DB.");
 
+                _logger.LogInformation("Fetched from DB.");
                 await _cacheService.SetAsync(cacheKey, books, _cacheExpiration, _jsonOptions);
                 _logger.LogInformation("Set to CACHE.");
+                isFromCache = true;
+            }
+            else
+            {
+                _logger.LogInformation("Fetched from CACHE.");
             }
 
             IQueryable<Book> bookQuery = books.AsQueryable();
 
             if (!string.IsNullOrWhiteSpace(searchTerm))
-                bookQuery = bookQuery.SearchBy(searchTerm, b => b.Title, b => b.Author.Name);
+            {
+                bookQuery = isFromCache
+                    ? bookQuery.InMemorySearch(searchTerm, b => b.Title, b => b.Author.Name).AsQueryable()
+                    : bookQuery.SearchBy(searchTerm, b => b.Title, b => b.Author.Name);
+            }
 
             if (filter != null)
                 bookQuery = filter.Apply(bookQuery);
@@ -79,8 +77,11 @@ namespace BookAPI.Repositories
             if (sort != null)
                 bookQuery = sort.Apply(bookQuery);
 
-            var totalBooks = bookQuery.Count();
-            var paginatedBooks = bookQuery.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList();
+            int totalBooks = bookQuery.Count();
+            List<Book> paginatedBooks = bookQuery
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToList();
 
             return new PaginatedResult<Book>
             {
@@ -90,6 +91,7 @@ namespace BookAPI.Repositories
                 PageSize = pageSize
             };
         }
+
 
         public async Task<Book?> GetByIdAsync(Guid id)
         {
@@ -176,6 +178,8 @@ namespace BookAPI.Repositories
 
         public async Task UpdateAsync(Book entity)
         {
+            var a = _context.Books.ToList();
+            var b = entity.Id;
             var existingBook = await _context.Books.FirstOrDefaultAsync(b => b.Id == entity.Id)
                                ?? throw new KeyNotFoundException("Book not found");
 
@@ -219,7 +223,6 @@ namespace BookAPI.Repositories
             _logger.LogInformation("Book deleted from DB and cache.");
         }
 
-       
 
     }
 }

@@ -1,13 +1,13 @@
 ﻿using BookAPI.Models.Filters;
 using BookAPI.Models.Sortings;
 using Library.Common;
+using Library.DTOs.Book;
 using System.Linq.Expressions;
 
 namespace BookAPI.Services.Interfaces
 {
     public interface IBookService
     {
-        // Renamed from "GetBooksAsync" to "GetAllAsync"
         public Task<PaginatedResult<BookDto>> GetAllAsync(
             int pageNumber,
             int pageSize,
@@ -17,8 +17,11 @@ namespace BookAPI.Services.Interfaces
         );
         Task<BookDto> GetByIdAsync(Guid bookId);
         Task<ICollection<string>?> GetAllForUserDetailsAsync(ICollection<Guid> ids);
-        Task /*<BookDto>*/ CreateAsync(BookDto bookDto, IFormFile? imageFile);
-        Task /*<BookDto>*/ UpdateAsync(Guid id, BookDto bookDto, IFormFile? imageFile);
+        Task /*<BookDto>*/ CreateAsync(BookRequest bookDto);
+        Task /*<BookDto>*/ UpdateAsync(Guid id, BookRequest bookDto);
         Task /*<bool>*/ DeleteAsync(Guid id);
+        Task UpdateWithDiscountAsync(Guid id, UpdateBookRequest request, IDiscountService discountService);
+        Task<DiscountDTO?> GetDiscountByBookIdAsync(Guid bookId);
+
     }
 }

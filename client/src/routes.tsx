@@ -10,6 +10,7 @@ import { AuthProvider } from './state/context/AuthContext';
 import PrivateRoute from './privateRoute';
 
 import AdminPage from './pages/admin/AdminPage';
+import AdminDashboard from './pages/admin/AdminDashboard';
 
 import AdminLayout from './components/layouts/AdminLayout';
 
@@ -30,12 +31,19 @@ import SubscriptionListPage from './pages/admin/userRelated/subscriptions/Subscr
 import SubscriptionFormPage from './pages/admin/userRelated/subscriptions/SubscriptionFormPage';
 import OrderCheckoutPage from './pages/Main/order/OrderCheckoutPage';
 import UserOrdersPage from './pages/main/user/UserOrdersPage';
+import LikedBooksPage from './pages/main/likedBooksPage';
 import BookDetailsPage from './pages/main/book/BookDetailsPage';
 import BookCatalogPage from './pages/main/book/BooksCatalogPage';
 import OrderDetailsPage from './pages/admin/orderRelated/orders/OrderDetailsPage';
 import ProfilePage from './pages/common/ProfilePage';
 import OrderConfirmationPage from './pages/Main/order/OrderConfirmationPage';
 import OrderSuccessPage from './pages/Main/order/OrderSuccessPage';
+import BookListPage from './pages/Admin/BookRelated/Books/BooksListPage';
+import AuthorsListPage from './pages/Admin/BookRelated/Authors/AuthorsListPage';
+import AuthorFormPage from './pages/Admin/BookRelated/Authors/AuthorFormPage';
+import PublishersListPage from './pages/Admin/BookRelated/Publishers/PublishersListPage';
+import PublisherFormPage from './pages/Admin/BookRelated/Publishers/PublisherFormPage';
+import FeedbacklistPage from './pages/Admin/BookRelated/Feedbacks/FeedbacksListPage';
 
 const AppRoutes = () => (
   <AuthProvider>
@@ -48,6 +56,7 @@ const AppRoutes = () => (
         <Route path='/checkout/confirm' element={<OrderConfirmationPage />} />
         <Route path='/checkout/success' element={<OrderSuccessPage/>} />
         <Route path='/orders' element={<UserOrdersPage />} />
+        <Route path='/liked' element={<LikedBooksPage />} />
         <Route path='/catalog' element={<BookCatalogPage/>}/>
         <Route path='/books/:bookId' element={<BookDetailsPage/>}/>
         <Route path='/orders/:orderId' element={<OrderDetailsPage />} />
@@ -59,6 +68,7 @@ const AppRoutes = () => (
           {/* Admin */}
           <Route path='/admin' element={<AdminLayout />}>
             <Route index element={<AdminPage />} />
+            <Route path='/admin/dashboard' element={<AdminDashboard />} />
             {/* User */}
             <Route path='/admin/users' element={<UserListPage />} />
             <Route path='/admin/users/add' element={<UserFormPage />} />
@@ -90,11 +100,22 @@ const AppRoutes = () => (
               element={<DeliveryTypeFormPage />}
             />
             {/*BOOKS*/}
-            <Route path='/admin/books' element={<BookListContainer />} />
+            <Route path='/admin/booksRelated/books' element={<BookListPage />} />
+            {/* AUTHOR */}
+            <Route path='/admin/booksRelated/authors' element={<AuthorsListPage />} />
+            <Route path='/admin/booksRelated/author/add' element={<AuthorFormPage />} />
+            <Route path='/admin/booksRelated/author/:authorId' element={<AuthorFormPage />} />
+            {/* PUBLISHER */}
+            <Route path='/admin/booksRelated/publishers' element={<PublishersListPage />} />
+            <Route path='/admin/booksRelated/publisher/add' element={<PublisherFormPage />} />
+            <Route path='/admin/booksRelated/publisher/:publisherId' element={<PublisherFormPage />} />
+            {/* FEEDBACK */}
+            <Route path='/admin/booksRelated/feedbacks' element={<FeedbacklistPage />} />
             {/* Other */}
             <Route path='*' element={<NotFoundPage />} />
           </Route>
         </Route>
+        <Route path='*' element={<NotFoundPage />} />
       </Routes>
     </BrowserRouter>
   </AuthProvider>

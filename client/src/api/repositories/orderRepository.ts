@@ -1,6 +1,7 @@
 import axios from "axios";
-import { ORDERS, ORDER_BY_ID, GRAPHQL } from "..";
-import { Order, PaginatedResponse, OrderFilter, OrderSort, GraphQLResponse } from "../../types";
+import { ORDERS_PAGINATED, ORDERS, ORDER_BY_ID, GET_ORDER_COUNTS, GRAPHQL } from "..";
+import { Order, PaginatedResponse, OrderFilter, OrderSort, GraphQLResponse} from "../../types";
+import { PeriodType } from "@/types/types/order/PeriodType"; 
 import { getAuthHeaders } from "./common";
 
 
@@ -43,5 +44,12 @@ export const updateOrder = async (id: string, order: Partial<Order>): Promise<Or
 }
 
 export const deleteOrder = async (id: string): Promise<void> => {
-    await axios.delete(ORDER_BY_ID(id));
+    await axios.delete(ORDER_BY_ID(id))
 }
+
+export const getOrderCounts = async (period: PeriodType): Promise<number[]> => {
+    console.log('AAACounts:dsfdsdfssdffdssd');
+    const response = await axios.get<number[]>(GET_ORDER_COUNTS(period));
+    console.log('BBBCounts:dsfdsdfssdffdssd');
+    return response.data;
+};

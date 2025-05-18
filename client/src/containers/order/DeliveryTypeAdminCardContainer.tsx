@@ -24,7 +24,7 @@ const DeliveryTypeAdminCardContainer: React.FC<DeliveryAdminCardContainerProps> 
                     type: 'error',
                   })
                 : addNotification({
-                    message: 'Order successfully deleted.',
+                    message: 'Delivery type successfully deleted.',
                     type: 'success',
                   }),
             );

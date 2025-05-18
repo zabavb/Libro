@@ -16,5 +16,6 @@ namespace OrderApi.Services
 
         Task<OrderForUserCard?> GetForUserCardAsync(Guid id);
         Task<ICollection<OrderForUserDetails>?> GetAllForUserDetailsAsync(Guid id);
+        Task<List<Guid>> MostOrderedBooksAsync(int days);
     }
 }

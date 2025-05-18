@@ -1,4 +1,3 @@
-import { statusEnumToNumber } from "../api/adapters/orderAdapters";
 import { createOrder, deleteOrder, getAllOrders, getOrderById, updateOrder } from "../api/repositories/orderRepository";
 import { Order, OrderFilter, OrderSort, PaginatedResponse, ServiceResponse, Bool } from "../types";
 

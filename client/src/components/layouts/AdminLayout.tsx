@@ -2,12 +2,17 @@ import { Outlet, useLocation } from 'react-router-dom';
 import '@/assets/styles/layout/admin-layout.css';
 import { icons } from '@/lib/icons'
 import logoUrl from '@/assets/logoLibro.svg';
+import AdminDropdownWrapper from '../common/AdminDropdownWrapper';
 
 const AdminLayout: React.FC = () => {
   const location = useLocation();
   const currentPath = location.pathname;
 
-  const isActive = (path: string) => currentPath === path;
+  const isActive = (path: string, includes?: boolean) => {
+    if(includes)
+      return currentPath.includes(path)
+    return currentPath === path;
+  }
 
   return (
     <div className='admin-container'>
@@ -26,13 +31,27 @@ const AdminLayout: React.FC = () => {
               <a href='/admin'>Home</a>
             </li>
             <li
-              className={isActive('/admin/books') ? 'active-link link' : 'link'}
+              className={isActive('/admin/booksRelated', true) ? 'active-link link' : 'link'}
             >
-              <img
-                src={icons.wBook}
-                className={isActive('/admin/books') ? 'invert' : ''}
-              />
-              <a href='/admin/books'>Books</a>
+              <ul>
+                <AdminDropdownWrapper iconUrl={icons.wBook} triggerLabel='Book Related' isActive={isActive('/admin/booksRelated', true)}>
+                  <li className='flex py-[5px] px-[7px] text-base'>
+                    <a className={`${isActive('/admin/booksRelated/books') && 'underline'}`} href='/admin/booksRelated/books'>Books</a>
+                  </li>
+                  <li className='flex py-[5px] px-[7px] text-base'>
+                    <a className={`${isActive('/admin/booksRelated/categories') && 'underline'}`} href='/admin/booksRelated/categories'>Categories</a>
+                  </li>
+                  <li className='flex py-[5px] px-[7px] text-base'>
+                    <a className={`${isActive('/admin/booksRelated/authors') && 'underline'}`} href='/admin/booksRelated/authors'>Authors</a>
+                  </li>
+                  <li className='flex py-[5px] px-[7px] text-base'>
+                    <a className={`${isActive('/admin/booksRelated/publishers') && 'underline'}`} href='/admin/booksRelated/publishers'>Publishers</a>
+                  </li>
+                  <li className='flex py-[5px] px-[7px] text-base'>
+                    <a className={`${isActive('/admin/booksRelated/feedbacks') && 'underline'}`} href='/admin/booksRelated/feedbacks'>Feedbacks</a>
+                  </li>
+                </AdminDropdownWrapper>
+              </ul>
             </li>
             <li
               className={isActive('/admin/users') ? 'active-link link' : 'link'}
@@ -59,9 +78,9 @@ const AdminLayout: React.FC = () => {
                 isActive('/admin/delivery') ? 'active-link link' : 'link'
               }
             >
-                <img
+              <img
                 src={icons.wTruck}
-                className={isActive('/admin/subscriptions') ? 'invert' : ''}
+                className={isActive('/admin/delivery') ? 'invert' : ''}
               />
               <a href='/admin/delivery'>Deliveries</a>
             </li>
@@ -70,7 +89,6 @@ const AdminLayout: React.FC = () => {
                 isActive('/admin/subscriptions') ? 'active-link link' : 'link'
               }
             >
-              {/* <FontAwesomeIcon icon={faCreditCard} /> */}
               <img
                 src={icons.wCredit}
                 className={isActive('/admin/subscriptions') ? 'invert' : ''}

@@ -17,6 +17,11 @@ using UserAPI.Repositories.Interfaces;
 using UserAPI.Services;
 using UserAPI.Services.Interfaces;
 using Library.Common.Middleware;
+using OrderApi.Data;
+using OrderApi.Repository;
+using OrderApi.Services;
+using OrderAPI.Services.Interfaces;
+
 
 var builder = WebApplication.CreateBuilder(args);
 

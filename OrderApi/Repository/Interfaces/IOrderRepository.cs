@@ -16,4 +16,5 @@ public interface IOrderRepository : IManageable<Order>
 
     Task<OrderForUserCard> GetForUserCardAsync(Guid userId);
     Task<ICollection<OrderForUserDetails>> GetAllForUserDetailsAsync(Guid userId);
+    Task<List<Guid>> MostOrderedBooksAsync(int days);
 }

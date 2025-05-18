@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
+using Library.DTOs.Book;
 
 namespace BookAPI.Models
 {
@@ -12,11 +13,9 @@ namespace BookAPI.Models
         public string Description { get; set; } = null!;
         public CoverType Cover { get; set; }
         public int Quantity { get; set; } = 0;
-        //public bool IsAvaliable { get; set; } = true;
         public string? ImageUrl { get; set; }
         public string? AudioFileUrl { get; set; }
-        [NotMapped]
-        public bool HasAudio => !string.IsNullOrEmpty(AudioFileUrl);
+        public string? PdfFileUrl { get; set; }
         public Guid CategoryId { get; set; }
         public Category Category { get; set; } = null!;
         public Guid PublisherId { get; set; }
@@ -44,7 +43,8 @@ namespace BookAPI.Models
             Feedbacks = new List<Feedback>();
             Subcategories = new List<SubCategory>();
             ImageUrl = string.Empty;
-            DiscountId = Guid.Empty;
+            AudioFileUrl = string.Empty;
+			DiscountId = Guid.Empty;
         }
     }
 }

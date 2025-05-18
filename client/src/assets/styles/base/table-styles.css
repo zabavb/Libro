@@ -7,12 +7,14 @@ table{
     @apply font-semibold overflow-hidden border-separate border-spacing-0 w-full;
 }
 
-tr>td{
-    @apply cursor-pointer;
+th, td{
+    @apply text-start text-[#1A1D23];
+    padding: 15px;
+    border-bottom: 1px solid #7A7A7A;
 }
 
-th, td{
-    @apply text-start;
+.table-header{
+    @apply text-[#1A1D23];
     padding: 15px;
     border-bottom: 1px solid #7A7A7A;
 }
