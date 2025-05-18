@@ -2,6 +2,7 @@ import axios from "axios"
 import { BOOKS_PAGINATED, BOOKS, BOOK_BY_ID } from "../index"
 import { PaginatedResponse } from "../../types"
 import { Book } from "../../types/objects/Book"
+import { getAuthHeaders } from "./common";
 
 interface BookQueryParams {
     author?: string;
@@ -45,7 +46,9 @@ export const getBookById = async (id: string): Promise<Book> => {
  * Create a new book.
  */
 export const addBook = async (book: Partial<Book>): Promise<Book> => {
-    const response = await axios.post<Book>(BOOKS, book);
+    const response = await axios.post<Book>(BOOKS, book,{
+        headers: getAuthHeaders('multipart/form-data'),
+    });
     return response.data;
 };
 

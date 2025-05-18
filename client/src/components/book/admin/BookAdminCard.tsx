@@ -12,7 +12,7 @@ const BookAdminCard: React.FC<BookAdminCardProps> = ({book, onDelete,onNavigate}
         <>
             <tr>
                 <td className="flex justify-center">
-                    <img className="w-[50px] h-[70px]" src={`https://picsum.photos/seed/${book.bookId}/50/70`} />
+                    <img className="w-[50px] h-[70px]" src={book.imageUrl ? book.imageUrl :`https://picsum.photos/seed/${book.bookId}/50/70`} />
                 </td>
                 <td>
                     {book.title}

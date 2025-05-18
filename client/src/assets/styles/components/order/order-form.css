@@ -72,12 +72,12 @@
 }
 
 .input-select{
-    @apply rounded-lg p-3.5 w-1/2 text-white;
+    @apply rounded-lg p-3.5 w-1/2 bg-[#DEDBD1] text-[#1A1D23];
     transition: all 0.5s;
 }
 
 .select-option{
-    @apply bg-[#DEDBD1] text-black;
+    @apply bg-[#DEDBD1] text-[#1A1D23];
 }
 
 .delivery-card{

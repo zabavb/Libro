@@ -4,6 +4,7 @@ import { CoverType } from '../../types/subTypes/book/CoverType';
 import { dateToString } from './commonAdapters';
 import { AuthorFormData, CategoryFormData, PublisherFormData, SubCategoryFormData } from '@/utils';
 import { Publisher } from '@/types/types/book/Publisher';
+import { BookFormData } from '@/utils/bookValidationSchema';
 
 export const languageNumberToEnum = (languageNumber: number): Language => {
   const languageMap: { [key: number]: Language } = {

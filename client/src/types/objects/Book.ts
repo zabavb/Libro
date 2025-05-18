@@ -12,9 +12,10 @@ export interface Book {
   description?: string
   cover: number
   quantity: number
-  imageUrl?: string;
+  imageUrl: string;
+  image: File | null;
   audioFileUrl?: string;
   PdfFileUrl?: string;
-  feedbackIds: string[];
-  subcategoryIds: string[]; 
+  feedbackIds?: string[];
+  subcategoryIds?: string[]; 
 }
