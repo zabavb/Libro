@@ -2,16 +2,18 @@
     @apply flex my-2.5 mx-10;
 }
 
-.active{
-    @apply font-semibold text-[#ff642e];
-}
+
 
 .page-nav{
     @apply py-0 px-5;
 }
 
 .page-number{
-    @apply my-0 mx-0.5
+    @apply my-0 mx-0.5;
+}
+
+.page-number.number-active{
+    @apply font-semibold text-[#ff642e];
 }
 
 .number-container{

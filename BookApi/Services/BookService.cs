@@ -4,14 +4,17 @@ using BookAPI.Models.Filters;
 using BookAPI.Models.Sortings;
 using BookAPI.Repositories.Interfaces;
 using BookAPI.Services.Interfaces;
+using Humanizer;
 using Library.Common;
 using System.Linq.Expressions;
-using SixLabors.ImageSharp;
+using Library.DTOs.Book;
+using Book = BookAPI.Models.Book;
+using Library.Sorts;
 
 namespace BookAPI.Services
 {
     public class BookService(
-        IBookRepository bookRepository,
+        IBookRepository bookRepository, IDiscountRepository discountRepository,
         IMapper mapper,
         ILogger<BookService> logger,
         S3StorageService storageService) : IBookService
@@ -20,7 +23,6 @@ namespace BookAPI.Services
         private readonly IMapper _mapper = mapper;
         private readonly ILogger<BookService> _logger = logger;
         private readonly S3StorageService _storageService = storageService;
-        private static readonly Size Size = new Size(500, 400);
 
         public async Task<PaginatedResult<BookDto>> GetAllAsync(
             int pageNumber,
@@ -72,14 +74,41 @@ namespace BookAPI.Services
                 return null;
             }
         }
-
-        public async Task /*<BookDto>*/ CreateAsync(BookDto bookDto, IFormFile? imageFile)
+        public async Task<DiscountDTO?> GetDiscountByBookIdAsync(Guid bookId)
         {
-            var book = _mapper.Map<Book>(bookDto);
-            book.Id = Guid.NewGuid();
-            if (imageFile != null)
+            if (bookId == Guid.Empty)
+                throw new ArgumentException("Book ID не може бути порожнім", nameof(bookId));
+
+            var discount = await discountRepository.GetByBookIdAsync(bookId);
+
+            if (discount == null)
             {
-                book.ImageUrl = await UploadImageAsync(imageFile, book.Id);
+                _logger.LogWarning($"Знижка для книги з ID {bookId} не знайдена.");
+                return null;
+            }
+
+            return _mapper.Map<DiscountDTO>(discount);
+        }
+
+        public async Task /*<BookDto>*/ CreateAsync(BookRequest request)
+        {
+            var book = _mapper.Map<Book>(request);
+            book.Id = Guid.NewGuid();
+
+            var filesHelper = new FilesHelper(_storageService, "libro-book");
+
+            if (request.Image != null)
+            {
+                book.ImageUrl = await filesHelper.UploadImageFromFormAsync(request.Image, book.Id, GlobalConstants.booksFolderImage);
+            }
+
+            if (request.Audio != null)
+            {
+                book.AudioFileUrl = await filesHelper.UploadAudioFromFormAsync(request.Audio, book.Id, GlobalConstants.booksFolderAudio);
+            }
+            if (request.PDF != null)
+            {
+                book.PdfFileUrl = await filesHelper.UploadPdfFromFormAsync(request.PDF, book.Id, GlobalConstants.booksFolderPdf);
             }
 
             try
@@ -93,10 +122,10 @@ namespace BookAPI.Services
                 throw;
             }
 
-            // return _mapper.Map<BookDto>(book);
         }
 
-        public async Task /*<BookDto>*/ UpdateAsync(Guid id, BookDto bookDto, IFormFile? imageFile)
+
+        public async Task UpdateAsync(Guid id, BookRequest request)
         {
             var existingBook = await _bookRepository.GetByIdAsync(id);
 
@@ -108,17 +137,29 @@ namespace BookAPI.Services
 
             try
             {
-                if (!string.IsNullOrEmpty(existingBook.ImageUrl))
+                if (!string.IsNullOrEmpty(existingBook.ImageUrl) && request.Image != null)
                 {
                     await _storageService.DeleteAsync(GlobalConstants.bucketName, existingBook.ImageUrl);
+                    existingBook.ImageUrl = null; 
                 }
 
-                if (imageFile != null)
+                var filesHelper = new FilesHelper(_storageService, "libro-book");
+                if (request.Image != null)
                 {
-                    existingBook.ImageUrl = await UploadImageAsync(imageFile, id);
+                    existingBook.ImageUrl = await filesHelper.UploadImageFromFormAsync(request.Image, id, GlobalConstants.booksFolderImage);
                 }
 
-                _mapper.Map(bookDto, existingBook);
+                if (request.Audio != null)
+                {
+                    existingBook.AudioFileUrl = await filesHelper.UploadAudioFromFormAsync(request.Audio, id, GlobalConstants.booksFolderAudio); 
+                }
+
+                if (request.PDF != null)
+                {
+                    existingBook.PdfFileUrl = await filesHelper.UploadPdfFromFormAsync(request.PDF, id, GlobalConstants.booksFolderPdf);
+                }
+
+                _mapper.Map(request, existingBook);
                 await _bookRepository.UpdateAsync(existingBook);
                 _logger.LogInformation($"Successfully updated book with id {id}");
             }
@@ -127,9 +168,8 @@ namespace BookAPI.Services
                 _logger.LogError($"Failed to update book. Error: {ex.Message}");
                 throw;
             }
-
-            // return _mapper.Map<BookDto>(existingBook);
         }
+
 
         public async Task /*<bool>*/ DeleteAsync(Guid id)
         {
@@ -150,31 +190,64 @@ namespace BookAPI.Services
 
                 await _bookRepository.DeleteAsync(id);
                 _logger.LogInformation($"Successfully deleted book with id {id}");
-                // return true;
             }
             catch (Exception ex)
             {
                 _logger.LogError($"Failed to delete book. Error: {ex.Message}");
-                // return false;
             }
         }
 
-        private async Task<string?> UploadImageAsync(IFormFile? imageFile, Guid id)
+
+
+        public async Task UpdateWithDiscountAsync(Guid id, UpdateBookRequest request, IDiscountService discountService)
         {
-            if (imageFile == null || imageFile.Length == 0)
-                return null;
+            var bookDto = request.Book;
+            var discount = request.Discount;
 
-            try
+            if (bookDto == null)
             {
-                return await _storageService.UploadAsync(GlobalConstants.bucketName, "book/images/", id, imageFile,
-                    Size);
+                _logger.LogWarning("Invalid book data provided for update.");
+                throw new ArgumentException("Invalid book data.");
             }
-            catch (Exception ex)
+
+            var existingDiscount = await discountService.GetByBookIdAsync(bookDto.BookId);
+            var discountId = existingDiscount?.DiscountId ?? Guid.Empty;
+
+            if (discount != null)
             {
-                string message = "Error occurred while uploading book's image.";
-                _logger.LogError(message);
-                throw new InvalidOperationException(message, ex);
+                discount.BookId = bookDto.BookId;
+
+                if (existingDiscount != null)
+                {
+                    bookDto.DiscountId = discountId;
+                    await discountService.UpdateAsync(discount);
+                }
+                else
+                {
+                    await discountService.CreateAsync(discount);
+                    var createdDiscount = await discountService.GetByBookIdAsync(bookDto.BookId);
+                    if (createdDiscount != null)
+                    {
+                        bookDto.DiscountId = createdDiscount.DiscountId;
+                    }
+                }
             }
+            else if (existingDiscount != null && existingDiscount.DiscountId != Guid.Empty)
+            {
+                await discountService.DeleteAsync(existingDiscount.DiscountId);
+            }
+
+            var existingBook = await _bookRepository.GetByIdAsync(id);
+            if (existingBook == null)
+            {
+                _logger.LogWarning($"Book with id {id} not found.");
+                throw new InvalidOperationException($"Book with id {id} not found.");
+            }
+
+            _mapper.Map(bookDto, existingBook);
+            await _bookRepository.UpdateAsync(existingBook);
+            _logger.LogInformation($"Successfully updated book with id {id} and processed discount.");
         }
+
     }
 }

@@ -1,6 +1,7 @@
 import React from 'react';
 import { EmailViewDomen, RoleView, UserViewFilter } from '../../types';
 import SubscriptionDropdown from './SubscriptionDropdown';
+import '@/assets/styles/components/common/filter.css'
 
 interface UserFilterProps {
   filters: UserViewFilter;
@@ -9,9 +10,9 @@ interface UserFilterProps {
 
 const UserFilter: React.FC<UserFilterProps> = ({ onFilterChange, filters }) => {
   return (
-    <div>
-      <h3>Filters</h3>
+    <div className='filters-container'>
       <select
+      className='filter-item'
         value={filters.email || ''}
         onChange={(e) =>
           onFilterChange({
@@ -29,6 +30,7 @@ const UserFilter: React.FC<UserFilterProps> = ({ onFilterChange, filters }) => {
         ))}
       </select>
       <select
+        className='filter-item'
         value={filters.role || ''}
         onChange={(e) =>
           onFilterChange({

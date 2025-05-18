@@ -1,5 +1,6 @@
 ﻿using Amazon.S3.Model;
 using BookAPI.Models;
+using Library.DTOs.Book;
 using Library.Interfaces;
 
 namespace BookAPI.Models.Filters

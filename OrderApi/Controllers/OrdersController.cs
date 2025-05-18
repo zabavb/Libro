@@ -1,7 +1,8 @@
-﻿using Library.DTOs.UserRelated.User;
+using Library.DTOs.UserRelated.User;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using OrderApi.Services;
+
 
 namespace OrderApi.Controllers
 {
@@ -220,6 +221,60 @@ namespace OrderApi.Controllers
             {
                 _logger.LogError(ex.Message);
                 return StatusCode(StatusCodes.Status500InternalServerError, new { message = ex.Message });
+            }
+        }
+
+
+        /// <summary>
+        /// Retrieves the list of most frequently ordered books within the specified number of days.
+        /// </summary>
+        /// <param name="days">The number of days in the past to consider when calculating book order frequencies.</param>
+        /// <returns>A list of the top 9 most ordered books within the given timeframe.</returns>
+        /// <response code="200">Retrieval successful, returns the list of most ordered books.</response>
+        /// <response code="500">An unexpected error occurred during processing.</response>
+        //[Authorize(Roles = "ADMIN, MODERATOR")]
+        [HttpGet("most-ordered-books/{days}")]
+        public async Task<IActionResult> MostOrderedBooksAsync(int days)
+        {
+            try
+            {
+                var mostOrderedBooks = await _orderService.MostOrderedBooksAsync(days);
+                return Ok(mostOrderedBooks);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                return StatusCode(StatusCodes.Status500InternalServerError, new { message = ex.Message });
+            }
+        }
+
+        /// <summary>
+        /// Retrieves order counts for the last three periods based on the given period type.
+        /// </summary>
+        /// <param name="period">The type of period to analyze (Day, Week, Month).</param>
+        /// <returns>List of order counts for the last three periods.</returns>
+        /// <response code="200">Retrieval successful, returns a list of counts</response>
+        /// <response code="400">Invalid period type provided</response>
+        /// <response code="500">An unexpected error occurred</response>
+        [HttpGet("counts/{period}")]
+        public async Task<IActionResult> GetOrderCounts(PeriodType period)
+        {
+            try
+            {
+                if (!Enum.IsDefined(typeof(PeriodType), period))
+                {
+                    var message = $"Invalid period type: {period}";
+                    _logger.LogError(message);
+                    return BadRequest(new { message });
+                }
+
+                var result = await _orderService.GetOrderCountsForLastThreePeriodsAsync(period);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Unexpected error while retrieving order counts for period type {Period}", period);
+                return StatusCode(StatusCodes.Status500InternalServerError, new { message = "An unexpected error occurred." });
             }
         }
     }

@@ -43,8 +43,8 @@ const UserListContainer: React.FC = () => {
       setLoading(true);
       try {
         const response = await fetchUsersService(
-          (paginationMemo.pageNumber = 1),
-          (paginationMemo.pageSize = 10),
+          paginationMemo.pageNumber,
+          paginationMemo.pageSize,
           searchTerm,
           filters,
           sort,
@@ -111,9 +111,10 @@ const UserListContainer: React.FC = () => {
   };
 
   const handlePageChange = (pageNumber: number) => {
-    setPagination((prev) => ({ ...prev, pageNumber }));
-  };
-
+    
+    setPagination((prev) => ({...prev, pageNumber}))
+  }
+  
   return (
     <UserList
       users={users}

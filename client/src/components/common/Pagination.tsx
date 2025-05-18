@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import "@/assets/styles/components/pagination.css"
 interface PaginationProps {
 	pagination: { pageNumber: number; pageSize: number; totalCount: number }
@@ -16,39 +16,56 @@ const Pagination: React.FC<PaginationProps> = ({ pagination, onPageChange }) => 
 		}
 	}, [pagination, onPageChange, totalPages])
 
+	const useThrottledPageChange = (limit = 300) => {
+		const lastRan = useRef<number>(0);
+	  
+		const handlePageChange = (pageNumber: number) => {
+		  const now = Date.now();
+		  if (now - lastRan.current >= limit) {
+			lastRan.current = now;
+			onPageChange(pageNumber)
+		  }
+		};
+	  
+		return handlePageChange;
+	  };
+	
+
+	const throttledPageChange = useThrottledPageChange(1000);
+
 	return (
 		<div className="pagination-container">
 
 				<button
-					onClick={() => onPageChange(Math.max(1, pagination.pageNumber - 1))}
+					onClick={() => throttledPageChange(Math.max(1, pagination.pageNumber - 1))}
 					className="page-nav">
 				{totalPages > 1 ? (<p>&lt;</p>) : (<p></p>)}
 				</button>
 
 			<div className="number-container">
 				{pages.map((page) => (
-					<button onClick={() => onPageChange(page)}>
+					<button onClick={() => throttledPageChange(page)}>
 						{page == pagination.pageNumber ?
-							(<p className="page-number active">{page}</p>)
+							(<p className="page-number number-active">{page}</p>)
 							:
 							(<p className="page-number">{page}</p>)}
 					</button>
 				))}
 
 				<p>{pages[pages.length - 1] + 1 < totalPages ? "..." : ""}</p>
-				{pages[pages.length - 1] < totalPages ? (
-					<button onClick={() => onPageChange(totalPages)}>
+				{pages[pages.length - 1] < totalPages && (
+					<button onClick={() => throttledPageChange(totalPages)}>
 						{pagination.pageNumber == totalPages ? (
-							<p className="page-number active">
+							<p className="page-number number-active">
 								{totalPages}</p>)
 							:
 							(<p className="page-number">{totalPages}</p>)
 						}
 					</button>
-				) : <></>}
+				)}
 			</div>
 			<button
-				onClick={() => onPageChange(Math.min(totalPages, pagination.pageNumber + 1))}
+				onClick={() => throttledPageChange(Math.min(totalPages, pagination.pageNumber + 1))}
 				className="page-nav"
 			>
 				{totalPages > 1 ? (<p>&gt;</p>) : (<p></p>)}

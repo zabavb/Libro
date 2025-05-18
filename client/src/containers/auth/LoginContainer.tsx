@@ -17,7 +17,7 @@ const LoginContainer: React.FC = () => {
     const data = await oAuth(token);
 
     // If it is new user
-    if (data as User) navigate('/register', { state: { user: data as User } });
+    if (data as User) navigate('/', { state: { authOpen:true, user: data as User } });
 
     if ((data as NotificationData).type === 'success')
       handleSuccess({ type: 'success', message: 'Login successful!' });

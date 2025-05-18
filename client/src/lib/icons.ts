@@ -26,6 +26,12 @@ import bArrowRight from '@/assets/icons/bArrowRight.svg'
 import bLetter from '@/assets/icons/bLetter.svg'
 import gVisibility from '@/assets/icons/gVisibility.svg'
 import bCheck from '@/assets/icons/check-solid.svg'
+import wPen from '@/assets/icons/wPen.svg'
+import oTrash from '@/assets/icons/oTrash.svg'
+import bPlus from '@/assets/icons/bPlus.svg'
+import oArrowLeft from '@/assets/icons/oArrowLeft.svg'
+import oStarFilled from '@/assets/icons/oStarFilled.svg'
+import oStarEmpty from '@/assets/icons/oStarEmpty.svg'
 export const icons = {
     wUser,
     wBonus,
@@ -55,4 +61,10 @@ export const icons = {
     bLetter,
     gVisibility,
     bCheck,
+    wPen,
+    oTrash,
+    bPlus,
+    oArrowLeft,
+    oStarFilled,
+    oStarEmpty,
 }

@@ -25,7 +25,8 @@ const AuthPanel: React.FC<AuthPanelProps> = ({ data, setIsAuthOpen, isOpen, isRe
     const stateIsOpen: boolean = location.state?.authOpen === true;
     const navigate = useNavigate();
     useEffect(() => {
-        setIsAuthOpen(stateIsOpen);
+        if(data != null)
+            setIsAuthOpen(stateIsOpen);
         navigate(location.pathname, { replace: true });
     },[])
 

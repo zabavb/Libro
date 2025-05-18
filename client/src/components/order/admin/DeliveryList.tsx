@@ -1,13 +1,13 @@
 import React from "react";
-import { DeliveryType } from "../../../types";
+import { DeliveryType, User } from "../../../types";
 import DeliveryTypeAdminCardContainer from "../../../containers/order/DeliveryTypeAdminCardContainer";
 import Pagination from "../../common/Pagination";
 import Search from "../../common/Search";
 import DeliverySort from "../DeliverySort";
 import "@/assets/styles/base/table-styles.css"
 import "@/assets/styles/components/list-styles.css"
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPlus } from "@fortawesome/free-solid-svg-icons";
+import {icons} from "@/lib/icons"
+import { getUserFromStorage } from "@/utils/storage";
 interface DeliveryTypeListProps {
     deliveryTypes?: DeliveryType[]
     loading: boolean
@@ -30,6 +30,7 @@ const DeliveryTypeList: React.FC<DeliveryTypeListProps> = ({
     onSearchTermChange,
     handleNavigate
 }) => {
+    const user: User | null = getUserFromStorage();
     if (loading) return <p>Loading...</p>
     return (
         <div>
@@ -38,16 +39,17 @@ const DeliveryTypeList: React.FC<DeliveryTypeListProps> = ({
                     searchTerm={searchTerm}
                     onSearchTermChange={onSearchTermChange} />
                 <button className="add-button" onClick={() => handleNavigate("/admin/delivery/add")}>
-                    <FontAwesomeIcon icon={faPlus} />
+                    <img src={icons.bPlus}/>
                     <p>
                         Add Delivery
                     </p>
                 </button>
-                {/* Temporary implementation, replace with user pfp component */}
-                <div className="profile-icon">
-                    <div style={{ borderRadius: "50%", backgroundColor: "grey", height: "43px", width: "43px" }}></div>
-                    <p className="profile-name">Name Surname</p>
-                </div>
+        <div className="profile-icon">
+          <div className="icon-container-pfp">
+            <img src={user?.imageUrl ? user.imageUrl : icons.bUser} className="panel-icon" />
+          </div>
+          <p className="profile-name">{user?.firstName ?? "Unknown User"} {user?.lastName}</p>
+        </div>
 
             </header>
             <main className="main-container">
@@ -62,9 +64,9 @@ const DeliveryTypeList: React.FC<DeliveryTypeListProps> = ({
                             <table>
                                 <thead className="m-5">
                                     <tr>
-                                        <th style={{ width: "50%" }}>Service name</th>
-                                        <th style={{ width: "40%" }}>Delivery</th>
-                                        <th style={{ width: "10%" }}></th>
+                                        <th style={{ width: "50%" }} className='table-header'>Service name</th>
+                                        <th style={{ width: "40%" }} className='table-header'>Delivery</th>
+                                        <th style={{ width: "10%" }} className='table-header'></th>
                                     </tr>
                                 </thead>
                                 {loading ? (

@@ -5,6 +5,7 @@ using Library.Common;
 using Library.DTOs.Order;
 using Library.DTOs.UserRelated.User;
 using System.Text;
+using System.Text.Json;
 
 namespace APIComposer.GraphQL.Services
 {
@@ -37,6 +38,7 @@ namespace APIComposer.GraphQL.Services
             }
         }
 
+
         public async Task<ICollection<OrderForUserDetails>> GetAllOrdersAsync(Guid id)
         {
             try
@@ -56,6 +58,7 @@ namespace APIComposer.GraphQL.Services
         {
             try
             {
+                SetAuthHeader();
                 var response = await _http.GetAsync($"orders/{orderId}");
 
                 if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
@@ -88,23 +91,15 @@ namespace APIComposer.GraphQL.Services
         {
             try
             {
-                // add BuildQuery
-                var queryString = new StringBuilder($"orders?pageNumber={pageNumber}&pageSize={pageSize}");
-                if (!string.IsNullOrEmpty(searchTerm))
-                {
-                    queryString.Append($"&searchTerm={Uri.EscapeDataString(searchTerm)}");
-                }
-                if (filter != null && !string.IsNullOrEmpty(filter.S3KeyFilter.ToString()))
-                {
-                    queryString.Append($"&filterProperty={filter.S3KeyFilter}");
-                }
-               
-                //if (sort != null)
-                //{
-                //    // add sorting to query ?
-                //}
+                SetAuthHeader();
 
-                var response = await _http.GetAsync(queryString.ToString());
+                var query = QueryBuilder.BuildQuery(
+                    new { pageNumber, pageSize, searchTerm },
+                    filter,
+                    sort
+                );
+
+                var response = await _http.GetAsync(query.ToString());
 
                 if (!response.IsSuccessStatusCode)
                 {
@@ -120,40 +115,23 @@ namespace APIComposer.GraphQL.Services
             }
         }
 
-        public async Task CreateOrderAsync(Order order)
+        public async Task<List<Guid>> GetMostOrderedBooksAsync(int days)
         {
-            try
-            {
-                SetAuthHeader();
-                var response = await _http.PostAsJsonAsync("orders", order);
-                if (!response.IsSuccessStatusCode)
-                {
-                    await ErrorHandler.HandleErrorResponseAsync(response);
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error creating order: {ex.Message}");
-                throw;
-            }
-        }
+            SetAuthHeader();
 
-        public async Task UpdateOrderAsync(Order order)
-        {
-            try
+            var response = await _http.GetAsync($"most-ordered-books/{days}");
+
+            if (!response.IsSuccessStatusCode)
             {
-                SetAuthHeader();
-                var response = await _http.PutAsJsonAsync($"orders/{order.Id}", order);
-                if (!response.IsSuccessStatusCode)
-                {
-                    await ErrorHandler.HandleErrorResponseAsync(response);
-                }
+                var error = await response.Content.ReadAsStringAsync();
+                throw new HttpRequestException($"Error fetching most ordered books: {error}");
             }
-            catch (Exception ex)
+
+            var content = await response.Content.ReadAsStringAsync();
+            return JsonSerializer.Deserialize<List<Guid>>(content, new JsonSerializerOptions
             {
-                Console.WriteLine($"Error updating order: {ex.Message}");
-                throw;
-            }
+                PropertyNameCaseInsensitive = true
+            }) ?? new List<Guid>();
         }
     }
 }

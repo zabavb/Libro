@@ -11,8 +11,14 @@ body{
     @apply flex ml-auto items-center;
 }
 
-.profile-name{
-    @apply my-0 mx-2.5;
+.icon-container{
+    @apply p-2.5 bg-dark;
+    border-radius: 30px;
+}
+
+.icon-container-pfp{
+    @apply p-2.5 bg-[#FF642E];
+    border-radius: 30px;
 }
 
 .pagination-container{
@@ -30,6 +36,6 @@ body{
 }
 
 .add-button{
-    @apply flex font-semibold items-center text-center rounded-lg my-0 mx-5 gap-3.5 bg-[#F5CB2E];
-    padding: 5px 20px;
+    @apply flex font-semibold items-center text-center rounded-lg 
+    my-0 mx-5 gap-3.5 bg-[#F5CB2E] py-2 px-[30px];
 }

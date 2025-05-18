@@ -1,3 +1,4 @@
+import { PeriodType } from '@/types/types/order/PeriodType';
 import { API_ROUTES } from './config/apiConfig';
 
 // ================= GRAPHQL =================
@@ -52,6 +53,8 @@ export const ORDERS_PAGINATED = (
 
 export const ORDER_BY_ID = API_ROUTES.ORDERS.BY_ID;
 
+export const GET_ORDER_COUNTS = (period: PeriodType) => API_ROUTES.ORDERS.ORDER_COUNTS(period);
+
 // ================= DELIVERY TYPE =================
 
 export const DELIVERYTYPES = API_ROUTES.DELIVERY.BASE;
@@ -72,3 +75,33 @@ export const BOOKS_PAGINATED = (
 ) => API_ROUTES.BOOKS.PAGINATED(pageNumber, pageSize);
 
 export const BOOK_BY_ID = API_ROUTES.BOOKS.BY_ID;
+
+// ================= AUTHOR =================
+export const AUTHORS = API_ROUTES.AUTHORS.BASE;
+
+export const AUTHORS_PAGINATED = (
+  pageNumber: number = 1,
+  pageSize: number = 10,
+) => API_ROUTES.AUTHORS.PAGINATED(pageNumber,pageSize);
+
+export const AUTHOR_BY_ID = API_ROUTES.AUTHORS.BY_ID;
+
+// ================= PUBLISHER =================
+export const PUBLISHERS = API_ROUTES.PUBLISHERS.BASE;
+
+export const PUBLISHERS_PAGINATED = (
+  pageNumber: number = 1,
+  pageSize: number = 10,
+) => API_ROUTES.PUBLISHERS.PAGINATED(pageNumber, pageSize);
+
+export const PUBLISHER_BY_ID = API_ROUTES.PUBLISHERS.BY_ID;
+
+// ================= FEEDBACK =================
+export const FEEDBACKS = API_ROUTES.FEEDBACKS.BASE;
+
+export const FEEDBACKS_PAGINATED = (
+  pageNumber: number = 1,
+  pageSize: number = 10,
+) => API_ROUTES.FEEDBACKS.PAGINATED(pageNumber,pageSize);
+
+export const FEEDBACK_BY_ID = API_ROUTES.FEEDBACKS.BY_ID;
