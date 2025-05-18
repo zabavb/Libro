@@ -8,7 +8,7 @@
 }
 
 .cart-panel{
-    @apply z-30 h-dvh bg-primary fixed top-0 transition-all duration-500 ease-in-out text-white;
+    @apply z-30 h-dvh bg-[#F4F0E5] fixed top-0 transition-all duration-500 ease-in-out text-white;
     width: 445px;
 }
 
@@ -19,10 +19,7 @@
 }
 
 .cart-footer{
-    @apply flex flex-col p-[30px];
-    background-color: #1A1D23;
-    height: 23%;
-    gap: 2.5px;
+    @apply flex flex-col p-[30px] bg-[#1A1D23] h-[23%] gap-2.5;
 }
 
 .close-icon{
@@ -30,7 +27,6 @@
 }
 
 .checkout-btn{
-    color: #1A1D23;
-    @apply bg-[#FF642E] py-3.5 px-20 w-full;
+    @apply text-[#1A1D23] bg-[#FF642E] py-3.5 px-20 w-full;
     border-radius: 44px;
 }

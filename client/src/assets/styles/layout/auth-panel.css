@@ -1,18 +1,19 @@
-.dim {
+.dim{
     @apply fixed inset-0 z-20 bg-black opacity-0 pointer-events-none;
     transition: all 0.4s;
 }
 
-.dim.visible {
+.dim.visible{
     @apply opacity-80 pointer-events-auto;
 }
 
-.auth-panel {
-    @apply fixed pointer-events-none opacity-0 bg-primary py-5 px-20 flex flex-col gap-2.5 items-center;
-    color: #1A1D23;
+
+.auth-panel{
+    @apply fixed pointer-events-none opacity-0
+    bg-[#F4F0E5] py-5 px-20 flex flex-col gap-2.5 text-[#1A1D23] items-center;
     z-index: 99;
-    top: 50%;
-    left: 50%;
+    top:50%;
+    left:50%;
     transform: translate(-50%, -50%);
     transition: all 0.4s;
     border: 1px solid #1A1D23;
@@ -20,23 +21,22 @@
     min-width: 600px;
 }
 
-.auth-panel.visible {
+.auth-panel.visible{
     @apply opacity-100;
     transform: translate(-50%, -50%);
     pointer-events: auto;
 }
 
-.user-icon-container {
-    @apply p-2.5 bg-[#FF642E] flex-none;
-    border-radius: 30px;
+.user-icon-container{
+    @apply p-2.5 bg-[#FF642E] flex-none rounded-full;
 }
 
-.user-icon {
+.user-icon{
     width: 30px;
     height: 30px;
 }
 
-.google-auth {
+.google-auth{
     @apply rounded-lg;
     border: 1px solid black;
     padding-left: 100px;
@@ -45,20 +45,20 @@
     padding-bottom: 18px;
 }
 
-.auth-input-row {
+.auth-input-row{
     @apply flex flex-col gap-2.5;
 }
 
-.submit-btn {
-    background-color: #1A1D23;
-    @apply text-white rounded-lg enabled:pointer-events-auto disabled:pointer-events-none;
+.submit-btn{
+    @apply bg-[#1A1D23] text-white rounded-lg enabled:pointer-events-auto 
+    disabled:pointer-events-none;
     padding-top: 23px;
     padding-bottom: 23px;
     padding-left: 100px;
     padding-right: 100px;
 }
 
-.auth-input-field {
+.auth-input-field{
     @apply py-3 bg-transparent rounded-lg w-full border;
     padding-left: 30px;
     padding-right: 30px;
