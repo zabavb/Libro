@@ -1,17 +1,22 @@
 import React from "react";
+import RightArrow from '@/assets/icons/rightArrow.svg';
+import "@/assets/styles/components/book/libro-bonus-club.css";
 
 const LibroBonusClub: React.FC = () => {
   return (
-    <div className="bg-[#f4f1ea] rounded-xl p-6 flex flex-col justify-between h-full">
+    <div className="libro-bonus-root">
       <div>
-        <h3 className="text-black font-bold text-xl mb-2">Libro Bonus Club</h3>
-        <p className="text-sm text-gray-700">
+        <h3 className="libro-bonus-title">
+          Libro Bonus Club
+        </h3>
+        <p className="libro-bonus-desc">
           Earn bonuses for every purchase and use them for discounts on your favorite books!
         </p>
       </div>
-      <div className="mt-6">
-        <button className="bg-black text-white rounded-lg px-6 py-2 hover:bg-gray-800 transition">
+      <div className="libro-bonus-btn-wrap">
+        <button className="libro-bonus-btn">
           Learn more
+          <img src={RightArrow} alt="Arrow right" className="libro-bonus-arrow" />
         </button>
       </div>
     </div>
