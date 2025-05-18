@@ -44,7 +44,7 @@
     @apply flex flex-col p-[30px];
     background-color: #1A1D23;
     height: 23%;
-    gap: 2.5px;
+    gap: 10px;
 }
 
 .close-icon {
