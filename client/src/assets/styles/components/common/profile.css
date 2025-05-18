@@ -1,55 +1,59 @@
-.form-container{
-    @apply bg-dark py-5 px-[60px] flex flex-col gap-6;
+.form-container {
+    @apply py-5 px-[60px] flex flex-col gap-6;
+    background-color: #1A1D23;
 }
 
 .form-section {
-    @apply flex flex-col bg-primary p-10 text-dark gap-5;
+    @apply flex flex-col bg-primary p-10 gap-5;
+    color: #1A1D23;
     border-radius: 30px;
 }
 
 .input-field {
-    @apply flex justify-between bg-dim-gray rounded-lg p-2.5;
+    @apply flex justify-between rounded-lg p-2.5;
+    background-color: #DEDBD1;
 }
 
-.input-area{
+.input-area {
     @apply bg-transparent text-lg;
     flex-grow: 1;
     flex-shrink: 1;
     min-width: 0;
 }
 
-.input-btn{
+.input-btn {
     @apply shrink-0 text-[#FF642E];
     font-size: 15px;
 }
 
-.admin-btn{
+.admin-btn {
     @apply bg-[#F5CB2E] py-5 px-10 text-xl;
     border-radius: 30px;
 }
 
-.sub-active{
+.sub-active {
     @apply rounded-lg p-2.5 bg-[#FF642E] text-white;
 }
 
-.sub-inactive{
+.sub-inactive {
     @apply rounded-lg p-2.5;
-    border:1px solid #FF642E;
+    border: 1px solid #FF642E;
 }
 
-.sub-image{
-    @apply  text-white font-semibold;
+.sub-image {
+    @apply text-white font-semibold;
     font-size: 15px;
     line-height: 20px;
 }
 
-.sub-image-container{
-    @apply flex bg-dark items-center justify-center shrink-0;
+.sub-image-container {
+    @apply flex items-center justify-center shrink-0;
+    background-color: #1A1D23;
     width: 44px;
     height: 44px;
     border-radius: 40px;
 }
 
-.sub-desc{
+.sub-desc {
     font-size: 13px;
 }
