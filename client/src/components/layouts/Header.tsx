@@ -6,6 +6,9 @@ import UserPanel from "./UserPanel";
 import { icons } from '@/lib/icons'
 import { useState } from "react";
 import AuthPanelContainer from "@/containers/auth/AuthPanelContainer";
+import '@/assets/styles/layout/_header.css'
+
+
 export default function Header() {
   const navigate = useNavigate();
 
