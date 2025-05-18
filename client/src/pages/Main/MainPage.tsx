@@ -8,8 +8,7 @@ import BookCatalogContainer from "@/containers/books/BookCatalogContainer";
 import React from "react";
 import BookOfTheWeek from "@/components/book/BookOfTheWeek";
 import testPhoto from "@/assets/BookImage.svg";
-import SubscribePromo from "@/components/book/SubscribePromo";
-import LibroBonusClub from "@/components/book/LibroBonusClub";
+import PromoContainer from "@/containers/books/PromoContainer";
 const MainPage: React.FC = () => {
 
 
@@ -29,9 +28,7 @@ const MainPage: React.FC = () => {
         </div>
 
           <BookCatalogContainer />
-          <div className={"bg-[#1A1D23] py-10 px-16"}>
           <BookCatalogContainer isAudioOnly />
-          </div>
           <BookOfTheWeek
             title="I SEE YOU'RE INTERSTED IN DARKNESS"
             author="Ilarion Pavliuk"
@@ -40,12 +37,7 @@ const MainPage: React.FC = () => {
             onOrder={handleOrder}
             onFavorite={handleFavorite}
           />
-          <div className="bg-[#1A1D23] py-10 px-16">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <SubscribePromo />
-            <LibroBonusClub />
-          </div>
-        </div>
+            <PromoContainer />
 
       </main>
       <Footer />
