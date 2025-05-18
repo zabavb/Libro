@@ -1,6 +1,6 @@
 using Library.DTOs.Order;
 using Microsoft.AspNetCore.Mvc;
-using OrderAPI.Services.Interfaces;
+using OrderApi.Services;
 
 namespace OrderApi.Controllers
 {

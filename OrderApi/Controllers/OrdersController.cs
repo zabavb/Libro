@@ -2,6 +2,7 @@ using Library.DTOs.UserRelated.User;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using OrderApi.Services;
+using OrderAPI.Models;
 
 
 namespace OrderApi.Controllers
