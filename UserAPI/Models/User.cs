@@ -29,6 +29,18 @@ namespace UserAPI.Models
             Role = role;
         }
 
+        public User(Guid id, string firstName, string? lastName, DateTime? dateOfBirth, string emailDomen,
+            string? phoneNumber, RoleType role = RoleType.USER)
+        {
+            UserId = id;
+            FirstName = firstName;
+            LastName = lastName;
+            DateOfBirth = dateOfBirth;
+            Email = $"{firstName}.{lastName}@{emailDomen}.com";
+            PhoneNumber = phoneNumber;
+            Role = role;
+        }
+
         public User()
         {
             UserId = Guid.NewGuid();

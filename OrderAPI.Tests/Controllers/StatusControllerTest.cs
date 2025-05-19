@@ -4,9 +4,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Moq;
 using OrderApi.Controllers;
-using OrderApi.Services;
 using Xunit;
 using FluentAssertions;
+using OrderAPI.Services.Interfaces;
 
 namespace OrderAPI.Tests.Controllers
 {

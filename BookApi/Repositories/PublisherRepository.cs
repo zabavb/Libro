@@ -3,8 +3,6 @@ using BookAPI.Models;
 using BookAPI.Models.Sortings;
 using BookAPI.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using StackExchange.Redis;
-using System.Text.Json;
 using Library.Common;
 using BookAPI.Data.CachHelper;
 
@@ -68,13 +66,13 @@ namespace BookAPI.Repositories
 
         public async Task<PaginatedResult<Publisher>> GetAllAsync(int pageNumber, int pageSize, string? searchTerm,  PublisherSort? sort)
         {
-            List<Publisher> publishers;
-            string cacheKey = $"{_cacheKeyPrefix}All";
-            var cachedPublishers = await _cacheService.GetAsync<List<Publisher>>(cacheKey);
 
-            if (cachedPublishers != null && cachedPublishers.Count > 0)
+            string cacheKey = $"{_cacheKeyPrefix}All";
+            List<Publisher>? publishers = await _cacheService.GetAsync<List<Publisher>>(cacheKey);
+            bool isFromCache = publishers != null && publishers.Count > 0;
+
+            if (isFromCache)
             {
-                publishers = cachedPublishers;
                 _logger.LogInformation("Fetched from CACHE.");
             }
             else
@@ -87,10 +85,12 @@ namespace BookAPI.Repositories
             }
 
             IQueryable<Publisher> publisherQuery = publishers.AsQueryable();
-
             if (!string.IsNullOrWhiteSpace(searchTerm))
-                publisherQuery = publisherQuery.SearchBy(searchTerm, p => p.Name);
-
+            {
+                publisherQuery = isFromCache
+                    ? publisherQuery.InMemorySearch(searchTerm, b => b.Name).AsQueryable()
+                    : publisherQuery.SearchBy(searchTerm, b => b.Name);
+            }
 
             if (sort != null)
                 publisherQuery = sort.Apply(publisherQuery);

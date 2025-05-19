@@ -8,14 +8,18 @@
         public DateTime? DateOfBirth { get; set; }
         public string? Citizenship { get; set; }
         internal List<Book> Books { get; set; } = new();
+        public string? ImageUrl { get; set; }
+
 
         public Author()
         {
             Name = string.Empty;
+            ImageUrl = string.Empty;
             Biography = null;
             DateOfBirth = null;
             Citizenship = null;
             Books = new List<Book>();
+
         }
     }
 }

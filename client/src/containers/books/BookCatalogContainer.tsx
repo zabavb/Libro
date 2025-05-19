@@ -8,7 +8,11 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { useDispatch } from "react-redux"
 import { useNavigate } from "react-router-dom"
 
-const BookCatalogContainer = () => {
+type BookCatalogContainerProps = {
+    isAudioOnly?: boolean; 
+  };
+  
+const BookCatalogContainer = ({ isAudioOnly = false }: BookCatalogContainerProps) => {
     const dispatch = useDispatch<AppDispatch>();
     const navigate = useNavigate();
     const [books, setBooks] = useState<Book[]>([]);
@@ -26,11 +30,15 @@ const BookCatalogContainer = () => {
     const fetchBookList = useCallback(async () => {
         setLoading(true);
         try{
+            const updatedFilters = { ...filters };
+            if (isAudioOnly) {
+            updatedFilters.hasAudio = true; 
+            }
             const response = await fetchBooksService(
                 paginationMemo.pageNumber,
                 paginationMemo.pageSize,
                 searchTerm,
-                filters,
+                updatedFilters,
                 sort
             );
             
@@ -107,6 +115,7 @@ const BookCatalogContainer = () => {
             onFilterChange={handleFilterChange}
             sort={sort}
             onSortChange={handleSortChange}
+            isAudioOnly={isAudioOnly}
         />
     )
 }

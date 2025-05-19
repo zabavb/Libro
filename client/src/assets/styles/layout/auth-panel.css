@@ -11,7 +11,7 @@
 
 .auth-panel{
     @apply fixed pointer-events-none opacity-0
-    bg-primary py-5 px-20 flex flex-col gap-2.5 text-dark items-center;
+    bg-[#F4F0E5] py-5 px-20 flex flex-col gap-2.5 text-[#1A1D23] items-center;
     z-index: 99;
     top:50%;
     left:50%;
@@ -51,7 +51,7 @@
 }
 
 .submit-btn{
-    @apply bg-dark text-white rounded-lg enabled:pointer-events-auto 
+    @apply bg-[#1A1D23] text-white rounded-lg enabled:pointer-events-auto 
     disabled:pointer-events-none;
     padding-top: 23px;
     padding-bottom: 23px;
@@ -64,4 +64,3 @@
     padding-left: 30px;
     padding-right: 30px;
 }
-

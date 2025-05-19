@@ -1,29 +1,32 @@
-.form-container{
-    @apply bg-dark py-5 px-[60px] flex flex-col gap-6;
+.form-container {
+    @apply py-5 px-[60px] flex flex-col gap-6;
+    background-color: #1A1D23;
 }
 
 .checkout-section {
-    @apply flex flex-col bg-primary p-10 text-dark gap-5;
+    @apply flex flex-col bg-primary p-10 gap-5;
+    color: #1A1D23;
     border-radius: 30px;
 }
 
-.input-display{
+.input-display {
     @apply rounded-lg p-2.5 flex items-center gap-1.5;
     border: 1px solid black;
     width: 100%;
 }
 
-.display-row{
-    @apply flex flex-col gap-2 text-dark text-sm;
+.display-row {
+    @apply flex flex-col gap-2 text-sm;
+    color: #1A1D23;
     width: 45%;
 }
 
-.display-col{
+.display-col {
     @apply flex flex-col gap-[15px];
     width: 100%;
 }
 
-.confirm-btn{
+.confirm-btn {
     @apply text-white px-20 bg-[#FF642E] font-semibold;
     font-size: 18px;
     line-height: 16px;
@@ -32,6 +35,6 @@
     border-radius: 46px;
 }
 
-.price-container{
+.price-container {
     @apply flex flex-col gap-2 font-semibold text-[#FF642E] text-end;
 }

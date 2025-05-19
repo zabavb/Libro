@@ -131,6 +131,11 @@ namespace UserAPI.Services
                 request.SubscriptionId);
         }
 
+        public async Task<int> GetActiveSubscriptionsCountAsync()
+        {
+            return await _repository.GetActiveSubscriptionsCountAsync();
+        }
+
         public async Task<ICollection<BySubscription>> GetAllForFilterContentAsync()
         {
             var subscriptions = await _repository.GetAllForFilterContentAsync();

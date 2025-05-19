@@ -1,5 +1,4 @@
-﻿/*
-using Amazon.S3.Model;
+﻿using Amazon.S3.Model;
 using APIComposer.GraphQL.Services.Interfaces;
 using AutoMapper;
 using HotChocolate.Validation;
@@ -15,17 +14,8 @@ namespace APIComposer.GraphQL.Queries
     [ExtendObjectType(OperationTypeNames.Query)]
     public class OrderQuery
     {
-        // add method that returns => order, book, user with subscription via user api,
-        // add method that returns => book name and photo with orders count?
 
-        [GraphQLName("order")]
-        [GraphQLDescription("Gets a single order by its unique ID.")]
-        public async Task<Order?> GetOrderByIdAsync(
-            [Service] IOrderServiceClient orderClient,
-            [GraphQLNonNullType] Guid id)
-        {
-            return await orderClient.GetOrderByIdAsync(id);
-        }
+        
 
         [GraphQLName("allOrdersWithUserName")]
         public async Task<PaginatedResult<OrderWithUserName>?> GetAllOrdersWithUserNameAsync(
@@ -66,6 +56,8 @@ namespace APIComposer.GraphQL.Queries
             };
         }
 
+        // GetAllEditOrderAsync => order, book, user with subscription via user api,
+        
         [GraphQLName("allOrderIntAsync")]
         public async Task<PaginatedResult<OrderInput>?> GetAllEditOrderAsync(
            [Service] IOrderServiceClient orderClient,
@@ -88,7 +80,7 @@ namespace APIComposer.GraphQL.Queries
 
                 List<BookForOrder> books = new List<BookForOrder>();
                 var bookIds = order.Books.Keys;
-                foreach(var bookId in bookIds)
+                foreach (var bookId in bookIds)
                 {
                     Library.DTOs.Book.Book book = await bookClient.GetBookAsync(bookId);
 
@@ -126,52 +118,6 @@ namespace APIComposer.GraphQL.Queries
                 TotalCount = orders.TotalCount,
             };
         }
-
-        [GraphQLName("saveOrderAsync")]
-        public async Task<bool> SaveOrderAsync(
-            [Service] IOrderServiceClient orderClient,
-            [Service] IUserServiceClient userClient,
-            [Service] IBookServiceClient bookClient,
-            OrderInput input)
-        {
-            if (input == null || input.Books == null || !input.Books.Any() || input.UserId == null)
-                throw new ArgumentException("Invalid order input");
-
-            if (string.IsNullOrWhiteSpace(input.OrderUiId))
-            {
-                var newOrder = new Library.DTOs.Order.Order
-                {
-                    Id = Guid.NewGuid(),
-                    UserId = input.UserId ?? Guid.Empty,
-                    City = input.City,
-                    Price = input.Books.Sum(b => b.Price * b.Quantity),
-                    OrderDate = input.OrderDate ?? DateTime.UtcNow,
-                    DeliveryDate = input.DeliveryDate,
-                    Status = input.Status ?? OrderStatus.PENDING,
-                    Books = input.Books.ToDictionary(b => Guid.Parse(b.BookId), b => b.Quantity)
-                };
-
-                await orderClient.CreateOrderAsync(newOrder);
-            }
-            else
-            {
-                var updatedOrder = new Library.DTOs.Order.Order
-                {
-                    Id = Guid.Parse(input.OrderUiId),
-                    UserId = input.UserId ?? Guid.Empty,
-                    City = input.City,
-                    Price = input.Books.Sum(b => b.Price * b.Quantity),
-                    OrderDate = input.OrderDate ?? DateTime.UtcNow,
-                    DeliveryDate = input.DeliveryDate,
-                    Status = input.Status ?? OrderStatus.PENDING,
-                    Books = input.Books.ToDictionary(b => Guid.Parse(b.BookId), b => b.Quantity)
-                };
-
-                await orderClient.UpdateOrderAsync(updatedOrder);
-            }
-
-            return true;
-        }
     }
-}  
-*/
+}
+

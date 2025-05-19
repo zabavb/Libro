@@ -1,62 +1,75 @@
-
-@layer utilities {
- 
-}
-
 .header {
-  @apply bg-[rgb(244,240,229)] text-dark flex items-center justify-between px-6 py-4 shadow-md;
+  @apply flex items-center justify-between px-6 py-4 shadow-md;
+  background-color: #F4F0E5;
+  color: #1A1D23;
 }
 
 .header__main {
-  @apply flex  items-center justify-between sticky top-0 left-0;
+  @apply flex items-center justify-between sticky top-0 left-0;
 }
 
 .header__left {
   @apply flex items-center gap-4;
 }
 
-.header__proposals{
-  @apply flex bg-dark text-white justify-center text-xl py-2.5;
+.header__proposals {
+  @apply flex justify-center text-xl py-2.5;
+  background-color: #1A1D23;
+  color: #F4F0E5;
   gap: 54px;
   font-size: 20px;
   line-height: 16px;
 }
 
-.header__proposals>p{
+.header__proposals > p {
   @apply cursor-pointer;
 }
 
-.line{
-  border: 1px solid white;
+.line {
+  border: 1px solid #F4F0E5;
 }
 
 .header__logo {
-  @apply text-2xl font-bold tracking-wider text-primary; /* Додано колір для тексту */
+  @apply text-2xl font-bold tracking-wider;
+  color: #F4F0E5;
 }
 
 .header__catalog {
-  @apply flex items-center bg-dark text-primary py-[5px] px-[33px] cursor-pointer;
+  @apply flex items-center py-[5px] px-[33px] cursor-pointer;
+  background-color: #1A1D23;
+  color: #F4F0E5;
   border-radius: 30px;
-  gap:15px;
+  gap: 15px;
 }
 
 .header__nav {
-  @apply flex gap-6 items-center text-dark text-sm w-fit;
+  @apply flex gap-6 items-center text-sm w-fit;
+  color: #1A1D23;
 }
 
 .header__search {
   @apply relative w-1/2 mx-4;
 }
+
 .header__input {
-  @apply w-full rounded-full border border-dark bg-primary px-4 py-2 pl-5 pr-10 text-sm placeholder-dark outline-none;
+  @apply w-full rounded-full border px-4 py-2 pl-5 pr-10 text-sm outline-none;
+  background-color: #F4F0E5;
+  border-color: #1A1D23;
+  color: #1A1D23;
+}
+
+.header__input::placeholder {
+  color: #1A1D23;
 }
 
 .header__icon {
-  @apply absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-dark;
+  @apply absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5;
+  color: #1A1D23;
 }
 
 .header__right {
-  @apply flex items-center gap-4 text-dark text-sm;
+  @apply flex items-center gap-4 text-sm;
+  color: #1A1D23;
 }
 
 .header__lang {
@@ -66,6 +79,7 @@
 .header__lang--active {
   @apply font-bold;
 }
+
 .header__logo .logo-icon {
-  fill: #1A1D23; 
+  fill: #1A1D23;
 }

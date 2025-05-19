@@ -6,7 +6,7 @@ using Moq;
 using OrderApi.Data;
 using OrderApi.Models;
 using OrderApi.Repository;
-using OrderAPI.Repository;
+using OrderAPI.Repository.Interfaces;
 using StackExchange.Redis;
 using System.Text.Json;
 
