@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import cartIcon from '@/assets/icons/cartBig.svg'
 import '@/assets/styles/layout/cart-panel.css'
-import useCart from "@/state/context/useCart";
+import { useCart } from "@/state/context/CartContext";
 import closeIcon from '@/assets/icons/menuClose.svg'
 import CartCard from "../common/CartCard";
 import { CartItem } from "@/types/types/cart/CartItem";

@@ -3,10 +3,10 @@ using Moq;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using OrderApi.Controllers;
-using OrderApi.Services;
 using Library.DTOs.Order;
 using FluentAssertions;
 using Library.Extensions;
+using OrderAPI.Services.Interfaces;
 
 namespace OrderAPI.Tests.Controllers
 {

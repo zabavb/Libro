@@ -17,8 +17,7 @@ namespace APIComposer.GraphQL.Services.Interfaces
             Filter? filter,
             OrderAPI.OrderSort? sort);
 
-        Task CreateOrderAsync(Order order);
-        Task UpdateOrderAsync(Order order);
+        Task<List<Guid>> GetMostOrderedBooksAsync(int days);
 
     }
 }

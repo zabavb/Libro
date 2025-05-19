@@ -1,16 +1,17 @@
 import React from "react";
 import BookCard from "../../components/book/BookCard";
+import { useNavigate } from "react-router-dom";
 import { BookView } from "../../types";
+import { CartItem } from "../../types/types/cart/CartItem";
 
 interface Props {
     books: BookView[];
 }
 
 const BooksListPage: React.FC<Props> = ({ books }) => {
+    const navigate = useNavigate();
     const navigateToBook = (bookId: string) => {
-        //
-        // Implement navigation logic here
-        //
+        navigate(`/books/${bookId}`);
     };
 
     return (
@@ -20,6 +21,7 @@ const BooksListPage: React.FC<Props> = ({ books }) => {
                     key={book.bookId}
                     book={book}
                     onNavigate={() => navigateToBook(book.bookId)}
+                    onAddItem={() => console.log("Item added")}
                 />
             ))}
         </ul>

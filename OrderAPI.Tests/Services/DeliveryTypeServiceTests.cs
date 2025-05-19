@@ -2,11 +2,11 @@
 using Microsoft.Extensions.Logging;
 using Moq;
 using OrderApi.Services;
-using OrderAPI.Repository;
 using DeliveryTypeDto = Library.DTOs.Order.DeliveryType;
 using DeliveryType = OrderApi.Models.DeliveryType;
 using FluentAssertions;
 using Library.Common;
+using OrderAPI.Repository.Interfaces;
 namespace OrderAPI.Tests.Services
 {
     public class DeliveryTypeServiceTests

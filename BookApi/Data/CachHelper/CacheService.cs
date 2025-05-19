@@ -29,10 +29,26 @@ namespace BookAPI.Data.CachHelper
 
         public async Task SetAsync<T>(string key, T value, TimeSpan expiration, JsonSerializerOptions? jsonOptions = null)
         {
-            var serializedValue = JsonSerializer.Serialize(value, jsonOptions ?? new JsonSerializerOptions());
-            await _redisDatabase.StringSetAsync(key, serializedValue, expiration);
-            _logger.LogInformation($"Set value in cache for key {key}");
+            try
+            {
+                var serializedValue = JsonSerializer.Serialize(value, jsonOptions ?? new JsonSerializerOptions());
+                await _redisDatabase.StringSetAsync(key, serializedValue, expiration);
+                _logger.LogInformation($"Set value in cache for key {key}");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Failed to set cache for key {key}. Trying to remove the key.");
+                try
+                {
+                    await RemoveAsync(key);
+                }
+                catch (Exception cleanupEx)
+                {
+                    _logger.LogError(cleanupEx, $"Failed to delete key {key} after set failure.");
+                }
+            }
         }
+
 
         public async Task RemoveAsync(string key)
         {

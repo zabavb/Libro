@@ -2,11 +2,11 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using OrderApi.Controllers;
-using OrderApi.Services;
 using Library.DTOs.Order;
 using Microsoft.Extensions.Logging;
 using Library.Extensions;
 using Xunit;
+using OrderAPI.Services.Interfaces;
 
 namespace OrderAPI.Tests.Controllers
 {

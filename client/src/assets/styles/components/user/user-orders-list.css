@@ -1,0 +1,14 @@
+.user-orders-filter-panel{
+    @apply flex flex-col;
+    width: 20%;
+}
+
+.user-orders-main-panel{
+    @apply flex flex-col gap-5;
+    width: 75%;
+}
+
+.user-orders-wrapper{
+   @apply flex flex-col py-5 px-16 bg-[#1A1D23];
+   gap: 22px;
+}

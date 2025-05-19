@@ -1,6 +1,6 @@
 import BookDetails from "@/components/book/BookDetails"
 import { fetchBookByIdService } from "@/services/bookService"
-import useCart from "@/state/context/useCart"
+import { useCart } from "@/state/context/CartContext"
 import { AppDispatch } from "@/state/redux"
 import { addNotification } from "@/state/redux/slices/notificationSlice"
 import { Book, ServiceResponse } from "@/types"

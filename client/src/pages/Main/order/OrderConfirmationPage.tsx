@@ -1,12 +1,11 @@
 import Footer from "@/components/layouts/Footer";
 import Header from "@/components/layouts/Header";
 import OrderConfirmationContainer from "@/containers/order/OrderConfirmationContainer";
-import { useLocation } from "react-router-dom";
+import { Order, User } from "@/types";
 
 const OrderConfirmationPage = () => {
-    const { state } = useLocation();
-    const { order, user } = state || {};
-
+    const order: Order = JSON.parse(localStorage.getItem('orderCheckout') || '{}');
+    const user: User = JSON.parse(localStorage.getItem('user') || '{}');
     return (
         <div className="flex flex-col min-h-screen">
             <Header />

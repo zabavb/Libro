@@ -3,6 +3,8 @@ import { BookView } from "../../types";
 import { getLikedBooks } from "../../services/likedBooksStorage";
 import BookCard from "../../components/book/BookCard";
 
+
+
 const LikedBooksPage: React.FC = () => {
     const [likedBooks, setLikedBooks] = useState<BookView[]>([]);
 
@@ -11,22 +13,26 @@ const LikedBooksPage: React.FC = () => {
     }, []);
 
     return (
-        <div>
-            <h2>Liked Books < /h2>
-            <ul>
+        <>
+            <h2>Liked Books </h2>
+            
             {likedBooks.length === 0 ? (
-                <p>No liked books yet.< /p>
+                <p>No liked books yet.</p>
             ) : (
-                likedBooks.map((book) => (
+                <ul>
+                {likedBooks.map((book) => (
+                    <li key={book.bookId}>
                     <BookCard
-                          key= { book.bookId }
-                          book = { book }
-                          onNavigate = {() => console.log("Navigate to", book.bookId)}
+                        book={book}
+                        onNavigate={() => console.log("Navigate to", book.bookId)}
+                        onAddItem={() => console.log("Item added")}
                     />
-                ))
+                    </li>
+                ))}
+                </ul>
             )}
-        </ul>
-    < /div>
+        
+    </>
   );
 };
 

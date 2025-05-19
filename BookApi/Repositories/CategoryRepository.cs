@@ -24,8 +24,8 @@ namespace BookAPI.Repositories
 
         private readonly JsonSerializerOptions _jsonOptions = new JsonSerializerOptions
         {
-            ReferenceHandler = ReferenceHandler.IgnoreCycles, // Ігнорування циклічних посилань
-            DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull, // Ігнорування null значень
+            ReferenceHandler = ReferenceHandler.IgnoreCycles,
+            DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull, 
         };
 
 
@@ -78,14 +78,13 @@ namespace BookAPI.Repositories
 
         public async Task<PaginatedResult<Category>> GetAllAsync(int pageNumber, int pageSize, string? searchTerm, CategorySort? sort)
         {
-            List<Category> categories;
             string cacheKey = $"{_cacheKeyPrefix}All";
-            var cachedCategories = await _cacheService.GetAsync<List<Category>>(cacheKey, _jsonOptions);
+            List<Category>? categories = await _cacheService.GetAsync<List<Category>>(cacheKey, _jsonOptions);
+            bool isFromCache = categories != null && categories.Count > 0;
 
 
-            if (cachedCategories != null && cachedCategories.Count > 0)
+            if (isFromCache)
             {
-                categories = cachedCategories;
                 _logger.LogInformation("Fetched from CACHE.");
             }
             else
@@ -101,7 +100,12 @@ namespace BookAPI.Repositories
 
 
             if (!string.IsNullOrWhiteSpace(searchTerm))
-                categoriesQuery = categoriesQuery.SearchBy(searchTerm, b => b.Name);
+            {
+                categoriesQuery = isFromCache
+                    ? categoriesQuery.InMemorySearch(searchTerm, b => b.Name).AsQueryable()
+                    : categoriesQuery.SearchBy(searchTerm, b => b.Name);
+            }
+
             if (sort != null)
                 categoriesQuery = sort.Apply(categoriesQuery);
 

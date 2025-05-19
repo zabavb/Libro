@@ -11,6 +11,7 @@ namespace UserAPI.Repositories.Interfaces
 
         Task SubscribeAsync(Guid subscriptionId, Guid userId);
         Task UnsubscribeAsync(Guid subscriptionId, Guid userId);
+        Task<int> GetActiveSubscriptionsCountAsync();
         Task<ICollection<BySubscription>> GetAllForFilterContentAsync();
     }
 }

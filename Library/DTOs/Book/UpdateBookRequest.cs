@@ -1,8 +1,11 @@
-﻿namespace Library.DTOs.Book
+﻿using Microsoft.AspNetCore.Http;
+
+namespace Library.DTOs.Book
 {
     public class UpdateBookRequest
     {
-        public Book Book { get; set; }
+        public BookRequest Book { get; set; }
         public Discount? Discount { get; set; }
+        
     }
 }

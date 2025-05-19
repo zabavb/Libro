@@ -1,47 +1,69 @@
-.catalog-container{
-    @apply flex gap-4 px-16 py-4;
+.catalog-container {
+    @apply flex gap-4 px-16 py-12;
 }
 
-.options-panel{
-    @apply flex flex-col w-1/6 bg-dark text-white py-9 px-6;
+.options-panel {
+    @apply flex flex-col w-1/6 text-white py-9 px-6;
+    background-color: #1A1D23;
     min-width: 250px;
     border-radius: 30px;
     gap: 30px;
 }
 
-.options-container{
+.options-container {
     @apply flex flex-col;
     gap: 21px;
 }
 
-.books-panel{
+.books-panel {
     @apply flex flex-col w-5/6;
     border: 1px solid #1A1D23;
     border-radius: 30px;
     padding: 30px 62px;
-    gap: 30px
+    gap: 30px;
 }
 
-.books-counter{
+.books-counter {
     @apply font-bold;
     font-size: 22px;
     line-height: 16px;
 }
 
-.load-btn{
-    @apply bg-dark font-bold px-20 py-6 text-white;
+.load-btn {
+    background-color: #1A1D23;
+    @apply font-bold px-20 py-6 text-white;
     border-radius: 46px;
 }
 
-.books-panel-main{
+.books-panel-main {
     @apply flex gap-5;
 }
 
-.books-panel-footer{
+.books-panel-footer {
     @apply flex flex-col items-center py-9;
 }
 
-
-.books-panel-header{
+.books-panel-header {
     @apply flex justify-between;
+}
+
+.options-panel.audio-only {
+    background-color: #F5CB2E;
+    color: #ffffff;
+    border-right: 1px solid #2c2f36;
+}
+
+.books-panel.audio-only {
+    background-color: #fef8e2;
+    border-color: #2c2f36;
+    padding: 30px 62px;
+}
+
+.books-panel-header.audio-only {
+    padding-bottom: 12px;
+}
+
+.books-counter.audio-only {
+    color: #1a1d23;
+    font-weight: 700;
 }

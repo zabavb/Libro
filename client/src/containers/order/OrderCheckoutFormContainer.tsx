@@ -4,7 +4,7 @@ import React, { useCallback, useEffect, useMemo, useState } from "react"
 import { addNotification } from "../../state/redux/slices/notificationSlice"
 import { DeliveryType, User } from "../../types"
 import OrderCheckoutForm from "../../components/order/OrderCheckoutForm"
-import useCart from "../../state/context/useCart"
+import { useCart } from "../../state/context/CartContext"
 import { fetchDeliveryTypesService } from "../../services"
 import { getUserFromStorage } from "@/utils/storage"
 import { CartItem } from "@/types/types/cart/CartItem"
@@ -36,33 +36,6 @@ const OrderCheckoutFormContainer: React.FC = () => {
     const handleClear = (bookId: string) => {
         clearItem(bookId)
     }    
-
-    // const handleMessage = useCallback(
-    //     (message: string, type: 'success' | 'error') => {
-    //     dispatch(addNotification({ message, type }));
-    //     },
-    //     [dispatch],
-    // );
-
-    // const handleNavigate = useCallback(
-    //     (route: string) => navigate(route),
-    //     [navigate],
-    // );
-
-    // const handleAddOrder = useCallback(
-    //     async(order: Order) => {
-    //         const response = await addOrderService(order);
-
-    //         if (response.error) handleMessage(response.error, 'error');
-    //         else {
-    //             handleMessage('Order Placed successfully!', 'success');
-    //             clearCart();
-    //             handleNavigate('/');
-
-    //         }
-    //     },
-    //     [handleMessage, handleNavigate,clearCart]
-    // )
 
    const paginationMemo = useMemo(() => ({...pagination}), [pagination]);
 
