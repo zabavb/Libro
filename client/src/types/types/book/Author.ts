@@ -4,4 +4,5 @@ export interface Author {
     dateOfBirth?: Date;
     biography?: string;
     citizenship?: string;
+    imageUrl?: string;
 }
