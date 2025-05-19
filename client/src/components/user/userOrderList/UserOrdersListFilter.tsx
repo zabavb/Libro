@@ -1,90 +1,50 @@
-import React from "react";
+import React, { useState } from "react";
 import { Status } from "../../../types";
 import type { OrderFilter } from "../../../types";
-
+import '@/assets/styles/components/user/user-orders-filter.css'
 interface OrdersListFilterProps {
     onFilterChange: (filters: OrderFilter) => void
     filters: OrderFilter
 }
 
-const UserOrdersListFilter: React.FC<OrdersListFilterProps> = ({onFilterChange, filters}) => {
+const UserOrdersListFilter: React.FC<OrdersListFilterProps> = ({ onFilterChange, filters }) => {
+    const [activeStatus, setActiveStatus] = useState<Status>()
+
+    const handleFilterChange = (newStatus?: Status) => {
+        onFilterChange({ ...filters, status:newStatus })
+        setActiveStatus(newStatus)
+    }
+
     return (
-        <div>
-            <h3>Filters</h3>
-            <label>
-                Order date (Start):
-                <input
-                    type="date"
-                    value={filters.orderDateStart ? filters.orderDateStart : ""}
-                    onChange={(e) => {
-                        onFilterChange({
-                            ...filters,
-                            orderDateStart: e.target.value
-                        })
-                    }}
-                />
-            </label>
-            <label>
-                Order date (End):
-                <input
-                    type="date"
-                    value={filters.orderDateEnd ? filters.orderDateEnd : ""}
-                    onChange={(e) => {
-                        onFilterChange({
-                            ...filters,
-                            orderDateEnd: e.target.value
-                        })
-                    }}
-                />
-            </label>
-            <label>
-                Delivery date (Start):
-                <input
-                    type="date"
-                    value={filters.deliveryDateStart ? filters.deliveryDateStart : ""}
-                    onChange={(e) => {
-                        onFilterChange({
-                            ...filters,
-                            deliveryDateStart: e.target.value
-                        })
-                    }}
-                />
-            </label>
-            <label>
-                Delivery date (End):
-                <input
-                    type="date"
-                    value={filters.deliveryDateEnd ? filters.deliveryDateEnd : ""}
-                    onChange={(e) => {
-                        onFilterChange({
-                            ...filters,
-                            deliveryDateEnd: e.target.value
-                        })
-                    }}
-                />
-            </label>
-            <label>
-                Status:
-                <select
-                    value={filters.status || ""}
-                    onChange={(e) => onFilterChange({ ...filters, status: e.target.value as Status})}>
-                    <option value="">All</option>
-                    {Object.values(Status).map((status) => (
-                        <option
-                            key={status}
-                            value={status}>
-                            {status}
-                        </option>
-                    ))}
-                </select>
-            </label>
-            {/* Temporary implementation. This filter may be changed in the future */}
-            <label>
-                Delivery Id:
-                <input
-                type="text"
-                onChange={(e) => onFilterChange({...filters, deliveryId: e.target.value})}/>
-            </label>
+        <div className="user-orders-filter-container">
+            <div className="flex gap-5 cursor-pointer" 
+                tabIndex={0}
+                role="button"
+                onClick={() => handleFilterChange(undefined)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    handleFilterChange(undefined);
+                    }
+                }}>
+                <div className={`w-1 rounded-r-[10px] ${activeStatus === undefined ? 'bg-[#FF642E]' : 'bg-transparent'}`}></div>
+                <p className={`${activeStatus === undefined ? 'text-[#FF642E]' : 'text-[#1A1D23]'}`}>All</p>
+            </div>
+            {Object.values(Status).map((status) => (
+            <div className="flex gap-5 cursor-pointer"
+                tabIndex={0}
+                role="button"
+                onClick={() => handleFilterChange(status)}
+                onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    handleFilterChange(status);
+                    }
+                }}>
+                <div className={`w-1 rounded-r-[10px] ${activeStatus === status ? 'bg-[#FF642E]' : 'bg-transparent'}`}></div>
+                <p className={`${activeStatus === status ? 'text-[#FF642E]' : 'text-[#1A1D23]'}`}>{status}</p>
+            </div>
+            ))}
         </div>
     )
 }
