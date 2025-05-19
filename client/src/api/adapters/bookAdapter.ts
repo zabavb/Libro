@@ -71,8 +71,9 @@ export const BookToBookView = (response: Book): BookView => {
     feedbackIds: response.feedbackIds,
     discountRate: response.discountRate,
     startDate: response.startDate,
-    endDate: response.endDate
+    endDate: response.endDate,
     //subcategoryIds: response.subcategoryIds,
+    imageUrl: response.imageUrl,
   };
 };
 

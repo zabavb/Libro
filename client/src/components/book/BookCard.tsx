@@ -36,7 +36,7 @@ const BookCard: React.FC<BookAdminCardProps> = ({ onAddItem, book, onNavigate })
                         e.stopPropagation()
                         onNavigate()
                     }}
-            src={`https://picsum.photos/seed/${book.bookId}/220/340`} />
+            src={book.imageUrl ? book.imageUrl :`https://picsum.photos/seed/${book.bookId}/220/340`} />
             <div>
                 <div 
                     className="card-info">
