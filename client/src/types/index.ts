@@ -11,6 +11,8 @@ export type { Book } from './objects/Book';
 export type { Author } from './types/book/Author'
 export type { Publisher } from './types/book/Publisher'
 export type { Feedback } from './types/book/Feedback'
+export type { Category } from './types/book/Category'
+export type { SubCategory } from './types/book/SubCategory'
 
 // View types
 export type { UserCard } from './types/user/UserCard';
@@ -28,6 +30,8 @@ export type { BySubscription } from './filters/BySubscription';
 export type { OrderFilter } from './filters/OrderFilter';
 export type { AuthorFilter } from './filters/AuthorFilter'
 export type { FeedbackFilter } from './filters/FeedbackFilter'
+export type { SubCategoryFilter } from './filters/SubCategoryFilter'
+
 // Sorts
 export type { DeliverySort } from './sortings/DeliverySort';
 export type { UserSort } from './sortings/UserSort';
@@ -35,6 +39,9 @@ export type { OrderSort } from './sortings/OrderSort';
 export type { BookSort } from './sortings/BookSort';
 export type { AuthorSort } from './sortings/AuthorSort'
 export type { FeedbackSort } from './sortings/FeedbackSort'
+export type { CategorySort } from './sortings/CategorySort'
+export type { SubCategorySort } from './sortings/SubCategorySort'
+
 // Subtypes
 export type { ServiceResponse } from './subTypes/ServiceResponse';
 export type { GraphQLResponse } from './subTypes/GraphQLResponse';

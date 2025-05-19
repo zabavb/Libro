@@ -48,3 +48,19 @@ export {
   fetchFeedbackByIdService,
   addFeedbackService,
 } from './feedbackService';
+
+export {
+  fetchCategoriesService,
+  fetchCategoryByIdService,
+  addCategoryService,
+  editCategoryService,
+  removeCategoryService,
+} from './categoryService'
+
+export {
+  fetchSubCategoriesService,
+  fetchSubCategoryByIdService,
+  addSubCategoryService,
+  editSubCategoryService,
+  removeSubCategoryService,
+} from './subCategoryService'

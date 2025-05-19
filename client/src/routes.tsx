@@ -44,6 +44,9 @@ import AuthorFormPage from './pages/Admin/BookRelated/Authors/AuthorFormPage';
 import PublishersListPage from './pages/Admin/BookRelated/Publishers/PublishersListPage';
 import PublisherFormPage from './pages/Admin/BookRelated/Publishers/PublisherFormPage';
 import FeedbacklistPage from './pages/Admin/BookRelated/Feedbacks/FeedbacksListPage';
+import CategoriesListPage from './pages/Admin/BookRelated/Categories/CategoriesListPage';
+import CategoryFormPage from './pages/Admin/BookRelated/Categories/CategoryFormPage';
+import SubCategoryFormPage from './pages/Admin/BookRelated/Categories/SubCategoryFormPage';
 import { CartProvider } from './state/context/CartContext';
 
 const AppRoutes = () => (
