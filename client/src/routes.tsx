@@ -114,6 +114,11 @@ const AppRoutes = () => (
               <Route path='/admin/booksRelated/publisher/:publisherId' element={<PublisherFormPage />} />
               {/* FEEDBACK */}
               <Route path='/admin/booksRelated/feedbacks' element={<FeedbacklistPage />} />
+              {/* CATEGORY */}
+              <Route path='/admin/booksRelated/categories' element={<CategoriesListPage/>}/>
+              <Route path='/admin/booksRelated/category/add' element={<CategoryFormPage/>}/>
+              {/* SUBCATEGORY */}
+              <Route path='/admin/booksRelated/subcategory/add/:categoryId' element={<SubCategoryFormPage/>}/>
               {/* Other */}
               <Route path='*' element={<NotFoundPage />} />
             </Route>

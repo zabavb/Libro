@@ -36,7 +36,7 @@
 }
 
 .books-panel-main {
-    @apply flex gap-5;
+    @apply flex gap-5 flex-wrap;
 }
 
 .books-panel-footer {

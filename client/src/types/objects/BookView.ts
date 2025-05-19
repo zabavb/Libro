@@ -18,4 +18,5 @@ export interface BookView {
   startDate: Date;
   endDate: Date;
   //subcategoryIds: string[]
+  imageUrl?: string;
 }
