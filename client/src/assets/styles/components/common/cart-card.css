@@ -1,14 +1,16 @@
-.item-counter{
-    @apply bg-dim-gray py-[5px] px-[25px];
+.item-counter {
+    background-color: #DEDBD1;
+    @apply py-[5px] px-[25px];
     border-radius: 6px;
-    
 }
 
-.delete-btn{
-    @apply absolute right-0 top-0 text-gray cursor-pointer;
+.delete-btn {
+    @apply absolute right-0 top-0 cursor-pointer;
+    color: #9C9C97;
 }
 
-.counter-btn{
-    @apply text-gray cursor-pointer;
+.counter-btn {
+    @apply cursor-pointer;
+    color: #9C9C97;
     font-size: 18px;
 }
