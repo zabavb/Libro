@@ -4,7 +4,7 @@
 }
 
 .checkout-section {
-    @apply flex flex-col bg-primary p-10 gap-5;
+    @apply flex flex-col bg-[#F4F0E5] p-10 gap-5;
     color: #1A1D23;
     border-radius: 30px;
 }

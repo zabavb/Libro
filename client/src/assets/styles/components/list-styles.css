@@ -12,7 +12,7 @@ body{
 }
 
 .icon-container{
-    @apply p-2.5 bg-dark;
+    @apply p-2.5 bg-[#1A1D23];
     border-radius: 30px;
 }
 
