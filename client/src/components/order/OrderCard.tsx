@@ -13,10 +13,11 @@ const OrderCard: React.FC<OrderCardProps> = ({order}) => {
                 <div>
                     <p>
                         <strong>Books:</strong>
-                        {Object.entries(order.books).map(([book, count]) => (
-                            <p>{book} (x{count})</p>
-                        ))
-                    }
+                        {order.orderedBooks.map((orderedBook) => (
+                            <p key={orderedBook.bookId}>
+                                {orderedBook.bookId} (x{orderedBook.quantity})
+                            </p>
+                        ))}
                     </p>
                     <p>
                         <strong>Region:</strong> {order.region}

@@ -139,11 +139,6 @@ namespace OrderApi.Repository
                     ? query.OrderBy(o => o.OrderDate)
                     : query.OrderByDescending(o => o.OrderDate);
 
-            /*if (sort.BooksAmount != Bool.NULL)
-                query = sort.BooksAmount == Bool.ASCENDING
-                    ? query.OrderBy(o => o.Books.Values.Sum())
-                    : query.OrderByDescending(o => o.Books.Values.Sum());*/
-
             if (sort.OrderPrice != Bool.NULL)
                 query = sort.OrderPrice == Bool.ASCENDING
                     ? query.OrderBy(o => o.Price)
@@ -255,7 +250,7 @@ namespace OrderApi.Repository
                 .Select(o => new OrderForUserDetails()
                 {
                     OrderUiId = o.OrderId.ToString().Split('-')[4],
-                    BookIds = o.Books.Keys,
+                    BookIds = o.OrderedBooks.Select(i => i.BookId).ToList(),
                     Price = o.Price
                 }).ToList();
             _logger.LogInformation("Fetched from DB.");
@@ -302,19 +297,22 @@ namespace OrderApi.Repository
         {
             DateTime cutoff = DateTime.UtcNow.AddDays(-days);
 
-            var orders = await _context.Orders.ToListAsync();
+            var orders = await _context.Orders
+                .Where(o => o.OrderDate >= cutoff)
+                .Include(o => o.OrderedBooks)
+                .ToListAsync();
+
             _logger.LogInformation("Fetched from DB.");
 
-            var top9 = orders
-                .Where(o => o.OrderDate >= cutoff)
-                .SelectMany(o => o.Books)
-                .GroupBy(b => b.Key)
-                .Select(group => new { Id = group.Key, Total = group.Sum(p => p.Value) })
+            var top9Ids = orders
+                .SelectMany(o => o.OrderedBooks)
+                .GroupBy(b => b.BookId)
+                .Select(group => new { Id = group.Key, Total = group.Sum(p => p.Quantity) })
                 .OrderByDescending(x => x.Total)
                 .Take(9)
+                .Select(x => x.Id)
                 .ToList();
             
-            var top9Ids = top9.Select(x => x.Id).ToList();
             return top9Ids;
         }
 

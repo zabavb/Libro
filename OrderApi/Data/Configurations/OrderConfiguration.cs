@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Library.DTOs.Order;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using OrderApi.Models;
 using System.Text.Json;
@@ -34,10 +35,10 @@ namespace OrderApi.Data.Configurations
             builder.Property(o => o.Status)
                 .HasConversion<string>();
 
-            builder.Property(e => e.Books)
+            builder.Property(e => e.OrderedBooks)
                 .HasConversion(
                     v => JsonSerializer.Serialize(v, new JsonSerializerOptions()),
-                    v => JsonSerializer.Deserialize<Dictionary<Guid, int>>(v, new JsonSerializerOptions())
+                    v => JsonSerializer.Deserialize<ICollection<OrderedBook>>(v, new JsonSerializerOptions()) ?? new List<OrderedBook>()
                 );
 
 

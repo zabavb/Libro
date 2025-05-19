@@ -8,13 +8,14 @@ import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 import { statusNumberToEnum } from "@/api/adapters/orderAdapters";
 import OrderFormBookList from "./OrderFormBookList";
 import { dateToString } from "@/api/adapters/commonAdapters";
+import { OrderedBook } from "../../types/types/order/OrderedBook";
 interface OrderDetailsProps {
     existingOrder?: Order;
     loading: boolean;
 }
 
 const OrderDetails: React.FC<OrderDetailsProps> = ({ existingOrder }) => {
-    const [bookObjs, setBookObjs] = useState<Record<string, number>>({})
+    const [bookObjs, setBookObjs] = useState<OrderedBook[]>([])
     const navigate = useNavigate();
 
     /* Outsource the function into separate lib */
@@ -29,7 +30,7 @@ const OrderDetails: React.FC<OrderDetailsProps> = ({ existingOrder }) => {
 
     useEffect(() => {
         if (existingOrder) {
-            setBookObjs(existingOrder.books)
+            setBookObjs(existingOrder.orderedBooks)
         }
     }, [existingOrder])
 
