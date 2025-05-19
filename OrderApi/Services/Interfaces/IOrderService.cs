@@ -1,6 +1,7 @@
 ﻿using Library.Common;
 using Library.DTOs.UserRelated.User;
 using Library.Interfaces;
+using OrderAPI.Models;
 
 namespace OrderApi.Services
 {
@@ -17,5 +18,8 @@ namespace OrderApi.Services
         Task<OrderForUserCard?> GetForUserCardAsync(Guid id);
         Task<ICollection<OrderForUserDetails>?> GetAllForUserDetailsAsync(Guid id);
         Task<List<Guid>> MostOrderedBooksAsync(int days);
+        Task<List<int>> GetOrderCountsForLastThreePeriodsAsync(PeriodType periodType);
+
+
     }
 }

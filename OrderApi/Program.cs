@@ -14,8 +14,7 @@ using BookAPI.Services.Interfaces;
 using BookAPI.Services;
 using Library.Common;
 using BookAPI.Data.CachHelper;
-using OrderAPI.Repository.Interfaces;
-using OrderAPI.Services.Interfaces;
+using OrderAPI.Repository;
 
 var builder = WebApplication.CreateBuilder(args);
 
