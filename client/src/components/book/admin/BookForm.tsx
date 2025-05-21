@@ -14,9 +14,9 @@ import { Language } from '@/types/subTypes/book/Language';
 import { coverNumberToEnum, languageNumberToEnum } from '@/api/adapters/bookAdapter';
 interface BookFormProps {
     existingBook?: Book;
-    onAddBook: (book: BookFormData) => Promise<void>;
+    onAddBook: (book: FormData) => Promise<void>;
     onEditBook: (
-        updatedBook: BookFormData,
+        updatedBook: FormData,
     ) => Promise<void>;
     loading: boolean;
     onIsEdit: (isEdit: boolean) => void;
@@ -42,14 +42,15 @@ const BookForm: React.FC<BookFormProps> = ({
         defaultValues: {
             title: '',
             year: dateToString(new Date(new Date().getFullYear())),
-            cover: CoverType.DUST_JACKET,
+            cover: CoverType.DUSTJACKET,
             price: 0,
             language: Language.ENGLISH,
             quantity: 0,
             authorId: '',
             publisherId: '',
             categoryId: '',
-            description: ''
+            description: '',
+            imageUrl: '',
         },
     });
 
@@ -74,7 +75,7 @@ const BookForm: React.FC<BookFormProps> = ({
     useEffect(() => {
         if (existingBook) {
             setValue('title', existingBook.title ?? undefined);
-            setValue('year', dateToString(existingBook.year));
+            setValue('year', new Date(existingBook.year).getFullYear().toString());
             setValue('cover', coverNumberToEnum(existingBook.cover));
             setValue('price', existingBook.price);
             setValue('language', languageNumberToEnum(existingBook.language));
@@ -83,31 +84,31 @@ const BookForm: React.FC<BookFormProps> = ({
             setValue('categoryId', existingBook.categoryId);
             setValue('publisherId', existingBook.publisherId);
             setValue('description', existingBook.description ?? '');
+            setValue('imageUrl', existingBook.imageUrl);
         }
     }, [existingBook, setValue]);
 
     const onSubmit = (data: BookFormData) => {
-        console.log(data)
-        // const formData = new FormData();
-        // formData.append(
-        //     'id',
-        //     existingBook?.bookId ?? '00000000-0000-0000-0000-000000000000',
-        // )
-        // formData.append('year', data.year);
-        // formData.append('cover', data.cover);
-        // formData.append('price', data.price.toString());
-        // formData.append('language', data.language);
-        // formData.append('quantity', data.quantity.toString());
-        // formData.append('authorId', data.authorId);
-        // formData.append('publisherId', data.publisherId);
-        // formData.append('categoryId', data.categoryId);
-        // formData.append('description', data.description);
-        // formData.append('image', data.image ?? '');
-        // if (existingBook)
-        //     formData.append('imageUrl', existingBook.imageUrl ?? '');
+        const formData = new FormData();
+        formData.append("Title", data.title);
+        formData.append("AuthorId", data.authorId);
+        formData.append("PublisherId", data.publisherId);
+        formData.append("CategoryId", data.categoryId);
+        formData.append("Price", data.price.toString());
+        formData.append("Language", data.language);
+        formData.append("Year", new Date(Number(data.year), 1, 1).toISOString());
+        formData.append("Description", data.description || "");
+        formData.append("Cover", data.cover);
+        formData.append("Quantity", data.quantity.toString());
 
-        if (existingBook) onEditBook(data);
-        else onAddBook(data);
+        if (data.image instanceof File) 
+            formData.append("Image", data.image);
+        
+        if (existingBook?.imageUrl)
+            formData.append("ImageUrl", existingBook.imageUrl)
+
+        if (existingBook) onEditBook(formData);
+        else onAddBook(formData);
     };
 
     const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -155,7 +156,7 @@ const BookForm: React.FC<BookFormProps> = ({
            overflow-hidden bg-contain bg-no-repeat bg-center w-[260px] h-[390px]'
                         style={{ backgroundImage: imagePreview ? `url(${imagePreview})` : existingBook?.imageUrl ? `url(${existingBook.imageUrl})` : "none", }}
                     >
-                        {!imagePreview && <img className='w-[260px] h-[390px]' src={noImageUrl} />}
+                        {!existingBook?.imageUrl && (!imagePreview  && <img className='w-[260px] h-[390px]' src={noImageUrl} />)}
                     </label>
                         <p>{errors.image?.message}</p>
 

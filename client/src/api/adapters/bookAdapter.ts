@@ -34,23 +34,24 @@ export const languageEnumToNumber = (language: Language): number => {
 
 export const coverNumberToEnum = (coverNumber: number): CoverType => {
   const coverMap: { [key: number]: CoverType } = {
-    0: CoverType.SOFT_COVER,
-    1: CoverType.HARD_COVER,
-    2: CoverType.RING_BINDING,
+    0: CoverType.SOFTCOVER,
+    1: CoverType.HARDCOVER,
+    2: CoverType.RINGBINDING,
     3: CoverType.LEATHER,
-    4: CoverType.DUST_JACKET,
+    4: CoverType.DUSTJACKET,
   };
 
-  return coverMap[coverNumber] ?? CoverType.SOFT_COVER;
+  return coverMap[coverNumber] ?? CoverType.SOFTCOVER;
 };
 
 export const coverEnumToNumber = (cover: CoverType): number => {
   const coverMap: { [key in CoverType]: number } = {
-    [CoverType.SOFT_COVER]: 0,
-    [CoverType.HARD_COVER]: 1,
-    [CoverType.RING_BINDING]: 2,
+    [CoverType.SOFTCOVER]: 0,
+    [CoverType.HARDCOVER]: 1,
+    [CoverType.RINGBINDING]: 2,
     [CoverType.LEATHER]: 3,
-    [CoverType.DUST_JACKET]: 4,
+    [CoverType.DUSTJACKET]: 4,
+    [CoverType.OTHER]: 5,
   };
 
   return coverMap[cover] ?? 0;

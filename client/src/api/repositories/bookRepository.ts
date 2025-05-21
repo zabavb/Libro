@@ -2,7 +2,6 @@ import axios from "axios"
 import { BOOKS_PAGINATED, BOOKS, BOOK_BY_ID } from "../index"
 import { PaginatedResponse } from "../../types"
 import { Book } from "../../types/objects/Book"
-import { getAuthHeaders } from "./common";
 
 interface BookQueryParams {
     author?: string;
@@ -14,8 +13,8 @@ interface BookQueryParams {
     language?: string;
     covertype?: string;
     inStock?: boolean;
-    subcategory?:string;
-    discountRate?:number;
+    subcategory?: string;
+    discountRate?: number;
     startDate?: Date;
     endDate?: Date;
     searchTerm?: string;
@@ -25,13 +24,13 @@ interface BookQueryParams {
  * Fetch a paginated list of books with optional filters.
  */
 export const getAllBooks = async (
-	pageNumber: number = 1,
-	pageSize: number = 10,
-	params: BookQueryParams = {},
+    pageNumber: number = 1,
+    pageSize: number = 10,
+    params: BookQueryParams = {},
 ): Promise<PaginatedResponse<Book>> => {
-	const url = BOOKS_PAGINATED(pageNumber, pageSize)
-	const response = await axios.get<PaginatedResponse<Book>>(url, { params })
-	return response.data
+    const url = BOOKS_PAGINATED(pageNumber, pageSize)
+    const response = await axios.get<PaginatedResponse<Book>>(url, { params })
+    return response.data
 }
 
 /**
@@ -45,9 +44,11 @@ export const getBookById = async (id: string): Promise<Book> => {
 /**
  * Create a new book.
  */
-export const addBook = async (book: Partial<Book>): Promise<Book> => {
-    const response = await axios.post<Book>(BOOKS, book,{
-        headers: getAuthHeaders('multipart/form-data'),
+export const addBook = async (formData: Partial<FormData>): Promise<FormData> => {
+    const response = await axios.post<FormData>(BOOKS, formData, {
+        headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
+        },
     });
     return response.data;
 };
@@ -55,8 +56,12 @@ export const addBook = async (book: Partial<Book>): Promise<Book> => {
 /**
  * Update an existing book by ID.
  */
-export const updateBook = async (id: string, updatedBook: Partial<Book>): Promise<Book> => {
-    const response = await axios.put<Book>(BOOK_BY_ID(id), updatedBook);
+export const updateBook = async (id: string, formData: FormData): Promise<FormData> => {
+    const response = await axios.put(BOOK_BY_ID(id), formData, {
+        headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
+        },
+    });
     return response.data;
 };
 

@@ -4,8 +4,8 @@ import { useNavigate } from 'react-router-dom';
 import { addNotification } from '../../state/redux/slices/notificationSlice';
 import { Book, ServiceResponse } from '../../types';
 import { addBookService, fetchBookByIdService, updateBookService } from '@/services/bookService';
-import { BookFormData } from '@/utils/bookValidationSchema';
-import { BookFormDataToBook } from '@/api/adapters/bookAdapter';
+// import { BookFormData } from '@/utils/bookValidationSchema';
+// import { BookFormDataToBook } from '@/api/adapters/bookAdapter';
 import BookForm from '@/components/book/admin/BookForm';
 
 interface BookFormContainerProps {
@@ -49,9 +49,9 @@ const BookFormContainer: React.FC<BookFormContainerProps> = ({ id }) => {
   );
 
   const handleAddBook = useCallback(
-    async (bookForm: BookFormData) => {
-      const book = BookFormDataToBook(bookForm);
-      const response = await addBookService(book);
+    async (bookForm: FormData) => {
+      // const book = BookFormDataToBook(bookForm);
+      const response = await addBookService(bookForm);
 
       if (response.error) handleMessage(response.error, 'error');
       else {
@@ -63,11 +63,13 @@ const BookFormContainer: React.FC<BookFormContainerProps> = ({ id }) => {
   );
 
   const handleEditBook = useCallback(
-    async (updatedBook: BookFormData) => {
+    async (updateForm: FormData) => {
       if (!id) return;
-      const book = BookFormDataToBook(updatedBook);
-      book.bookId = id
-      const response = await updateBookService(id, book);
+      // const book = BookFormDataToBook(updatedBook);
+      // book.bookId = id
+      // updateForm.append("BookId", id);
+      console.log(updateForm)
+      const response = await updateBookService(id, updateForm);
       if (response.error) handleMessage(response.error, 'error');
       else handleMessage('Book updated successfully!', 'success');
     },
