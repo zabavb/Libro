@@ -31,7 +31,26 @@ export const bookValidationSchema = z.object({
 
     quantity: z
         .number()
-        .positive("Must be a positive number"),
+        .nonnegative("Must be a non negative number"),
+
+    authorId: z.string(),
+    publisherId: z.string(),
+    categoryId: z.string(),
+    description: z
+        .string()
+        .min(2, "Description must be at least 2 characters")
+        .max(1000, "Description is too long"),
+
+    image: z.instanceof(File, { message: 'An Image is required.' }).refine(
+    (file) => {
+      const allowedFormats = ['image/png', 'image/jpeg', 'image/jpg'];
+      return allowedFormats.includes(file.type);
+    },
+    {
+      message: 'Image must be in PNG, JPG, or JPEG format.',
+    },
+  ).optional(),
+    imageUrl: z.string().optional(),
 });
 
 export type BookFormData = z.infer<typeof bookValidationSchema>;

@@ -51,7 +51,7 @@ const UserPanel: React.FC<UserPanelProps> = ({ onLoginOpen }) => {
                 onClick={() => setIsOpen(false)}
             />
             <div className={`user-panel ${isOpen ? 'right-0' : 'right-[-445px]'}`}>
-                <div className="p-[30px] bg-dark h-[17%] flex flex-col gap-[23px]">
+                <div className="p-[30px] bg-dark h-[17%] min-h-[170px] flex flex-col gap-[23px]">
                     <div>
                         <img src={closeIcon} className="close-icon" onClick={() => setIsOpen(false)} />
                         <h1 className="font-semibold text-2xl">Profile</h1>
@@ -109,7 +109,7 @@ const UserPanel: React.FC<UserPanelProps> = ({ onLoginOpen }) => {
                         <p>Log out</p>
                     </div>
                 </div>
-                <div className="user-footer">
+                <div className="user-footer min-h-[160px]">
                     <p className="text-gray">Got any questions?</p>
                     <h1 className="contact-info">0-800-***-***</h1>
                 </div>

@@ -25,6 +25,7 @@ namespace Library.DTOs.Book
         [JsonIgnore]
         public bool HasAudio => !string.IsNullOrEmpty(AudioFileUrl);
 
+        public IFormFile? Image { get; set; }
 
         public List<Guid> FeedbackIds { get; set; } = new List<Guid>();
         public List<Guid> SubcategoryIds { get; set; } = new List<Guid>();

@@ -1,8 +1,8 @@
 export enum Language {
-	ENGLISH = "English",
-	UKRAINIAN = "Ukrainian",
-	SPANISH = "Spanish",
-	FRENCH = "French",
-	GERMAN = "German",
-	OTHER = "Other"
+  ENGLISH = "ENGLISH",
+  UKRAINIAN = "UKRAINIAN",
+  SPANISH = "SPANISH",
+  FRENCH = "FRENCH",
+  GERMAN = "GERMAN",
+  OTHER = "OTHER"
 }
