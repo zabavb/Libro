@@ -33,9 +33,9 @@ export const bookValidationSchema = z.object({
         .number()
         .nonnegative("Must be a non negative number"),
 
-    authorId: z.string().uuid(),
-    publisherId: z.string().uuid(),
-    categoryId: z.string().uuid(),
+    authorId: z.string(),
+    publisherId: z.string(),
+    categoryId: z.string(),
     description: z
         .string()
         .min(2, "Description must be at least 2 characters")

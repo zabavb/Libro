@@ -12,6 +12,8 @@ import { dateToString } from '@/api/adapters/commonAdapters';
 import { CoverType } from '@/types/subTypes/book/CoverType';
 import { Language } from '@/types/subTypes/book/Language';
 import { coverNumberToEnum, languageNumberToEnum } from '@/api/adapters/bookAdapter';
+import BookFormAuthorSearch from '../BookFormAuthorSearch';
+import BookFormPublisherSearch from '../BookFormPublisherSearch';
 interface BookFormProps {
     existingBook?: Book;
     onAddBook: (book: FormData) => Promise<void>;
@@ -59,7 +61,8 @@ const BookForm: React.FC<BookFormProps> = ({
     const coverValue = watch("cover");
     const navigate = useNavigate();
     const [localEdit, setLocalEdit] = useState<boolean>(isEdit);
-
+    const [selectedAuthor, setSelectedAuthor] = useState<string>("");
+    const [selectedPublisher, setSelectedPublisher] = useState<string>("");
     useEffect(() => {
         if (existingBook === undefined)
             setLocalEdit(true)
@@ -69,8 +72,6 @@ const BookForm: React.FC<BookFormProps> = ({
     }, [isEdit, existingBook])
 
     const loggedUser: User | null = getUserFromStorage();
-
-
 
     useEffect(() => {
         if (existingBook) {
@@ -91,8 +92,8 @@ const BookForm: React.FC<BookFormProps> = ({
     const onSubmit = (data: BookFormData) => {
         const formData = new FormData();
         formData.append("Title", data.title);
-        formData.append("AuthorId", data.authorId);
-        formData.append("PublisherId", data.publisherId);
+        formData.append("AuthorId", selectedAuthor);
+        formData.append("PublisherId", selectedPublisher);
         formData.append("CategoryId", data.categoryId);
         formData.append("Price", data.price.toString());
         formData.append("Language", data.language);
@@ -101,9 +102,9 @@ const BookForm: React.FC<BookFormProps> = ({
         formData.append("Cover", data.cover);
         formData.append("Quantity", data.quantity.toString());
 
-        if (data.image instanceof File) 
+        if (data.image instanceof File)
             formData.append("Image", data.image);
-        
+
         if (existingBook?.imageUrl)
             formData.append("ImageUrl", existingBook.imageUrl)
 
@@ -156,9 +157,9 @@ const BookForm: React.FC<BookFormProps> = ({
            overflow-hidden bg-contain bg-no-repeat bg-center w-[260px] h-[390px]'
                         style={{ backgroundImage: imagePreview ? `url(${imagePreview})` : existingBook?.imageUrl ? `url(${existingBook.imageUrl})` : "none", }}
                     >
-                        {!existingBook?.imageUrl && (!imagePreview  && <img className='w-[260px] h-[390px]' src={noImageUrl} />)}
+                        {!existingBook?.imageUrl && (!imagePreview && <img className='w-[260px] h-[390px]' src={noImageUrl} />)}
                     </label>
-                        <p>{errors.image?.message}</p>
+                    <p>{errors.image?.message}</p>
 
                 </div>
                 <div className='flex flex-col gap-[33px] w-full'>
@@ -173,12 +174,21 @@ const BookForm: React.FC<BookFormProps> = ({
                                 <p>{errors.title?.message}</p>
                             </div>
                             {/* To be replaced */}
-                            <div className='input-row flex-1'>
+                            {/* <div className='input-row flex-1'>
                                 <label className='text-sm'>Author</label>
                                 <input {...register('authorId')}
                                     className='input-field'
                                     placeholder='Author'
                                     disabled={!localEdit} />
+                            </div> */}
+                            <input {...register('authorId')}
+                                value={selectedAuthor}
+                                type='hidden'
+                            />
+                            <div className='flex flex-col flex-1'>
+                                <BookFormAuthorSearch
+                                    onSelect={setSelectedAuthor}
+                                    isEnabled={!localEdit} />
                                 <p>{errors.authorId?.message}</p>
                             </div>
                         </div>
@@ -199,12 +209,22 @@ const BookForm: React.FC<BookFormProps> = ({
                                 </select>
                                 <p>{errors.language?.message}</p>
                             </div>
-                            <div className='input-row flex-1'>
+                            {/* <div className='input-row flex-1'>
                                 <label className='text-sm'>Publisher</label>
                                 <input {...register('publisherId')}
                                     className='input-field'
                                     placeholder='Publisher'
                                     disabled={!localEdit} />
+                                
+                            </div> */}
+                            <input {...register('publisherId')}
+                                value={selectedPublisher}
+                                type='hidden'
+                            />
+                            <div className='flex flex-col flex-1'>
+                                <BookFormPublisherSearch
+                                    onSelect={setSelectedPublisher}
+                                    isEnabled={!localEdit} />
                                 <p>{errors.publisherId?.message}</p>
                             </div>
                         </div>
