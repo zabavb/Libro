@@ -63,6 +63,31 @@ namespace Library.Common
         return query.Where(Expression.Lambda<Func<T, bool>>(predicate!, parameter));
     }*/
 
+        public static IQueryable<T> SearchBy<T>(
+            this IQueryable<T> query,
+            string searchTerm,
+            params Expression<Func<T, string?>>[] searchFields)
+        {
+            if (string.IsNullOrWhiteSpace(searchTerm) || searchFields.Length == 0)
+                return query;
+
+            var parameter = Expression.Parameter(typeof(T), "x");
+            Expression? predicate = null;
+
+            foreach (var field in searchFields)
+            {
+                var member = ReplaceParameter(field.Body, field.Parameters[0], parameter);
+
+                var containsMethod = typeof(string).GetMethod(nameof(string.Contains), new[] { typeof(string) })!;
+                var containsCall = Expression.Call(member, containsMethod, Expression.Constant(searchTerm));
+
+                predicate = predicate == null
+                    ? containsCall
+                    : Expression.OrElse(predicate, containsCall);
+            }
+
+            return query.Where(Expression.Lambda<Func<T, bool>>(predicate!, parameter));
+        }
 
         public static IEnumerable<T> InMemorySearch<T>(this IEnumerable<T> source, string searchTerm,
             params Func<T, string?>[] fields)

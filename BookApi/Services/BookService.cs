@@ -202,7 +202,22 @@ namespace BookAPI.Services
 
         public async Task UpdateWithDiscountAsync(Guid id, UpdateBookRequest request, IDiscountService discountService)
         {
-            var bookDto = request.Book;
+            var bookDto = new BookDto()
+            {
+                BookId = request.BookId,
+                Title = request.Title,
+                AuthorId = request.AuthorId,
+                PublisherId = request.PublisherId,
+                CategoryId = request.CategoryId,
+                DiscountId = request.DiscountId,
+                Price = request.Price,
+                Language = request.Language,
+                Year = request.Year,
+                Description = request.Description,
+                Cover = request.Cover,
+                Quantity = request.Quantity,
+                Image = request.Image,
+            }; ;
             var discount = request.Discount;
 
             if (bookDto == null)

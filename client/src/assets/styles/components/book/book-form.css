@@ -34,7 +34,7 @@
 }
 
 .input-field {
-    @apply flex justify-between bg-dim-gray rounded-lg p-2.5;
+    @apply flex justify-between bg-[#DEDBD1] rounded-lg p-2.5;
 }
 
 .input-select{
