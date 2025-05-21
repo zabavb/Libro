@@ -74,6 +74,7 @@ namespace BookAPI.Services
                 return null;
             }
         }
+
         public async Task<DiscountDTO?> GetDiscountByBookIdAsync(Guid bookId)
         {
             if (bookId == Guid.Empty)
