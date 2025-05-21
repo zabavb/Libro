@@ -49,7 +49,8 @@ export const bookValidationSchema = z.object({
     {
       message: 'Image must be in PNG, JPG, or JPEG format.',
     },
-  ),
+  ).optional(),
+    imageUrl: z.string().optional(),
 });
 
 export type BookFormData = z.infer<typeof bookValidationSchema>;
