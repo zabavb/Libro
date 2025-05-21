@@ -82,9 +82,9 @@ export const fetchBookByIdService = async (
  * Add a new book.
  */
 export const addBookService = async (
-    book: Partial<Book>
-): Promise<ServiceResponse<Book>> => {
-    const response: ServiceResponse<Book> = {
+    book: Partial<FormData>
+): Promise<ServiceResponse<FormData>> => {
+    const response: ServiceResponse<FormData> = {
         data: null,
         loading: true,
         error: null,
@@ -108,9 +108,9 @@ export const addBookService = async (
  */
 export const updateBookService = async (
     id: string,
-    book: Partial<Book>
-): Promise<ServiceResponse<Book>> => {
-    const response: ServiceResponse<Book> = {
+    book: Partial<FormData>
+): Promise<ServiceResponse<FormData>> => {
+    const response: ServiceResponse<FormData> = {
         data: null,
         loading: true,
         error: null,
