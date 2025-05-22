@@ -32,6 +32,7 @@ import bPlus from '@/assets/icons/bPlus.svg'
 import oArrowLeft from '@/assets/icons/oArrowLeft.svg'
 import oStarFilled from '@/assets/icons/oStarFilled.svg'
 import oStarEmpty from '@/assets/icons/oStarEmpty.svg'
+import oCross from '@/assets/icons/oCross.svg'
 export const icons = {
     wUser,
     wBonus,
@@ -67,4 +68,5 @@ export const icons = {
     oArrowLeft,
     oStarFilled,
     oStarEmpty,
+    oCross,
 }
