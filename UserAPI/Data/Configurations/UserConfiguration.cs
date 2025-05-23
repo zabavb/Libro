@@ -35,6 +35,9 @@ namespace UserAPI.Data.Configurations
                 .HasMaxLength(15)
                 .HasColumnType("nvarchar(15)");
 
+            builder.HasIndex(u => u.PhoneNumber)
+                .IsUnique();
+
             builder.Property(u => u.Role)
                 .IsRequired()
                 .HasConversion<string>();

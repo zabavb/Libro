@@ -1,3 +1,5 @@
+import { Role } from "@/types";
+
 export interface UserForm {
   id: string;
   lastName: string | null;
@@ -5,7 +7,7 @@ export interface UserForm {
   email: string | null;
   phoneNumber: string | null;
   dateOfBirth: Date | null;
-  role: number;
+  role: Role;
   imageUrl: string | null;
 
   orders: OrderDetailsSnippet[];

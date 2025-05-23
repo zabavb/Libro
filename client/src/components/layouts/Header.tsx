@@ -55,7 +55,7 @@ export default function Header() {
           <div className="header__nav">
             <CartPanel />
             <img src={icons.bHeart} />
-            <UserPanel onLoginOpen={toggleAuth}/>
+            <UserPanel onLoginOpen={toggleAuth} />
           </div>
           <div className='header__lang'>
             <span>UA</span>

@@ -9,8 +9,6 @@ namespace UserAPI.Models.Subscription
         public Subscription Subscription { get; set; }
 
         public DateTime ExpirationDate { get; set; }
-        
-        
 
         public UserSubscription()
         {

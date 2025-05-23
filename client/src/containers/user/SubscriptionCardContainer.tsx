@@ -8,10 +8,12 @@ import SubscriptionCard from '../../components/user/SubscriptionCard';
 
 interface SubscriptionCardContainerProps {
   subscription: SubscriptionCardType;
+  onDeleted: (isDeleted: boolean) => void;
 }
 
 const SubscriptionCardContainer: React.FC<SubscriptionCardContainerProps> = ({
   subscription,
+  onDeleted
 }) => {
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
@@ -24,17 +26,22 @@ const SubscriptionCardContainer: React.FC<SubscriptionCardContainerProps> = ({
     e.stopPropagation();
     const response = await removeSubscriptionService(subscription.id);
 
-    dispatch(
-      response.error
-        ? addNotification({
-            message: response.error,
-            type: 'error',
-          })
-        : addNotification({
-            message: 'Subscription successfully deleted.',
-            type: 'success',
-          }),
-    );
+    if (response.error)
+      dispatch(
+        addNotification({
+          message: response.error,
+          type: 'error',
+        }),
+      );
+    else {
+      onDeleted(true);
+      dispatch(
+        addNotification({
+          message: 'Subscription successfully deleted.',
+          type: 'success',
+        }),
+      );
+    }
   };
 
   return (

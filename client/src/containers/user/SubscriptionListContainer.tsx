@@ -83,6 +83,10 @@ const SubscriptionListContainer: React.FC = () => {
     setPagination((prev) => ({ ...prev, pageNumber }));
   };
 
+  const handleDeleted = (subscriptionId: string) => {
+    setSubscriptions((prev) => prev.filter((subscription) => subscription.id !== subscriptionId));
+  };
+
   return (
     <SubscriptionList
       subscriptions={subscriptions}
@@ -92,6 +96,7 @@ const SubscriptionListContainer: React.FC = () => {
       onNavigate={handleNavigate}
       onSearchTermChange={handleSearchTermChange}
       searchTerm={searchTerm}
+      onDeleted={handleDeleted}
     />
   );
 };
