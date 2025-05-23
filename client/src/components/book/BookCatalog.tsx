@@ -19,6 +19,8 @@ interface BookCatalogProps {
     onSortChange: (field: keyof BookSort) => void
     sort: BookSort
     isAudioOnly?: boolean
+    onLoadMore: () => void;
+    loadedAll: boolean;
 }
 
 const BookCatalog: React.FC<BookCatalogProps> = ({
@@ -30,7 +32,9 @@ const BookCatalog: React.FC<BookCatalogProps> = ({
     onFilterChange,
     sort,
     onSortChange,
-    isAudioOnly = false
+    isAudioOnly = false,
+    onLoadMore,
+    loadedAll
 }) => {
     return (
     <div className={`catalog-container ${isAudioOnly ? "bg-[#1A1D23]" : ""}`}>
@@ -50,7 +54,7 @@ const BookCatalog: React.FC<BookCatalogProps> = ({
                 </div>
 
                 <div className="books-panel-main">
-                    {loading ? (
+                    {loading && books.length <= 0? (
                         <>Loading...</>
                     ) : books.length > 0 ? (
                         books.map((book) => (
@@ -65,8 +69,8 @@ const BookCatalog: React.FC<BookCatalogProps> = ({
                 </div>
 
                 <div className="books-panel-footer">
-                    <button className={`load-btn ${isAudioOnly ? "audio-only" : ""}`}>
-                        Load more books
+                    <button disabled={loadedAll || loading} onClick={onLoadMore} className={`load-btn ${isAudioOnly ? "audio-only" : ""}`}>
+                        {!loadedAll && loading ? <p>Loading...</p> : <p>Load more books</p>}
                     </button>
                     <Pagination pagination={pagination} onPageChange={onPageChange} />
                 </div>
