@@ -43,11 +43,18 @@ const CartPanel: React.FC = () => {
 
     return (
         <div>
-            <img src={cartIcon}
-                className='cursor-pointer'
-                onClick={() => setIsOpen(true)}
-            />
+            <div className="relative">
+                <img src={cartIcon}
+                    className='cursor-pointer'
+                    onClick={() => setIsOpen(true)}
+                />
+                {cart.length > 0 && (                
+                <div className="cart-counter-container">
+                    {cart.length}
+                </div>)
+                }
 
+            </div>
             <div
                 className={`dim ${isOpen && 'visible'}`}
                 aria-hidden={!isOpen}
