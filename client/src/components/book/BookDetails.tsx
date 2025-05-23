@@ -5,7 +5,11 @@ import starIcon from '@/assets/icons/ratingStar.svg'
 import truckIcon from '@/assets/icons/truckIcon.svg'
 import CartIcon from '@/assets/icons/cartIcon.svg'
 import FeedbackCard from './FeedbackCard'
-
+import { useEffect, useState } from 'react'
+import { isBookLiked, likeBook, unlikeBook } from '@/services/likedBooksStorage'
+import noImageUrl from '@/assets/noImage.svg'
+import { BookToBookView } from '@/api/adapters/bookAdapter'
+import {icons} from '@/lib/icons'
 interface BookDetailsProps {
     onAddItem: (item: CartItem) => void
     book: Book
@@ -13,13 +17,38 @@ interface BookDetailsProps {
 }
 
 const BookDetails: React.FC<BookDetailsProps> = ({ onAddItem, book, loading }) => {
+    
+    const [liked, setLiked] = useState(false);
+
+    useEffect(() => {
+        if(book)
+            setLiked(isBookLiked(book.bookId));
+    }, [book]);
+
+    const toggleLike = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        if (liked) {
+            unlikeBook(book.bookId);
+        } else {
+            likeBook(BookToBookView(book));
+        }
+        setLiked(!liked);
+    };
+    
     if (loading) return <p>Loading...</p>
     return (
         <div className="px-16 py-5">
             <div className="flex gap-[60px]">
                 {/* Image column */}
-                <div>
-                    <img className="w-[370px] h-[570px]" alt="Loading..." src={`https://picsum.photos/seed/${book.bookId}/370/570`} />
+                <div className='flex flex-col'>
+                    <img className="w-[370px] h-[570px]" alt="Loading..." src={book.imageUrl ? book.imageUrl : noImageUrl} />
+                    <div className='w-[370]'>
+                        <button onClick={toggleLike}   className={`like-btn transition-all duration-300 ease-in-out border-2 ${
+                                liked ? 'bg-[#FF642E] border-[#FF642E]' : 'border-black'
+                            }`}>
+                            <img className={`transition-all duration-300 ease-in-out ${liked && "invert"}`} src={icons.bHeart}/>
+                        </button>
+                    </div>
                 </div>
                 {/* Info column */}
                 <div className="flex flex-col gap-[41px]">
@@ -40,11 +69,11 @@ const BookDetails: React.FC<BookDetailsProps> = ({ onAddItem, book, loading }) =
                         <div className="flex gap-5">
                             <div className="booktype-btn active">
                                 <p>Physical</p>
-                                <p className="font-semibold">{book.price} UAH</p>
+                                <p className="font-semibold">{book.price.toFixed(2)} UAH</p>
                             </div>
                             <div className="booktype-btn">
                                 <p>Digital</p>
-                                <p className="font-semibold">{book.price} UAH</p>
+                                <p className="font-semibold">{book.price.toFixed(2)} UAH</p>
                             </div>
                         </div>
                     </div>
@@ -106,7 +135,7 @@ const BookDetails: React.FC<BookDetailsProps> = ({ onAddItem, book, loading }) =
                 {/* Cart column */}
                 <div className="buy-container">
                     <div className="flex flex-col gap-2.5">
-                        <h1>{book.price} UAH</h1>
+                        <h1>{book.price.toFixed(2)} UAH</h1>
                         {/* Update later */}
                         <div className="flex">
                             <img src={truckIcon}/>
