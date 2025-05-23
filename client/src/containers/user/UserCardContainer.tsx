@@ -9,9 +9,13 @@ import { removeUserService } from '../../services';
 
 interface UserCardContainerProps {
   user: UserCardType;
+  onDeleted: (isDeleted: boolean) => void;
 }
 
-const UserCardContainer: React.FC<UserCardContainerProps> = ({ user }) => {
+const UserCardContainer: React.FC<UserCardContainerProps> = ({
+  user,
+  onDeleted,
+}) => {
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
 
@@ -23,17 +27,22 @@ const UserCardContainer: React.FC<UserCardContainerProps> = ({ user }) => {
     e.stopPropagation();
     const response = await removeUserService(user.id);
 
-    dispatch(
-      response.error
-        ? addNotification({
-            message: response.error,
-            type: 'error',
-          })
-        : addNotification({
-            message: 'User successfully deleted.',
-            type: 'success',
-          }),
-    );
+    if (response.error)
+      dispatch(
+        addNotification({
+          message: response.error,
+          type: 'error',
+        }),
+      );
+    else {
+      onDeleted(true);
+      dispatch(
+        addNotification({
+          message: 'User successfully deleted.',
+          type: 'success',
+        }),
+      );
+    }
   };
 
   return (

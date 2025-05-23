@@ -111,10 +111,13 @@ const UserListContainer: React.FC = () => {
   };
 
   const handlePageChange = (pageNumber: number) => {
-    
-    setPagination((prev) => ({...prev, pageNumber}))
-  }
-  
+    setPagination((prev) => ({ ...prev, pageNumber }));
+  };
+
+  const handleDeleted = (userId: string) => {
+    setUsers((prev) => prev.filter((user) => user.id !== userId));
+  };
+
   return (
     <UserList
       users={users}
@@ -128,6 +131,7 @@ const UserListContainer: React.FC = () => {
       filters={FromUserFilterToUserViewFilter(filters)}
       onSortChange={handleSortChange}
       sort={sort}
+      onDeleted={handleDeleted}
     />
   );
 };
