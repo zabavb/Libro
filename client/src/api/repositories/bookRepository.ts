@@ -44,7 +44,7 @@ export const getBookById = async (id: string): Promise<Book> => {
 /**
  * Create a new book.
  */
-export const addBook = async (formData: Partial<FormData>): Promise<FormData> => {
+export const addBook = async (formData: FormData): Promise<FormData> => {
     const response = await axios.post<FormData>(BOOKS, formData, {
         headers: {
             Authorization: `Bearer ${localStorage.getItem('token')}`,

@@ -8,12 +8,14 @@ import { useNavigate } from 'react-router-dom';
 import { Book, User } from '@/types';
 import noImageUrl from '@/assets/noImage.svg'
 import { BookFormData, bookValidationSchema } from '@/utils/bookValidationSchema';
-import { dateToString } from '@/api/adapters/commonAdapters';
 import { CoverType } from '@/types/subTypes/book/CoverType';
 import { Language } from '@/types/subTypes/book/Language';
 import { coverNumberToEnum, languageNumberToEnum } from '@/api/adapters/bookAdapter';
 import BookFormAuthorSearch from '../BookFormAuthorSearch';
 import BookFormPublisherSearch from '../BookFormPublisherSearch';
+import BookFormCategorySearch from '../BookFormCategorySearch';
+import BookFormSubCategorySearch from '../BookFormSubcategorySearch';
+import BookSubcategoryList from '../BookSubcategoryList';
 interface BookFormProps {
     existingBook?: Book;
     onAddBook: (book: FormData) => Promise<void>;
@@ -43,7 +45,7 @@ const BookForm: React.FC<BookFormProps> = ({
         resolver: zodResolver(bookValidationSchema),
         defaultValues: {
             title: '',
-            year: dateToString(new Date(new Date().getFullYear())),
+            year: new Date(new Date().getFullYear(), 0, 1).toISOString(),
             cover: CoverType.DUSTJACKET,
             price: 0,
             language: Language.ENGLISH,
@@ -51,9 +53,13 @@ const BookForm: React.FC<BookFormProps> = ({
             authorId: '',
             publisherId: '',
             categoryId: '',
+            discountId: undefined, 
+            subcategoryIds: [],   
             description: '',
-            imageUrl: '',
-        },
+            image: undefined,
+            audio: undefined,
+            PDF: undefined,
+        }
     });
 
     const [imagePreview, setImagePreview] = useState<string | null>(null);
@@ -63,6 +69,8 @@ const BookForm: React.FC<BookFormProps> = ({
     const [localEdit, setLocalEdit] = useState<boolean>(isEdit);
     const [selectedAuthor, setSelectedAuthor] = useState<string>("");
     const [selectedPublisher, setSelectedPublisher] = useState<string>("");
+    const [selectedCategory, setSelectedCategory] = useState<string>("");
+    const [selectedSubCategoriesDisplay, setSelectedSubCategoriesDisplay] = useState<Record<string,string>>({});
     useEffect(() => {
         if (existingBook === undefined)
             setLocalEdit(true)
@@ -72,6 +80,22 @@ const BookForm: React.FC<BookFormProps> = ({
     }, [isEdit, existingBook])
 
     const loggedUser: User | null = getUserFromStorage();
+
+    const addSubCategory = (subcategoryId: string, subcategoryName: string) => {
+        setSelectedSubCategoriesDisplay(prev => ({
+            ...(prev || {}),
+            [subcategoryId]: subcategoryName,
+        }));
+    };
+
+    const removeSubCategory = (subcategoryId: string) => {
+        setSelectedSubCategoriesDisplay(prev => {
+            if (!prev) return prev;
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+            const { [subcategoryId]: _, ...rest } = prev;
+            return rest;
+        });
+    };
 
     useEffect(() => {
         if (existingBook) {
@@ -85,16 +109,18 @@ const BookForm: React.FC<BookFormProps> = ({
             setValue('categoryId', existingBook.categoryId);
             setValue('publisherId', existingBook.publisherId);
             setValue('description', existingBook.description ?? '');
-            setValue('imageUrl', existingBook.imageUrl);
+            setValue('discountId', existingBook.discountId ?? undefined);
+            setValue('subcategoryIds', existingBook.subcategoryIds ?? []);
         }
     }, [existingBook, setValue]);
 
     const onSubmit = (data: BookFormData) => {
         const formData = new FormData();
+
         formData.append("Title", data.title);
         formData.append("AuthorId", selectedAuthor);
         formData.append("PublisherId", selectedPublisher);
-        formData.append("CategoryId", data.categoryId);
+        formData.append("CategoryId", selectedCategory);
         formData.append("Price", data.price.toString());
         formData.append("Language", data.language);
         formData.append("Year", new Date(Number(data.year), 1, 1).toISOString());
@@ -102,14 +128,34 @@ const BookForm: React.FC<BookFormProps> = ({
         formData.append("Cover", data.cover);
         formData.append("Quantity", data.quantity.toString());
 
-        if (data.image instanceof File)
+        if (data.discountId) {
+            formData.append("DiscountId", data.discountId);
+        }
+
+        if (data.image instanceof File) {
             formData.append("Image", data.image);
+        }
 
-        if (existingBook?.imageUrl)
-            formData.append("ImageUrl", existingBook.imageUrl)
+        if (data.audio instanceof File) {
+            formData.append("Audio", data.audio);
+        }
 
-        if (existingBook) onEditBook(formData);
-        else onAddBook(formData);
+        if (data.PDF instanceof File) {
+            formData.append("PDF", data.PDF);
+        }
+        
+        if (selectedSubCategoriesDisplay && Object.entries(selectedSubCategoriesDisplay).length > 0) {
+            Object.entries(selectedSubCategoriesDisplay).forEach(([key, value]) => {
+                formData.append("SubcategoryIds", key);
+            });
+        }
+
+        if (existingBook) {
+            formData.append("BookId", existingBook.bookId);
+            onEditBook(formData);
+        } else {
+            onAddBook(formData);
+        }
     };
 
     const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -274,23 +320,25 @@ const BookForm: React.FC<BookFormProps> = ({
                             </div>
                         </div>
                         <div className='flex gap-2'>
-                            <div className='input-row flex-1'>
-                                <label className='text-sm'>Category</label>
-                                <input {...register('categoryId')}
-                                    className='input-field'
-                                    placeholder='Category'
-                                    disabled={!localEdit} />
-                                <p>{errors.categoryId?.message}</p>
+                            <div className='flex flex-col flex-1'>
+                                <BookFormCategorySearch
+                                    onSelect={setSelectedCategory}
+                                    isEnabled={!localEdit} />
+                                <p>{errors.authorId?.message}</p>
                             </div>
-                            <div className='input-row flex-1'>
-                                <label className='text-sm'>Subcategory</label>
-                                <input
-                                    // {...register('categoryId')}
-                                    className='input-field'
-                                    placeholder='Subcategory'
-                                    disabled={true} />
-                                <p>{errors.categoryId?.message}</p>
+                            <div className='flex flex-col flex-1'>
+                                <BookFormSubCategorySearch
+                                    onSelect={addSubCategory}
+                                    isEnabled={!localEdit} />
+                                <p>{errors.authorId?.message}</p>
                             </div>
+                        </div>
+                        <div className='flex gap-2'>
+                            <BookSubcategoryList
+                                RemoveSubcategory={removeSubCategory}
+                                Subcategories={selectedSubCategoriesDisplay ?? {}}
+                                isEnabled={localEdit}
+                            />
                         </div>
                         <div className='flex gap-2'>
                             <div className='input-row flex-1'>

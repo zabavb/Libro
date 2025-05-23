@@ -4,6 +4,7 @@ import { PaginatedResponse, ServiceResponse, SubCategory, SubCategoryFilter } fr
 export const fetchSubCategoriesService = async (
     pageNumber: number = 1,
     pageSize: number = 10,
+    searchTerm?: string,
     filter?: SubCategoryFilter
 ): Promise<ServiceResponse<PaginatedResponse<SubCategory>>> => {
     const response: ServiceResponse<PaginatedResponse<SubCategory>> = {
@@ -17,6 +18,7 @@ export const fetchSubCategoriesService = async (
 
 
         const params = {
+            searchTerm,
             ...filter,
         }
 
