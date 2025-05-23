@@ -61,7 +61,7 @@ const AuthorList: React.FC<AuthorListProps> = ({
                     <div className="flex flex-col w-full">
                         <div className="flex flex-row-reverse">
                             <p className="counter">
-                                ({pagination.totalCount}) authors
+                                Found authors ({pagination.totalCount})
                             </p>
                         </div>
                         <div className="table-wrapper">

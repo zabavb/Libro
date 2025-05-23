@@ -4,10 +4,11 @@ import { UserProfileFormData, userProfileSchema } from '@/utils';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import '@/assets/styles/components/common/profile.css'
-import { icons } from '@/lib/icons'
+import '@/assets/styles/components/common/profile.css';
+import { icons } from '@/lib/icons';
 import NewsletterAdvert from '../common/NewsletterAdvert';
 import { roleEnumToNumber } from '@/api/adapters/userAdapter';
+
 interface ProfileProps {
   user: User;
   onEditUser: (
@@ -20,7 +21,6 @@ interface ProfileProps {
   loading: ComplicatedLoading<UserProfileFormData>;
   onNavigate: (route: string) => void;
 }
-
 
 const Profile: React.FC<ProfileProps> = ({
   user,
@@ -50,8 +50,6 @@ const Profile: React.FC<ProfileProps> = ({
     },
   });
 
-
-  
   const [editableField, setEditableField] = useState<
     keyof UserProfileFormData | null
   >(null);
@@ -112,11 +110,19 @@ const Profile: React.FC<ProfileProps> = ({
           disabled={editableField !== fieldName}
         />
         {editableField === fieldName ? (
-          <button className='input-btn' type='button' onClick={() => handleSave(fieldName)}>
+          <button
+            className='input-btn'
+            type='button'
+            onClick={() => handleSave(fieldName)}
+          >
             Save
           </button>
         ) : (
-          <button className='input-btn' type='button' onClick={() => handleEditClick(fieldName)}>
+          <button
+            className='input-btn'
+            type='button'
+            onClick={() => handleEditClick(fieldName)}
+          >
             Edit
           </button>
         )}
@@ -154,7 +160,11 @@ const Profile: React.FC<ProfileProps> = ({
               Next
             </button>
           ) : (
-            <button className='input-btn' type='button' onClick={() => handleEditClick('password')}>
+            <button
+              className='input-btn'
+              type='button'
+              onClick={() => handleEditClick('password')}
+            >
               Change
             </button>
           )}
@@ -180,7 +190,11 @@ const Profile: React.FC<ProfileProps> = ({
               {...register('confirmPassword')}
               placeholder='Confirm password'
             />
-            <button className='input-btn' type='button' onClick={() => handleSave('password')}>
+            <button
+              className='input-btn'
+              type='button'
+              onClick={() => handleSave('password')}
+            >
               Save
             </button>
           </div>
@@ -210,70 +224,81 @@ const Profile: React.FC<ProfileProps> = ({
             {renderField('Email', 'email', 'email', 'Email')}
             {renderField('Phone number', 'phoneNumber', 'tel', 'Phone number')}
             {renderPasswordFields()}
-            {renderField('Date of birth', 'dateOfBirth', 'date', 'Date of birth')}
+            {renderField(
+              'Date of birth',
+              'dateOfBirth',
+              'date',
+              'Date of birth',
+            )}
           </div>
         </div>
         <div className='flex flex-col gap-[13px] w-[30%]'>
-          {user.role === roleEnumToNumber(Role.ADMIN) ||
-           user.role === roleEnumToNumber(Role.ADMIN) &&
-           (
-            <a href='#' className='admin-btn'>
-            <div className='flex gap-4 justify-center'>
-              <img src={icons.bPen} />
-              <p>Go to admin panel</p>
-            </div>
-          </a>
-           )}
+          {user.role === roleEnumToNumber(Role.ADMIN) && (
+            <a href='/admin' className='admin-btn'>
+              <div className='flex gap-4 justify-center'>
+                <img src={icons.bPen} />
+                <p>Go to admin panel</p>
+              </div>
+            </a>
+          )}
           <div className='form-section'>
-            <div className='flex justify-between items-center'>
-              <h3 className='font-semibold text-xl text-dark'>Delivery 365</h3>
-              <div>
-                {isSubscribedFor365 ? (
-                  <div className='sub-active'>
-                    Active
+            {subscription ? (
+              <>
+                <div className='flex justify-between items-center'>
+                  <h3
+                    className='font-semibold text-xl text-dark'
+                    onClick={() =>
+                      onNavigate(`/subscriptions/${subscription?.id}`)
+                    }
+                  >
+                    {subscription?.title}
+                  </h3>
+                  <div>
+                    {isSubscribedFor365 ? (
+                      <div className='sub-active'>Active</div>
+                    ) : (
+                      <div className='sub-inactive'>Inactive</div>
+                    )}
                   </div>
-                ) : (
-                  <div className='sub-inactive'>
-                    Inactive
+                </div>
+                <div className='flex gap-1.5'>
+                  <div className='sub-image-container'>
+                    <img src={subscription?.imageUrl} />
                   </div>
-                )}
-              </div>
-            </div>
-            <div className='flex gap-1.5'>
-              <div className='sub-image-container'>
-                <p className='sub-image'>365</p>
-              </div>
-              <div>
-                <p className='sub-desc'>Subscription for free delivery of orders from Libro
-                  throughout Ukraine. Valid for all orders over UAH 100
-                  for 1 year from the moment of registration.
-                  There are no restrictions on the number of orders.</p>
-              </div>
-            </div>
+                  <div>
+                    <p className='sub-desc'>{subscription?.description}</p>
+                  </div>
+                </div>
+              </>
+            ) : (
+              <p style={{ display: 'flex', justifyContent: 'center' }}>
+                Loading subscription...
+              </p>
+            )}
           </div>
           <div className='form-section'>
             <div className='flex justify-between items-center'>
-              <h3 className='font-semibold text-xl text-dark'>Newsletter subscription</h3>
+              <h3 className='font-semibold text-xl text-dark'>
+                Newsletter subscription
+              </h3>
               <div>
                 {subscription ? (
-                  <div className='sub-active'>
-                    Active
-                  </div>
+                  <div className='sub-active'>Active</div>
                 ) : (
-                  <div className='sub-inactive'>
-                    Inactive
-                  </div>
+                  <div className='sub-inactive'>Inactive</div>
                 )}
               </div>
             </div>
             <div>
-            <p className='sub-desc'>We exchange emails for book trends,
-            information about new releases, book collections, secret promo codes</p>
+              <p className='sub-desc'>
+                We exchange emails for book trends, information about new
+                releases, book collections, secret promo codes
+              </p>
             </div>
           </div>
         </div>
       </div>
-      <NewsletterAdvert/>
+      <NewsletterAdvert />
     </div>
   );
 };
