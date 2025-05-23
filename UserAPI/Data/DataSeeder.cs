@@ -22,7 +22,6 @@ namespace UserAPI.Data
         private readonly string _seedPassword = configuration["SeedPassword"]!;
 
         private static readonly Random Random = new();
-        private const string UserImagesSeedDir = "SeedImages/Users";
         private const string SubscriptionImagesSeedDir = @"Data\SeedImages\Subscriptions";
 
         private static readonly string[] ModeratorFirstNames =
@@ -44,7 +43,7 @@ namespace UserAPI.Data
         ];
 
         private static readonly string[] FirstNames =
-        {
+        [
             "Aaron", "Bella", "Cameron", "Dana", "Ethan",
             "Faith", "Gavin", "Hailey", "Isaac", "Jasmine",
             "Kyle", "Lily", "Miles", "Naomi", "Oliver",
@@ -61,10 +60,30 @@ namespace UserAPI.Data
             "Nico", "Owen", "Piper", "Quiana", "Ray",
             "Sara", "Tom", "Una", "Val", "Wren",
             "Ximena", "Yosef", "Zelda", "Ash", "Blaire"
-        };
+        ];
 
-        private static readonly List<Guid> userIds = new List<Guid>
-        {
+        private static readonly string[] LastNames =
+        [
+            "Adams", "Baker", "Carter", "Dixon", "Ellis",
+            "Ferguson", "Grant", "Harris", "Ingram", "Jacobs",
+            "Keller", "Larson", "Morris", "Nash", "O'Brien",
+            "Price", "Qualls", "Reed", "Smith", "Taylor",
+            "Underwood", "Vance", "Walker", "Xiong", "Young",
+            "Zimmerman", "Abbott", "Barnes", "Chavez", "Dalton",
+            "Edwards", "Fitzgerald", "Gibson", "Howard", "Iverson",
+            "James", "Knight", "Lane", "Moore", "Nelson",
+            "Ortega", "Porter", "Quintana", "Ramirez", "Stewart",
+            "Thomas", "Upton", "Vargas", "White", "Xu",
+            "York", "Zamora", "Austin", "Blake", "Coleman",
+            "Drake", "Erickson", "Ford", "Green", "Hayes",
+            "Irving", "Jefferson", "Kim", "Long", "Martin",
+            "Nguyen", "Owens", "Powell", "Robinson", "Shaw",
+            "Travis", "Ulrich", "Vega", "Watson", "Xander",
+            "Yates", "Zhou", "Archer", "Bryant", "Caldwell"
+        ];
+
+        private static readonly List<Guid> UserIds =
+        [
             new("eb65e5c5-a3bd-4da7-9c43-e722c49c0151"),
             new("0497d9e4-ec6b-4277-a268-18f61104e140"),
             new("56a1c91f-8b00-43fa-adac-19b67559c48d"),
@@ -145,27 +164,9 @@ namespace UserAPI.Data
             new("d55c56ff-87e6-4141-a34a-ab71190b4223"),
             new("f13beee9-561c-4086-9bc9-b21faf7f4c6c"),
             new("d0e827e7-6339-43fc-8959-4713a4ea535d")
-        };
+        ];
 
-        private static readonly string[] LastNames =
-        {
-            "Adams", "Baker", "Carter", "Dixon", "Ellis",
-            "Ferguson", "Grant", "Harris", "Ingram", "Jacobs",
-            "Keller", "Larson", "Morris", "Nash", "O'Brien",
-            "Price", "Qualls", "Reed", "Smith", "Taylor",
-            "Underwood", "Vance", "Walker", "Xiong", "Young",
-            "Zimmerman", "Abbott", "Barnes", "Chavez", "Dalton",
-            "Edwards", "Fitzgerald", "Gibson", "Howard", "Iverson",
-            "James", "Knight", "Lane", "Moore", "Nelson",
-            "Ortega", "Porter", "Quintana", "Ramirez", "Stewart",
-            "Thomas", "Upton", "Vargas", "White", "Xu",
-            "York", "Zamora", "Austin", "Blake", "Coleman",
-            "Drake", "Erickson", "Ford", "Green", "Hayes",
-            "Irving", "Jefferson", "Kim", "Long", "Martin",
-            "Nguyen", "Owens", "Powell", "Robinson", "Shaw",
-            "Travis", "Ulrich", "Vega", "Watson", "Xander",
-            "Yates", "Zhou", "Archer", "Bryant", "Caldwell"
-        };
+        private readonly Guid _delivery365Id = Guid.Parse(configuration["Delivery365Id"]!);
 
         public async Task SeedAsync()
         {
@@ -195,7 +196,8 @@ namespace UserAPI.Data
                     RdmPhoneNumber(), RoleType.MODERATOR));
 
             for (var i = 0; i < FirstNames.Length; i++)
-                users.Add(new User(userIds[i] ,FirstNames[i], LastNames[i], RdmDateOfBirth(), RdmEmailDomen(), RdmPhoneNumber()));
+                users.Add(new User(UserIds[i], FirstNames[i], LastNames[i], RdmDateOfBirth(), RdmEmailDomen(),
+                    RdmPhoneNumber()));
 
             foreach (var user in users)
             {
@@ -215,7 +217,6 @@ namespace UserAPI.Data
                     user.ImageUrl = imageUrl;
                 }
             }
-
 
             _logger.LogInformation("Created {UsersCount} users with their images.", users.Count);
 
@@ -240,12 +241,12 @@ namespace UserAPI.Data
 
         private async Task<List<Subscription>> SeedSubscriptionsAsync()
         {
-            var description = "Subscription for free delivery of orders from Yakaboo throughout Ukraine." +
-                              "Valid for all orders over 100 UAH for 1 year from the moment of registration." +
+            var description = "Subscription for free delivery of orders from Libro throughout Ukraine." +
+                              "Valid for all orders over 365 UAH for 1 year from the moment of registration." +
                               "There are no restrictions on the number of orders.";
             var subscriptions = new List<Subscription>
             {
-                new("Subscription 365", 365, 365, "Free shipping for a year for 365₴", description)
+                new(_delivery365Id, "Delivery 365", 365, 365, "Free shipping for a year for 365₴", description)
             };
 
             for (var i = 0; i < subscriptions.Count; i++)
@@ -303,16 +304,8 @@ namespace UserAPI.Data
             List<Subscription> subscriptions,
             List<UserSubscription> userSubscriptions)
         {
-/*            await _context.Users.AddRangeAsync(users);
-            _logger.LogInformation("Inserted {UsersCount} users into DB.", users.Count);
-            await _context.SaveChangesAsync();*/
-
             await _context.Passwords.AddRangeAsync(passwords);
             _logger.LogInformation("Inserted {PasswordsCount} passwords into DB.", passwords.Count);
-
-/*            await _context.Subscriptions.AddRangeAsync(subscriptions);
-            _logger.LogInformation("Inserted {SubscriptionsCount} subscriptions into DB.", subscriptions.Count);
-            await _context.SaveChangesAsync();*/
 
             await _context.UserSubscriptions.AddRangeAsync(userSubscriptions);
             _logger.LogInformation("Inserted {Count} UserSubscription entities into DB.", userSubscriptions.Count);
@@ -340,7 +333,7 @@ namespace UserAPI.Data
             var part1 = Random.Next(100, 1000);
             var part2 = Random.Next(100, 1000);
             var part3 = Random.Next(1000, 10000);
-            return $"{part1}-{part2}-{part3}";
+            return $"{part1}{part2}{part3}";
         }
 
         private FormFile GetImageAsFormFile(string fileName, string seedDir)
