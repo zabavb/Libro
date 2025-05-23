@@ -54,7 +54,7 @@ export default function Header() {
           </div>
           <div className="header__nav">
             <CartPanel />
-            <img src={icons.bHeart} />
+            <img src={icons.bHeart} className="cursor-pointer" onClick={() => navigate("/liked")}/>
             <UserPanel onLoginOpen={toggleAuth} />
           </div>
           <div className='header__lang'>
