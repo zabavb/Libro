@@ -43,10 +43,9 @@ const CartPanel: React.FC = () => {
 
     return (
         <div>
-            <div className="relative">
-                <img src={cartIcon}
-                    className='cursor-pointer'
-                    onClick={() => setIsOpen(true)}
+            <div className="relative cursor-pointer" onClick={() => setIsOpen(true)}>
+                <img 
+                    src={cartIcon}
                 />
                 {cart.length > 0 && (                
                 <div className="cart-counter-container">
