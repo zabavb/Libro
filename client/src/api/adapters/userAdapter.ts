@@ -31,6 +31,16 @@ export const roleEnumToNumber = (role: Role): number => {
   return roleMap[role] ?? 2;
 };
 
+export const roleEnumToRoleView = (role: Role): RoleView => {
+  const roleMap: { [key in Role]: RoleView } = {
+    [Role.ADMIN]: RoleView.ADMIN,
+    [Role.MODERATOR]: RoleView.MODERATOR,
+    [Role.USER]: RoleView.USER,
+  };
+
+  return roleMap[role] ?? RoleView.USER;
+};
+
 export const UserFormDataToUser = (form: UserFormData, id?: string): User => ({
   ...form,
   id: id ?? '00000000-0000-0000-0000-000000000000',
