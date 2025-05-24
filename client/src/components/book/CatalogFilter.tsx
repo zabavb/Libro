@@ -2,10 +2,12 @@ import "@/assets/styles/components/book/catalog-sort.css";
 import "@/assets/styles/components/book/catalog-filter.css";
 import { BookFilter } from "@/types/filters/BookFilter";
 import RangeSlider from "../common/RangeSlider";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import DropdownWrapper from "../common/DropdownWrapper";
 import AuthorList from "../common/AuthorList";
 import { Language } from "@/types/subTypes/book/Language";
+import CategoryFilters from "../common/CategoryFilters";
+import PublisherFilters from "../common/PublisherFilters";
 
 interface CatalogFilterProps {
     onFilterChange: (field: BookFilter) => void;
@@ -14,30 +16,43 @@ interface CatalogFilterProps {
 }
 
 const CatalogFilter: React.FC<CatalogFilterProps> = ({ onFilterChange, filters, isAudioOnly = false }) => {
-    const [priceTo, setPriceTo] = useState<boolean>(true);
+    const [toPrice, setMaxPrice] = useState<boolean>(true);
     const [priceRange, setPriceRange] = useState<number>(0);
 
     const applyPriceFilter = () => {
-        if (priceTo) {
-            const { priceFrom: _priceFrom, ...rest } = filters;
-            onFilterChange({ ...rest, priceTo: priceRange });
+        console.log(priceRange)
+        if (toPrice) {
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+            const { minPrice: _minPrice, ...rest } = filters;
+            onFilterChange({ ...rest, maxPrice: priceRange });
         } else {
-            const { priceTo: _priceTo, ...rest } = filters;
-            onFilterChange({ ...rest, priceFrom: priceRange });
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+            const { maxPrice: _priceTo, ...rest } = filters;
+            onFilterChange({ ...rest, minPrice: priceRange });
         }
+        console.log(filters)
     };
+
+    const applyFilter = (option: keyof BookFilter, value: string | boolean) => {
+        const updatedFilter: BookFilter = {
+            ...filters,
+            [option]:value,
+        };
+        onFilterChange(updatedFilter);
+    }
+
+    useEffect(() => {
+        if(isAudioOnly)
+            applyFilter("hasAudio", true);
+    },[])
+
 
     return (
         <div className={`filter-panel-container ${isAudioOnly ? "audio-only" : ""}`}>
             <p>Filters</p>
 
-            <div className="filter-container">
-                <DropdownWrapper triggerLabel="Category">
-                    <button onClick={() => onFilterChange({ ...filters, subcategory: "" })}>
-                        Psychology
-                    </button>
-                </DropdownWrapper>
-            </div>
+            <CategoryFilters
+                onSelect={applyFilter} />
 
             {!isAudioOnly && (
                 <>
@@ -51,18 +66,13 @@ const CatalogFilter: React.FC<CatalogFilterProps> = ({ onFilterChange, filters, 
                         </DropdownWrapper>
                     </div>
 
-                    <div className="filter-container">
-                        <DropdownWrapper triggerLabel="Publisher">
-                            <button onClick={() => onFilterChange({ ...filters, publisher: "" })}>
-                                Publisher B
-                            </button>
-                        </DropdownWrapper>
-                    </div>
+                    <PublisherFilters
+                        onSelect={applyFilter}/>
 
                     <div className="filter-container">
                         <DropdownWrapper triggerLabel="Availability">
-                            <p onClick={() => onFilterChange({ ...filters, inStock: true })}>Available</p>
-                            <p onClick={() => onFilterChange({ ...filters, inStock: false })}>Not Available</p>
+                            <p className={`cursor-pointer ${filters.available && "text-[#FF642E]"}`} onClick={() => onFilterChange({ ...filters, available: true })}>Available</p>
+                            <p className={`cursor-pointer ${!filters.available && "text-[#FF642E]"}`} onClick={() => onFilterChange({ ...filters, available: false })}>Not Available</p>
                         </DropdownWrapper>
                     </div>
                 </>
@@ -73,7 +83,7 @@ const CatalogFilter: React.FC<CatalogFilterProps> = ({ onFilterChange, filters, 
                     {Object.values(Language).map((value) => (
                         <p
                             key={value}
-                            className="cursor-pointer"
+                            className={`cursor-pointer ${filters.language == value && "text-[#FF642E]"}`}
                             onClick={() => onFilterChange({ ...filters, language: value as Language })}
                         >
                             {value}
@@ -91,19 +101,19 @@ const CatalogFilter: React.FC<CatalogFilterProps> = ({ onFilterChange, filters, 
             <div>
                 Price
                 <div>
-                    <RangeSlider min={0} max={1500} value={priceRange} onChange={setPriceRange} />
+                    <RangeSlider min={0} max={9999} value={priceRange} onChange={setPriceRange} />
                 </div>
                 <div className="flex flex-col gap-4">
                     <div className="flex gap-2">
                         <button
-                            className={`price-btn ${!priceTo ? "price-btn-active" : ""}`}
-                            onClick={() => setPriceTo(false)}
+                            className={`price-btn ${!toPrice ? "price-btn-active" : ""}`}
+                            onClick={() => setMaxPrice(false)}
                         >
                             from
                         </button>
                         <button
-                            className={`price-btn ${priceTo ? "price-btn-active" : ""}`}
-                            onClick={() => setPriceTo(true)}
+                            className={`price-btn ${toPrice ? "price-btn-active" : ""}`}
+                            onClick={() => setMaxPrice(true)}
                         >
                             to
                         </button>

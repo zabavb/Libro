@@ -50,7 +50,7 @@ const CatalogSort: React.FC<CatalogSortProps> = ({ onSortChange, sort }) => {
 
             {/* Animated Dropdown Panel */}
             <div
-                className={`sort-container ${expanded ? "max-h-[500px] opacity-100" : "max-h-0 opacity-0"
+                className={`bg-[#F4F0E5] sort-container ${expanded ? "max-h-[500px] opacity-100" : "max-h-0 opacity-0"
                     }`}
             >
                 <div className="flex flex-col p-2">
@@ -65,11 +65,11 @@ const CatalogSort: React.FC<CatalogSortProps> = ({ onSortChange, sort }) => {
                             </span>
                         </p>
                     </button>
-                    <button className="sort-btn" onClick={() => handleSort("title")}>
+                    <button className="sort-btn" onClick={() => handleSort("alphabetical")}>
                         <p className="sort-title">By title
                             <span className=" float-right">
-                                {sort.title !== undefined ?
-                                    <FontAwesomeIcon icon={sort.title ? faCaretUp : faCaretDown} />
+                                {sort.alphabetical !== undefined ?
+                                    <FontAwesomeIcon icon={sort.alphabetical ? faCaretUp : faCaretDown} />
                                     : ""
                                 }
                             </span>
@@ -85,31 +85,11 @@ const CatalogSort: React.FC<CatalogSortProps> = ({ onSortChange, sort }) => {
                             </span>
                         </p>
                     </button>
-                    <button className="sort-btn" onClick={() => handleSort("year")}>
-                        <p className="sort-title">By year
-                            <span className=" float-right">
-                                {sort.year !== undefined ?
-                                    <FontAwesomeIcon icon={sort.year ? faCaretUp : faCaretDown} />
-                                    : ""
-                                }
-                            </span>
-                        </p>
-                    </button>
-                    <button className="sort-btn" onClick={() => handleSort("feedBack")}>
+                    <button className="sort-btn" onClick={() => handleSort("feedBackCount")}>
                         <p className="sort-title">By feedback
                             <span className=" float-right">
-                                {sort.feedBack !== undefined ?
-                                    <FontAwesomeIcon icon={sort.feedBack ? faCaretUp : faCaretDown} />
-                                    : ""
-                                }
-                            </span>
-                        </p>
-                    </button>
-                    <button className="sort-btn" onClick={() => handleSort("discountRate")}>
-                        <p className="sort-title">By discount
-                            <span className=" float-right">
-                                {sort.discountRate !== undefined ?
-                                    <FontAwesomeIcon icon={sort.discountRate ? faCaretUp : faCaretDown} />
+                                {sort.feedBackCount!== undefined ?
+                                    <FontAwesomeIcon icon={sort.feedBackCount ? faCaretUp : faCaretDown} />
                                     : ""
                                 }
                             </span>

@@ -44,7 +44,7 @@ const BookCatalog: React.FC<BookCatalogProps> = ({
             <main className={`books-panel ${isAudioOnly ? "audio-only" : ""}`}>
                 <div className={`books-panel-header ${isAudioOnly ? "audio-only" : ""}`}>
                     <div className={`books-counter ${isAudioOnly ? "audio-only" : ""}`}>
-                        {pagination.totalCount} books
+                        {pagination.totalCount} books found
                     </div>
                     {!isAudioOnly && (
                         <div className="opacity-50 font-semibold text-base">
@@ -69,10 +69,14 @@ const BookCatalog: React.FC<BookCatalogProps> = ({
                 </div>
 
                 <div className="books-panel-footer">
-                    <button disabled={loadedAll || loading} onClick={onLoadMore} className={`load-btn ${isAudioOnly ? "audio-only" : ""}`}>
+                    {(books.length > 0 && !loadedAll) && (
+                    <>
+                    <button disabled={loading} onClick={onLoadMore} className={`load-btn ${isAudioOnly ? "audio-only" : ""}`}>
                         {!loadedAll && loading ? <p>Loading...</p> : <p>Load more books</p>}
                     </button>
                     <Pagination pagination={pagination} onPageChange={onPageChange} />
+                    </>)
+                    }
                 </div>
             </main>
         </div>

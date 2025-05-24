@@ -27,15 +27,6 @@ const BookCatalogContainer = ({ isAudioOnly = false }: BookCatalogContainerProps
         totalCount: 0,
     })
     
-    const handleLoadMore = () => {
-        if(!loadedAll){
-            const newSize = pagination.pageSize + 10
-            setPagination((prev) => ({...prev, pageSize:newSize}))
-            if(pagination.pageSize >= pagination.totalCount)
-                setLoadedAll(true)
-        }
-
-    }
 
     const paginationMemo = useMemo(() => ({...pagination}), [pagination]);
     const fetchBookList = useCallback(async () => {
@@ -83,6 +74,25 @@ const BookCatalogContainer = ({ isAudioOnly = false }: BookCatalogContainerProps
         }
         setLoading(false);
     }, [paginationMemo, searchTerm, filters, sort, dispatch, isAudioOnly])
+
+    const handleLoadMore = () => {
+        if(!loadedAll){
+            const newSize = pagination.pageSize + 10
+            setPagination((prev) => ({...prev, pageSize:newSize}))
+
+        }
+
+    }
+
+    useEffect(() => {
+        if(pagination.pageSize >= pagination.totalCount){
+            setLoadedAll(true)
+        }
+        else{
+            setLoadedAll(false)
+        }
+    },[pagination.pageSize, pagination.totalCount, loading])
+
 
     useEffect(() => {
         fetchBookList()
