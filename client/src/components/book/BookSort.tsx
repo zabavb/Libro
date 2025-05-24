@@ -11,20 +11,14 @@ const BookSort: React.FC<BookSortProps> = ({ onSortChange, sort }) => {
             <button onClick={() => onSortChange("newest")}> 
                 Newest {sort.newest === true ? "↑" : sort.newest === false ? "↓" : ""} 
             </button>
-            <button onClick={() => onSortChange("title")}> 
-                Title {sort.title === true ? "↑" : sort.title === false ? "↓" : ""} 
+            <button onClick={() => onSortChange("alphabetical")}> 
+                Title {sort.alphabetical === true ? "↑" : sort.alphabetical === false ? "↓" : ""} 
             </button>
             <button onClick={() => onSortChange("price")}> 
                 Price {sort.price === true ? "↑" : sort.price === false ? "↓" : ""} 
             </button>
-            <button onClick={() => onSortChange("year")}> 
-                Year {sort.year === true ? "↑" : sort.year === false ? "↓" : ""} 
-            </button>
-            <button onClick={() => onSortChange("feedBack")}> 
-                Reviews {sort.feedBack === true ? "↑" : sort.feedBack === false ? "↓" : ""} 
-            </button>
-            <button onClick={() => onSortChange("biggestDiscount")}>
-                Biggest Discount {sort.biggestDiscount ? "↑" : ""}
+            <button onClick={() => onSortChange("feedBackCount")}> 
+                Reviews {sort.feedBackCount === true ? "↑" : sort.feedBackCount === false ? "↓" : ""} 
             </button>
         </div>
     )
