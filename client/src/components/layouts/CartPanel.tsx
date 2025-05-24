@@ -94,7 +94,7 @@ const CartPanel: React.FC = () => {
                     <div className="cart-footer">
                         <div className="flex justify-between font-semibold text-2xl">
                             <p>Total</p>
-                            <p>{total} UAH</p>
+                            <p>{total.toFixed(2)} UAH</p>
                         </div>
                         <div>
                             <button className="checkout-btn" onClick={() => navigate("/checkout")}>To Checkout</button>
