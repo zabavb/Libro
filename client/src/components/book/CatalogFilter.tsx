@@ -38,7 +38,7 @@ const CatalogFilter: React.FC<CatalogFilterProps> = ({ onFilterChange, filters, 
         };
 
         if (option === "categoryId") {
-        updatedFilter.subcategoryId = undefined;
+            updatedFilter.subcategoryId = undefined;
         }
 
         onFilterChange(updatedFilter);
@@ -74,8 +74,10 @@ const CatalogFilter: React.FC<CatalogFilterProps> = ({ onFilterChange, filters, 
             {!isAudioOnly && (
                 <>
                     <div className="filter-container">
-                        <DropdownWrapper triggerLabel="Book type">
-                            <div className="flex flex-col">
+                        <DropdownWrapper 
+                        triggerLabel="Book type" 
+                        triggerClassName={`transition-colors duration-100 hover:text-[#FF642E] ${(filters.hasAudio || filters.hasDigital) !== undefined && "text-[#FF642E]" }`}>
+                            <div className="flex flex-col gap-2">
                                 {/* <p
                                     className={`transition-colors duration-100 hover:text-[#FF642E] cursor-pointer ${(!filters.hasAudio && !filters.hasDigital) && "text-[#FF642E]"}`}
                                     onClick={() => setType()}>
@@ -100,24 +102,32 @@ const CatalogFilter: React.FC<CatalogFilterProps> = ({ onFilterChange, filters, 
                         onSelect={applyFilter} />
 
                     <div className="filter-container">
-                        <DropdownWrapper triggerLabel="Availability">
-                            <p className={`cursor-pointer transition-colors duration-100 hover:text-[#FF642E] ${filters.available && "text-[#FF642E]"}`} onClick={() => onFilterChange({ ...filters, available: true })}>Available</p>
-                            <p className={`cursor-pointer transition-colors duration-100 hover:text-[#FF642E] ${!filters.available && "text-[#FF642E]"}`} onClick={() => onFilterChange({ ...filters, available: false })}>Not Available</p>
+                        <DropdownWrapper 
+                        triggerLabel="Availability" 
+                        triggerClassName={`transition-colors duration-100 hover:text-[#FF642E] ${filters.available !== undefined && "text-[#FF642E]" }`}>
+                            <div className="flex flex-col gap-2">
+                                <p className={`cursor-pointer transition-colors duration-100 hover:text-[#FF642E] ${filters.available && "text-[#FF642E]"}`} onClick={() => onFilterChange({ ...filters, available: true })}>Available</p>
+                                <p className={`cursor-pointer transition-colors duration-100 hover:text-[#FF642E] ${(filters.available !== undefined && !filters.available) && "text-[#FF642E]"}`} onClick={() => onFilterChange({ ...filters, available: false })}>Not Available</p>
+                            </div>
                         </DropdownWrapper>
                     </div>
                 </>
             )}
 
             <div className="filter-container">
-                <DropdownWrapper triggerLabel="Language">
+                <DropdownWrapper 
+                triggerLabel="Language" 
+                triggerClassName={`transition-colors duration-100 hover:text-[#FF642E] ${filters.language !== undefined && "text-[#FF642E]" }`}>
                     {Object.values(Language).map((value) => (
-                        <p
-                            key={value}
-                            className={`cursor-pointer transition-colors duration-100 hover:text-[#FF642E] ${filters.language == value && "text-[#FF642E]"}`}
-                            onClick={() => onFilterChange({ ...filters, language: value as Language })}
-                        >
-                            {value}
-                        </p>
+                        <div className="flex flex-col gap-2">
+                            <p
+                                key={value}
+                                className={`cursor-pointer transition-colors duration-100 hover:text-[#FF642E] ${filters.language == value && "text-[#FF642E]"}`}
+                                onClick={() => onFilterChange({ ...filters, language: value as Language })}
+                            >
+                                {value}
+                            </p>
+                        </div>
                     ))}
                 </DropdownWrapper>
             </div>
@@ -126,13 +136,12 @@ const CatalogFilter: React.FC<CatalogFilterProps> = ({ onFilterChange, filters, 
                 <AuthorFilters
                     filters={filters}
                     onSelect={applyFilter} />
-                {/* <DropdownWrapper triggerLabel="Author">
-                    <AuthorList onFilterChange={onFilterChange} filters={filters} />
-                </DropdownWrapper> */}
             </div>
 
             <div>
-                Price
+                <p className={`transition-colors duration-100 ${(filters.maxPrice !== undefined || filters.minPrice !== undefined) && "text-[#FF642E]"}`}>
+                    Price
+                    </p>
                 <div>
                     <RangeSlider min={0} max={9999} value={priceRange} onChange={setPriceRange} />
                 </div>

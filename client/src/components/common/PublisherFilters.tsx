@@ -21,11 +21,11 @@ const PublisherFilters: React.FC<PublisherFiltersProps> = ({ onSelect, filters }
         pageSize: 10,
         totalCount: 0,
     })
-    
+
     const handleLoadMore = () => {
-        if(pagination.pageSize < pagination.totalCount){
+        if (pagination.pageSize < pagination.totalCount) {
             const newSize = pagination.pageSize + 10
-            setPagination((prev) => ({...prev, pageSize:newSize}))
+            setPagination((prev) => ({ ...prev, pageSize: newSize }))
         }
     }
 
@@ -71,33 +71,36 @@ const PublisherFilters: React.FC<PublisherFiltersProps> = ({ onSelect, filters }
     useEffect(() => {
         fetchPublishersList();
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    },[pagination.pageNumber, pagination.pageSize])
+    }, [pagination.pageNumber, pagination.pageSize])
 
 
     return (
         <div className="filter-container">
-            <DropdownWrapper triggerLabel="Publisher">
-                <div className="flex flex-col ">
-                {!loading ? 
-                    publishers.map((publisher) => (
-                        <button 
-                        key={publisher.publisherId}
-                        className={`text-start transition-colors duration-100 hover:text-[#FF642E] ${filters.publisherid == publisher.publisherId && "text-[#FF642E]"}`}
-                        onClick={() => {
-                            onSelect("publisherid",publisher.publisherId)
-                            }}>
-                            {publisher.name}
-                        </button>
-                    ))
-                    :
-                    (<div>Loading</div>)
-                }
+            <DropdownWrapper 
+            triggerLabel="Publisher"
+            triggerClassName={`transition-colors duration-100 hover:text-[#FF642E] ${filters.publisherid !== undefined && "text-[#FF642E]" }`}>
+                <div className="flex flex-col gap-2">
+                    {!loading ?
+                        publishers.map((publisher) => (
+                            <button
+                                key={publisher.publisherId}
+                                className={`text-start transition-colors duration-100 hover:text-[#FF642E] ${filters.publisherid == publisher.publisherId && "text-[#FF642E]"}`}
+                                onClick={() => {
+                                    onSelect("publisherid", publisher.publisherId)
+                                }}>
+                                {publisher.name}
+                            </button>
+                        ))
+                        :
+                        (<div>Loading</div>)
+                    }
+                    {pagination.totalCount > pagination.pageSize &&
+                        <p onClick={handleLoadMore} aria-disabled={loading} className="cursor-pointer transition-colors duration-100 hover:text-[#FF642E]">
+                            {loading ? "Loading..." : "Load more..."}
+                        </p>
+                    }
                 </div>
-                {pagination.totalCount > pagination.pageSize &&
-                <p onClick={handleLoadMore} aria-disabled={loading} className="cursor-pointer transition-colors duration-100 hover:text-[#FF642E]">
-                    {loading ? "Loading..." : "Load more..." }
-                </p>
-                }
+
             </DropdownWrapper>
         </div>
     )

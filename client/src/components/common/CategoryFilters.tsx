@@ -25,9 +25,9 @@ const CategoryFilters: React.FC<CategoryFiltersProps> = ({ onSelect, filters }) 
 
 
     const handleLoadMore = () => {
-        if(pagination.pageSize < pagination.totalCount){
+        if (pagination.pageSize < pagination.totalCount) {
             const newSize = pagination.pageSize + 10
-            setPagination((prev) => ({...prev, pageSize:newSize}))
+            setPagination((prev) => ({ ...prev, pageSize: newSize }))
         }
     }
 
@@ -73,41 +73,44 @@ const CategoryFilters: React.FC<CategoryFiltersProps> = ({ onSelect, filters }) 
     useEffect(() => {
         fetchCategoriesList();
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    },[pagination.pageNumber, pagination.pageSize])
+    }, [pagination.pageNumber, pagination.pageSize])
 
 
     return (
         <div className="filter-container">
-            <DropdownWrapper triggerLabel="Category">
-                <div className="flex flex-col ">
-                {!loading || categories.length > 0 ? 
-                    categories.map((category) => (
-                        <>
-                        <button 
-                        key={category.categoryId}
-                        className={`text-start transition-colors duration-100 hover:text-[#FF642E] ${filters.categoryId == category.categoryId && "text-[#FF642E]"}`}
-                        onClick={() => {
-                            onSelect("categoryId",category.categoryId)
-                            }}>
-                            {category.name}
-                        </button>
-                        { filters.categoryId == category.categoryId &&
-                            (<SubCategoryFilters
-                            onSelect={onSelect}
-                            filters={filters}
-                            categoryId={category.categoryId}/>)
-                        }
-                        </>
-                    ))
-                    :
-                    (<div>Loading</div>)
-                }
+            <DropdownWrapper 
+            triggerLabel="Category"
+            triggerClassName={`transition-colors duration-100 hover:text-[#FF642E] ${filters.categoryId !== undefined && "text-[#FF642E]" }`}>
+                <div className="flex flex-col gap-2 ">
+                    {!loading || categories.length > 0 ?
+                        categories.map((category) => (
+                            <>
+                                <button
+                                    key={category.categoryId}
+                                    className={`text-start transition-colors duration-100 hover:text-[#FF642E] ${filters.categoryId == category.categoryId && "text-[#FF642E]"}`}
+                                    onClick={() => {
+                                        onSelect("categoryId", category.categoryId)
+                                    }}>
+                                    {category.name}
+                                </button>
+                                {filters.categoryId == category.categoryId &&
+                                    (<SubCategoryFilters
+                                        onSelect={onSelect}
+                                        filters={filters}
+                                        categoryId={category.categoryId} />)
+                                }
+                            </>
+                        ))
+                        :
+                        (<div>Loading</div>)
+                    }
+                    {pagination.totalCount > pagination.pageSize &&
+                        <p onClick={handleLoadMore} aria-disabled={loading} className="cursor-pointer transition-colors duration-100 hover:text-[#FF642E]">
+                            {loading ? "Loading..." : "Load more..."}
+                        </p>
+                    }
                 </div>
-                {pagination.totalCount > pagination.pageSize &&
-                <p onClick={handleLoadMore} aria-disabled={loading} className="cursor-pointer transition-colors duration-100 hover:text-[#FF642E]">
-                    {loading ? "Loading..." : "Load more..." }
-                </p>
-                }
+
             </DropdownWrapper>
         </div>
     )

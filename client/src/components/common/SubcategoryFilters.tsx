@@ -79,7 +79,7 @@ const SubCategoryFilters: React.FC<SubCategoryFiltersProps> = ({ onSelect, filte
 
     return (
         <div className="filter-container ml-4">
-                <div className="flex flex-col ">
+                <div className="flex flex-col gap-2">
                 {!loading || subcategories.length > 0 ? 
                     subcategories.map((subcategory) => (
                         <button 

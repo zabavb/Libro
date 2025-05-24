@@ -78,14 +78,16 @@ const AuthorFilters: React.FC<AuthorFiltersProps> = ({ onSelect, filters }) => {
 
     return (
         <div className="filter-container">
-            <DropdownWrapper triggerLabel="Author">
+            <DropdownWrapper 
+            triggerLabel="Author"
+            triggerClassName={`transition-colors duration-100 hover:text-[#FF642E] ${filters.authorId !== undefined && "text-[#FF642E]" }`}>
                 <div className="ml-1 my-1">
                     <input 
                     className="text-black rounded-lg border-black bg-[#F4F0E5] p-1" 
                     onChange={(e) => setSearchTerm(e.target.value)}
                     placeholder="Author name"/>
                 </div>
-                <div className="flex flex-col ">
+                <div className="flex flex-col gap-2 ">
                     {!loading &&
                         authors.map((author) => (
                             <button
@@ -98,12 +100,13 @@ const AuthorFilters: React.FC<AuthorFiltersProps> = ({ onSelect, filters }) => {
                             </button>
                         ))
                     }
-                </div>
-                {pagination.totalCount > pagination.pageSize &&
+                    {pagination.totalCount > pagination.pageSize &&
                     <p onClick={handleLoadMore} aria-disabled={loading} className="cursor-pointer transition-colors duration-100 hover:text-[#FF642E]">
                         {loading ? "Loading..." : "Load more..."}
                     </p>
-                }
+                    }
+                </div>
+
             </DropdownWrapper>
         </div>
     )
