@@ -12,6 +12,7 @@ type BookCatalogContainerProps = {
     isAudioOnly?: boolean; 
   };
   
+
 const BookCatalogContainer = ({ isAudioOnly = false }: BookCatalogContainerProps) => {
     const dispatch = useDispatch<AppDispatch>();
     const navigate = useNavigate();
@@ -79,9 +80,7 @@ const BookCatalogContainer = ({ isAudioOnly = false }: BookCatalogContainerProps
         if(!loadedAll){
             const newSize = pagination.pageSize + 10
             setPagination((prev) => ({...prev, pageSize:newSize}))
-
         }
-
     }
 
     useEffect(() => {

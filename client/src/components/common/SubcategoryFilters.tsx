@@ -1,27 +1,28 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
-import DropdownWrapper from "./DropdownWrapper";
-import { Publisher } from "@/types";
+import { SubCategory } from "@/types";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "@/state/redux";
-import { fetchPublishersService } from "@/services";
+import { fetchSubCategoriesService } from "@/services";
 import { addNotification } from "@/state/redux/slices/notificationSlice";
 import { BookFilter } from "@/types/filters/BookFilter";
 
-interface PublisherFiltersProps {
+interface SubCategoryFiltersProps {
     onSelect: (option: keyof BookFilter, value: string) => void;
     filters: BookFilter;
+    categoryId: string;
 }
 
-const PublisherFilters: React.FC<PublisherFiltersProps> = ({ onSelect, filters }) => {
+const SubCategoryFilters: React.FC<SubCategoryFiltersProps> = ({ onSelect, filters, categoryId }) => {
     const dispatch = useDispatch<AppDispatch>()
-    const [publishers, setPublishers] = useState<Publisher[]>([]);
+    const [subcategories, setSubcategories] = useState<SubCategory[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [pagination, setPagination] = useState({
         pageNumber: 1,
         pageSize: 10,
         totalCount: 0,
     })
-    
+
+
     const handleLoadMore = () => {
         if(pagination.pageSize < pagination.totalCount){
             const newSize = pagination.pageSize + 10
@@ -31,12 +32,14 @@ const PublisherFilters: React.FC<PublisherFiltersProps> = ({ onSelect, filters }
 
     const paginationMemo = useMemo(() => ({ ...pagination }), [pagination]);
 
-    const fetchPublishersList = useCallback(async () => {
+    const fetchSubcategoriesList = useCallback(async () => {
         setLoading(true);
         try {
-            const response = await fetchPublishersService(
+            const response = await fetchSubCategoriesService(
                 paginationMemo.pageNumber,
                 paginationMemo.pageSize,
+                undefined,
+                {categoryId}
             );
 
             if (response.error)
@@ -49,7 +52,7 @@ const PublisherFilters: React.FC<PublisherFiltersProps> = ({ onSelect, filters }
 
             if (response && response.data) {
                 const paginatedData = response.data;
-                setPublishers(paginatedData.items);
+                setSubcategories(paginatedData.items);
                 setPagination({
                     pageNumber: paginatedData.pageNumber,
                     pageSize: paginatedData.pageSize,
@@ -63,30 +66,29 @@ const PublisherFilters: React.FC<PublisherFiltersProps> = ({ onSelect, filters }
                     type: 'error'
                 })
             )
-            setPublishers([])
+            setSubcategories([])
         }
         setLoading(false);
-    }, [paginationMemo, dispatch])
+    }, [paginationMemo, dispatch, categoryId])
 
     useEffect(() => {
-        fetchPublishersList();
+        fetchSubcategoriesList();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     },[pagination.pageNumber, pagination.pageSize])
 
 
     return (
-        <div className="filter-container">
-            <DropdownWrapper triggerLabel="Publisher">
+        <div className="filter-container ml-4">
                 <div className="flex flex-col ">
-                {!loading ? 
-                    publishers.map((publisher) => (
+                {!loading || subcategories.length > 0 ? 
+                    subcategories.map((subcategory) => (
                         <button 
-                        key={publisher.publisherId}
-                        className={`text-start transition-colors duration-100 hover:text-[#FF642E] ${filters.publisherid == publisher.publisherId && "text-[#FF642E]"}`}
+                        key={subcategory.subCategoryId}
+                        className={`text-start transition-colors duration-100 hover:text-[#FF642E] ${filters.subcategoryId == subcategory.subCategoryId && "text-[#FF642E]"}`}
                         onClick={() => {
-                            onSelect("publisherid",publisher.publisherId)
+                            onSelect("subcategoryId",subcategory.subCategoryId)
                             }}>
-                            {publisher.name}
+                            {subcategory.name}
                         </button>
                     ))
                     :
@@ -98,9 +100,8 @@ const PublisherFilters: React.FC<PublisherFiltersProps> = ({ onSelect, filters }
                     {loading ? "Loading..." : "Load more..." }
                 </p>
                 }
-            </DropdownWrapper>
         </div>
     )
 }
 
-export default PublisherFilters
+export default SubCategoryFilters

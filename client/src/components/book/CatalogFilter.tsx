@@ -4,10 +4,10 @@ import { BookFilter } from "@/types/filters/BookFilter";
 import RangeSlider from "../common/RangeSlider";
 import { useEffect, useState } from "react";
 import DropdownWrapper from "../common/DropdownWrapper";
-import AuthorList from "../common/AuthorList";
 import { Language } from "@/types/subTypes/book/Language";
 import CategoryFilters from "../common/CategoryFilters";
 import PublisherFilters from "../common/PublisherFilters";
+import AuthorFilters from "../common/AuthorFilters";
 
 interface CatalogFilterProps {
     onFilterChange: (field: BookFilter) => void;
@@ -20,7 +20,6 @@ const CatalogFilter: React.FC<CatalogFilterProps> = ({ onFilterChange, filters, 
     const [priceRange, setPriceRange] = useState<number>(0);
 
     const applyPriceFilter = () => {
-        console.log(priceRange)
         if (toPrice) {
             // eslint-disable-next-line @typescript-eslint/no-unused-vars
             const { minPrice: _minPrice, ...rest } = filters;
@@ -30,28 +29,46 @@ const CatalogFilter: React.FC<CatalogFilterProps> = ({ onFilterChange, filters, 
             const { maxPrice: _priceTo, ...rest } = filters;
             onFilterChange({ ...rest, minPrice: priceRange });
         }
-        console.log(filters)
     };
 
     const applyFilter = (option: keyof BookFilter, value: string | boolean) => {
         const updatedFilter: BookFilter = {
             ...filters,
-            [option]:value,
+            [option]: value,
         };
+
+        if (option === "categoryId") {
+        updatedFilter.subcategoryId = undefined;
+        }
+
         onFilterChange(updatedFilter);
     }
 
     useEffect(() => {
-        if(isAudioOnly)
+        if (isAudioOnly)
             applyFilter("hasAudio", true);
-    },[])
+    }, [])
 
+    const setType = (option?: keyof BookFilter) => {
+        let updatedFilter: BookFilter = filters;
+        if (option === "hasAudio") {
+            updatedFilter = { ...filters, hasAudio: true, hasDigital: false }
+        }
+        else if (option === "hasDigital") {
+            updatedFilter = { ...filters, hasAudio: false, hasDigital: true }
+        }
+        else if (option === undefined) {
+            updatedFilter = { ...filters, hasAudio: false, hasDigital: false }
+        }
+        onFilterChange(updatedFilter);
+    }
 
     return (
         <div className={`filter-panel-container ${isAudioOnly ? "audio-only" : ""}`}>
             <p>Filters</p>
 
             <CategoryFilters
+                filters={filters}
                 onSelect={applyFilter} />
 
             {!isAudioOnly && (
@@ -59,20 +76,33 @@ const CatalogFilter: React.FC<CatalogFilterProps> = ({ onFilterChange, filters, 
                     <div className="filter-container">
                         <DropdownWrapper triggerLabel="Book type">
                             <div className="flex flex-col">
-                                <p>Physical</p>
-                                <p>Digital</p>
-                                <p>Audio</p>
+                                {/* <p
+                                    className={`transition-colors duration-100 hover:text-[#FF642E] cursor-pointer ${(!filters.hasAudio && !filters.hasDigital) && "text-[#FF642E]"}`}
+                                    onClick={() => setType()}>
+                                    Physical
+                                </p> */}
+                                <p
+                                    className={`transition-colors duration-100 hover:text-[#FF642E] cursor-pointer ${filters.hasDigital && "text-[#FF642E]"}`}
+                                    onClick={() => setType("hasDigital")}>
+                                    Digital
+                                </p>
+                                <p
+                                    className={`transition-colors duration-100 hover:text-[#FF642E] cursor-pointer ${filters.hasAudio && "text-[#FF642E]"}`}
+                                    onClick={() => setType("hasAudio")}>
+                                    Audio
+                                </p>
                             </div>
                         </DropdownWrapper>
                     </div>
 
                     <PublisherFilters
-                        onSelect={applyFilter}/>
+                        filters={filters}
+                        onSelect={applyFilter} />
 
                     <div className="filter-container">
                         <DropdownWrapper triggerLabel="Availability">
-                            <p className={`cursor-pointer ${filters.available && "text-[#FF642E]"}`} onClick={() => onFilterChange({ ...filters, available: true })}>Available</p>
-                            <p className={`cursor-pointer ${!filters.available && "text-[#FF642E]"}`} onClick={() => onFilterChange({ ...filters, available: false })}>Not Available</p>
+                            <p className={`cursor-pointer transition-colors duration-100 hover:text-[#FF642E] ${filters.available && "text-[#FF642E]"}`} onClick={() => onFilterChange({ ...filters, available: true })}>Available</p>
+                            <p className={`cursor-pointer transition-colors duration-100 hover:text-[#FF642E] ${!filters.available && "text-[#FF642E]"}`} onClick={() => onFilterChange({ ...filters, available: false })}>Not Available</p>
                         </DropdownWrapper>
                     </div>
                 </>
@@ -83,7 +113,7 @@ const CatalogFilter: React.FC<CatalogFilterProps> = ({ onFilterChange, filters, 
                     {Object.values(Language).map((value) => (
                         <p
                             key={value}
-                            className={`cursor-pointer ${filters.language == value && "text-[#FF642E]"}`}
+                            className={`cursor-pointer transition-colors duration-100 hover:text-[#FF642E] ${filters.language == value && "text-[#FF642E]"}`}
                             onClick={() => onFilterChange({ ...filters, language: value as Language })}
                         >
                             {value}
@@ -93,9 +123,12 @@ const CatalogFilter: React.FC<CatalogFilterProps> = ({ onFilterChange, filters, 
             </div>
 
             <div className="filter-container">
-                <DropdownWrapper triggerLabel="Author">
+                <AuthorFilters
+                    filters={filters}
+                    onSelect={applyFilter} />
+                {/* <DropdownWrapper triggerLabel="Author">
                     <AuthorList onFilterChange={onFilterChange} filters={filters} />
-                </DropdownWrapper>
+                </DropdownWrapper> */}
             </div>
 
             <div>
@@ -107,14 +140,12 @@ const CatalogFilter: React.FC<CatalogFilterProps> = ({ onFilterChange, filters, 
                     <div className="flex gap-2">
                         <button
                             className={`price-btn ${!toPrice ? "price-btn-active" : ""}`}
-                            onClick={() => setMaxPrice(false)}
-                        >
+                            onClick={() => setMaxPrice(false)}>
                             from
                         </button>
                         <button
                             className={`price-btn ${toPrice ? "price-btn-active" : ""}`}
-                            onClick={() => setMaxPrice(true)}
-                        >
+                            onClick={() => setMaxPrice(true)}>
                             to
                         </button>
                     </div>

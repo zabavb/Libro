@@ -14,4 +14,5 @@ export interface BookFilter {
   categoryId?: string;
   subcategoryId?: string;
   hasAudio?: boolean;
+  hasDigital?: boolean;
 }

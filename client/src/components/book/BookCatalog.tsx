@@ -6,6 +6,8 @@ import "@/assets/styles/components/book/catalog.css"
 import CatalogSort from "./CatalogSort";
 import CatalogFilter from "./CatalogFilter";
 
+
+
 interface BookCatalogProps {
     books?: Book[]
     loading: boolean
@@ -34,27 +36,41 @@ const BookCatalog: React.FC<BookCatalogProps> = ({
     onSortChange,
     isAudioOnly = false,
     onLoadMore,
-    loadedAll
+    loadedAll,
 }) => {
     return (
-    <div className={`catalog-container ${isAudioOnly ? "bg-[#1A1D23]" : ""}`}>
+        <div className={`catalog-container ${isAudioOnly ? "bg-[#1A1D23]" : ""}`}>
             <aside className={`options-panel overflow-scroll ${isAudioOnly ? "audio-only" : ""}`}>
                 <CatalogFilter filters={filters} onFilterChange={onFilterChange} isAudioOnly={isAudioOnly} />
             </aside>
             <main className={`books-panel ${isAudioOnly ? "audio-only" : ""}`}>
-                <div className={`books-panel-header ${isAudioOnly ? "audio-only" : ""}`}>
-                    <div className={`books-counter ${isAudioOnly ? "audio-only" : ""}`}>
-                        {pagination.totalCount} books found
-                    </div>
-                    {!isAudioOnly && (
-                        <div className="opacity-50 font-semibold text-base">
-                            <CatalogSort sort={sort} onSortChange={onSortChange} />
+                <div>
+                    <div className={`books-panel-header ${isAudioOnly ? "audio-only" : ""}`}>
+                        <div className={`books-counter ${isAudioOnly ? "audio-only" : ""}`}>
+                            {pagination.totalCount} books found
                         </div>
-                    )}
+                        {!isAudioOnly && (
+                            <div className="opacity-50 font-semibold text-base">
+                                <CatalogSort sort={sort} onSortChange={onSortChange} />
+                            </div>
+                        )}
+                    </div>
+                    <div className="flex gap-2.5">
+                        
+                        {// eslint-disable-next-line @typescript-eslint/no-unused-vars
+                        Object.entries(filters).filter(([_, value]) => value !== undefined).length > 0 && (
+                            <p 
+                            className="underline cursor-pointer transition-colors duration-100 hover:text-[#FF642E]"
+                            onClick={() => onFilterChange({})}>
+                                Clear filters
+                            </p>)}
+                    </div>
                 </div>
 
+
                 <div className="books-panel-main">
-                    {loading && books.length <= 0? (
+
+                    {loading && books.length <= 0 ? (
                         <>Loading...</>
                     ) : books.length > 0 ? (
                         books.map((book) => (
@@ -70,12 +86,12 @@ const BookCatalog: React.FC<BookCatalogProps> = ({
 
                 <div className="books-panel-footer">
                     {(books.length > 0 && !loadedAll) && (
-                    <>
-                    <button disabled={loading} onClick={onLoadMore} className={`load-btn ${isAudioOnly ? "audio-only" : ""}`}>
-                        {!loadedAll && loading ? <p>Loading...</p> : <p>Load more books</p>}
-                    </button>
-                    <Pagination pagination={pagination} onPageChange={onPageChange} />
-                    </>)
+                        <>
+                            <button disabled={loading} onClick={onLoadMore} className={`load-btn ${isAudioOnly ? "audio-only" : ""}`}>
+                                {!loadedAll && loading ? <p>Loading...</p> : <p>Load more books</p>}
+                            </button>
+                            <Pagination pagination={pagination} onPageChange={onPageChange} />
+                        </>)
                     }
                 </div>
             </main>

@@ -6,22 +6,30 @@ import { AppDispatch } from "@/state/redux";
 import { fetchCategoriesService } from "@/services";
 import { addNotification } from "@/state/redux/slices/notificationSlice";
 import { BookFilter } from "@/types/filters/BookFilter";
+import SubCategoryFilters from "./SubcategoryFilters";
 
 interface CategoryFiltersProps {
     onSelect: (option: keyof BookFilter, value: string) => void;
+    filters: BookFilter;
 }
 
-const CategoryFilters: React.FC<CategoryFiltersProps> = ({ onSelect }) => {
+const CategoryFilters: React.FC<CategoryFiltersProps> = ({ onSelect, filters }) => {
     const dispatch = useDispatch<AppDispatch>()
-    const [selectedCategory, setSelectedCategory] = useState<string>();
     const [categories, setCategories] = useState<Category[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [pagination, setPagination] = useState({
         pageNumber: 1,
-        pageSize: 1000,
+        pageSize: 10,
         totalCount: 0,
     })
 
+
+    const handleLoadMore = () => {
+        if(pagination.pageSize < pagination.totalCount){
+            const newSize = pagination.pageSize + 10
+            setPagination((prev) => ({...prev, pageSize:newSize}))
+        }
+    }
 
     const paginationMemo = useMemo(() => ({ ...pagination }), [pagination]);
 
@@ -43,7 +51,6 @@ const CategoryFilters: React.FC<CategoryFiltersProps> = ({ onSelect }) => {
 
             if (response && response.data) {
                 const paginatedData = response.data;
-                console.log(paginatedData)
                 setCategories(paginatedData.items);
                 setPagination({
                     pageNumber: paginatedData.pageNumber,
@@ -66,29 +73,41 @@ const CategoryFilters: React.FC<CategoryFiltersProps> = ({ onSelect }) => {
     useEffect(() => {
         fetchCategoriesList();
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    },[pagination.pageNumber])
+    },[pagination.pageNumber, pagination.pageSize])
 
 
     return (
         <div className="filter-container">
             <DropdownWrapper triggerLabel="Category">
                 <div className="flex flex-col ">
-                {!loading ? 
+                {!loading || categories.length > 0 ? 
                     categories.map((category) => (
+                        <>
                         <button 
                         key={category.categoryId}
-                        className={`text-start ${selectedCategory == category.categoryId && "text-[#FF642E]"}`}
+                        className={`text-start transition-colors duration-100 hover:text-[#FF642E] ${filters.categoryId == category.categoryId && "text-[#FF642E]"}`}
                         onClick={() => {
                             onSelect("categoryId",category.categoryId)
-                            setSelectedCategory(category.categoryId)
                             }}>
                             {category.name}
                         </button>
+                        { filters.categoryId == category.categoryId &&
+                            (<SubCategoryFilters
+                            onSelect={onSelect}
+                            filters={filters}
+                            categoryId={category.categoryId}/>)
+                        }
+                        </>
                     ))
                     :
                     (<div>Loading</div>)
                 }
                 </div>
+                {pagination.totalCount > pagination.pageSize &&
+                <p onClick={handleLoadMore} aria-disabled={loading} className="cursor-pointer transition-colors duration-100 hover:text-[#FF642E]">
+                    {loading ? "Loading..." : "Load more..." }
+                </p>
+                }
             </DropdownWrapper>
         </div>
     )
