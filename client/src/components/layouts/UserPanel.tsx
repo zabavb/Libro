@@ -14,7 +14,7 @@ interface UserPanelProps {
 const censorPhonenumber = (phoneNumber: string | null | undefined) => {
   if (!phoneNumber) return '';
 
-  return `+${phoneNumber.split('-')[0]} ******* ${phoneNumber.split('-')[2].slice(-2)}`;
+  return `+${phoneNumber.slice(0,2)} ******* ${phoneNumber.slice(-2)}`;
 };
 
 const UserPanel: React.FC<UserPanelProps> = ({ onLoginOpen }) => {
@@ -60,7 +60,7 @@ const UserPanel: React.FC<UserPanelProps> = ({ onLoginOpen }) => {
         onClick={() => setIsOpen(false)}
       />
       <div className={`user-panel ${isOpen ? 'right-0' : 'right-[-445px]'}`}>
-        <div className='p-[30px] bg-dark h-[17%] min-h-[170px] flex flex-col gap-[23px]'>
+        <div className='p-[30px] bg-[#1A1D23] h-[17%] min-h-[170px] flex flex-col gap-[23px]'>
           <div>
             <img
               src={closeIcon}
