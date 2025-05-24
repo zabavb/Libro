@@ -12,6 +12,7 @@ type BookCatalogContainerProps = {
     isAudioOnly?: boolean; 
   };
   
+
 const BookCatalogContainer = ({ isAudioOnly = false }: BookCatalogContainerProps) => {
     const dispatch = useDispatch<AppDispatch>();
     const navigate = useNavigate();
@@ -20,11 +21,13 @@ const BookCatalogContainer = ({ isAudioOnly = false }: BookCatalogContainerProps
     const [searchTerm, setSearchTerm] = useState<string>('');
     const [filters, setFilters] = useState<BookFilter>({});
     const [sort, setSort] = useState<BookSort>({});
+    const [loadedAll, setLoadedAll] = useState<boolean>(false);
     const [pagination, setPagination] = useState({
         pageNumber: 1,
         pageSize: 10,
         totalCount: 0,
     })
+    
 
     const paginationMemo = useMemo(() => ({...pagination}), [pagination]);
     const fetchBookList = useCallback(async () => {
@@ -71,12 +74,29 @@ const BookCatalogContainer = ({ isAudioOnly = false }: BookCatalogContainerProps
             setBooks([])
         }
         setLoading(false);
-    }, [paginationMemo, searchTerm, filters, sort, dispatch])
+    }, [paginationMemo, searchTerm, filters, sort, dispatch, isAudioOnly])
+
+    const handleLoadMore = () => {
+        if(!loadedAll){
+            const newSize = pagination.pageSize + 10
+            setPagination((prev) => ({...prev, pageSize:newSize}))
+        }
+    }
+
+    useEffect(() => {
+        if(pagination.pageSize >= pagination.totalCount){
+            setLoadedAll(true)
+        }
+        else{
+            setLoadedAll(false)
+        }
+    },[pagination.pageSize, pagination.totalCount, loading])
+
 
     useEffect(() => {
         fetchBookList()
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    },[sort, filters])
+    },[sort, filters, pagination.pageNumber, pagination.pageSize])
 
     const handleNavigate = (path: string) => navigate(path);
 
@@ -116,6 +136,8 @@ const BookCatalogContainer = ({ isAudioOnly = false }: BookCatalogContainerProps
             sort={sort}
             onSortChange={handleSortChange}
             isAudioOnly={isAudioOnly}
+            onLoadMore={handleLoadMore}
+            loadedAll={loadedAll}
         />
     )
 }

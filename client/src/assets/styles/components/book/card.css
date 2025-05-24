@@ -13,7 +13,7 @@
 }
 
 .card-title{
-    @apply cursor-pointer font-bold overflow-hidden whitespace-nowrap text-ellipsis;
+    @apply cursor-pointer font-bold overflow-hidden whitespace-nowrap text-ellipsis max-w-44;
 }
 
 .card-subtext{

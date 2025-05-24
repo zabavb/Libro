@@ -62,3 +62,15 @@
     font-size: 13px;
     line-height: 16px;
 }
+
+.like-btn {
+  @apply float-right rounded-full p-3 border-2;
+}
+
+.like-btn:hover{
+    @apply bg-[#FF642E] border-[#FF642E];
+}
+
+.like-btn:hover>*{
+    @apply invert;
+}

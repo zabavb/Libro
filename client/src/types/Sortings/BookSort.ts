@@ -1,8 +1,6 @@
 export interface BookSort{
     newest?: boolean;
-    title?: boolean;
+    alphabetical?: boolean;
     price?: boolean;
-    year?: boolean;
-    feedBack?: boolean;
-    discountRate?: boolean;
+    feedBackCount?: boolean;
 }

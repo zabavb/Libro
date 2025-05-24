@@ -56,7 +56,7 @@ namespace BookAPI.Controllers
             {
                 var authors = await _authorService.GetAllAsync(pageNumber, pageSize, searchTerm, filter, sort);
 
-                if (authors == null || authors.Items == null || authors.Items.Count == 0)
+                if (authors == null || authors.Items == null)
                 {
                     _logger.LogInformation("No authors found.");
                     return NotFound("No authors found.");
