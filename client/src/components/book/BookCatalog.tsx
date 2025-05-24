@@ -40,7 +40,7 @@ const BookCatalog: React.FC<BookCatalogProps> = ({
 }) => {
     return (
         <div className={`catalog-container ${isAudioOnly ? "bg-[#1A1D23]" : ""}`}>
-            <aside className={`options-panel overflow-scroll ${isAudioOnly ? "audio-only" : ""}`}>
+            <aside className={`options-panel overflow-hidden ${isAudioOnly ? "audio-only" : ""}`}>
                 <CatalogFilter filters={filters} onFilterChange={onFilterChange} isAudioOnly={isAudioOnly} />
             </aside>
             <main className={`books-panel ${isAudioOnly ? "audio-only" : ""}`}>
