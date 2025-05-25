@@ -69,7 +69,10 @@ const CatalogFilter: React.FC<CatalogFilterProps> = ({ onFilterChange, filters, 
 
             <CategoryFilters
                 filters={filters}
-                onSelect={applyFilter} />
+                onSelect={(option, value) => {
+                    onFilterChange({ ...filters, [option]: value });         
+                }}       
+                />
 
             {!isAudioOnly && (
                 <>
