@@ -105,12 +105,12 @@ const UserPanel: React.FC<UserPanelProps> = ({ onLoginOpen }) => {
             </div>
             <p>Favorites</p>
           </div>
-          <div className='panel-row'>
+          {/* <div className='panel-row'>
             <div className='icon-container'>
               <img className='panel-icon' src={icons.wBonus} />
             </div>
             <p>Bonuses</p>
-          </div>
+          </div> */}
           <div className='panel-row' onClick={() => navigate('/profile')}>
             <div className='icon-container'>
               <img className='panel-icon' src={icons.wGear} />
