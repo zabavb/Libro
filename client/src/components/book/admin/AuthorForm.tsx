@@ -40,6 +40,7 @@ const AuthorForm: React.FC<AuthorFormProps> = ({
       dateOfBirth: dateToString(new Date(new Date().getFullYear() - 18)),
       biography: '',
       citizenship: '',
+      image: undefined,
     },
   });
 
@@ -78,6 +79,11 @@ const AuthorForm: React.FC<AuthorFormProps> = ({
     if (data.image instanceof File) {
       formData.append("Image", data.image);
     }
+
+    if(existingAuthor){
+      formData.append("ImageUrl", existingAuthor.imageUrl ?? '');
+    }
+
     if (existingAuthor) onEditAuthor(formData);
     else onAddAuthor(formData);
   };

@@ -88,6 +88,7 @@ namespace BookAPI.Services
         public async Task /*<AuthorDto>*/ UpdateAsync(Guid id, AuthorRequest request)
         {
             var existingAuthor = await _authorRepository.GetByIdAsync(id);
+            var filesHelper = new FilesHelper(_storageService, "libro-book");
 
             if (existingAuthor == null)
             {
@@ -97,19 +98,19 @@ namespace BookAPI.Services
 
             try
             {
+                _mapper.Map(request, existingAuthor);
+
                 if (!string.IsNullOrEmpty(existingAuthor.ImageUrl) && request.Image != null)
                 {
                     await _storageService.DeleteAsync(GlobalConstants.bucketName, existingAuthor.ImageUrl);
                     existingAuthor.ImageUrl = null;
                 }
 
-                var filesHelper = new FilesHelper(_storageService, "libro-book");
                 if (request.Image != null)
                 {
                     existingAuthor.ImageUrl = await filesHelper.UploadImageFromFormAsync(request.Image, id, GlobalConstants.authorFolderImage);
                 }
 
-                _mapper.Map(request, existingAuthor);
                 await _authorRepository.UpdateAsync(existingAuthor);
                 _logger.LogInformation($"Successfully updated author with id {request.AuthorId}");
             }
