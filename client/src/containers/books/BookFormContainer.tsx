@@ -68,7 +68,6 @@ const BookFormContainer: React.FC<BookFormContainerProps> = ({ id }) => {
       // const book = BookFormDataToBook(updatedBook);
       // book.bookId = id
       // updateForm.append("BookId", id);
-      console.log(updateForm)
       const response = await updateBookService(id, updateForm);
       if (response.error) handleMessage(response.error, 'error');
       else handleMessage('Book updated successfully!', 'success');
