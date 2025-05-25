@@ -15,9 +15,10 @@ namespace BookAPI.Repositories
 {
     public class BookRepository(
         BookDbContext context,
-        ICacheService cacheService, ILogger<BookRepository> logger) : IBookRepository
+        ICacheService cacheService, ISubCategoryRepository subCategoryRepository, ILogger<BookRepository> logger) : IBookRepository
     {
         private readonly BookDbContext _context = context;
+        private readonly ISubCategoryRepository _subCategoryRepository = subCategoryRepository;
         private readonly ILogger<IBookRepository> _logger = logger;
         private readonly string _cacheKeyPrefix = "Book_";
         private readonly TimeSpan _cacheExpiration = TimeSpan.FromMinutes(GlobalConstants.DefaultCacheExpirationTime);
@@ -30,11 +31,11 @@ namespace BookAPI.Repositories
         };
 
         public async Task<PaginatedResult<Book>> GetAllAsync(
-     int pageNumber,
-     int pageSize,
-     string? searchTerm,
-     BookFilter? filter,
-     BookSort? sort)
+             int pageNumber,
+             int pageSize,
+             string? searchTerm,
+             BookFilter? filter,
+             BookSort? sort)
         {
             var filterJson = filter != null ? JsonSerializer.Serialize(filter, _jsonOptions) : "";
             var sortJson = sort != null ? JsonSerializer.Serialize(sort, _jsonOptions) : "";
@@ -161,6 +162,18 @@ namespace BookAPI.Repositories
         {
             ArgumentNullException.ThrowIfNull(entity);
             entity.Id = Guid.NewGuid();
+            if (entity.Subcategories != null)
+            {
+                var newSubcategories = await _context.Subcategories
+                    .Where(sc => entity.Subcategories.Select(s => s.Id).Contains(sc.Id))
+                    .ToListAsync();
+
+                entity.Subcategories.Clear();
+                foreach (var sub in newSubcategories)
+                {
+                    entity.Subcategories.Add(sub);
+                }
+            }
             _context.Books.Add(entity);
             await _context.SaveChangesAsync();
 
@@ -180,11 +193,22 @@ namespace BookAPI.Repositories
 
         public async Task UpdateAsync(Book entity)
         {
-            var a = _context.Books.ToList();
-            var b = entity.Id;
-            var existingBook = await _context.Books.FirstOrDefaultAsync(b => b.Id == entity.Id)
+            var existingBook = await _context.Books
+                .Include(b => b.Subcategories).FirstOrDefaultAsync(b => b.Id == entity.Id)
                                ?? throw new KeyNotFoundException("Book not found");
 
+            if (entity.Subcategories != null)
+            {
+                var newSubcategories = await _context.Subcategories
+                    .Where(sc => entity.Subcategories.Select(s => s.Id).Contains(sc.Id))
+                    .ToListAsync();
+
+                existingBook.Subcategories.Clear();
+                foreach (var sub in newSubcategories)
+                {
+                    existingBook.Subcategories.Add(sub);
+                }
+            }
             _context.Entry(existingBook).CurrentValues.SetValues(entity);
             await _context.SaveChangesAsync();
 
