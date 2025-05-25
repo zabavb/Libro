@@ -1,81 +1,105 @@
-import { 
-    DropdownMenu, 
-    DropdownMenuTrigger, 
-    DropdownMenuContent, 
-    DropdownMenuItem, 
-    DropdownMenuSub, 
-    DropdownMenuSubTrigger, 
-    DropdownMenuSubContent 
-  } from "@/components/ui/dropdown-menu";
-  import hamburgerIcon from '@/assets/icons/hamburgerIcon.svg'
-  
-  
-  export default function CatalogMenu() {
-    return (
-        <DropdownMenu>
-            <DropdownMenuTrigger className="bg-[rgb(26,29,35)] shadow-md w-full text-left flex items-center gap-3.5 whitespace-nowrap">
-                <img src={hamburgerIcon}/>
-                <span className="text-white text-lg" style={{lineHeight:"20px"}}>
-                    Book Catalog
-                </span>
-            </DropdownMenuTrigger>
-  
-            <DropdownMenuContent className="w-80 h-[400px] bg-white rounded-lg shadow-xl border border-gray-200 mt-2 overflow-y-auto">
-                <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200">
-                    <span className="font-semibold text-gray-800">
-                        Paper
-                    </span>
-                    <div className="flex gap-2">
-                        <button
-                            className="text-gray-600 hover:bg-gray-100 text-sm border border-gray-300 rounded-md px-2 py-1"
-                        >
-                            E-books
-                        </button>
-                        <button     
-                            className="text-gray-600 hover:bg-gray-100"
-                        >
-                            Audio
-                        </button>
-                    </div>
-                </div>
-  
-                <DropdownMenuSub>
-                    <DropdownMenuSubTrigger className="px-4 py-2 text-sm text-orange-500 font-medium hover:bg-gray-100 focus:bg-gray-100 focus:outline-none transition-colors">
-                        Fiction
-                    </DropdownMenuSubTrigger>
-                    <DropdownMenuSubContent className="w-80 bg-gray-900 rounded-lg shadow-xl border border-gray-200 overflow-y-auto">
-                        <DropdownMenuItem className="px-4 py-2 text-sm text-gray-200 hover:bg-gray-700 hover:text-orange-500 focus:bg-gray-700 focus:text-orange-500 focus:outline-none transition-colors">
-                            Books of aphorisms and quotes
-                        </DropdownMenuItem>
-                        <DropdownMenuItem className="px-4 py-2 text-sm text-gray-200 hover:bg-gray-700 hover:text-orange-500 focus:bg-gray-700 focus:text-orange-500 focus:outline-none transition-colors">
-                            Detective books
-                        </DropdownMenuItem>
-                        <DropdownMenuItem className="px-4 py-2 text-sm text-gray-200 hover:bg-gray-700 hover:text-orange-500 focus:bg-gray-700 focus:text-orange-500 focus:outline-none transition-colors">
-                            Thriller books
-                        </DropdownMenuItem>
-                        <DropdownMenuItem className="px-4 py-2 text-sm text-gray-200 hover:bg-gray-700 hover:text-orange-500 focus:bg-gray-700 focus:text-orange-500 focus:outline-none transition-colors">
-                            Action books
-                        </DropdownMenuItem>
-                        <DropdownMenuItem className="px-4 py-2 text-sm text-gray-200 hover:bg-gray-700 hover:text-orange-500 focus:bg-gray-700 focus:text-orange-500 focus:outline-none transition-colors">
-                            Medieval books
-                        </DropdownMenuItem>
-                        <DropdownMenuItem className="px-4 py-2 text-sm text-gray-200 hover:bg-gray-700 hover:text-orange-500 focus:bg-gray-700 focus:text-orange-500 focus:outline-none transition-colors">
-                            Romantic prose
-                        </DropdownMenuItem>
-                        <DropdownMenuItem className="px-4 py-2 text-sm text-gray-200 hover:bg-gray-700 hover:text-orange-500 focus:bg-gray-700 focus:text-orange-500 focus:outline-none transition-colors">
-                            Classic prose
-                        </DropdownMenuItem>
-                    </DropdownMenuSubContent>
-                </DropdownMenuSub>
+import React, { useEffect, useState } from "react";
+import "@/assets/styles/layout/catalog-menu.css";
+import { icons } from "@/lib/icons";
+import { fetchCategoriesService } from "@/services/categoryService";
+import { fetchSubCategoriesService } from "@/services/subCategoryService";
+import { Category, SubCategory } from "@/types";
+import { useNavigate } from "react-router-dom";
+
+interface CatalogMenuProps {
+  isOpen: boolean;
+  setIsOpen: (isOpen: boolean) => void;
+}
+
+const CatalogMenu: React.FC<CatalogMenuProps> = ({ isOpen, setIsOpen }) => {
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [subCategories, setSubCategories] = useState<SubCategory[]>([]);
+  const [activeCategoryId, setActiveCategoryId] = useState<string | null>(null);
+  const navigate = useNavigate();
+
+
+  useEffect(() => {
+    const loadCategories = async () => {
+      const res = await fetchCategoriesService(1, 100);
+      if (res.data) setCategories(res.data.items);
+    };
+    if (isOpen) loadCategories();
+  }, [isOpen]);
+
+  const handleCategoryClick = async (categoryId: string) => {
+    setActiveCategoryId(categoryId);
+    const res = await fetchSubCategoriesService(1, 100, undefined, { categoryId });
+    if (res.data && res.data.items.length > 0) {
+      setSubCategories(res.data.items);
+    } else {
+      setSubCategories([]);
+      setIsOpen(false);
+      navigate(`/catalog?category=${categoryId}`);
+    }
+  };
+  const handleSubCategoryClick = (subCategoryId: string) => {
+    setIsOpen(false);
+    navigate(`/catalog?subcategory=${subCategoryId}&category=${activeCategoryId}`);
+ };
+
+
   
 
-                <DropdownMenuItem className="px-4 py-2 text-sm text-gray-800 hover:bg-gray-100 hover:text-orange-500 focus:bg-gray-100 focus:text-orange-500 focus:outline-none transition-colors">
-                  Children's literature
-              </DropdownMenuItem>
-              <DropdownMenuItem className="px-4 py-2 text-sm text-gray-800 hover:bg-gray-100 hover:text-orange-500 focus:bg-gray-100 focus:text-orange-500 focus:outline-none transition-colors">
-                  Business, money, economy
-              </DropdownMenuItem>
-          </DropdownMenuContent>
-      </DropdownMenu>
+  return (
+    <>
+      <div
+        className={`dim ${isOpen ? 'visible' : ''}`}
+        onClick={() => setIsOpen(false)}
+        aria-hidden={!isOpen}
+      />
+
+      <div className={`catalog-menu ${isOpen ? 'visible' : ''}`} aria-hidden={!isOpen} aria-modal={true}>
+        <img
+          src={icons.gMenuClose}
+          alt="close"
+          onClick={() => setIsOpen(false)}
+          className="cursor-pointer absolute top-4 right-4 z-10 w-6 h-6"
+        />
+
+        <div className="flex w-full overflow-hidden rounded-[30px] min-h-[300px] shadow-lg">
+          <div className="w-1/2 bg-[#F4F0E5] text-[#1A1D23] p-6 rounded-l-[30px] pt-10">
+            <ul className="flex flex-col gap-2">
+              {categories.map((cat) => (
+                <li
+                    key={cat.categoryId}
+                    onClick={() => handleCategoryClick(cat.categoryId)}
+                    className={`cursor-pointer flex justify-between items-center text-base font-semibold transition-colors ${
+                        activeCategoryId === cat.categoryId ? 'text-[#FF642E]' : ''
+                    }`}
+                    >
+                    {cat.name}
+                    <img src={icons.pointer} alt="pointer" />
+                </li>
+
+              ))}
+            </ul>
+          </div>
+
+            <div className="w-1/2 bg-[#1A1D23] text-white p-6 rounded-r-[30px] pt-10">
+                {subCategories.length > 0 ? (
+                    subCategories.map((sub) => (
+                    <div
+                        key={sub.subCategoryId}
+                        onClick={() => handleSubCategoryClick(sub.subCategoryId)}
+                        className="flex justify-between items-center text-base font-semibold cursor-pointer hover:text-[#FF642E] transition-colors"
+                    >
+                        {sub.name}
+                        <img src={icons.pointerLight} alt="pointer" />
+                    </div>
+                    ))
+                ) : (
+                    <div className="italic text-gray-400">No subcategories</div>
+                )}
+            </div>
+        </div>
+      </div>
+    </>
   );
-}
+};
+
+export default CatalogMenu;
