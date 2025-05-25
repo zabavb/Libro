@@ -9,7 +9,7 @@ import { BookFilter } from "@/types/filters/BookFilter";
 import SubCategoryFilters from "./SubcategoryFilters";
 
 interface CategoryFiltersProps {
-    onSelect: (option: keyof BookFilter, value: string) => void;
+    onSelect: (field: keyof BookFilter, value: string) => void;
     filters: BookFilter;
 }
 

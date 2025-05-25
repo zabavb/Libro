@@ -1,0 +1,17 @@
+.dim {
+  @apply fixed inset-0 z-20 bg-black opacity-90 pointer-events-none transition-all duration-300;
+}
+
+.dim.visible {
+  @apply opacity-60 pointer-events-auto;
+}
+
+.catalog-menu {
+  @apply fixed top-[100px] left-1/2 transform -translate-x-1/2 z-[99] 
+  opacity-0 pointer-events-none transition-all duration-300 min-w-[800px];
+}
+
+
+.catalog-menu.visible {
+  @apply opacity-100 pointer-events-auto;
+}

@@ -33,6 +33,10 @@ import oArrowLeft from '@/assets/icons/oArrowLeft.svg'
 import oStarFilled from '@/assets/icons/oStarFilled.svg'
 import oStarEmpty from '@/assets/icons/oStarEmpty.svg'
 import oCross from '@/assets/icons/oCross.svg'
+import bMenu from '@/assets/icons/bMenu.svg'
+import pointer from '@/assets/icons/pointer.svg'
+import pointerLight from '@/assets/icons/pointerLight.svg'
+
 export const icons = {
     wUser,
     wBonus,
@@ -69,4 +73,7 @@ export const icons = {
     oStarFilled,
     oStarEmpty,
     oCross,
+    bMenu,
+    pointer,
+    pointerLight
 }
