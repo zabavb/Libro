@@ -7,4 +7,4 @@ global using SubCategoryDto = Library.DTOs.Book.SubCategory;
 global using Sort = BookAPI.Models.Sortings.BookSort;
 global using Filter = BookAPI.Models.Filters.BookFilter;
 global using DiscountDTO = Library.DTOs.Book.Discount;
-
+global using AuthorRequest = Library.DTOs.Book.AuthorRequest;
