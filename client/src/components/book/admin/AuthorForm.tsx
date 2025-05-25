@@ -117,9 +117,9 @@ const AuthorForm: React.FC<AuthorFormProps> = ({
 
         </div>
         <div className="profile-icon">
-          <div className="icon-container-pfp">
-            <img src={loggedUser?.imageUrl ? loggedUser.imageUrl : icons.bUser} className="panel-icon" />
-          </div>
+
+            <img src={loggedUser?.imageUrl ? loggedUser.imageUrl : icons.bUser} className={`w-[43px] ${loggedUser?.imageUrl ? "bg-transparent" : "bg-[#FF642E]"} rounded-full`} />
+
           <p className="profile-name">{loggedUser?.firstName ?? "Unknown User"} {loggedUser?.lastName}</p>
         </div>
       </header>
