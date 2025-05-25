@@ -18,11 +18,12 @@ namespace Library.DTOs.Book
         public string? Description { get; set; }
         public CoverType Cover { get; set; }
         public int Quantity { get; set; } = 0;
-        //public bool IsAvaliable { get; set; }
         public string? ImageUrl { get; set; }
         public string? AudioFileUrl { get; set; }
 
         public IFormFile? Image { get; set; }
+        public IFormFile? PDF { get; set; }
+        public IFormFile? Audio { get; set; }
 
         public List<Guid> FeedbackIds { get; set; } = new List<Guid>();
         public List<Guid> SubcategoryIds { get; set; } = new List<Guid>();

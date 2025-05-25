@@ -11,13 +11,15 @@ namespace BookAPI.Services
     public class SubCategoryService : ISubCategoryService
     {
         private readonly ISubCategoryRepository _subCategoryRepository;
+        private readonly IBookRepository _bookRepository;
         private readonly IMapper _mapper;
         private readonly ILogger<SubCategoryService> _logger;
 
-        public SubCategoryService(ISubCategoryRepository subCategoryRepository, IMapper mapper,
+        public SubCategoryService(ISubCategoryRepository subCategoryRepository, IBookRepository bookRepository, IMapper mapper,
             ILogger<SubCategoryService> logger)
         {
             _subCategoryRepository = subCategoryRepository;
+            _bookRepository = bookRepository;
             _mapper = mapper;
             _logger = logger;
         }
@@ -26,19 +28,26 @@ namespace BookAPI.Services
         {
             var subCategory = _mapper.Map<SubCategory>(subCategoryDto);
             subCategory.Id = Guid.NewGuid();
+            var books = new List<Book>();
 
+            foreach (var bookId in subCategoryDto.BookIds)
+            {
+                var book = await _bookRepository.GetByIdAsync(bookId);
+                if (book != null)
+                    books.Add(book);
+                else
+                    _logger.LogWarning($"Book with ID {bookId} was not found in the database.");
+            }
+
+            subCategory.Books = books;
             await _subCategoryRepository.CreateAsync(subCategory);
-
-            // return _mapper.Map<SubCategoryDto>(subCategory);
         }
 
-        public async Task /*<bool>*/ DeleteAsync(Guid id)
+        public async Task DeleteAsync(Guid id)
         {
             var subCategory = await _subCategoryRepository.GetByIdAsync(id);
-            // if (subCategory is null) return false;
-
-            await _subCategoryRepository.DeleteAsync(id);
-            // return true;
+            if (subCategory is not null)
+                await _subCategoryRepository.DeleteAsync(id);
         }
 
         public async Task<PaginatedResult<SubCategoryDto>> GetAllAsync(
@@ -68,19 +77,24 @@ namespace BookAPI.Services
             return subCategory is not null ? _mapper.Map<SubCategoryDto>(subCategory) : null;
         }
 
-        public async Task /*<SubCategoryDto>*/ UpdateAsync(SubCategoryDto subCategoryDto)
+        public async Task UpdateAsync(SubCategoryDto subCategoryDto)
         {
             var existingSubCategory = await _subCategoryRepository.GetByIdAsync(subCategoryDto.SubCategoryId);
 
-            if (existingSubCategory == null)
+            var books = new List<Book>();
+
+            foreach (var bookId in subCategoryDto.BookIds)
             {
-                // return null;
+                var book = await _bookRepository.GetByIdAsync(bookId);
+                if (book != null)
+                    books.Add(book);
+                else
+                    _logger.LogWarning($"Book with ID {bookId} was not found in the database.");
             }
 
+            existingSubCategory.Books = books;
             _mapper.Map(subCategoryDto, existingSubCategory);
             await _subCategoryRepository.UpdateAsync(existingSubCategory);
-
-            // return _mapper.Map<SubCategoryDto>(existingSubCategory);
         }
     }
 }
