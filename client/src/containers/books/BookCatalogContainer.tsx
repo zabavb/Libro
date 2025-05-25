@@ -7,6 +7,7 @@ import { BookFilter } from "@/types/filters/BookFilter";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useDispatch } from "react-redux"
 import { useNavigate } from "react-router-dom"
+import { useSearchParams } from "react-router-dom";
 
 type BookCatalogContainerProps = {
     isAudioOnly?: boolean; 
@@ -22,6 +23,7 @@ const BookCatalogContainer = ({ isAudioOnly = false }: BookCatalogContainerProps
     const [filters, setFilters] = useState<BookFilter>({});
     const [sort, setSort] = useState<BookSort>({});
     const [loadedAll, setLoadedAll] = useState<boolean>(false);
+    const [searchParams] = useSearchParams();
     const [pagination, setPagination] = useState({
         pageNumber: 1,
         pageSize: 10,
@@ -97,6 +99,20 @@ const BookCatalogContainer = ({ isAudioOnly = false }: BookCatalogContainerProps
         fetchBookList()
         // eslint-disable-next-line react-hooks/exhaustive-deps
     },[sort, filters, pagination.pageNumber, pagination.pageSize])
+
+    useEffect(() => {
+        const subCategoryId = searchParams.get("subcategory");
+        const categoryId = searchParams.get("category");
+
+        const newFilters: BookFilter = {};
+
+        if (subCategoryId) newFilters.subcategoryId = subCategoryId;
+        if (categoryId) newFilters.categoryId = categoryId;
+
+        setFilters(newFilters);
+        setPagination((prev) => ({ ...prev, pageNumber: 1 }));
+    }, [searchParams]);
+
 
     const handleNavigate = (path: string) => navigate(path);
 
