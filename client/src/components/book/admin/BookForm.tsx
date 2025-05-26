@@ -143,6 +143,10 @@ const BookForm: React.FC<BookFormProps> = ({
         if (data.PDF instanceof File) {
             formData.append("PDF", data.PDF);
         }
+
+        if (existingBook){
+            formData.append("ImageUrl", existingBook.imageUrl);
+        }
         
         if (selectedSubCategoriesDisplay && Object.entries(selectedSubCategoriesDisplay).length > 0) {
             Object.entries(selectedSubCategoriesDisplay).forEach(([key, value]) => {

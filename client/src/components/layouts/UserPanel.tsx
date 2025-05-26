@@ -70,12 +70,8 @@ const UserPanel: React.FC<UserPanelProps> = ({ onLoginOpen }) => {
             <h1 className='font-semibold text-2xl'>Profile</h1>
           </div>
           <div className='flex gap-[23px]'>
-            <div className='icon-container-pfp'>
-              <img
-                src={user?.imageUrl ? user.imageUrl : icons.bUser}
-                className='panel-icon'
-              />
-            </div>
+            <img src={user?.imageUrl ? user.imageUrl : icons.bUser} className={`w-[54px] ${user?.imageUrl ? "bg-transparent" : "bg-[#FF642E]"} rounded-full`} />
+
             <div>
               <div className='flex flex-col gap-1'>
                 <p>
@@ -109,12 +105,12 @@ const UserPanel: React.FC<UserPanelProps> = ({ onLoginOpen }) => {
             </div>
             <p>Favorites</p>
           </div>
-          <div className='panel-row'>
+          {/* <div className='panel-row'>
             <div className='icon-container'>
               <img className='panel-icon' src={icons.wBonus} />
             </div>
             <p>Bonuses</p>
-          </div>
+          </div> */}
           <div className='panel-row' onClick={() => navigate('/profile')}>
             <div className='icon-container'>
               <img className='panel-icon' src={icons.wGear} />

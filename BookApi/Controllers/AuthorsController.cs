@@ -107,7 +107,8 @@ namespace BookAPI.Controllers
         /// <response code="201">Returns the newly created author.</response>
         /// <response code="400">If the provided data is invalid.</response>
         [HttpPost]
-        public async Task<ActionResult<AuthorDto>> CreateAuthor([FromBody] AuthorDto authorDto)
+        [Consumes("multipart/form-data")]
+        public async Task<ActionResult<AuthorDto>> CreateAuthor([FromForm] AuthorRequest authorDto)
         {
             if (authorDto == null)
             {
@@ -137,7 +138,8 @@ namespace BookAPI.Controllers
         /// <response code="400">If the provided data is invalid.</response>
         /// <response code="404">If the author is not found.</response>
         [HttpPut("{id}")]
-        public async Task<ActionResult<AuthorDto>> Update(Guid id, [FromBody] AuthorDto authorDto)
+        [Consumes("multipart/form-data")]
+        public async Task<ActionResult<AuthorDto>> Update(Guid id, [FromForm] AuthorRequest authorDto)
         {
             if (authorDto == null)
             {

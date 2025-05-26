@@ -55,7 +55,7 @@ const OrderList: React.FC<OrderListProps> = ({
           <option value='cancelled'>Cancelled</option>
         </select>
 
-        {/* Сортування за ціною */}
+        {/* Сортування за ціною
         <select
           value={sort.orderPrice ? 'price' : ''}
           onChange={(e) =>
@@ -65,14 +65,10 @@ const OrderList: React.FC<OrderListProps> = ({
         >
           <option value=''>Default sort</option>
           <option value='price'>Sort by Price</option>
-        </select>
+        </select> */}
         <div className='profile-icon'>
-          <div className='icon-container-pfp'>
-            <img
-              src={user?.imageUrl ? user.imageUrl : icons.bUser}
-              className='panel-icon'
-            />
-          </div>
+          <img src={user?.imageUrl ? user.imageUrl : icons.bUser} className={`w-[43px] ${user?.imageUrl ? "bg-transparent" : "bg-[#FF642E]"} rounded-full`} />
+
           <p className='profile-name'>
             {user?.firstName ?? 'Unknown User'} {user?.lastName}
           </p>

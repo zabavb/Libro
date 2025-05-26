@@ -18,7 +18,7 @@ export const getAllAuthors = async (
 ): Promise<PaginatedResponse<Author>> => {
     const url = AUTHORS_PAGINATED(pageNumber, pageSize)
     const response = await axios.get<PaginatedResponse<Author>>(url, { params })
-    
+
     return response.data
 }
 
@@ -33,16 +33,24 @@ export const getAuthorById = async (id: string): Promise<Author> => {
 /**
  * Create a new author.
  */
-export const addAuthor = async (author: Partial<Author>): Promise<Author> => {
-    const response = await axios.post<Author>(AUTHORS, author);
+export const addAuthor = async (author: FormData): Promise<FormData> => {
+    const response = await axios.post<FormData>(AUTHORS, author, {
+        headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
+        },
+    });
     return response.data;
 };
 
 /**
  * Update an existing author by ID.
  */
-export const updateAuthor = async (id: string, updatedAuthor: Partial<Author>): Promise<Author> => {
-    const response = await axios.put<Author>(AUTHOR_BY_ID(id), updatedAuthor);
+export const updateAuthor = async (id: string, updatedAuthor: FormData): Promise<FormData> => {
+    const response = await axios.put<FormData>(AUTHOR_BY_ID(id), updatedAuthor, {
+        headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
+        },
+    });
     return response.data;
 };
 
