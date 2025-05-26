@@ -98,11 +98,12 @@ const BookCatalogContainer = ({ isAudioOnly = false }: BookCatalogContainerProps
     useEffect(() => {
         fetchBookList()
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    },[sort, filters, pagination.pageNumber, pagination.pageSize])
+    },[sort, filters, pagination.pageNumber, pagination.pageSize, searchTerm])
 
     useEffect(() => {
         const subCategoryId = searchParams.get("subcategory");
         const categoryId = searchParams.get("category");
+        const searchQuery = searchParams.get("search");
 
         const newFilters: BookFilter = {};
 
@@ -110,6 +111,7 @@ const BookCatalogContainer = ({ isAudioOnly = false }: BookCatalogContainerProps
         if (categoryId) newFilters.categoryId = categoryId;
 
         setFilters(newFilters);
+        setSearchTerm(searchQuery || ''); // ⬅️ додано
         setPagination((prev) => ({ ...prev, pageNumber: 1 }));
     }, [searchParams]);
 
