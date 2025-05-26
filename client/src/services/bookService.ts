@@ -32,8 +32,8 @@ export const fetchBooksService = async (
             searchTerm,
             ...filters,
             coverType:
-            filters?.coverType !== undefined
-                ? coverEnumToNumber(filters.coverType).toString()
+            filters?.cover !== undefined
+                ? coverEnumToNumber(filters.cover).toString()
                 : undefined,
             language:
             filters?.language !== undefined
@@ -82,7 +82,7 @@ export const fetchBookByIdService = async (
  * Add a new book.
  */
 export const addBookService = async (
-    book: Partial<FormData>
+    book: FormData
 ): Promise<ServiceResponse<FormData>> => {
     const response: ServiceResponse<FormData> = {
         data: null,
@@ -108,7 +108,7 @@ export const addBookService = async (
  */
 export const updateBookService = async (
     id: string,
-    book: Partial<FormData>
+    book: FormData
 ): Promise<ServiceResponse<FormData>> => {
     const response: ServiceResponse<FormData> = {
         data: null,

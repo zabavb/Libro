@@ -70,9 +70,9 @@ export const fetchAuthorByIdService = async (
  * Add a new author.
  */
 export const addAuthorService = async (
-    author: Partial<Author>
-): Promise<ServiceResponse<Author>> => {
-    const response: ServiceResponse<Author> = {
+    author: FormData
+): Promise<ServiceResponse<FormData>> => {
+    const response: ServiceResponse<FormData> = {
         data: null,
         loading: true,
         error: null,
@@ -96,9 +96,9 @@ export const addAuthorService = async (
  */
 export const updateAuthorService = async (
     id: string,
-    author: Partial<Author>
-): Promise<ServiceResponse<Author>> => {
-    const response: ServiceResponse<Author> = {
+    author: FormData
+): Promise<ServiceResponse<FormData>> => {
+    const response: ServiceResponse<FormData> = {
         data: null,
         loading: true,
         error: null,

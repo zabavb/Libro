@@ -13,12 +13,18 @@ namespace BookAPI.Services
         private readonly IMapper _mapper;
         private readonly IAuthorRepository _authorRepository;
         private readonly ILogger<AuthorService> _logger;
+        S3StorageService _storageService;
 
-        public AuthorService(ILogger<AuthorService> logger, IMapper mapper, IAuthorRepository authorRepository)
+        public AuthorService(
+            ILogger<AuthorService> logger,
+            IMapper mapper,
+            IAuthorRepository authorRepository,
+            S3StorageService storageService)
         {
             _mapper = mapper;
             _authorRepository = authorRepository;
             _logger = logger;
+            _storageService = storageService;
         }
 
         public async Task<PaginatedResult<AuthorDto>> GetAllAsync(int pageNumber, int pageSize, string? searchTerm,
@@ -54,13 +60,22 @@ namespace BookAPI.Services
             return _mapper.Map<AuthorDto>(author);
         }
 
-        public async Task /*<AuthorDto>*/ CreateAsync(AuthorDto authorDto)
+        public async Task /*<AuthorDto>*/ CreateAsync(AuthorRequest request)
         {
-            var author = _mapper.Map<Author>(authorDto);
+            var author = _mapper.Map<Author>(request);
+            author.Id = Guid.NewGuid();
+
+            var filesHelper = new FilesHelper(_storageService, "libro-book");
+
+            if (request.Image != null)
+            {
+                author.ImageUrl = await filesHelper.UploadImageFromFormAsync(request.Image, author.Id, GlobalConstants.authorFolderImage);
+            }
+
             try
             {
                 await _authorRepository.CreateAsync(author);
-                _logger.LogInformation($"Successfully created author with id {authorDto.AuthorId}");
+                _logger.LogInformation($"Successfully created author with id {request.AuthorId}");
             }
             catch (Exception ex)
             {
@@ -70,9 +85,10 @@ namespace BookAPI.Services
             // return _mapper.Map<AuthorDto>(author);
         }
 
-        public async Task /*<AuthorDto>*/ UpdateAsync( /*Guid id,*/ AuthorDto authorDto)
+        public async Task /*<AuthorDto>*/ UpdateAsync(Guid id, AuthorRequest request)
         {
-            var existingAuthor = await _authorRepository.GetByIdAsync(authorDto.AuthorId);
+            var existingAuthor = await _authorRepository.GetByIdAsync(id);
+            var filesHelper = new FilesHelper(_storageService, "libro-book");
 
             if (existingAuthor == null)
             {
@@ -82,9 +98,21 @@ namespace BookAPI.Services
 
             try
             {
-                _mapper.Map(authorDto, existingAuthor);
+                _mapper.Map(request, existingAuthor);
+
+                if (!string.IsNullOrEmpty(existingAuthor.ImageUrl) && request.Image != null)
+                {
+                    await _storageService.DeleteAsync(GlobalConstants.bucketName, existingAuthor.ImageUrl);
+                    existingAuthor.ImageUrl = null;
+                }
+
+                if (request.Image != null)
+                {
+                    existingAuthor.ImageUrl = await filesHelper.UploadImageFromFormAsync(request.Image, id, GlobalConstants.authorFolderImage);
+                }
+
                 await _authorRepository.UpdateAsync(existingAuthor);
-                _logger.LogInformation($"Successfully updated author with id {authorDto.AuthorId}");
+                _logger.LogInformation($"Successfully updated author with id {request.AuthorId}");
             }
             catch (Exception ex)
             {
@@ -106,6 +134,11 @@ namespace BookAPI.Services
 
             try
             {
+                if (!string.IsNullOrEmpty(author.ImageUrl))
+                {
+                    await _storageService.DeleteAsync(GlobalConstants.bucketName, author.ImageUrl);
+                }
+
                 await _authorRepository.DeleteAsync(id);
                 _logger.LogInformation($"Successfully deleted author with id {id}");
                 // return true;
