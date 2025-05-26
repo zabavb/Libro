@@ -149,7 +149,7 @@ namespace BookAPI.Controllers
 
             try
             {
-                await _authorService.UpdateAsync(authorDto);
+                await _authorService.UpdateAsync(id, authorDto);
                 return Ok();
             }
             catch (Exception ex)
