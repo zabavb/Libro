@@ -10,16 +10,20 @@ using System.Linq.Expressions;
 using Library.DTOs.Book;
 using Book = BookAPI.Models.Book;
 using Library.Sorts;
+using BookAPI.Repositories;
+using SubCategory = BookAPI.Models.SubCategory;
 
 namespace BookAPI.Services
 {
     public class BookService(
-        IBookRepository bookRepository, IDiscountRepository discountRepository,
+        IBookRepository bookRepository, IDiscountRepository discountRepository, ISubCategoryRepository subcategoryRepository,
         IMapper mapper,
         ILogger<BookService> logger,
         S3StorageService storageService) : IBookService
     {
         private readonly IBookRepository _bookRepository = bookRepository;
+        private readonly ISubCategoryRepository _subcategoryRepository = subcategoryRepository;
+
         private readonly IMapper _mapper = mapper;
         private readonly ILogger<BookService> _logger = logger;
         private readonly S3StorageService _storageService = storageService;
@@ -114,6 +118,15 @@ namespace BookAPI.Services
 
             try
             {
+                var subcategories = new List<SubCategory>();
+                foreach (var subId in request.SubcategoryIds)
+                {
+                    var subcategory = await _subcategoryRepository.GetByIdAsync(subId);
+                    if (subcategory != null)
+                        subcategories.Add(subcategory);
+                }
+
+                book.Subcategories = subcategories;
                 await _bookRepository.CreateAsync(book);
                 _logger.LogInformation($"Successfully created book with id {book.Id}");
             }
@@ -161,6 +174,20 @@ namespace BookAPI.Services
                 }
 
                 _mapper.Map(request, existingBook);
+
+                var subcategories = new List<SubCategory>();
+
+                foreach (var subId in request.SubcategoryIds)
+                {
+                    var subcategory = await _subcategoryRepository.GetByIdAsync(subId);
+                    if (subcategory != null)
+                    {
+                        subcategories.Add(subcategory);
+                    }
+                }
+
+                existingBook.Subcategories = subcategories;
+
                 await _bookRepository.UpdateAsync(existingBook);
                 _logger.LogInformation($"Successfully updated book with id {id}");
             }

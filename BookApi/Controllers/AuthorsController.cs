@@ -118,9 +118,7 @@ namespace BookAPI.Controllers
 
             try
             {
-                /*var created = */
                 await _authorService.CreateAsync(authorDto);
-                // return CreatedAtAction(nameof(GetById), new { id = created.AuthorId }, created);
                 return CreatedAtAction(nameof(GetById), new { id = authorDto.AuthorId }, authorDto);
             }
             catch (Exception ex)
@@ -151,15 +149,8 @@ namespace BookAPI.Controllers
 
             try
             {
-                /*var updated = */
-                await _authorService.UpdateAsync(id, authorDto);
-
-                /*if (updated == null)
-                {
-                    return NotFound($"Author with id {id} not found.");
-                }*/
-
-                return Ok( /*updated*/);
+                await _authorService.UpdateAsync(authorDto);
+                return Ok();
             }
             catch (Exception ex)
             {
@@ -180,14 +171,7 @@ namespace BookAPI.Controllers
         {
             try
             {
-                /*var isDeleted = */
                 await _authorService.DeleteAsync(id);
-
-                /*if (!isDeleted)
-                {
-                    return NotFound($"Author with id {id} not found.");
-                }*/
-
                 return NoContent();
             }
             catch (Exception ex)

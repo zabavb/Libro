@@ -17,22 +17,14 @@ namespace BookAPI.Repositories
     public class CategoryRepository : ICategoryRepository
     {
         private readonly BookDbContext _context;
-        private readonly ICacheService _cacheService;
         private readonly ILogger<ICategoryRepository> _logger;
-        private readonly string _cacheKeyPrefix = "Category_";
-        private readonly TimeSpan _cacheExpiration = TimeSpan.FromMinutes(GlobalConstants.DefaultCacheExpirationTime);
 
-        private readonly JsonSerializerOptions _jsonOptions = new JsonSerializerOptions
-        {
-            ReferenceHandler = ReferenceHandler.IgnoreCycles,
-            DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull, 
-        };
+        
 
 
-        public CategoryRepository(BookDbContext context, ICacheService cacheService, ILogger<ICategoryRepository> logger)
+        public CategoryRepository(BookDbContext context, ILogger<ICategoryRepository> logger)
         {
             _context = context;
-            _cacheService = cacheService;
             _logger = logger;
         }
 
@@ -40,19 +32,21 @@ namespace BookAPI.Repositories
         {
             ArgumentNullException.ThrowIfNull(entity);
             entity.Id = Guid.NewGuid();
+            if (entity.Subcategories != null)
+            {
+                var newSubcategories = await _context.Subcategories
+                    .Where(sc => entity.Subcategories.Select(s => s.Id).Contains(sc.Id))
+                    .ToListAsync();
+
+                entity.Subcategories.Clear();
+                foreach (var sub in newSubcategories)
+                {
+                    entity.Subcategories.Add(sub);
+                }
+            }
             _context.Categories.Add(entity);
             await _context.SaveChangesAsync();
-
-            string cacheKey = $"{_cacheKeyPrefix}{entity.Id}";
-            await _cacheService.SetAsync(cacheKey, entity, _cacheExpiration, _jsonOptions);
-
-            string allCategoriesCacheKey = $"{_cacheKeyPrefix}All";
-            var cachedCategories = await _cacheService.GetAsync<List<Category>>(allCategoriesCacheKey, _jsonOptions) ?? new List<Category>();
-
-            cachedCategories.Add(entity);
-            await _cacheService.SetAsync(allCategoriesCacheKey, cachedCategories, _cacheExpiration, _jsonOptions);
-
-            _logger.LogInformation("New Category added to DB and cached.");
+            _logger.LogInformation("New Category added to DB.");
         }
 
         public async Task DeleteAsync(Guid id)
@@ -64,46 +58,18 @@ namespace BookAPI.Repositories
             
             _context.Categories.Remove(category);
             await _context.SaveChangesAsync();
-
-            await _cacheService.RemoveAsync($"{_cacheKeyPrefix}{id}");
-
-            string allCategoriesCacheKey = $"{_cacheKeyPrefix}All";
-            var cachedCategories = await _cacheService.GetAsync<List<Category>>(allCategoriesCacheKey, _jsonOptions);
-
-            if (cachedCategories != null)
-            {
-                await _cacheService.UpdateListAsync(allCategoriesCacheKey, default(Category), id, _cacheExpiration);
-            }
         }
 
         public async Task<PaginatedResult<Category>> GetAllAsync(int pageNumber, int pageSize, string? searchTerm, CategorySort? sort)
         {
-            string cacheKey = $"{_cacheKeyPrefix}All";
-            List<Category>? categories = await _cacheService.GetAsync<List<Category>>(cacheKey, _jsonOptions);
-            bool isFromCache = categories != null && categories.Count > 0;
-
-
-            if (isFromCache)
-            {
-                _logger.LogInformation("Fetched from CACHE.");
-            }
-            else
-            {
-                categories = await _context.Categories.ToListAsync();
-                _logger.LogInformation("Fetched from DB.");
-
-                await _cacheService.SetAsync(cacheKey, categories, _cacheExpiration, _jsonOptions);
-                _logger.LogInformation("Set to CACHE.");
-            }
-
+            var categories = await _context.Categories.Include(c => c.Subcategories).ToListAsync();
+            _logger.LogInformation("Fetched from DB.");
             IQueryable<Category> categoriesQuery = categories.AsQueryable();
 
 
             if (!string.IsNullOrWhiteSpace(searchTerm))
             {
-                categoriesQuery = isFromCache
-                    ? categoriesQuery.InMemorySearch(searchTerm, b => b.Name).AsQueryable()
-                    : categoriesQuery.SearchBy(searchTerm, b => b.Name);
+                categoriesQuery = categoriesQuery.SearchBy(searchTerm, b => b.Name);
             }
 
             if (sort != null)
@@ -126,43 +92,34 @@ namespace BookAPI.Repositories
             if (id == Guid.Empty)
                 throw new ArgumentException("Id cannot be empty.", nameof(id));
 
-            string cacheKey = $"{_cacheKeyPrefix}{id}";
-            var cachedCategory = await _cacheService.GetAsync<Category>(cacheKey, _jsonOptions);
-
-            if (cachedCategory != null)
-            {
-                _logger.LogInformation("Fetched from CACHE.");
-                return cachedCategory;
-            }
-
             _logger.LogInformation("Fetched from DB.");
             var category = await _context.Categories.FirstOrDefaultAsync(c => c.Id == id);
-
-            if (category != null)
-            {
-                await _cacheService.SetAsync(cacheKey, category, _cacheExpiration, _jsonOptions);
-            }
 
             return category;
         }
 
         public async Task UpdateAsync(Category entity)
         {
-            var existingCategory = await _context.Categories.FirstOrDefaultAsync(c => c.Id == entity.Id)
+            var existingCategory = await _context.Categories
+                .Include(c => c.Subcategories).
+                FirstOrDefaultAsync(c => c.Id == entity.Id)
                                     ?? throw new KeyNotFoundException("Category not found");
-            
-            _context.Entry(existingCategory).CurrentValues.SetValues(entity);
-            await _context.SaveChangesAsync();
 
-            await _cacheService.SetAsync($"{_cacheKeyPrefix}{entity.Id}", entity, _cacheExpiration, _jsonOptions);
+            existingCategory.Name = entity.Name;
 
-            string allCategoriesCacheKey = $"{_cacheKeyPrefix}All";
-            var cachedCategories = await _cacheService.GetAsync<List<Category>>(allCategoriesCacheKey, _jsonOptions);
-
-            if (cachedCategories != null)
+            if (entity.Subcategories != null)
             {
-                await _cacheService.UpdateListAsync(allCategoriesCacheKey, entity, null, _cacheExpiration);
+                var newSubcategories = await _context.Subcategories
+                    .Where(sc => entity.Subcategories.Select(s => s.Id).Contains(sc.Id))
+                    .ToListAsync();
+
+                existingCategory.Subcategories.Clear();
+                foreach (var sub in newSubcategories)
+                {
+                    existingCategory.Subcategories.Add(sub);
+                }
             }
+            await _context.SaveChangesAsync();
 
             _logger.LogInformation("Category updated in DB and cached.");
         }

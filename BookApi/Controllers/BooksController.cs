@@ -181,6 +181,7 @@ namespace BookAPI.Controllers
                 PublisherId = request.PublisherId,
                 CategoryId = request.CategoryId,
                 DiscountId = request.DiscountId,
+                SubcategoryIds = request.SubcategoryIds,
                 Price = request.Price,
                 Language = request.Language,
                 Year = request.Year,
@@ -188,6 +189,8 @@ namespace BookAPI.Controllers
                 Cover = request.Cover,
                 Quantity = request.Quantity,
                 Image = request.Image,
+                Audio = request.Audio,
+                PDF = request.PDF
             };
             var discount = request.Discount;
             if (bookDto == null)
@@ -200,10 +203,11 @@ namespace BookAPI.Controllers
                 /*TO BE UPDATED ON FRONTEND*/
                 /*await _bookService.UpdateWithDiscountAsync(id, request, _discountService);
                 return Ok();*/
+                bookDto.DiscountId = discount.DiscountId;
                 await _bookService.UpdateAsync(id, bookDto);
-
                 if (discount != null)
                 {
+                    discount.BookId = bookDto.BookId;
                     await _discountService.UpdateAsync(discount);
                 }
 

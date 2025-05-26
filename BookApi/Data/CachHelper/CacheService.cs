@@ -13,6 +13,7 @@ namespace BookAPI.Data.CachHelper
             _redisDatabase = redis.GetDatabase();
             _logger = logger;
         }
+        
 
         public async Task<T?> GetAsync<T>(string key, JsonSerializerOptions? jsonOptions = null)
         {
