@@ -5,7 +5,7 @@ using Library.Interfaces;
 
 namespace BookAPI.Services.Interfaces
 {
-    public interface IAuthorService : IManageable<AuthorDto>
+    public interface IAuthorService
     {
         // Renamed from "GetAuthorsAsync" to "GetAllAsync"
         Task<PaginatedResult<AuthorDto>> GetAllAsync(
@@ -15,9 +15,9 @@ namespace BookAPI.Services.Interfaces
             AuthorFilter? filter,
             AuthorSort? sort
         );
-        /*Task<AuthorDto> GetAuthorByIdAsync(Guid id);
-        Task<AuthorDto> CreateAuthorAsync(AuthorDto authorDto);
-        Task<AuthorDto> UpdateAuthorAsync(Guid id, AuthorDto authorDto);
-        Task<bool> DeleteAuthorAsync(Guid id);*/
+        Task<AuthorDto> GetByIdAsync(Guid id);
+        Task CreateAsync(AuthorRequest request);
+        Task UpdateAsync(Guid id, AuthorRequest request);
+        Task DeleteAsync(Guid id);
     }
 }

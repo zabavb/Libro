@@ -49,9 +49,8 @@ const AuthorFormContainer: React.FC<AuthorFormContainerProps> = ({ id }) => {
   );
 
   const handleAddAuthor = useCallback(
-    async (authorForm: AuthorFormData) => {
-      const author = AuthorFormDataToAuthor(authorForm);
-      const response = await addAuthorService(author);
+    async (authorForm: FormData) => {
+      const response = await addAuthorService(authorForm);
 
       if (response.error) handleMessage(response.error, 'error');
       else {
@@ -63,13 +62,14 @@ const AuthorFormContainer: React.FC<AuthorFormContainerProps> = ({ id }) => {
   );
 
   const handleEditAuthor = useCallback(
-    async (updatedAuthor: AuthorFormData) => {
+    async (updatedAuthor: FormData) => {
       if (!id) return;
-      const author = AuthorFormDataToAuthor(updatedAuthor);
-      author.authorId = id
-      const response = await updateAuthorService(id, author);
+      setServiceResponse((prev) => ({...prev, loading: true}))
+      const response = await updateAuthorService(id, updatedAuthor);
       if (response.error) handleMessage(response.error, 'error');
       else handleMessage('Author updated successfully!', 'success');
+      setServiceResponse((prev) => ({...prev, loading: false}))
+      setIsEdit(false);
     },
     [id, handleMessage],
   );

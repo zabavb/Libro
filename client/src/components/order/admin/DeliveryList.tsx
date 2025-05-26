@@ -47,12 +47,8 @@ const DeliveryTypeList: React.FC<DeliveryTypeListProps> = ({
           <p>Add Delivery</p>
         </button>
         <div className='profile-icon'>
-          <div className='icon-container-pfp'>
-            <img
-              src={user?.imageUrl ? user.imageUrl : icons.bUser}
-              className='panel-icon'
-            />
-          </div>
+            <img src={user?.imageUrl ? user.imageUrl : icons.bUser} className={`w-[43px] ${user?.imageUrl ? "bg-transparent" : "bg-[#FF642E]"} rounded-full`} />
+
           <p className='profile-name'>
             {user?.firstName ?? 'Unknown User'} {user?.lastName}
           </p>

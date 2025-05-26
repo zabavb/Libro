@@ -1,5 +1,7 @@
 import { Author } from "../../../types";
 import { icons } from '@/lib/icons'
+import noImageUrl from '@/assets/noImage.svg'
+
 interface AuthorAdminCardProps {
     author: Author
     onDelete: (e: React.MouseEvent) => void
@@ -11,7 +13,7 @@ const AuthorAdminCard: React.FC<AuthorAdminCardProps> = ({author, onDelete,onNav
         <>
             <tr>
                 <td className="flex justify-center">
-                    <img className="w-[50px] h-[70px]" src={author.imageUrl ? author.imageUrl :`https://picsum.photos/seed/${author.authorId}/50/70`} />
+                    <img className="w-[50px] h-[70px]" src={author.imageUrl ? author.imageUrl : noImageUrl} />
                 </td>
                 <td>
                     {author.name}
