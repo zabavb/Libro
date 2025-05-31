@@ -15,7 +15,7 @@ const PrivateRoute = () => {
     (user.role === roleEnumToNumber(Role.ADMIN) ||
       user.role === roleEnumToNumber(Role.MODERATOR));
 
-  return isPrivileged ? <Outlet /> : <Navigate to='/login' state={{ authOpen: true}}/>;
+  return isPrivileged ? <Outlet /> : <Navigate to='/' state={{ authOpen: true}}/>;
 };
 
 export default PrivateRoute;

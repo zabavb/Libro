@@ -10,12 +10,16 @@ import AuthPanelContainer from "@/containers/auth/AuthPanelContainer";
 import '@/assets/styles/layout/_header.css'
 import React from "react";
 
+interface LocationState{
+  authOpen?: boolean
+}
+
 export default function Header() {
   const navigate = useNavigate();
   const location = useLocation();
   const currentPath = location.pathname;
-
-  const [isAuthOpen, setIsAuthOpen] = useState<boolean>(false);
+  const state = location.state !== null ? location.state as LocationState : {authOpen: false};
+  const [isAuthOpen, setIsAuthOpen] = useState<boolean>(state.authOpen ?? false);
   const [isCatalogOpen, setIsCatalogOpen] = useState<boolean>(false);
   const [searchValue, setSearchValue] = useState('');
 
