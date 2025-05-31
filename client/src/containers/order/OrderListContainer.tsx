@@ -2,16 +2,17 @@ import { useNavigate } from "react-router-dom"
 import { useDispatch } from "react-redux"
 import { AppDispatch } from "../../state/redux"
 import { useCallback, useEffect, useMemo, useState } from "react"
-import { Order, OrderFilter, OrderSort} from "../../types"
+import { OrderFilter, OrderSort} from "../../types"
 import OrderList from "../../components/order/admin/OrderList"
 import { fetchOrdersService } from "../../services"
 import { addNotification } from "../../state/redux/slices/notificationSlice"
+import { OrderWithUserName } from "@/types/types/order/OrderWithUserName"
 
 
 const OrderListContainer = () => {
     const dispatch = useDispatch<AppDispatch>()
     const navigate = useNavigate()
-    const [orders, setOrders] = useState<Order[]>([]);
+    const [orders, setOrders] = useState<OrderWithUserName[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [searchTerm, setSearchTerm] = useState<string>('');
     const [filters, setFilters] = useState<OrderFilter>({});

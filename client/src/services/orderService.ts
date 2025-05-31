@@ -1,4 +1,5 @@
-import { createOrder, deleteOrder, getAllOrders, getOrderById, updateOrder } from "../api/repositories/orderRepository";
+import { OrderWithUserName } from "@/types/types/order/OrderWithUserName";
+import { createOrder, deleteOrder, GetAllOrdersWithUserName, getOrderById, updateOrder } from "../api/repositories/orderRepository";
 import { Order, OrderFilter, OrderSort, PaginatedResponse, ServiceResponse, Bool } from "../types";
 
 
@@ -8,8 +9,8 @@ export const fetchOrdersService = async (
     searchTerm?: string,
     filters?: OrderFilter,
     sort?: OrderSort
-): Promise<ServiceResponse<PaginatedResponse<Order>>> => {
-    const response: ServiceResponse<PaginatedResponse<Order>> = {
+): Promise<ServiceResponse<PaginatedResponse<OrderWithUserName>>> => {
+    const response: ServiceResponse<PaginatedResponse<OrderWithUserName>> = {
         data: null,
         loading: true,
         error: null,
@@ -17,13 +18,13 @@ export const fetchOrdersService = async (
 
     try{
         const defaultFilter: OrderFilter = {
-            orderDateStart: undefined,
-            orderDateEnd: undefined,
-            deliveryDateStart: undefined,
-            deliveryDateEnd: undefined,
-            status: undefined,
-            deliveryId: undefined,
-            userId: undefined
+            orderDateStart: null,
+            orderDateEnd: null,
+            deliveryDateStart: null,
+            deliveryDateEnd: null,
+            status: null,
+            deliveryId: null,
+            userId: null
         };
 
         const defaultSort = {
@@ -34,20 +35,26 @@ export const fetchOrdersService = async (
 
         const body = {
             query: `
-            query AllOrders($pageNumber: Int!, $pageSize: Int!,
-                $searchTerm: String, $filter: OrderFilter, $sort: OrderSort)
+            query GetAllOrdersWithUserName(
+            $pageNumber: Int!,
+          $pageSize: Int!,
+          $searchTerm: String,
+          $filter: OrderFilterInput!,
+          $sort: OrderSortInput!)
             {
-                    allOrders(pageNumber: $pageNumber, pageSize: $pageSize,
-                        searchTerm: $searchTerm, filter: $filter, sort: $sort)
-                    {
+                    allOrdersWithUserName(
+                        pageNumber: $pageNumber,
+                        pageSize: $pageSize,
+                        searchTerm: $searchTerm,
+                        filter: $filter,
+                        sort: $sort
+                    ) {
                         items {
-                            id
-                            orderDate
-                            deliveryDate
+                            orderUiId
+                            price
                             status
-                            totalPrice
-                            userId
-                            deliveryId
+                            firstName
+                            lastName
                         }
                         pageNumber
                         pageSize
@@ -68,14 +75,14 @@ export const fetchOrdersService = async (
             },
         };
 
-        const graphQLResponse = await getAllOrders(body);
+        const graphQLResponse = await GetAllOrdersWithUserName(body);
         if (graphQLResponse.errors)
             throw new Error(
                 `${graphQLResponse.errors[0].message} Status code: ${graphQLResponse.errors[0].extensions?.status}`,
             );
-
+            console.log(graphQLResponse.data);
         response.data = graphQLResponse.data
-            ?.allOrders as PaginatedResponse<Order>;
+            ?.allOrdersWithUserName as PaginatedResponse<OrderWithUserName>;
     }
     catch(error) {
         console.error(error instanceof Error ? error.message : String(error));
@@ -84,9 +91,8 @@ export const fetchOrdersService = async (
     } finally {
         response.loading = false;
     }
-
+    console.log(response)
     return response;
-
 }
 
 export const fetchOrderByIdService = async (id: string) : Promise<ServiceResponse<Order>> => {

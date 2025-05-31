@@ -1,9 +1,10 @@
 import React from "react";
-import { OrderView } from "../../../types/types/order/OrderView";
 import "@/assets/styles/base/status-display.css"
 import {icons} from '@/lib/icons'
+import { OrderWithUserName } from "@/types/types/order/OrderWithUserName";
+import { statusEnumToStatusView } from "@/api/adapters/orderAdapters";
 interface OrderAdminCardProps {
-    order: OrderView
+    order: OrderWithUserName
     onDelete: (e: React.MouseEvent) => void
     onNavigate: () => void
 }
@@ -16,25 +17,21 @@ function cutFloat(num: number): number {
   }
 
 const OrderAdminCard: React.FC<OrderAdminCardProps> = ({ order, onDelete, onNavigate }) => {
-    const orderUid = order.id.split('-')[4];
+    const orderUid = order.orderUiId.split('-')[4];
     return (
         <>
-            <tr
-                onClick={(e) => {
-                    e.stopPropagation()
-                    onNavigate()
-                }} style={{textAlign:"center"}}>
+            <tr style={{textAlign:"center"}}>
                 <td>
-                    (to be implemented)
+                    {order.firstName} {order.lastName}
                 </td>
                 <td>
                     {orderUid}...
                 </td>
                 <td>
-                    {cutFloat(order.price + order.deliveryPrice)} ₴
+                    {cutFloat(order.price)} ₴
                 </td>
                 <td>
-                    <div className={`status ${order.status.toLowerCase()}`}>{order.status}</div>
+                    <div className={`status ${order.status.toLowerCase()}`}>{statusEnumToStatusView(order.status)}</div>
                 </td>
                 <td>
                     <div className='flex gap-2'>

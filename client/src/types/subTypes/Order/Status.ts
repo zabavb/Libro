@@ -1,0 +1,7 @@
+export enum Status {
+    PENDING = "PENDING",
+    PROCESSING = "PROCESSING",
+    TRANSIT = "TRANSIT",
+    PAYMENT = "PAYMENT",
+    COMPLETED = "COMPLETED"
+}

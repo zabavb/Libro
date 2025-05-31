@@ -1,9 +1,26 @@
 import axios from "axios";
-import { ORDERS_PAGINATED, ORDERS, ORDER_BY_ID, GET_ORDER_COUNTS, GRAPHQL } from "..";
+import { ORDERS, ORDER_BY_ID, GET_ORDER_COUNTS, GRAPHQL } from "..";
 import { Order, PaginatedResponse, OrderFilter, OrderSort, GraphQLResponse} from "../../types";
 import { PeriodType } from "@/types/types/order/PeriodType"; 
 import { getAuthHeaders } from "./common";
+import { OrderWithUserName } from "@/types/types/order/OrderWithUserName";
 
+
+export const GetAllOrdersWithUserName = async (body: {
+    query: string;
+    variables: {
+        pageNumber: number;
+        pageSize: number;
+        searchTerm: string | null;
+        filter: OrderFilter;
+        sort: OrderSort;
+    };
+}): Promise<GraphQLResponse<{ allOrdersWithUserName: PaginatedResponse<OrderWithUserName> }>> => {
+    const response = await axios.post<GraphQLResponse<{ allOrdersWithUserName: PaginatedResponse<OrderWithUserName> }>>(GRAPHQL, body, {
+        headers: getAuthHeaders("application/json"),
+    });
+    return response.data;
+}
 
 export const getAllOrders = async (body: {
     query: string;
@@ -28,7 +45,7 @@ export const getOrderById = async (body: {
     };
 }): Promise<GraphQLResponse<{ order: Order }>> => {
     const response = await axios.post<GraphQLResponse<{ order: Order }>>(GRAPHQL, body, {
-        headers: getAuthHeaders(),
+        headers: getAuthHeaders("application/json"),
     });
     return response.data;
 };
