@@ -1,4 +1,4 @@
-import { Status } from "@/types/subTypes/Order/Status";
+import { Status } from "@/types/subTypes/order/Status";
 
 export interface OrderWithUserName
 {

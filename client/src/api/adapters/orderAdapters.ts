@@ -1,4 +1,4 @@
-import { StatusView } from "@/types/subTypes/Order/StatusView";
+import { StatusView } from "@/types/subTypes/order/StatusView";
 import { Order, Status, OrderView  } from "../../types";
 import { dateToString } from "./commonAdapters";
 
