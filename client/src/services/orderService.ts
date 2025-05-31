@@ -16,7 +16,7 @@ export const fetchOrdersService = async (
         error: null,
     };
 
-    try{
+    try {
         const defaultFilter: OrderFilter = {
             orderDateStart: null,
             orderDateEnd: null,
@@ -80,11 +80,11 @@ export const fetchOrdersService = async (
             throw new Error(
                 `${graphQLResponse.errors[0].message} Status code: ${graphQLResponse.errors[0].extensions?.status}`,
             );
-            console.log(graphQLResponse.data);
+        console.log(graphQLResponse.data);
         response.data = graphQLResponse.data
             ?.allOrdersWithUserName as PaginatedResponse<OrderWithUserName>;
     }
-    catch(error) {
+    catch (error) {
         console.error(error instanceof Error ? error.message : String(error));
         response.error =
             'An error occurred while fetching orders. Please try again later.';
@@ -95,25 +95,35 @@ export const fetchOrdersService = async (
     return response;
 }
 
-export const fetchOrderByIdService = async (id: string) : Promise<ServiceResponse<Order>> => {
+export const fetchOrderByIdService = async (id: string): Promise<ServiceResponse<Order>> => {
     const response: ServiceResponse<Order> = {
-        data:null,
-        loading:true,
+        data: null,
+        loading: true,
         error: null,
     };
 
-    try { 
+    try {
         const body = {
             query: `
-                query Order($id: String!) {
+                query(
+                    $id: UUID!
+                ) {
                     order(id: $id) {
                         id
+                        userId
+                        books {
+                            key
+                            value
+                        }
+                        region
+                        city
+                        address
+                        price
+                        deliveryTypeId
+                        deliveryPrice
                         orderDate
                         deliveryDate
                         status
-                        totalPrice
-                        userId
-                        deliveryId
                     }
                 }
             `,
@@ -128,28 +138,29 @@ export const fetchOrderByIdService = async (id: string) : Promise<ServiceRespons
                 `${graphQLResponse.errors[0].message} Status code: ${graphQLResponse.errors[0].extensions?.status}`,
             );
         response.data = graphQLResponse.data?.order as Order;
-    } catch(error){
+    } catch (error) {
         console.error(`Failed to fetch order ID [${id}]`, error);
         response.error =
             'An error occurred while fetching order. Please try again later.';
-    } finally{
+    } finally {
         response.loading = false;
     }
     return response;
-} 
+}
 
-export const addOrderService = async (order:Partial<Order>): Promise<ServiceResponse<Order>> => {
+export const addOrderService = async (order: Order): Promise<ServiceResponse<Order>> => {
     const response: ServiceResponse<Order> = {
-        data:null,
+        data: null,
         loading: true,
         error: null
     };
 
     try {
+        console.log(order);
         response.data = await createOrder(order);
-    }catch (error){
+    } catch (error) {
         console.error('Failed to create order', error);
-        response.error = 
+        response.error =
             'An error occurred while adding the order. Please try again later.';
     } finally {
         response.loading = false;
@@ -162,7 +173,7 @@ export const editOrderService = async (
     order: Partial<Order>
 ): Promise<ServiceResponse<Order>> => {
     const response: ServiceResponse<Order> = {
-        data:null,
+        data: null,
         loading: true,
         error: null,
     }

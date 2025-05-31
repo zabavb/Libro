@@ -9,13 +9,6 @@ interface OrderAdminCardProps {
     onNavigate: () => void
 }
 
-function cutFloat(num: number): number {
-    const parts = num.toString().split('.');
-    if (parts.length === 1) return num; // no decimal part
-    const decimal = parts[1].slice(0, 3);
-    return parseFloat(`${parts[0]}.${decimal}`);
-  }
-
 const OrderAdminCard: React.FC<OrderAdminCardProps> = ({ order, onDelete, onNavigate }) => {
     const orderUid = order.orderUiId.split('-')[4];
     return (
@@ -28,7 +21,7 @@ const OrderAdminCard: React.FC<OrderAdminCardProps> = ({ order, onDelete, onNavi
                     {orderUid}...
                 </td>
                 <td>
-                    {cutFloat(order.price)} ₴
+                    {order.price.toFixed(2)} ₴
                 </td>
                 <td>
                     <div className={`status ${order.status.toLowerCase()}`}>{statusEnumToStatusView(order.status)}</div>

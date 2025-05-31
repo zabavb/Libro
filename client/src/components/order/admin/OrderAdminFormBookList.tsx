@@ -20,7 +20,7 @@ const OrderAdminFormBookList: React.FC<OrderAdminFormBookListProps> = ({books, o
                 </thead>
                 <tbody>
                 {Object.entries(books)?.map(([book,count]) => (
-                    <tr>
+                    <tr key={book}>
                         <td style={{cursor:"default"}}>{book}</td>
                         <td style={{cursor:"default"}}>{count}</td>
                         <td style={{cursor:"default"}}>TBD</td>

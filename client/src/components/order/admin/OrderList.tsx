@@ -104,17 +104,19 @@ const OrderList: React.FC<OrderListProps> = ({
                   </tr>
                 </thead>
                 {loading ? (
-                  <tr>
-                    <td
-                      colSpan={5}
-                      style={{
-                        textAlign: 'center',
-                        height: `${orders.length * 65}px`,
-                      }}
-                    >
-                      Loading...
-                    </td>
-                  </tr>
+                  <tbody>
+                    <tr>
+                      <td
+                        colSpan={5}
+                        style={{
+                          textAlign: 'center',
+                          height: `${orders.length * 65}px`,
+                        }}
+                      >
+                        Loading...
+                      </td>
+                    </tr>
+                  </tbody>
                 ) : (
                   <tbody>
                     {orders.map((order) => (

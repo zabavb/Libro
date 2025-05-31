@@ -15,7 +15,7 @@ namespace APIComposer.GraphQL.Queries
     public class OrderQuery
     {
 
-        
+
 
         [GraphQLName("allOrdersWithUserName")]
         public async Task<PaginatedResult<OrderWithUserName>?> GetAllOrdersWithUserNameAsync(
@@ -57,7 +57,7 @@ namespace APIComposer.GraphQL.Queries
         }
 
         // GetAllEditOrderAsync => order, book, user with subscription via user api,
-        
+
         [GraphQLName("allOrderIntAsync")]
         public async Task<PaginatedResult<OrderInput>?> GetAllEditOrderAsync(
            [Service] IOrderServiceClient orderClient,
@@ -117,6 +117,16 @@ namespace APIComposer.GraphQL.Queries
                 PageSize = pageSize,
                 TotalCount = orders.TotalCount,
             };
+        }
+
+        [GraphQLName("order")]
+        public async Task<Order> GetOrderAsync(
+           [Service] IOrderServiceClient orderClient,
+           Guid id)
+        {
+            var order = await orderClient.GetOrderAsync(id);
+
+            return order;
         }
     }
 }

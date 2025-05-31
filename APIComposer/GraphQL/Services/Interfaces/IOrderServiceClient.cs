@@ -8,9 +8,12 @@ namespace APIComposer.GraphQL.Services.Interfaces
 {
     public interface IOrderServiceClient
     {
-        Task<OrderForUserCard> GetOrderAsync(Guid id);
+        Task<Order> GetOrderAsync(Guid id);
         Task<ICollection<OrderForUserDetails>> GetAllOrdersAsync(Guid id);
         Task<Order> GetOrderByIdAsync(Guid id);
+
+        Task<OrderForUserCard> GetOrderForUserAsync(Guid id);
+
         Task<PaginatedResult<Order>?> GetAllOrdersAsync(
             int pageNumber,
             int pageSize,

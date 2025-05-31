@@ -25,7 +25,18 @@ namespace APIComposer.GraphQL.Services
             }
         }
 
-        public async Task<OrderForUserCard> GetOrderAsync(Guid id)
+        public async Task<Order> GetOrderAsync(Guid id)
+        {
+            SetAuthHeader();
+            var response = await _http.GetAsync($"orders/{id}");
+
+            if (!response.IsSuccessStatusCode)
+                await ErrorHandler.HandleErrorResponseAsync(response);
+
+            return (await response.Content.ReadFromJsonAsync<Order>())!;
+        }
+
+        public async Task<OrderForUserCard> GetOrderForUserAsync(Guid id)
         {
             try
             {
