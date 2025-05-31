@@ -1,6 +1,7 @@
 import { OrderWithUserName } from "@/types/types/order/OrderWithUserName";
-import { createOrder, deleteOrder, GetAllOrdersWithUserName, getOrderById, updateOrder } from "../api/repositories/orderRepository";
+import { createOrder, deleteOrder, getAllOrderDetails, GetAllOrdersWithUserName, getOrderById, updateOrder } from "../api/repositories/orderRepository";
 import { Order, OrderFilter, OrderSort, PaginatedResponse, ServiceResponse, Bool } from "../types";
+import { OrderDetails } from "@/types/types/order/OrderDetails";
 
 
 export const fetchOrdersService = async (
@@ -145,6 +146,105 @@ export const fetchOrderByIdService = async (id: string): Promise<ServiceResponse
     } finally {
         response.loading = false;
     }
+    return response;
+}
+
+export const fetchOrderDetailsService = async ( pageNumber: number = 1,
+    pageSize: number = 10,
+    searchTerm?: string,
+    filters?: OrderFilter,
+    sort?: OrderSort): Promise<ServiceResponse<PaginatedResponse<OrderDetails>>> => {
+       const response: ServiceResponse<PaginatedResponse<OrderDetails>> = {
+        data: null,
+        loading: true,
+        error: null,
+    };
+
+    try {
+        const defaultFilter: OrderFilter = {
+            orderDateStart: null,
+            orderDateEnd: null,
+            deliveryDateStart: null,
+            deliveryDateEnd: null,
+            status: null,
+            deliveryId: null,
+            userId: null
+        };
+
+        const defaultSort = {
+            orderDate: Bool.NULL,
+            orderPrice: Bool.NULL,
+            deliveryDate: Bool.NULL,
+        } as OrderSort;
+
+        const body = {
+            query: `
+            query GetOrderDetails(
+            $pageNumber: Int!,
+          $pageSize: Int!,
+          $searchTerm: String,
+          $filter: OrderFilterInput!,
+          $sort: OrderSortInput!)
+            {
+                    allOrderDetails(
+                        pageNumber: $pageNumber,
+                        pageSize: $pageSize,
+                        searchTerm: $searchTerm,
+                        filter: $filter,
+                        sort: $sort
+                    ) {
+                        items {
+                            orderId
+                            price
+                            created
+                            status
+                            orderBooks {
+                                bookId
+                                title
+                                authorName
+                                price
+                                imageUrl
+                                amount
+                            }
+                        }
+                        pageNumber
+                        pageSize
+                        totalCount
+                        totalPages
+                    }
+            }
+            `,
+            variables: {
+                pageNumber,
+                pageSize,
+                searchTerm: searchTerm ?? null,
+                filter: {
+                    ...defaultFilter,
+                    ...filters,
+                },
+                sort: { ...defaultSort, ...sort },
+            },
+        };
+
+        const graphQLResponse = await getAllOrderDetails(body);
+        if (graphQLResponse.errors)
+            throw new Error(
+                `${graphQLResponse.errors[0].message} Status code: ${graphQLResponse.errors[0].extensions?.status}`,
+            );
+        response.data = graphQLResponse.data
+            ?.allOrderDetails as PaginatedResponse<OrderDetails>;
+            console.log(response)
+                        console.log(graphQLResponse)
+
+    }
+    catch (error) {
+        console.error(error instanceof Error ? error.message : String(error));
+        response.error =
+            'An error occurred while fetching orders. Please try again later.';
+    } finally {
+        response.loading = false;
+    }
+    console.log(response)
     return response;
 }
 

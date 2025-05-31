@@ -188,6 +188,18 @@
       "UpstreamPathTemplate": "/gateway/books/for-user/details",
       "UpstreamHttpMethod": [ "GET" ]
     },
+    {
+      "DownstreamPathTemplate": "/api/books/for-order/details/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7084
+        }
+      ],
+      "UpstreamPathTemplate": "/gateway/books/for-order/details/{id}",
+      "UpstreamHttpMethod": [ "GET" ]
+    },
     //======================= Author entity =======================
     {
       "DownstreamPathTemplate": "/api/authors",

@@ -6,10 +6,12 @@ import { Order, OrderFilter, OrderSort } from "../../types"
 import UserOrdersList from "../../components/user/userOrderList/UserOrdersList"
 import { addNotification } from "../../state/redux/slices/notificationSlice"
 import { fetchOrdersService } from "../../services"
+import { OrderDetails } from "@/types/types/order/OrderDetails"
+import { fetchOrderDetailsService } from "@/services/orderService"
 
 const UserOrdersContainer = () => {
     const dispatch = useDispatch<AppDispatch>()
-    const [orders, setOrders] = useState<Order[]>([]);
+    const [orders, setOrders] = useState<OrderDetails[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const navigate = useNavigate()
     const [filters, setFilters] = useState<OrderFilter>({});
@@ -27,7 +29,7 @@ const UserOrdersContainer = () => {
     const fetchOrderList = useCallback(async () => {
             setLoading(true);
             try{
-                const response = await fetchOrdersService(
+                const response = await fetchOrderDetailsService(
                     paginationMemo.pageNumber,
                     paginationMemo.pageSize,
                     searchTerm,
@@ -80,6 +82,7 @@ const UserOrdersContainer = () => {
     useEffect(() => {
         if (!userId) return;
         setFilters({...filters, userId:userId})
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [userId])
 
     useEffect(() => {

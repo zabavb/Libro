@@ -4,6 +4,7 @@ import { Order, PaginatedResponse, OrderFilter, OrderSort, GraphQLResponse} from
 import { PeriodType } from "@/types/types/order/PeriodType"; 
 import { getAuthHeaders } from "./common";
 import { OrderWithUserName } from "@/types/types/order/OrderWithUserName";
+import { OrderDetails } from "@/types/types/order/OrderDetails";
 
 
 export const GetAllOrdersWithUserName = async (body: {
@@ -66,5 +67,21 @@ export const deleteOrder = async (id: string): Promise<void> => {
 
 export const getOrderCounts = async (period: PeriodType): Promise<number[]> => {
     const response = await axios.get<number[]>(GET_ORDER_COUNTS(period));
+    return response.data;
+};
+
+export const getAllOrderDetails= async (body: {
+    query: string;
+    variables: {
+        pageNumber: number;
+        pageSize: number;
+        searchTerm: string | null;
+        filter: OrderFilter;
+        sort: OrderSort;
+    };
+}): Promise<GraphQLResponse<{ allOrderDetails: PaginatedResponse<OrderDetails> }>> => {
+    const response = await axios.post<GraphQLResponse<{ allOrderDetails: PaginatedResponse<OrderDetails> }>>(GRAPHQL, body,{
+        headers: getAuthHeaders("application/json"),
+    });
     return response.data;
 };

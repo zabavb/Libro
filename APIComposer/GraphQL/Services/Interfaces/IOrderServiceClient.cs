@@ -14,7 +14,7 @@ namespace APIComposer.GraphQL.Services.Interfaces
 
         Task<OrderForUserCard> GetOrderForUserAsync(Guid id);
 
-        Task<PaginatedResult<Order>?> GetAllOrdersAsync(
+        Task<PaginatedResult<Order>> GetAllOrdersAsync(
             int pageNumber,
             int pageSize,
             string? searchTerm,
