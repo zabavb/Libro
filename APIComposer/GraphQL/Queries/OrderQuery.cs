@@ -25,7 +25,7 @@ namespace APIComposer.GraphQL.Queries
             int pageNumber = 1,
             int pageSize = 10,
             string? searchTerm = null,
-            Filter? filter = null,
+            OrderFilter? filter = null,
             OrderSort? sort = null)
         {
             var orders = await orderClient.GetAllOrdersAsync(pageNumber, pageSize, searchTerm, filter, sort);
@@ -67,7 +67,7 @@ namespace APIComposer.GraphQL.Queries
            int pageNumber = 1,
            int pageSize = 10,
            string? searchTerm = null,
-           Filter? filter = null,
+           OrderFilter? filter = null,
            OrderSort? sort = null)
         {
             var orders = await orderClient.GetAllOrdersAsync(pageNumber, pageSize, searchTerm, filter, sort);

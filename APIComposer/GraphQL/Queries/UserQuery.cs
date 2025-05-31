@@ -7,6 +7,7 @@ using UserAPI.Models.Sorts;
 
 namespace APIComposer.GraphQL.Queries
 {
+    [ExtendObjectType(OperationTypeNames.Query)]
     public class UserQuery
     {
         [GraphQLName("allUsers")]
