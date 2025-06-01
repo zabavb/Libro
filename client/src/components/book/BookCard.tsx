@@ -1,12 +1,12 @@
 import React from "react";
-import { BookView } from "../../types"
 import "react-lazy-load-image-component/src/effects/blur.css"
 import { CartItem } from "@/types/types/cart/CartItem"
 import "@/assets/styles/components/book/card.css"
 import { icons } from '@/lib/icons';
 import noImageUrl from '@/assets/noImage.svg'
+import { BookCard as BookCardType } from "@/types/types/book/BookDetails";
 interface BookAdminCardProps {
-    book: BookView
+    book: BookCardType
     onNavigate: () => void
     onAddItem: (item: CartItem) => void
 }
@@ -16,12 +16,18 @@ const BookCard: React.FC<BookAdminCardProps> = ({ onAddItem, book, onNavigate })
 
     return (
         <div className="card-container">
-            <img className="card-image cursor-pointer" 
-            onClick={(e) => {
-                        e.stopPropagation()
-                        onNavigate()
-                    }}
-            src={book.imageUrl ? book.imageUrl : noImageUrl} />
+            <div className=" relative">
+                <img className="card-image cursor-pointer" 
+                onClick={(e) => {
+                            e.stopPropagation()
+                            onNavigate()
+                        }}
+                src={book.imageUrl ? book.imageUrl : noImageUrl} />
+                <div className="absolute bottom-0 right-0 flex bg-[#FF642E] rounded-tl-lg text-[#1A1D23] py-0.5 px-2 gap-0.5">
+                    <img src={icons.bStar}/>
+                    <p>{book.rating?.feedbackAmount}</p>
+                </div>
+            </div>
             <div>
                 <div 
                     className="card-info">
@@ -33,7 +39,7 @@ const BookCard: React.FC<BookAdminCardProps> = ({ onAddItem, book, onNavigate })
                         {book.title}
                     </p>
                     <p className="card-subtext">
-                        AUTHOR_TMP
+                        {book.authorName}
                     </p>
                 </div>
 
@@ -41,7 +47,7 @@ const BookCard: React.FC<BookAdminCardProps> = ({ onAddItem, book, onNavigate })
             <div className="card-footer">
                 <div>
                 <p className="book-price">{book.price.toFixed(2)} UAH</p>
-                {book.quantity > 0 ? (<p className="book-availability">Available</p>) : (<p className="book-availability">Not Available</p>)}
+                {book.isAvailable ? (<p className="book-availability">Available</p>) : (<p className="book-availability">Not Available</p>)}
                 </div>
                 <button
                     onClick={() => onAddItem({ bookId: book.bookId, amount: 1, name: book.title, price: book.price })}

@@ -8,3 +8,5 @@ global using Sort = BookAPI.Models.Sortings.BookSort;
 global using Filter = BookAPI.Models.Filters.BookFilter;
 global using DiscountDTO = Library.DTOs.Book.Discount;
 global using AuthorRequest = Library.DTOs.Book.AuthorRequest;
+global using BookFeedbacks = Library.DTOs.Book.BookFeedbacks;
+global using BookCard = Library.DTOs.Book.BookCard;

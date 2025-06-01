@@ -1,10 +1,10 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react"
-import { Book } from "../../../types"
 import { addNotification } from "@/state/redux/slices/notificationSlice"
 import { fetchBooksService } from "@/services/bookService"
 import { useDispatch } from "react-redux"
 import { AppDispatch } from "@/state/redux"
 import "@/assets/styles/components/order/order-book-search.css"
+import { BookCard } from "@/types/types/book/BookDetails"
 interface OrderFormBookSearchProps {
     onBookAdd: (bookId: string) => void
 }
@@ -13,7 +13,7 @@ const OrderFormBookSearch: React.FC<OrderFormBookSearchProps> = ({ onBookAdd }) 
     const [searchFocus, setSearchFocus] = useState<boolean>()
     const timeoutRef = useRef<NodeJS.Timeout | null>()
     const dispatch = useDispatch<AppDispatch>();
-    const [books, setBooks] = useState<Book[]>([]);
+    const [books, setBooks] = useState<BookCard[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [searchTerm, setSearchTerm] = useState<string>('');
     //const [filters, setFilters] = useState<BookFilter>({});

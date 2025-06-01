@@ -9,7 +9,7 @@ namespace BookAPI.Services.Interfaces
 {
     public interface IBookService
     {
-        public Task<PaginatedResult<BookDto>> GetAllAsync(
+        public Task<PaginatedResult<BookCard>> GetAllAsync(
             int pageNumber,
             int pageSize,
             string searchTerm,

@@ -5,6 +5,8 @@ using Microsoft.AspNetCore.Mvc;
 using Library.Common;
 using Library.DTOs.UserRelated.User;
 using Microsoft.AspNetCore.Authorization;
+using BookAPI.Services;
+using Library.DTOs.Order;
 
 namespace BookAPI.Controllers
 {
@@ -213,5 +215,21 @@ namespace BookAPI.Controllers
                 return StatusCode(500, $"Internal server error: {ex.Message}");
             }
         }
+
+/*        [HttpGet("for-book/rating/{id}")]
+        public async Task<ActionResult<BookFeedbacks>> GetAllForOrderDetailsAsync(Guid id)
+        {
+            if (id == Guid.Empty)
+                return NotFound($"Feedback ID [{id}] was not provided.");
+            try
+            {
+                var snippet = await _feedbackService.GetBookAvgRating(id);
+                return Ok(snippet);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"An error occurred: {ex.Message}");
+            }
+        }*/
     }
 }

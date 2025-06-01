@@ -2,16 +2,17 @@ import { useEffect, useCallback, useState, useMemo } from "react"
 import { useDispatch } from "react-redux"
 import { AppDispatch } from "../../state/redux/index"
 import { useNavigate } from "react-router-dom"
-import { Book, BookSort } from "@/types"
+import { BookSort } from "@/types"
 import { addNotification } from "@/state/redux/slices/notificationSlice"
 import BookList from "@/components/book/BookList"
 import { BookFilter } from "@/types/filters/BookFilter"
 import { fetchBooksService } from "@/services/bookService"
+import { BookCard } from "@/types/types/book/BookDetails"
 
 const BookListContainer = () => {
   const dispatch = useDispatch<AppDispatch>()
   const navigate = useNavigate()
-  const [books, setBooks] = useState<Book[]>([]);
+  const [books, setBooks] = useState<BookCard[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [sort, setSort] = useState<BookSort>({});

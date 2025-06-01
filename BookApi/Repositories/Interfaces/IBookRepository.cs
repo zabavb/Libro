@@ -11,7 +11,7 @@ namespace BookAPI.Repositories.Interfaces
 {
     public interface IBookRepository : IManageable<Book>
     {
-        Task<PaginatedResult<Book>> GetAllAsync(
+        Task<PaginatedResult<BookCard>> GetAllAsync(
             int pageNumber,
             int pageSize,
             string searchTerm,

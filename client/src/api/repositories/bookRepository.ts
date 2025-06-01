@@ -2,6 +2,7 @@ import axios from "axios"
 import { BOOKS_PAGINATED, BOOKS, BOOK_BY_ID } from "../index"
 import { PaginatedResponse } from "../../types"
 import { Book } from "../../types/objects/Book"
+import { BookCard } from "@/types/types/book/BookDetails";
 
 interface BookQueryParams {
     author?: string;
@@ -27,9 +28,9 @@ export const getAllBooks = async (
     pageNumber: number = 1,
     pageSize: number = 10,
     params: BookQueryParams = {},
-): Promise<PaginatedResponse<Book>> => {
+): Promise<PaginatedResponse<BookCard>> => {
     const url = BOOKS_PAGINATED(pageNumber, pageSize)
-    const response = await axios.get<PaginatedResponse<Book>>(url, { params })
+    const response = await axios.get<PaginatedResponse<BookCard>>(url, { params })
     return response.data
 }
 

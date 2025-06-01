@@ -28,7 +28,7 @@ namespace BookAPI.Services
         private readonly ILogger<BookService> _logger = logger;
         private readonly S3StorageService _storageService = storageService;
 
-        public async Task<PaginatedResult<BookDto>> GetAllAsync(
+        public async Task<PaginatedResult<BookCard>> GetAllAsync(
             int pageNumber,
             int pageSize,
             string searchTerm,
@@ -44,9 +44,9 @@ namespace BookAPI.Services
             }
 
             _logger.LogInformation("Successfully found books");
-            return new PaginatedResult<BookDto>
+            return new PaginatedResult<BookCard>
             {
-                Items = _mapper.Map<ICollection<BookDto>>(books.Items),
+                Items = _mapper.Map<ICollection<BookCard>>(books.Items),
                 TotalCount = books.TotalCount,
                 PageNumber = books.PageNumber,
                 PageSize = books.PageSize
