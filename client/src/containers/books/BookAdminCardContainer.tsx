@@ -1,15 +1,15 @@
 import React from "react"
 import { useNavigate } from "react-router-dom"
-import { Book } from "../../types/objects/Book"
 // import { BookToBookView } from "../../api/adapters/bookAdapter"
 import BookAdminCard from "@/components/book/admin/BookAdminCard"
 import { deleteBookService } from "@/services/bookService"
 import { useDispatch } from "react-redux"
 import { AppDispatch } from "@/state/redux"
 import { addNotification } from "@/state/redux/slices/notificationSlice"
+import { BookCard } from "@/types/types/book/BookDetails"
 
 interface BookCardContainerProps {
-  book: Book
+  book: BookCard
 }
 
 const BookAdminCardContainer: React.FC<BookCardContainerProps> = ({ book }) => {
