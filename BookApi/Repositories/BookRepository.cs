@@ -10,6 +10,8 @@ using Library.Common;
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using BookOrderDetails = Library.DTOs.Order.BookOrderDetails;
+using Amazon.Runtime.Internal;
 
 namespace BookAPI.Repositories
 {
@@ -249,6 +251,46 @@ namespace BookAPI.Repositories
             _logger.LogInformation("Book deleted from DB and cache.");
         }
 
+        public async Task<BookOrderDetails> GetAllForOrderDetailsAsync(Guid bookId)
+        {
+/*            string cacheKey = $"{_cacheKeyPrefix}{bookId}_details";
+            var cachedDetails = await _cacheService.GetAsync<BookOrderDetails>(cacheKey);
+            if (cachedDetails != null)
+            {
+                _logger.LogInformation("Fetched from CACHE.");
+                return cachedDetails;
+            }*/
+            try
+            {
+                var book = await _context.Books
+                        .AsNoTracking()
+                        .Where(b => b.Id == bookId)
+                        .Include(b => b.Author)
+                        .Select(b => new BookOrderDetails()
+                        {
+                            BookId = bookId,
+                            AuthorName = b.Author.Name,
+                            //CoverType = b.Cover,
+                            Price = b.Price,
+                            Title = b.Title,
+                            ImageUrl = b.ImageUrl
+                        }).FirstOrDefaultAsync();
+                _logger.LogInformation("Fetched from DB.");
+/*
+                if (book != null)
+                {
+                    await _cacheService.SetAsync(cacheKey, book, _cacheExpiration);
+                }*/
+
+                return book;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+                return null;
+            }
+
+        }
 
     }
 }

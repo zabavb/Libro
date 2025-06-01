@@ -7,6 +7,8 @@ using Library.DTOs.Order;
 using Library.DTOs.UserRelated.User;
 using OrderAPI;
 using UserAPI.Models;
+using UserAPI.Models.Filters;
+using UserAPI.Models.Sorts;
 
 
 namespace APIComposer.GraphQL.Queries
@@ -15,7 +17,7 @@ namespace APIComposer.GraphQL.Queries
     public class OrderQuery
     {
 
-        
+
 
         [GraphQLName("allOrdersWithUserName")]
         public async Task<PaginatedResult<OrderWithUserName>?> GetAllOrdersWithUserNameAsync(
@@ -25,7 +27,7 @@ namespace APIComposer.GraphQL.Queries
             int pageNumber = 1,
             int pageSize = 10,
             string? searchTerm = null,
-            Filter? filter = null,
+            OrderFilter? filter = null,
             OrderSort? sort = null)
         {
             var orders = await orderClient.GetAllOrdersAsync(pageNumber, pageSize, searchTerm, filter, sort);
@@ -57,7 +59,7 @@ namespace APIComposer.GraphQL.Queries
         }
 
         // GetAllEditOrderAsync => order, book, user with subscription via user api,
-        
+
         [GraphQLName("allOrderIntAsync")]
         public async Task<PaginatedResult<OrderInput>?> GetAllEditOrderAsync(
            [Service] IOrderServiceClient orderClient,
@@ -67,7 +69,7 @@ namespace APIComposer.GraphQL.Queries
            int pageNumber = 1,
            int pageSize = 10,
            string? searchTerm = null,
-           Filter? filter = null,
+           OrderFilter? filter = null,
            OrderSort? sort = null)
         {
             var orders = await orderClient.GetAllOrdersAsync(pageNumber, pageSize, searchTerm, filter, sort);
@@ -117,6 +119,59 @@ namespace APIComposer.GraphQL.Queries
                 PageSize = pageSize,
                 TotalCount = orders.TotalCount,
             };
+        }
+
+        [GraphQLName("order")]
+        public async Task<Order> GetOrderAsync(
+           [Service] IOrderServiceClient orderClient,
+           Guid id)
+        {
+            var order = await orderClient.GetOrderAsync(id);
+
+            return order;
+        }
+
+        [GraphQLName("allOrderDetails")]
+            public async Task<PaginatedResult<OrderDetails>> GetOrderDetailsAsync(
+            [Service] IOrderServiceClient orderClient,
+            [Service] IBookServiceClient bookClient,
+            [Service] IMapper mapper,
+            int pageNumber,
+            int pageSize,
+            string? searchTerm,
+            OrderFilter filter,
+            OrderSort sort)
+        {
+            var orders = await orderClient.GetAllOrdersAsync(pageNumber, pageSize, searchTerm, filter, sort);
+            var orderDetails = new List<OrderDetails>();
+            foreach (var order in orders.Items)
+            {
+                var bookDetails = new List<BookOrderDetails>();
+
+                foreach (var book in order.Books)
+                {
+                    var bookDetail = await bookClient.GetBookWithAuthor(book.Key);
+                    bookDetail.Amount = book.Value;
+                    bookDetails.Add(bookDetail);
+                }
+
+                orderDetails.Add(new OrderDetails()
+                {
+                    OrderId = order.Id,
+                    Status = order.Status,
+                    Created = order.OrderDate,
+                    Price = order.Price,
+                    OrderBooks = bookDetails,
+                });
+            }
+
+            return new PaginatedResult<OrderDetails>()
+            {
+                Items = orderDetails,
+                PageNumber = pageNumber,
+                PageSize = pageSize,
+                TotalCount = orders.TotalCount,
+            }; ;
         }
     }
 }

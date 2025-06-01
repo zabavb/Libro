@@ -3,6 +3,7 @@ using AutoMapper;
 
 namespace APIComposer.GraphQL.Queries
 {
+    [ExtendObjectType(OperationTypeNames.Query)]
     public class BookQuery
     {
         

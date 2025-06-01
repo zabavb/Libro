@@ -32,6 +32,7 @@ const OrderFormContainer: React.FC<OrderFormContainerProps> = ({ orderId }) => {
 
             if(response.error)
                 dispatch(addNotification({message:response.error, type: 'error'}));
+            console.log(response);
         })();
     }, [orderId, dispatch]);
 

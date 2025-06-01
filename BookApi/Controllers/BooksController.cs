@@ -5,6 +5,9 @@ using Microsoft.AspNetCore.Mvc;
 using Library.DTOs.Book;
 using System.Linq.Expressions;
 using Microsoft.AspNetCore.Authorization;
+using BookAPI.Services;
+using Library.DTOs.UserRelated.User;
+using Library.DTOs.Order;
 
 
 namespace BookAPI.Controllers
@@ -136,6 +139,22 @@ namespace BookAPI.Controllers
         /// <returns>The created book.</returns>
         /// <response code="201">Book successfully created.</response>
         /// <response code="400">Invalid input data.</response>
+
+        [HttpGet("for-order/details/{id}")]
+        public async Task<ActionResult<BookOrderDetails>> GetAllForOrderDetailsAsync(Guid id)
+        {
+            if (id == Guid.Empty)
+                return NotFound($"Book ID [{id}] was not provided.");
+            try
+            {
+                var snippet = await _bookService.GetAllForOrderDetailsAsync(id);
+                return Ok(snippet);
+            }
+            catch(Exception ex)
+            {
+                return StatusCode(500, $"An error occurred: {ex.Message}");
+            }
+        }
 
         [HttpPost]
         [Consumes("multipart/form-data")]

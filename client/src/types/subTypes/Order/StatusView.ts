@@ -1,4 +1,4 @@
-export enum Status {
+export enum StatusView {
     PENDING = "Pending",
     PROCESSING = "Processing",
     TRANSIT = "Transit",

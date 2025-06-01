@@ -7,8 +7,9 @@ import UserOrdersListFilter from "./UserOrdersListFilter";
 import UserOrdersListSort from "./UserOrdersListSort";
 import '@/assets/styles/components/user/user-orders-list.css'
 import linkIconUrl from '@/assets/link.svg'
+import { OrderDetails } from "@/types/types/order/OrderDetails";
 interface OrderListProps {
-    orders?: Order[]
+    orders?: OrderDetails[]
     loading: boolean
     pagination: { pageNumber: number; pageSize: number; totalCount: number }
     onPageChange: (pageNumber: number) => void
@@ -48,7 +49,7 @@ const UserOrdersList: React.FC<OrderListProps> = ({
                     {loading ? (<>Loading...</>) : orders.length > 0 ? (
                         orders.map((order) => (
                             <OrderCardContainter
-                                key={order.id}
+                                key={order.orderId}
                                 order={order}
                             />
                         ))

@@ -1,4 +1,4 @@
-import { Status } from "../../subTypes/Status"
+import { Status } from "../../subTypes/order/Status"
 
 export interface OrderView {
     id: string

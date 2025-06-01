@@ -3,6 +3,7 @@ using BookAPI.Models;
 using BookAPI.Models.Filters;
 using BookAPI.Models.Sortings;
 using Library.Common;
+using Library.DTOs.Order;
 using Library.Interfaces;
 using System.Linq.Expressions;
 
@@ -19,6 +20,6 @@ namespace BookAPI.Repositories.Interfaces
         );
 
         Task<ICollection<string>> GetAllForUserDetailsAsync(ICollection<Guid> ids);
-
+        Task<BookOrderDetails> GetAllForOrderDetailsAsync(Guid bookId);
     }
 }

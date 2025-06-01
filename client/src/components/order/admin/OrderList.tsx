@@ -1,13 +1,14 @@
 ﻿import { getUserFromStorage } from '@/utils/storage';
 import OrderAdminCardContainer from '../../../containers/order/OrderAdminCardContainer';
-import { Order, OrderFilter, OrderSort, Status, User } from '../../../types';
+import { OrderFilter, OrderSort, Status, User } from '../../../types';
 import Pagination from '../../common/Pagination';
 import Search from '../../common/Search';
 import '@/assets/styles/base/table-styles.css';
 import '@/assets/styles/components/list-styles.css';
 import { icons } from '@/lib/icons';
+import { OrderWithUserName } from '@/types/types/order/OrderWithUserName';
 interface OrderListProps {
-  orders?: Order[];
+  orders?: OrderWithUserName[];
   loading: boolean;
   pagination: { pageNumber: number; pageSize: number; totalCount: number };
   onPageChange: (pageNumber: number) => void;
@@ -103,21 +104,23 @@ const OrderList: React.FC<OrderListProps> = ({
                   </tr>
                 </thead>
                 {loading ? (
-                  <tr>
-                    <td
-                      colSpan={5}
-                      style={{
-                        textAlign: 'center',
-                        height: `${orders.length * 65}px`,
-                      }}
-                    >
-                      Loading...
-                    </td>
-                  </tr>
+                  <tbody>
+                    <tr>
+                      <td
+                        colSpan={5}
+                        style={{
+                          textAlign: 'center',
+                          height: `${orders.length * 65}px`,
+                        }}
+                      >
+                        Loading...
+                      </td>
+                    </tr>
+                  </tbody>
                 ) : (
                   <tbody>
                     {orders.map((order) => (
-                      <OrderAdminCardContainer key={order.id} order={order} />
+                      <OrderAdminCardContainer key={order.orderUiId} order={order} />
                     ))}
                   </tbody>
                 )}
