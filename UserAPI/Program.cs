@@ -20,7 +20,6 @@ using Library.Common.Middleware;
 using OrderApi.Data;
 using OrderApi.Repository;
 using OrderApi.Services;
-using OrderAPI.Services.Interfaces;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -30,7 +29,7 @@ builder.Services.AddSingleton<S3StorageService>();
 builder.Services.AddDbContext<UserDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-builder.Services.AddScoped<DataSeeder>();
+builder.Services.AddScoped<UserAPI.Data.DataSeeder>();
 
 builder.Services.AddScoped<IAvatarService, AvatarService>();
 builder.Services.AddScoped<IS3StorageService, S3StorageService>();
@@ -145,7 +144,7 @@ using (var scope = app.Services.CreateScope())
 
 using (var scope = app.Services.CreateScope())
 {
-    var seeder = scope.ServiceProvider.GetRequiredService<DataSeeder>();
+    var seeder = scope.ServiceProvider.GetRequiredService<UserAPI.Data.DataSeeder>();
     await seeder.SeedAsync();
 }
 

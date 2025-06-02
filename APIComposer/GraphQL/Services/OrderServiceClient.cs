@@ -6,6 +6,7 @@ using Library.DTOs.Order;
 using Library.DTOs.UserRelated.User;
 using System.Text;
 using System.Text.Json;
+using Library.DTOs.Book;
 
 namespace APIComposer.GraphQL.Services
 {
@@ -30,6 +31,20 @@ namespace APIComposer.GraphQL.Services
             {
                 SetAuthHeader();
                 var response = await _http.GetFromJsonAsync<OrderForUserCard>($"orders/for-user/card/{id}");
+                return response ?? new();
+            }
+            catch (Exception)
+            {
+                return new();
+            }
+        }
+
+        public async Task<List<Guid>> GetPurchasedBookIds(Guid id)
+        {
+            try
+            {
+                SetAuthHeader();
+                var response = await _http.GetFromJsonAsync<List<Guid>>($"orders/books/{id}");
                 return response ?? new();
             }
             catch (Exception)

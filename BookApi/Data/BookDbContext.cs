@@ -20,7 +20,12 @@ namespace BookAPI.Data
             : base(options)
         {
             _storageService = storageService;
-            Database.EnsureCreated();
+            //Database.EnsureCreated();
+        }
+
+        public BookDbContext(DbContextOptions<BookDbContext> options)
+    : base(options)
+        {
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

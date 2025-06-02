@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using OrderApi.Services;
 using OrderAPI;
-using OrderAPI.Services.Interfaces;
 namespace OrderApi.Controllers
 {
     /// <summary>

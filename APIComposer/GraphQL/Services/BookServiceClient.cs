@@ -1,6 +1,7 @@
 using System.Net.Http.Headers;
 using APIComposer.GraphQL.Services.Interfaces;
 using Library.DTOs.UserRelated.User;
+using UserAPI.Models;
 
 namespace APIComposer.GraphQL.Services
 {
@@ -63,6 +64,22 @@ namespace APIComposer.GraphQL.Services
             catch (Exception)
             {
                 return new List<FeedbackForUserDetails>();
+            }
+        }
+
+        public async Task<Library.DTOs.Book.Author> GetAuthorAsync(Guid id)
+        {
+            try
+            {
+                SetAuthHeader();
+                var response =
+                    await _http.GetFromJsonAsync<Library.DTOs.Book.Author>(
+                        $"authors/{id}");
+                return response ?? new Library.DTOs.Book.Author();
+            }
+            catch (Exception)
+            {
+                return new Library.DTOs.Book.Author();
             }
         }
     }

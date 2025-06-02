@@ -8,14 +8,13 @@ interface Book {
     authorLastName: string;
     coverImageUrl: string;
     bookType: 'audio' | 'electronic';
-    isPlaceholder?: boolean; // Ajouté pour la logique des placeholders si besoin
+    isPlaceholder?: boolean;
 }
 
-// Données Mock (temporaires)
 const mockBooks: Book[] = [
     {
         id: '1',
-        title: 'Дисципліна – це своб...',
+        title: 'Дисципліна – це свобода',
         authorFirstName: 'Джоко',
         authorLastName: 'Віллінк',
         coverImageUrl: 'https://placehold.co/150x220/D3D3D3/000000?text=Cover1&font=roboto',
@@ -39,7 +38,7 @@ const mockBooks: Book[] = [
     },
     {
         id: '4',
-        title: 'Стіни в моїй голові. Ж...',
+        title: 'Стіни в моїй голові',
         authorFirstName: 'Володимир',
         authorLastName: 'Станчишин',
         coverImageUrl: 'https://placehold.co/150x220/D3D3D3/000000?text=Cover4&font=roboto',
@@ -115,7 +114,7 @@ const LibraryPage: React.FC = () => {
             </div>
 
             <div className="library-content-shell">
-                <nav className="sidebar-navigation"> {/* Fond beige clair #FDFBF7 */}
+                <nav className="sidebar-navigation">
                     <button
                         className={`nav-button ${currentFilter === 'audio' ? 'active' : ''}`}
                         onClick={() => setCurrentFilter('audio')}

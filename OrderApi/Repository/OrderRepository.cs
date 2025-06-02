@@ -27,7 +27,35 @@ namespace OrderApi.Repository
         public readonly TimeSpan _cacheExpiration = TimeSpan.FromMinutes(10);
         private readonly ILogger<IOrderRepository> _logger = logger;
 
+        public async Task<List<Guid>> GetPurchasedBookIdsByUserIdAsync(Guid userId)
+        {
+            string cacheKey = $"{_cacheKeyPrefix}{userId}";
 
+            var cached = await _redisDatabase.StringGetAsync(cacheKey);
+            if (!cached.IsNullOrEmpty)
+            {
+                _logger.LogInformation("Fetched digital books from CACHE for user {UserId}", userId);
+                return JsonSerializer.Deserialize<List<Guid>>(cached!)!;
+            }
+
+            _logger.LogInformation("Fetching digital books from DB for user {UserId}", userId);
+
+            var bookIds = await _context.Orders
+                .Where(o => o.UserId == userId)
+                .SelectMany(o => o.OrderedBooks)
+                .Select(ob => ob.BookId)
+                .Distinct()
+                .ToListAsync();
+            
+
+            await _redisDatabase.StringSetAsync(
+                cacheKey,
+                JsonSerializer.Serialize(bookIds),
+                _cacheExpiration
+            );
+
+            return bookIds;
+        }
         public async Task<PaginatedResult<Order>> GetAllAsync(
             int pageNumber,
             int pageSize,

@@ -6,7 +6,7 @@ using OrderAPI;
 using StackExchange.Redis;
 using System.Text.Json;
 using Library.Sorts;
-using OrderAPI.Repository.Interfaces;
+using OrderAPI.Repository;
 
 namespace OrderApi.Repository
 {
