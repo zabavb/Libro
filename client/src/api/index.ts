@@ -105,3 +105,25 @@ export const FEEDBACKS_PAGINATED = (
 ) => API_ROUTES.FEEDBACKS.PAGINATED(pageNumber,pageSize);
 
 export const FEEDBACK_BY_ID = API_ROUTES.FEEDBACKS.BY_ID;
+
+// ================= CATEGORY =================
+
+export const CATEGORIES = API_ROUTES.CATEGORIES.BASE;
+
+export const CATEGORIES_PAGINATED = (
+  pageNumber: number = 1,
+  pageSize: number = 10,
+) => API_ROUTES.CATEGORIES.PAGINATED(pageNumber,pageSize);
+
+export const CATEGORY_BY_ID = API_ROUTES.CATEGORIES.BY_ID;
+
+// ================= SUBCATEGORY =================
+
+export const SUBCATEGORIES = API_ROUTES.SUBCATEGORIES.BASE;
+
+export const SUBCATEGORIES_PAGINATED = (
+  pageNumber: number = 1,
+  pageSize: number = 10,
+) => API_ROUTES.SUBCATEGORIES.PAGINATED(pageNumber,pageSize);
+
+export const SUBCATEGORY_BY_ID = API_ROUTES.SUBCATEGORIES.BY_ID;

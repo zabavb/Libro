@@ -33,11 +33,11 @@ const AdminPage: React.FC = () => {
     //const [lastUpdated, setLastUpdated] = useState<string>("");
     
     useEffect(() => {
-        // Fetch order statistics
         
+        // Fetch order statistics
         const fetchData  = async () => {
             try {
-                //const counts = await getOrderCounts(period);
+                //const counts = await ч(period);
                 const mockCounts = [200, 140, 180];
                 const labels = period === 'day'
                   ? ['Позавчора', 'Вчора', 'Сьогодні']

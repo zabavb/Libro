@@ -1,7 +1,8 @@
 import React from "react"
 import "@/assets/styles/components/order/order-book-list.css"
+import { OrderedBook } from "../../types/types/order/OrderedBook";
 interface OrderFormBookListProps {
-    books: Record<string,number>
+    books: OrderedBook[];
 }
 const OrderFormBookList: React.FC<OrderFormBookListProps> = ({books}) => {
     return(
@@ -15,13 +16,13 @@ const OrderFormBookList: React.FC<OrderFormBookListProps> = ({books}) => {
                     </tr>
                 </thead>
                 <tbody>
-                {Object.entries(books)?.map(([book,count]) => (
-                    <tr>
-                        <td style={{cursor:"default"}}>{book}</td>
-                        <td style={{cursor:"default"}}>{count}</td>
-                        <td style={{cursor:"default"}}>TBD</td>
-                    </tr>
-                ))}
+                    {books.map((book) => (
+                        <tr key={book.bookId}>
+                            <td style={{ cursor: "default" }}>{book.bookId}</td>
+                            <td style={{ cursor: "default" }}>{book.quantity}</td>
+                            <td style={{ cursor: "default" }}>TBD</td>
+                        </tr>
+                    ))}
                 </tbody>
             </table>
         </div>

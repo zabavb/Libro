@@ -79,17 +79,16 @@ namespace APIComposer.GraphQL.Queries
                 var subscription = await userClient.GetUserSubscriptionAsync(order.UserId);
 
                 List<BookForOrder> books = new List<BookForOrder>();
-                var bookIds = order.Books.Keys;
-                foreach (var bookId in bookIds)
+                foreach (var orderedBook in order.OrderedBooks)
                 {
-                    Library.DTOs.Book.Book book = await bookClient.GetBookAsync(bookId);
+                    Library.DTOs.Book.Book book = await bookClient.GetBookAsync(orderedBook.BookId);
 
                     BookForOrder bookForOrder = new BookForOrder
                     {
                         BookId = book.BookId.ToString(),
                         Title = book.Title,
                         Price = book.Price,
-                        Quantity = order.Books[bookId]
+                        Quantity = orderedBook.Quantity,
                     };
                     books.Add(bookForOrder);
                 }

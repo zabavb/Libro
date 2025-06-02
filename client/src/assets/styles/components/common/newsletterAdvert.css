@@ -1,38 +1,42 @@
 .advert-container {
-    @apply flex flex-col bg-primary p-10 text-dark gap-5;
+    @apply flex flex-col p-10 gap-5;
+    color: #1A1D23;
+    background-color: #F4F0E5;
     border-radius: 30px;
 }
 
-.advert-header{
-    @apply text-dark;
+.advert-header {
+    color: #1A1D23;
     font-size: 44px;
 }
 
-.sale{
-    @apply text-white bg-dark py-2 px-10;
+.sale {
+    @apply text-white py-2 px-10;
+    background-color: #1A1D23;
     border-radius: 13px;
 }
 
-.newsletter{
+.newsletter {
     @apply flex;
     border-radius: 46px;
     border: 1px solid #1A1D23;
     font-size: 22px;
 }
 
-.newsletter-input-container{
+.newsletter-input-container {
     @apply flex px-10 py-2 gap-2.5;
     flex-grow: 1;
     flex-shrink: 1;
 }
 
-.newsletter-input{
+.newsletter-input {
     @apply bg-transparent;
     min-width: 0;
 }
 
-.newsletter-submit{
-    @apply shrink-0 bg-dark font-bold text-white px-20;
+.newsletter-submit {
+    @apply shrink-0 font-bold text-white px-20;
+    background-color: #1A1D23;
     border-top-right-radius: 46px;
     border-bottom-right-radius: 46px;
 }

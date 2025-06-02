@@ -1,0 +1,123 @@
+.subscribe-promo-root {
+  background-color: #F4F0E5;
+  border-radius: 1rem;
+  padding: 2.5rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+}
+
+@media (min-width: 768px) {
+  .subscribe-promo-root {
+    border-radius: 1.5rem;
+    padding: 3.5rem;
+  }
+}
+
+.subscribe-promo-title {
+  color: #000;
+  font-weight: bold;
+  font-size: 1.875rem;
+  line-height: 1.1;
+  margin-bottom: 1.5rem;
+}
+
+@media (min-width: 768px) {
+  .subscribe-promo-title {
+    font-size: 3rem;
+  }
+}
+
+.subscribe-promo-discount {
+  display: inline-block;
+  background: #000;
+  color: #fff;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  margin-right: 1rem;
+  min-width: 220px;
+  text-align: center;
+  font-size: 2rem;
+}
+
+@media (min-width: 768px) {
+  .subscribe-promo-discount {
+    font-size: 2.5rem;
+  }
+}
+
+.subscribe-promo-desc {
+  font-size: 1.125rem;
+  color: #374151;
+  line-height: 1.6;
+}
+
+@media (min-width: 768px) {
+  .subscribe-promo-desc {
+    font-size: 1.5rem;
+  }
+}
+
+.subscribe-promo-form {
+  margin-top: 2.5rem;
+  display: flex;
+  width: 100%;
+  max-width: 800px;
+  border-radius: 9999px;
+  border: 1px solid #9ca3af;
+  overflow: hidden;
+}
+
+.subscribe-promo-icon-wrap {
+  display: flex;
+  align-items: center;
+  padding-left: 1.5rem;
+  background: #F4F0E5;
+}
+
+.subscribe-promo-icon {
+  width: 4.25rem;
+  height: 4.25rem;
+}
+
+.subscribe-promo-input {
+  background: #F4F0E5;
+  flex-grow: 1;
+  padding: 1rem 0.5rem 1rem 1rem;
+  font-size: 1.125rem;
+  border: none;
+  outline: none;
+  color: #111827;
+}
+
+.subscribe-promo-input::placeholder {
+  color: #374151;
+}
+
+@media (min-width: 768px) {
+  .subscribe-promo-input {
+    font-size: 1.25rem;
+  }
+}
+
+.subscribe-promo-btn {
+  background: #000;
+  color: #fff;
+  font-size: 1.125rem;
+  padding: 1.25rem 2rem;
+  border: none;
+  border-radius: 0 9999px 9999px 0;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+@media (min-width: 768px) {
+  .subscribe-promo-btn {
+    font-size: 1.25rem;
+  }
+}
+
+.subscribe-promo-btn:hover {
+  background: #1f2937;
+}

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import cartIcon from '@/assets/icons/cartBig.svg'
 import '@/assets/styles/layout/cart-panel.css'
-import useCart from "@/state/context/useCart";
+import { useCart } from "@/state/context/CartContext";
 import closeIcon from '@/assets/icons/menuClose.svg'
 import CartCard from "../common/CartCard";
 import { CartItem } from "@/types/types/cart/CartItem";
@@ -54,14 +54,14 @@ const CartPanel: React.FC = () => {
                 onClick={() => setIsOpen(false)}
             />
             <div className={`cart-panel ${isOpen ? 'right-0' : 'right-[-445px]'}`}>
-                <div className="p-[30px] bg-dark h-[17%]">
+                <div className="p-[30px] bg-[#1A1D23] h-[17%]">
                     <img src={closeIcon} className="close-icon" onClick={() => setIsOpen(false)} />
                     <h1 className="font-semibold text-2xl">Cart</h1>
 
                     {cart.length > 0 ? (
                         <div className="flex justify-between">
-                            <p className="text-gray">{cart.length} psc.</p>
-                            <p className="text-gray cursor-pointer" onClick={clearCart}>Clear cart</p>
+                            <p className="text-[#929089]">{cart.length} psc.</p>
+                            <p className="text-[#929089] cursor-pointer" onClick={clearCart}>Clear cart</p>
                         </div>
                     ) : ""}
                 </div>
@@ -77,7 +77,7 @@ const CartPanel: React.FC = () => {
                         ))
                         :
                         (
-                            <div className="font-semibold text-lg text-dark">
+                            <div className="font-semibold text-lg text-[#1A1D23]">
                                 <p className="text-[#FF642E]">Your cart is empty.</p>
                                 <p>Don't hesitate and browse our catalog to find something good for you!</p>
                             </div>

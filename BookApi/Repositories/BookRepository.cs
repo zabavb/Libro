@@ -10,8 +10,6 @@ using Library.Common;
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using IDatabase = StackExchange.Redis.IDatabase;
-using System.Linq.Expressions;
 
 namespace BookAPI.Repositories
 {
@@ -32,66 +30,70 @@ namespace BookAPI.Repositories
         };
 
         public async Task<PaginatedResult<Book>> GetAllAsync(
-            int pageNumber,
-            int pageSize,
-            string searchTerm,
-            BookFilter? filter,
-            BookSort? sort)
+     int pageNumber,
+     int pageSize,
+     string? searchTerm,
+     BookFilter? filter,
+     BookSort? sort)
         {
-            string cacheKey = $"{_cacheKeyPrefix}All";
-            List<Book>? books = await _cacheService.GetAsync<List<Book>>(cacheKey, _jsonOptions);
-            bool isFromCache = books != null && books.Count > 0;
+            var filterJson = filter != null ? JsonSerializer.Serialize(filter, _jsonOptions) : "";
+            var sortJson = sort != null ? JsonSerializer.Serialize(sort, _jsonOptions) : "";
+            string cacheKey = $"{_cacheKeyPrefix}Page_{pageNumber}_Size_{pageSize}_Search_{searchTerm}_Filter_{filterJson}_Sort_{sortJson}";
 
-            if (!isFromCache)
+            var cachedResult = await _cacheService.GetAsync<PaginatedResult<Book>>(cacheKey, _jsonOptions);
+            if (cachedResult != null)
             {
-                books = await _context.Books
-                    .Include(b => b.Category)
-                    .Include(b => b.Publisher)
-                    .Include(b => b.Feedbacks)
-                    .Include(b=>b.Author)
-                    .Include(b => b.Subcategories)
-                    .ToListAsync();
-
-                _logger.LogInformation("Fetched from DB.");
-                await _cacheService.SetAsync(cacheKey, books, _cacheExpiration, _jsonOptions);
-                _logger.LogInformation("Set to CACHE.");
-                isFromCache = true;
-            }
-            else
-            {
-                _logger.LogInformation("Fetched from CACHE.");
+                _logger.LogInformation("GetAllAsync: Fetched paginated result from CACHE.");
+                return cachedResult;
             }
 
-            IQueryable<Book> bookQuery = books.AsQueryable();
+            IQueryable<Book> query = _context.Books
+                .AsNoTracking()
+                .Include(b => b.Category)
+                .Include(b => b.Publisher)
+                .Include(b => b.Feedbacks)
+                .Include(b => b.Author)
+                .Include(b => b.Subcategories);
 
             if (!string.IsNullOrWhiteSpace(searchTerm))
             {
-                bookQuery = isFromCache
-                    ? bookQuery.InMemorySearch(searchTerm, b => b.Title, b => b.Author.Name).AsQueryable()
-                    : bookQuery.SearchBy(searchTerm, b => b.Title, b => b.Author.Name);
+                query = query.SearchBy(searchTerm, b => b.Title, b => b.Author.Name);
             }
 
             if (filter != null)
-                bookQuery = filter.Apply(bookQuery);
+            {
+                query = filter.Apply(query);
+            }
 
             if (sort != null)
-                bookQuery = sort.Apply(bookQuery);
+            {
+                query = sort.Apply(query);
+            }
+            else
+            {
+                query = query.OrderBy(b => b.Title);
+            }
 
-            int totalBooks = bookQuery.Count();
-            List<Book> paginatedBooks = bookQuery
+            int totalCount = await query.CountAsync();
+
+            List<Book> items = await query
                 .Skip((pageNumber - 1) * pageSize)
                 .Take(pageSize)
-                .ToList();
+                .ToListAsync();
 
-            return new PaginatedResult<Book>
+            var result = new PaginatedResult<Book>
             {
-                Items = paginatedBooks,
-                TotalCount = totalBooks,
+                Items = items,
+                TotalCount = totalCount,
                 PageNumber = pageNumber,
                 PageSize = pageSize
             };
-        }
 
+            await _cacheService.SetAsync(cacheKey, result, _cacheExpiration, _jsonOptions);
+            _logger.LogInformation("GetAllAsync: Fetched from DB and set paginated result to CACHE.");
+
+            return result;
+        }
 
         public async Task<Book?> GetByIdAsync(Guid id)
         {

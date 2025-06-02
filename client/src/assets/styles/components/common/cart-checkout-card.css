@@ -1,18 +1,22 @@
-.item-counter-container{
-    @apply bg-dim-gray p-2.5 text-dark;
+.item-counter-container {
+    background-color: #DEDBD1;
+    color: #1A1D23;
+    @apply p-2.5;
     border-radius: 8px;
 }
 
-.item-counter{
+.item-counter {
     line-height: 130%;
     font-size: 14px;
 }
 
-.delete-btn{
-    @apply absolute right-0 top-0 text-gray cursor-pointer;
+.delete-btn {
+    @apply absolute right-0 top-0 cursor-pointer;
+    color: #9C9C97;
 }
 
-.counter-btn{
-    @apply text-[#FF642E] cursor-pointer;
+.counter-btn {
+    @apply cursor-pointer;
+    color: #FF642E;
     font-size: 32px;
 }

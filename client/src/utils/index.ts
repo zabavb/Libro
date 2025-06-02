@@ -21,3 +21,9 @@ export type { AuthorFormData } from './authorValidationSchema'
 
 export { publisherSchema } from './publisherValidationSchema'
 export type { PublisherFormData } from './publisherValidationSchema'
+
+export { categorySchema } from './categoryValidationSchema'
+export type { CategoryFormData } from './categoryValidationSchema'
+
+export { subCategorySchema } from './subCategoryValidationSchema'
+export type { SubCategoryFormData } from './subCategoryValidationSchema'

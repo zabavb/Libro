@@ -2,6 +2,7 @@ using Library.DTOs.UserRelated.User;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using OrderApi.Services;
+using OrderAPI.Models;
 
 
 namespace OrderApi.Controllers
@@ -45,6 +46,20 @@ namespace OrderApi.Controllers
                 _logger.LogError(ex.Message);
                 return StatusCode(StatusCodes.Status500InternalServerError, new { message = ex.Message });
             }
+        }
+
+        /// <summary>
+        /// Retrieves a list of book IDs purchased by a specific user.
+        /// </summary>
+        /// <param name="userId">User id</param>
+        /// <returns>A list of book IDs purchased by the user.</returns>
+        /// <response code="200">Retrieval successful, returns the list of book IDs.</response>
+        /// <response code="500">an unexpected error occured.</response>
+        [HttpGet("books/{userId}")]
+        public async Task<ActionResult<List<Guid>>> GetUserBooks(Guid userId)
+        {
+            var bookIds = await _orderService.GetUserBookIdsAsync(userId);
+            return Ok(bookIds);
         }
 
         /// <summary>

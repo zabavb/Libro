@@ -1,11 +1,13 @@
 ﻿using AutoMapper;
+using BookAPI;
 using Library.Common;
+using Library.DTOs.Order;
 using Library.DTOs.UserRelated.User;
+using Library.Interfaces;
+using Library.Sorts;
 using OrderApi.Models;
-using OrderApi.Repository;
 using OrderAPI;
 using OrderAPI.Models;
-using OrderAPI.Services.Interfaces;
 
 
 namespace OrderApi.Services
@@ -42,6 +44,11 @@ namespace OrderApi.Services
                 PageNumber = paginatedOrders.PageNumber,
                 PageSize = paginatedOrders.PageSize
             };
+        }
+
+        public async Task<List<Guid>> GetUserBookIdsAsync(Guid userId)
+        {
+            return await _repository.GetPurchasedBookIdsByUserIdAsync(userId);
         }
 
         public async Task<OrderDto?> GetByIdAsync(Guid id)
@@ -93,7 +100,7 @@ namespace OrderApi.Services
                 throw new ArgumentNullException(null, _message);
             }
 
-            var order = _mapper.Map<Order>(entity);
+            var order = _mapper.Map<Models.Order>(entity);
 
             try
             {
@@ -118,7 +125,7 @@ namespace OrderApi.Services
                 throw new ArgumentNullException(null, _message);
             }
 
-            var order = _mapper.Map<Order>(entity);
+            var order = _mapper.Map<Models.Order>(entity);
             try
             {
                 await _repository.UpdateAsync(order);
@@ -176,72 +183,7 @@ namespace OrderApi.Services
             }
         }
 
-        public async Task<SingleSnippet<OrderCardSnippet>> GetCardSnippetByUserIdAsync(Guid id)
-        {
-            try
-            {
-
-                OrderFilter filter = new OrderFilter() { UserId = id };
-                OrderSort sort = new OrderSort() { OrderDate = Bool.DESCENDING };
-
-                PaginatedResult<Order> orders = await _repository.GetAllPaginatedAsync(GlobalConstants.DefaultPageNumber,1,"",filter,sort);
-
-
-
-                var orderSnippet = new OrderCardSnippet();
-
-                if (orders.TotalCount > 0)
-                {
-                    orderSnippet = new OrderCardSnippet
-                    {
-                        LastOrder = orders.Items.First().OrderId.ToString().Split('-')[4],
-                        OrdersCount = orders.TotalCount
-                    };
-                }
-
-                return new SingleSnippet<OrderCardSnippet>(false, orderSnippet);
-            }
-            catch
-            {
-                return new SingleSnippet<OrderCardSnippet>(true, new OrderCardSnippet());
-            }
-        }
-
-        public async Task<CollectionSnippet<OrderDetailsSnippet>> GetAllByUserIdAsync(Guid id, int pageNumber)
-        {
-            try
-            {
-                var filter = new OrderFilter { UserId = id };
-
-                var orders = await _repository.GetAllPaginatedAsync(pageNumber, GlobalConstants.DefaultPageSize, "", filter,null);
-                var orderDetailsSnippets = new List<OrderDetailsSnippet>();
-
-                foreach (var order in orders.Items)
-                {
-                    var bookNames = new List<string>();
-
-                    foreach (var book in order.Books)
-                    {
-                        var bookObject = await _bookRepository.GetByIdAsync(book.Key);
-                        if (bookObject != null)
-                            bookNames.Add(bookObject.Title);
-                    }
-
-                    orderDetailsSnippets.Add(new OrderDetailsSnippet
-                    {
-                        OrderUiId = order.OrderId.ToString().Split('-')[4],
-                        Price = order.Price + order.DeliveryPrice,
-                        BookNames = bookNames
-                    });
-                }
-
-                return new CollectionSnippet<OrderDetailsSnippet>(false, orderDetailsSnippets);
-            }
-            catch
-            {
-                return new CollectionSnippet<OrderDetailsSnippet>(true, new List<OrderDetailsSnippet>());
-            }
-        }
+       
         public async Task<List<int>> GetOrderCountsForLastThreePeriodsAsync(PeriodType periodType)
         {
             return await _repository.GetOrderCountsForLastThreePeriodsAsync(periodType);

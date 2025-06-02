@@ -34,10 +34,10 @@ namespace OrderApi.Data.Configurations
             builder.Property(o => o.Status)
                 .HasConversion<string>();
 
-            builder.Property(e => e.Books)
+            builder.Property(e => e.OrderedBooks)
                 .HasConversion(
                     v => JsonSerializer.Serialize(v, new JsonSerializerOptions()),
-                    v => JsonSerializer.Deserialize<Dictionary<Guid, int>>(v, new JsonSerializerOptions())
+                    v => JsonSerializer.Deserialize<List<Library.DTOs.Order.OrderedBook>>(v, new JsonSerializerOptions()) ?? new List<Library.DTOs.Order.OrderedBook>()
                 );
 
 

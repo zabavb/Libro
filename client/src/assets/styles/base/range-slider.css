@@ -1,34 +1,55 @@
 .thick-slider {
-    @apply absolute w-full top-1/2 -translate-y-1/2 z-10 h-2 bg-transparent cursor-pointer;
-    -webkit-appearance: none;
-  }
-  
-  .thick-slider::-webkit-slider-runnable-track {
-    @apply h-1 rounded-lg;
-    background: linear-gradient(to right, #FF642E 0%, #FF642E var(--progress), #ccc var(--progress), #ccc 100%);
-  }
-  
-  .thick-slider::-webkit-slider-thumb {
-    @apply appearance-none h-2 w-2 bg-[#FF642E] -mt-0.5 relative; 
-    -webkit-appearance: none;
-    border-radius: 50%;
-    box-shadow: 0 0 2px rgba(0, 0, 0, 0.3);
-    z-index: 1;
-  }
-  
-  .thick-slider::-moz-range-track {
-    @apply h-1 bg-transparent;
-  }
-  
-  .thick-slider::-moz-range-progress {
-    @apply h-1 bg-[#FF642E];
-  }
-  
-  .thick-slider::-moz-range-thumb {
-    @apply h-2 w-2 bg-[#FF642E] border-none cursor-pointer;
-    border-radius: 50%;
-  }
-  
-  .thin-background{
-    @apply absolute w-full h-0.5 bg-gray-400 top-1/2 -translate-y-1/2 z-0;
-  }
+  @apply absolute w-full top-1/2 -translate-y-1/2 z-10 h-2 bg-transparent cursor-pointer;
+  -webkit-appearance: none;
+}
+
+.thick-slider::-webkit-slider-runnable-track {
+  @apply h-1 rounded-lg;
+  background: linear-gradient(to right, #FF642E 0%, #FF642E var(--progress), #ccc var(--progress), #ccc 100%);
+}
+
+.thick-slider::-webkit-slider-thumb {
+  @apply appearance-none h-2 w-2 bg-[#FF642E] -mt-0.5 relative;
+  -webkit-appearance: none;
+  border-radius: 50%;
+  box-shadow: 0 0 2px rgba(0, 0, 0, 0.3);
+  z-index: 1;
+}
+
+.thick-slider::-moz-range-track {
+  @apply h-1 bg-transparent;
+}
+
+.thick-slider::-moz-range-progress {
+  @apply h-1 bg-[#FF642E];
+}
+
+.thick-slider::-moz-range-thumb {
+  @apply h-2 w-2 bg-[#FF642E] border-none cursor-pointer;
+  border-radius: 50%;
+}
+
+.thin-background {
+  @apply absolute w-full h-0.5 bg-gray-400 top-1/2 -translate-y-1/2 z-0;
+}
+
+.audio-only .thick-slider::-webkit-slider-runnable-track {
+  background: linear-gradient(to right, #1A1D23 0%, #1A1D23 var(--progress), #1A1D2380 var(--progress), #1A1D2380 100%);
+}
+
+.audio-only .thick-slider::-webkit-slider-thumb {
+  background: #1A1D23; 
+  box-shadow: 0 0 2px rgba(0, 0, 0, 0.3);
+}
+
+.audio-only .thick-slider::-moz-range-progress {
+  background: #1A1D23;
+}
+
+.audio-only .thick-slider::-moz-range-thumb {
+  background: #1A1D23;
+}
+
+.audio-only-slider {
+  background-color: #1A1D23;
+}

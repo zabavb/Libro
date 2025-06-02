@@ -42,6 +42,14 @@ export const getBookById = async (id: string): Promise<Book> => {
 };
 
 /**
+ * Fetch library books by user ID.
+ */
+export const getLibraryBooksById = async (id: string): Promise<Book[]> => {
+    const response = await axios.get<Book[]>(BOOK_BY_ID(id));
+    return response.data;
+};
+
+/**
  * Create a new book.
  */
 export const addBook = async (book: Partial<Book>): Promise<Book> => {

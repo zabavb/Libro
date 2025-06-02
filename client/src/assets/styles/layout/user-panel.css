@@ -1,58 +1,63 @@
-.dim{
+.dim {
     @apply fixed inset-0 z-20 bg-black opacity-0 pointer-events-none;
     transition: all 0.4s;
 }
 
-.dim.visible{
+.dim.visible {
     @apply opacity-80 pointer-events-auto;
 }
 
-
-.icon-container{
-    @apply p-2.5 bg-dark;
+.icon-container {
+    @apply p-2.5;
+    background-color: #1A1D23;
     border-radius: 30px;
 }
 
-.icon-container-pfp{
+.icon-container-pfp {
     @apply p-2.5 bg-[#FF642E];
     border-radius: 30px;
 }
 
-.panel-row{
+.panel-row {
     @apply flex gap-[23px] items-center text-lg font-semibold cursor-pointer;
 }
 
-.panel-icon{
+.panel-icon {
     width: 30px;
     height: 30px;
 }
 
-.user-panel{
-    @apply z-30 h-dvh bg-primary fixed top-0 transition-all duration-500 ease-in-out text-white;
+.user-panel {
+    @apply z-30 h-dvh bg-[#F4F0E5] fixed top-0 transition-all duration-500 ease-in-out text-white;
     width: 445px;
 }
 
-.user-main{
-    @apply flex flex-col overflow-scroll text-dark;
+.user-main {
+    @apply flex flex-col overflow-scroll;
+    color: #1A1D23;
     padding: 30px;
     height: 60%;
     gap: 32px;
 }
 
-.user-footer{
-    @apply flex flex-col p-[30px] bg-dark h-[23%] gap-2.5 text-lg;
+.user-footer {
+    @apply flex flex-col p-[30px];
+    background-color: #1A1D23;
+    height: 23%;
+    gap: 10px;
 }
 
-.close-icon{
+.close-icon {
     @apply top-[32px] right-[38px] absolute cursor-pointer;
 }
 
-.checkout-btn{
-    @apply text-dark bg-[#FF642E] py-3.5 px-20 w-full;
+.checkout-btn {
+    color: #1A1D23;
+    @apply bg-[#FF642E] py-3.5 px-20 w-full;
     border-radius: 44px;
 }
 
-.contact-info{
+.contact-info {
     @apply text-[#F4F0E5] font-semibold;
     font-size: 27px;
 }

@@ -1,7 +1,9 @@
+import { OrderedBook } from "./OrderedBook";
+
 export interface Order {
     id: string
     userId: string
-    books: Record<string,number>
+    orderedBooks: OrderedBook[];
     region: string
     city: string
     address: string

@@ -216,7 +216,13 @@ namespace UserAPI.Data
                 }
             }
 
+
             _logger.LogInformation("Created {UsersCount} users with their images.", users.Count);
+
+            await _context.Users.AddRangeAsync(users);
+            _logger.LogInformation("Inserted {UsersCount} users into DB.", users.Count);
+            await _context.SaveChangesAsync();
+
             return users;
         }
 
@@ -256,6 +262,11 @@ namespace UserAPI.Data
 
             _logger.LogInformation(
                 "Created {SubscriptionsCount} subscriptions with their images.", subscriptions.Count);
+
+            await _context.Subscriptions.AddRangeAsync(subscriptions);
+            _logger.LogInformation("Inserted {SubscriptionsCount} subscriptions into DB.", subscriptions.Count);
+            await _context.SaveChangesAsync();
+
             return subscriptions;
         }
 
@@ -292,14 +303,16 @@ namespace UserAPI.Data
             List<Subscription> subscriptions,
             List<UserSubscription> userSubscriptions)
         {
-            await _context.Users.AddRangeAsync(users);
+/*            await _context.Users.AddRangeAsync(users);
             _logger.LogInformation("Inserted {UsersCount} users into DB.", users.Count);
+            await _context.SaveChangesAsync();*/
 
             await _context.Passwords.AddRangeAsync(passwords);
             _logger.LogInformation("Inserted {PasswordsCount} passwords into DB.", passwords.Count);
 
-            await _context.Subscriptions.AddRangeAsync(subscriptions);
+/*            await _context.Subscriptions.AddRangeAsync(subscriptions);
             _logger.LogInformation("Inserted {SubscriptionsCount} subscriptions into DB.", subscriptions.Count);
+            await _context.SaveChangesAsync();*/
 
             await _context.UserSubscriptions.AddRangeAsync(userSubscriptions);
             _logger.LogInformation("Inserted {Count} UserSubscription entities into DB.", userSubscriptions.Count);

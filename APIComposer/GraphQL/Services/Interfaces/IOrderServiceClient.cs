@@ -19,5 +19,7 @@ namespace APIComposer.GraphQL.Services.Interfaces
 
         Task<List<Guid>> GetMostOrderedBooksAsync(int days);
 
+        Task<List<Guid>> GetPurchasedBookIds(Guid id);
+
     }
 }

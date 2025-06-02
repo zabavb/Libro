@@ -1,0 +1,23 @@
+.caret-scale {
+    @apply w-[12px] h-[6px] transition-all duration-500;
+}
+
+.subcategory-dropdown-header {
+    @apply flex justify-between items-center cursor-pointer 
+    font-bold bg-[#1A1D23] rounded-t-lg text-white py-5 px-8;
+    font-size: 21px;
+}
+
+.subcategory-dropdown-container{
+    @apply w-full bg-none rounded transition-all 
+    duration-500 overflow-hidden z-10 bg-white rounded-b-lg px-8;
+}
+
+.caret-open{
+    transform: rotate(180deg);
+}
+
+.subcategory-dropdown-wrapper{
+    @apply relative inline-block text-left rounded-lg;
+    border: 1px solid #1A1D23;
+}

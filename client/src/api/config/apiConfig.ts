@@ -11,6 +11,9 @@ const BOOKS = `${GATEWAY}/books`;
 const AUTHORS = `${GATEWAY}/authors`
 const PUBLISHERS = `${GATEWAY}/publishers`
 const FEEDBACKS = `${GATEWAY}/feedbacks`
+const CATEGORIES = `${GATEWAY}/categories`
+const SUBCATEGORIES = `${GATEWAY}/subcategories`
+
 export const API_ROUTES = {
   GRAPHQL: `${GATEWAY}/graphql`,
   AUTH: {
@@ -72,5 +75,17 @@ export const API_ROUTES = {
     PAGINATED: (pageNumber: number, pageSize: number) =>
       `${FEEDBACKS}?pageNumber=${pageNumber}&pageSize=${pageSize}`,
     BY_ID: (id:string) => `${FEEDBACKS}/${id}`,
+  },
+  CATEGORIES: {
+    BASE: CATEGORIES,
+    PAGINATED: (pageNumber: number, pageSize: number) =>
+      `${CATEGORIES}?pageNumber=${pageNumber}&pageSize=${pageSize}`,
+    BY_ID: (id:string) => `${CATEGORIES}/${id}`,
+  },
+  SUBCATEGORIES:{
+    BASE: SUBCATEGORIES,
+    PAGINATED: (pageNumber: number, pageSize: number) =>
+      `${SUBCATEGORIES}?pageNumber=${pageNumber}&pageSize=${pageSize}`,
+    BY_ID: (id:string) => `${SUBCATEGORIES}/${id}`,
   },
 };

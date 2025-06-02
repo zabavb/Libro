@@ -26,7 +26,7 @@ const OrderConfirmation: React.FC<OrderConfirmationProps> = ({ order, user, onCo
             <p className="text-[#F4F0E5] text-2xl font-semibold">Placing an order</p>
             <div className="checkout-section">
                 <div className="flex justify-between">
-                    <div>
+                    <div className="flex flex-col gap-3">
                         {cart.map((item) => (
                             <CheckoutBookCard item={item} />
                         ))}
