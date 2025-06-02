@@ -85,8 +85,8 @@ const OrderCheckoutForm: React.FC<OrderCheckoutFormProps> = ({ onAdd, onItemClea
             deliveryTypeId: data.deliveryTypeId,
             status: statusEnumToNumber(data.status)
         }
-
-        navigate('/checkout/confirm', {state: {order: order, user: user}})
+        localStorage.setItem('orderCheckout', JSON.stringify(order));
+        navigate('/checkout/confirm')
     }
 
     if (cart.length <= 0) navigate("/")

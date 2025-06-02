@@ -32,3 +32,7 @@
     @apply bg-[#FF642E] p-3;
     border-radius: 9px;
 }
+
+.card-image{
+    @apply w-[220px] h-[340px]
+}

@@ -3,7 +3,7 @@ body{
 }
 
 .header-container{
-    @apply flex items-center px-20 py-5 sticky top-0 bg-[#F4F0E5];
+    @apply flex items-center px-20 py-5 sticky top-0 bg-[#F4F0E5] z-40;
     border-bottom: 1px solid black;
 }
 
@@ -12,7 +12,7 @@ body{
 }
 
 .icon-container{
-    @apply p-2.5 bg-dark;
+    @apply p-2.5 bg-[#1A1D23];
     border-radius: 30px;
 }
 

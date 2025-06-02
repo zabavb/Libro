@@ -1,0 +1,45 @@
+.promo-container {
+  background-color: #1A1D23;
+  padding: 2.5rem 1rem;
+}
+
+@media (min-width: 768px) {
+  .promo-container {
+    padding-left: 4rem;
+    padding-right: 4rem;
+  }
+}
+
+.promo-flex {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+@media (min-width: 768px) {
+  .promo-flex {
+    flex-direction: row;
+  }
+}
+
+.promo-block {
+  flex: 1;
+  background-color: #F4F0E5;
+  border-radius: 1.5rem;
+  padding: 2rem;
+}
+
+.promo-bonus {
+  width: 100%;
+  background-color: #F4F0E5;
+  border-radius: 1.5rem;
+  padding: 2rem;
+  display: flex;
+  align-items: center;
+}
+
+@media (min-width: 768px) {
+  .promo-bonus {
+    width: 560px;
+  }
+}

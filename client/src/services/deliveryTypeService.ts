@@ -71,7 +71,7 @@ export const addDeliveryTypeService = async (deliveryType: Partial<DeliveryType>
     } catch (error){
         console.error('Failed to create delivery type', error)
         response.error = 
-            'An error occurred while adding the order. Please try again later.';
+            'An error occurred while adding the delivery type. Please try again later.';
     } finally {
         response.loading = false;
     }

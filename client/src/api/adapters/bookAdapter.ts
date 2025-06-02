@@ -1,8 +1,8 @@
-import { BookView, Book, Author } from '../../types';
+import { BookView, Book, Author, Category, SubCategory } from '../../types';
 import { Language } from '../../types/subTypes/book/Language';
 import { CoverType } from '../../types/subTypes/book/CoverType';
 import { dateToString } from './commonAdapters';
-import { AuthorFormData, PublisherFormData } from '@/utils';
+import { AuthorFormData, CategoryFormData, PublisherFormData, SubCategoryFormData } from '@/utils';
 import { Publisher } from '@/types/types/book/Publisher';
 
 export const languageNumberToEnum = (languageNumber: number): Language => {
@@ -71,8 +71,9 @@ export const BookToBookView = (response: Book): BookView => {
     feedbackIds: response.feedbackIds,
     discountRate: response.discountRate,
     startDate: response.startDate,
-    endDate: response.endDate
+    endDate: response.endDate,
     //subcategoryIds: response.subcategoryIds,
+    imageUrl: response.imageUrl,
   };
 };
 
@@ -92,3 +93,15 @@ export const PublisherFormDataToPublisher = (form: PublisherFormData, id?: strin
   description: form.description ?? undefined,
 });
 
+export const CategoryFormDataToCategory = (form: CategoryFormData, id?: string) : Category => ({
+  ...form,
+  categoryId: id ?? '00000000-0000-0000-0000-000000000000',
+  name: form.name,
+});
+
+export const SubCategoryFormDataToSubCategory = (form: SubCategoryFormData, id?: string): SubCategory => ({
+  ...form,
+  subCategoryId: id ?? '00000000-0000-0000-0000-000000000000',
+  categoryId: form.categoryId,
+  name: form.name,
+})

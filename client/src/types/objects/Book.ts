@@ -15,5 +15,7 @@ export interface Book {
 	discountRate: number;
 	startDate: Date;
 	endDate: Date;
+	audioFileUrl: string;
 	//subCategoryIds: string[]
+	imageUrl?: string;
 }

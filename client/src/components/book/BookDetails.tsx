@@ -27,7 +27,6 @@ const BookDetails: React.FC<BookDetailsProps> = ({ onAddItem, book, loading }) =
                         <h1 className="text-4xl">{book.title}</h1>
                         <p className="sub-text">Author Name</p>
                         <div className="flex">
-                            {/* TRANSFER TO COMPONENT */}
                              <img src={starIcon}/>
                              <img src={starIcon}/>
                              <img src={starIcon}/>
