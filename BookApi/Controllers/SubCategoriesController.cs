@@ -39,7 +39,7 @@ namespace BookAPI.Controllers
                 var subCategories =
                     await _subCategoryService.GetAllAsync(pageNumber, pageSize, searchTerm, filter, sort);
 
-                if (subCategories == null || subCategories.Items == null || subCategories.Items.Count == 0)
+                if (subCategories == null || subCategories.Items == null)
                 {
                     _logger.LogInformation("No subcategories found.");
                     return NotFound("No subcategories found.");

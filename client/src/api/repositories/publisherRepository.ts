@@ -18,7 +18,6 @@ export const getAllPublishers = async (
     const url = PUBLISHERS_PAGINATED(pageNumber, pageSize)
     const response = await axios.get<PaginatedResponse<Publisher>>(url, { params })
     
-    console.log(response)
     return response.data
 }
 

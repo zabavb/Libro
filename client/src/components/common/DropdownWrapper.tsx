@@ -5,16 +5,17 @@ import "@/assets/styles/components/common/dropdown-wrapper.css"
 interface DropdownWrapperProps {
   triggerLabel: string;
   children: ReactNode;
+  triggerClassName?: string
 }
 
-const DropdownWrapper: React.FC<DropdownWrapperProps> = ({ triggerLabel, children }) => {
+const DropdownWrapper: React.FC<DropdownWrapperProps> = ({ triggerLabel, children, triggerClassName }) => {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <div className={`relative inline-block text-left}`}>
+    <div className={`relative inline-block text-left`}>
       <div
         onClick={() => setIsOpen(!isOpen)}
-        className="dropdown-header"
+        className={`dropdown-header ${triggerClassName}`}
       >
         {triggerLabel} <img className={`caret-scale ${isOpen ? "caret-open": ""}`} src={icons.wCaretDown}/>
       </div>

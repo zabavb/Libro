@@ -1,3 +1,4 @@
+import { StatusView } from "@/types/subTypes/order/StatusView";
 import { Order, Status, OrderView  } from "../../types";
 import { dateToString } from "./commonAdapters";
 
@@ -25,6 +26,19 @@ export const statusEnumToNumber = (status: Status): number => {
 
     return statusMap[status] ?? 0
 }
+
+export const statusEnumToStatusView = (status: Status): StatusView => {
+  const roleMap: { [key in Status]: StatusView } = {
+        [Status.PENDING]: StatusView.PENDING,
+        [Status.PROCESSING]: StatusView.PROCESSING,
+        [Status.TRANSIT]: StatusView.TRANSIT,
+        [Status.PAYMENT]: StatusView.PAYMENT,
+        [Status.COMPLETED]: StatusView.COMPLETED,
+  };
+
+  return roleMap[status] ?? StatusView.PENDING;
+};
+
 
 export const OrderToOrderView = (response: Order): OrderView => {
     return {

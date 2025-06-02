@@ -1,18 +1,19 @@
 import { Outlet, useLocation } from 'react-router-dom';
 import '@/assets/styles/layout/admin-layout.css';
-import { icons } from '@/lib/icons'
+import { icons } from '@/lib/icons';
 import logoUrl from '@/assets/logoLibro.svg';
 import AdminDropdownWrapper from '../common/AdminDropdownWrapper';
+import { useAuth } from '@/state/context';
 
 const AdminLayout: React.FC = () => {
   const location = useLocation();
   const currentPath = location.pathname;
+  const { logout } = useAuth();
 
   const isActive = (path: string, includes?: boolean) => {
-    if(includes)
-      return currentPath.includes(path)
+    if (includes) return currentPath.includes(path);
     return currentPath === path;
-  }
+  };
 
   return (
     <div className='admin-container'>
@@ -21,7 +22,9 @@ const AdminLayout: React.FC = () => {
         <nav>
           <ul className='admin-nav-list'>
             <li className='logo-container'>
-              <img src={logoUrl} />
+              <a href='/'>
+                <img src={logoUrl} />
+              </a>
             </li>
             <li className={isActive('/admin') ? 'active-link link' : 'link'}>
               <img
@@ -31,24 +34,57 @@ const AdminLayout: React.FC = () => {
               <a href='/admin'>Home</a>
             </li>
             <li
-              className={isActive('/admin/booksRelated', true) ? 'active-link link' : 'link'}
+              className={
+                isActive('/admin/booksRelated', true)
+                  ? 'active-link link'
+                  : 'link'
+              }
             >
               <ul>
-                <AdminDropdownWrapper iconUrl={icons.wBook} triggerLabel='Book Related' isActive={isActive('/admin/booksRelated', true)}>
+                <AdminDropdownWrapper
+                  iconUrl={icons.wBook}
+                  triggerLabel='Book Related'
+                  isActive={isActive('/admin/booksRelated', true)}
+                >
                   <li className='flex py-[5px] px-[7px] text-base'>
-                    <a className={`${isActive('/admin/booksRelated/books') && 'underline'}`} href='/admin/booksRelated/books'>Books</a>
+                    <a
+                      className={`${isActive('/admin/booksRelated/books') && 'underline'}`}
+                      href='/admin/booksRelated/books'
+                    >
+                      Books
+                    </a>
                   </li>
                   <li className='flex py-[5px] px-[7px] text-base'>
-                    <a className={`${isActive('/admin/booksRelated/categories') && 'underline'}`} href='/admin/booksRelated/categories'>Categories</a>
+                    <a
+                      className={`${isActive('/admin/booksRelated/categories') && 'underline'}`}
+                      href='/admin/booksRelated/categories'
+                    >
+                      Categories
+                    </a>
                   </li>
                   <li className='flex py-[5px] px-[7px] text-base'>
-                    <a className={`${isActive('/admin/booksRelated/authors') && 'underline'}`} href='/admin/booksRelated/authors'>Authors</a>
+                    <a
+                      className={`${isActive('/admin/booksRelated/authors') && 'underline'}`}
+                      href='/admin/booksRelated/authors'
+                    >
+                      Authors
+                    </a>
                   </li>
                   <li className='flex py-[5px] px-[7px] text-base'>
-                    <a className={`${isActive('/admin/booksRelated/publishers') && 'underline'}`} href='/admin/booksRelated/publishers'>Publishers</a>
+                    <a
+                      className={`${isActive('/admin/booksRelated/publishers') && 'underline'}`}
+                      href='/admin/booksRelated/publishers'
+                    >
+                      Publishers
+                    </a>
                   </li>
                   <li className='flex py-[5px] px-[7px] text-base'>
-                    <a className={`${isActive('/admin/booksRelated/feedbacks') && 'underline'}`} href='/admin/booksRelated/feedbacks'>Feedbacks</a>
+                    <a
+                      className={`${isActive('/admin/booksRelated/feedbacks') && 'underline'}`}
+                      href='/admin/booksRelated/feedbacks'
+                    >
+                      Feedbacks
+                    </a>
                   </li>
                 </AdminDropdownWrapper>
               </ul>
@@ -96,10 +132,9 @@ const AdminLayout: React.FC = () => {
               <a href='/admin/subscriptions'>Subscriptions</a>
             </li>
           </ul>
-          <div className='link logout-item'>
+          <div className='link logout-item' onClick={logout}>
             <img src={icons.wLogout} />
-
-            <a>Logout</a>
+            Logout
           </div>
         </nav>
       </aside>

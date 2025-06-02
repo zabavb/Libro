@@ -5,7 +5,7 @@ using OrderApi.Services;
 using Microsoft.OpenApi.Models;
 using System.Reflection;
 using OrderApi.Repository;
-using OrderApi.Profiles;
+
 using StackExchange.Redis;
 using BookAPI.Data;
 using BookAPI.Repositories.Interfaces;
@@ -17,14 +17,6 @@ using BookAPI.Data.CachHelper;
 using OrderAPI.Repository;
 
 var builder = WebApplication.CreateBuilder(args);
-
-// builder.Services.AddSingleton<S3StorageService>();
-
-/*builder.Services.AddDbContext<BookDbContext>((serviceProvider, options) =>
-{
-    var storageService = serviceProvider.GetRequiredService<S3StorageService>();
-    options.UseSqlServer(builder.Configuration.GetConnectionString("BookDbConnection"));
-});*/
 
 builder.Services.AddDbContext<OrderDbContext>(options => options
         .UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
@@ -45,9 +37,6 @@ builder.Services.AddSingleton<IConnectionMultiplexer>(sp =>
 
 
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
-
-/*builder.Services.AddScoped<IBookRepository, BookRepository>();
-builder.Services.AddScoped<ICacheService, CacheService>();*/
 
 builder.Services.AddScoped<IOrderRepository, OrderRepository>();
 builder.Services.AddScoped<IOrderService, OrderService>();

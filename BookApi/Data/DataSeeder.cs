@@ -16,7 +16,7 @@ namespace BookAPI.Data
 
     public static class DataSeeder
     {
-        public static Dictionary<string, string> GenerateFileNames(string[] titles, string extension = ".jpeg")
+        public static Dictionary<string, string> GenerateFileNames(string[] titles, string folder, string extension = ".jpeg")
         {
             var result = new Dictionary<string, string>();
 
@@ -37,7 +37,7 @@ namespace BookAPI.Data
                     .Replace("!", "")
                     .Replace(" ", "_");
 
-                result[title] = $"Data/Files/Images/{fileName}{extension}";
+                result[title] = $"Data/Files/{folder}/{fileName}{extension}";
             }
 
             return result;
@@ -721,10 +721,10 @@ new("9fc6b407-7b59-4f69-8403-4fcdbf1bc841"),
 
 
 
-            var imagePaths = GenerateFileNames(BookTitles, ".jpeg");
-            var pdfPaths = GenerateFileNames(BookTitles, ".pdf");
-            var audioPaths = GenerateFileNames(BookTitles, ".mp3");
-            var authorImagePaths = GenerateFileNames(AuthorNames, ".jpeg");
+            var imagePaths = GenerateFileNames(BookTitles, "Images", ".jpeg");
+            var pdfPaths = GenerateFileNames(BookTitles, "Pdfs", ".pdf");
+            var audioPaths = GenerateFileNames(BookTitles, "Audios", ".mp3");
+            var authorImagePaths = GenerateFileNames(AuthorNames, "Images", ".jpeg");
 
             var categories = new List<Category>();
             for (int i = 0; i < CategoryNames.Length; i++)
@@ -735,8 +735,8 @@ new("9fc6b407-7b59-4f69-8403-4fcdbf1bc841"),
                     Name = CategoryNames[i]
                 });
             }
-            modelBuilder.Entity<Category>().HasData(categories);
-
+                new Category { Id = Guid.NewGuid(), Name = "Мистецтво" },
+                new Category { Id = Guid.NewGuid(), Name = "Подорожі" },
             var subCategories = new List<SubCategory>();
 
             for (int i = 0; i < SubCategoryNames.Length; i++)
@@ -758,6 +758,10 @@ new("9fc6b407-7b59-4f69-8403-4fcdbf1bc841"),
             for (int i = 0; i < publisherNames.Length; i++)
             {
                 publishers.Add(new Publisher
+                    Name = "ІстФакт",
+                    Description = "Спеціалізується на якісній історичній літературі."
+                },
+                new Publisher
                 {
                     Id = Guid.NewGuid(),
                     Name = publisherNames[i],
@@ -806,10 +810,6 @@ new("9fc6b407-7b59-4f69-8403-4fcdbf1bc841"),
                 BookId = bookId,
                 DiscountRate = random.Next(1, 36), 
                 StartDate = DateTime.UtcNow,
-                EndDate = DateTime.UtcNow.AddMonths(1)
-            }).ToList();
-
-            modelBuilder.Entity<Discount>().HasData(discounts);
 
             var books = new List<Book>();
             for (int i = 0; i < BookTitles.Length; i++)
@@ -823,7 +823,7 @@ new("9fc6b407-7b59-4f69-8403-4fcdbf1bc841"),
                 var language = (Language)languages.GetValue(random.Next(languages.Length));
                 var coverTypes = Enum.GetValues(typeof(CoverType));
                 var cover = (CoverType)coverTypes.GetValue(random.Next(coverTypes.Length));
-                var price = (float)(random.NextDouble() * 400 + 100);
+                var price = (float)Math.Round(random.NextDouble() * 400 + 100, 2);
 
                 var year = new DateTime(random.Next(1990, 2025), 1, 1);
 
@@ -848,234 +848,7 @@ new("9fc6b407-7b59-4f69-8403-4fcdbf1bc841"),
             }
 
 
-            //var books = new List<Book>
-            //{
-            //    new Book
-            //    {
-            //        Id = bookIds[0],
-            //        Title = "Місто зі скла",
-            //        AuthorId = authors[0].Id,
-            //        PublisherId = publishers[2].Id,
-            //        CategoryId = categories[0].Id,
-            //        Price = 350.99f,
-            //        Language = Language.UKRAINIAN,
-            //        Year = new DateTime(2023, 1, 1),
-            //        Description = "Фантастичний роман про місто, побудоване зі скла.",
-            //        Cover = CoverType.HARDCOVER,
-            //        Quantity = 5,
-            //        DiscountId = discounts[0].DiscountId,
-            //    },
-            //    new Book
-            //    {
-            //        Id = bookIds[1],
-            //        Title = "Тіні минулого",
-            //        AuthorId = authors[1].Id,
-            //        PublisherId = publishers[1].Id,
-            //        CategoryId = categories[1].Id,
-            //        Price = 250.99f,
-            //        Language = Language.UKRAINIAN,
-            //        Year = new DateTime(2022, 1, 1),
-            //        Description = "Детективний роман з несподіваною розв'язкою.",
-            //        Cover = CoverType.SOFTCOVER,
-            //        Quantity = 3,
-            //        DiscountId = discounts[1].DiscountId,
-            //    },
-            //    new Book
-            //    {
-            //        Id = bookIds[2],
-            //        Title = "Емоційний інтелект",
-            //        AuthorId = authors[2].Id,
-            //        PublisherId = publishers[4].Id,
-            //        CategoryId = categories[4].Id,
-            //        Price = 400.99f,
-            //        Language = Language.UKRAINIAN,
-            //        Year = new DateTime(2021, 1, 1),
-            //        Description = "Книга про те, як розвивати емоційний інтелект.",
-            //        Cover = CoverType.HARDCOVER,
-            //        Quantity = 1,
-            //        DiscountId = discounts[2].DiscountId,
-            //    },
-            //    new Book
-            //     {
-            //         Id = bookIds[3],
-            //         Title = "У пошуках світла",
-            //         AuthorId = authors[3].Id,
-            //         PublisherId = publishers[0].Id,
-            //         CategoryId = categories[3].Id,
-            //         Price = 299.99f,
-            //         Language = Language.UKRAINIAN,
-            //         Year = new DateTime(2020, 1, 1),
-            //         Description = "Натхненна історія про подолання труднощів.",
-            //         Cover = CoverType.SOFTCOVER,
-            //         Quantity = 2,
-            //         DiscountId = discounts[3].DiscountId,
-            //     },
-            //     new Book
-            //     {
-            //         Id = bookIds[4],
-            //         Title = "Поза межами розуму",
-            //         AuthorId = authors[4].Id,
-            //         PublisherId = publishers[3].Id,
-            //         CategoryId = categories[4].Id,
-            //         Price = 370.00f,
-            //         Language = Language.ENGLISH,
-            //         Year = new DateTime(2021, 5, 10),
-            //         Description = "Науково-популярна книга про можливості людського мозку.",
-            //         Cover = CoverType.HARDCOVER,
-            //         Quantity = 4,
-            //         DiscountId = discounts[4].DiscountId,
-            //     },
-            //     new Book
-            //     {
-            //         Id = bookIds[5],
-            //         Title = "Код надії",
-            //         AuthorId = authors[2].Id,
-            //         PublisherId = publishers[2].Id,
-            //         CategoryId = categories[0].Id,
-            //         Price = 310.00f,
-            //         Language = Language.UKRAINIAN,
-            //         Year = new DateTime(2022, 11, 15),
-            //         Description = "Фантастична пригода у постапокаліптичному світі.",
-            //         Cover = CoverType.SOFTCOVER,
-            //         Quantity = 7,
-            //         DiscountId = discounts[0].DiscountId,
-            //     },
-            //     new Book
-            //     {
-            //         Id = bookIds[6],
-            //         Title = "Таємниця лісу",
-            //         AuthorId = authors[1].Id,
-            //         PublisherId = publishers[1].Id,
-            //         CategoryId = categories[2].Id,
-            //         Price = 260.00f,
-            //         Language = Language.UKRAINIAN,
-            //         Year = new DateTime(2019, 3, 7),
-            //         Description = "Детектив у стилі нуар серед дикої природи.",
-            //         Cover = CoverType.SOFTCOVER,
-            //         Quantity = 3,
-            //         DiscountId = discounts[1].DiscountId,
-            //     },
-            //     new Book
-            //     {
-            //         Id = bookIds[7],
-            //         Title = "Історії з майбутнього",
-            //         AuthorId = authors[0].Id,
-            //         PublisherId = publishers[0].Id,
-            //         CategoryId = categories[0].Id,
-            //         Price = 390.00f,
-            //         Language = Language.ENGLISH,
-            //         Year = new DateTime(2024, 2, 20),
-            //         Description = "Збірка оповідань про альтернативні реальності.",
-            //         Cover = CoverType.HARDCOVER,
-            //         Quantity = 6,
-            //         DiscountId = discounts[3].DiscountId,
-            //     },
-            //     new Book
-            //     {
-            //         Id = bookIds[8],
-            //         Title = "Психологія впливу",
-            //         AuthorId = authors[2].Id,
-            //         PublisherId = publishers[4].Id,
-            //         CategoryId = categories[4].Id,
-            //         Price = 330.00f,
-            //         Language = Language.UKRAINIAN,
-            //         Year = new DateTime(2020, 6, 1),
-            //         Description = "Практичне керівництво по впливу на людей.",
-            //         Cover = CoverType.SOFTCOVER,
-            //         Quantity = 5,
-            //         DiscountId = discounts[2].DiscountId,
-            //     },
-            //     new Book
-            //     {
-            //         Id = bookIds[9],
-            //         Title = "Книга мандрівника",
-            //         AuthorId = authors[3].Id,
-            //         PublisherId = publishers[2].Id,
-            //         CategoryId = categories[3].Id,
-            //         Price = 280.00f,
-            //         Language = Language.UKRAINIAN,
-            //         Year = new DateTime(2018, 7, 15),
-            //         Description = "Путівник та мотиваційна література для мандрівників.",
-            //         Cover = CoverType.SOFTCOVER,
-            //         Quantity = 2,
-            //         DiscountId = discounts[4].DiscountId,
-            //     },
-            //     new Book
-            //     {
-            //         Id = bookIds[10],
-            //         Title = "Фізика для допитливих",
-            //         AuthorId = authors[4].Id,
-            //         PublisherId = publishers[3].Id,
-            //         CategoryId = categories[5].Id,
-            //         Price = 310.50f,
-            //         Language = Language.UKRAINIAN,
-            //         Year = new DateTime(2021, 9, 5),
-            //         Description = "Легкий вступ до складних фізичних понять.",
-            //         Cover = CoverType.HARDCOVER,
-            //         Quantity = 4,
-            //         DiscountId = discounts[1].DiscountId,
-            //     },
-            //     new Book
-            //     {
-            //         Id = bookIds[11],
-            //         Title = "Біологія життя",
-            //         AuthorId = authors[4].Id,
-            //         PublisherId = publishers[3].Id,
-            //         CategoryId = categories[5].Id,
-            //         Price = 299.99f,
-            //         Language = Language.ENGLISH,
-            //         Year = new DateTime(2023, 4, 12),
-            //         Description = "Ілюстроване видання для вивчення біології.",
-            //         Cover = CoverType.SOFTCOVER,
-            //         Quantity = 6,
-            //         DiscountId = discounts[3].DiscountId,
-            //     },
-            //     new Book
-            //     {
-            //         Id = bookIds[12],
-            //         Title = "Магія свідомості",
-            //         AuthorId = authors[2].Id,
-            //         PublisherId = publishers[4].Id,
-            //         CategoryId = categories[4].Id,
-            //         Price = 355.75f,
-            //         Language = Language.UKRAINIAN,
-            //         Year = new DateTime(2020, 10, 30),
-            //         Description = "Як мозок формує нашу реальність.",
-            //         Cover = CoverType.HARDCOVER,
-            //         Quantity = 1,
-            //         DiscountId = discounts[2].DiscountId,
-            //     },
-            //     new Book
-            //     {
-            //         Id = bookIds[13],
-            //         Title = "Кохання у віртуальному світі",
-            //         AuthorId = authors[1].Id,
-            //         PublisherId = publishers[1].Id,
-            //         CategoryId = categories[1].Id,
-            //         Price = 275.99f,
-            //         Language = Language.UKRAINIAN,
-            //         Year = new DateTime(2023, 8, 8),
-            //         Description = "Сучасна історія кохання у цифрову епоху.",
-            //         Cover = CoverType.SOFTCOVER,
-            //         Quantity = 3,
-            //         DiscountId = discounts[1].DiscountId,
-            //     },
-            //     new Book
-            //     {
-            //         Id = bookIds[14],
-            //         Title = "Всесвіт всередині нас",
-            //         AuthorId = authors[0].Id,
-            //         PublisherId = publishers[2].Id,
-            //         CategoryId = categories[5].Id,
-            //         Price = 380.00f,
-            //         Language = Language.UKRAINIAN,
-            //         Year = new DateTime(2019, 12, 25),
-            //         Description = "Наукові відкриття про людське тіло та свідомість.",
-            //         Cover = CoverType.HARDCOVER,
-            //         Quantity = 5,
-            //         DiscountId = discounts[4].DiscountId,
-            //     }
-            //};
+            
 
             foreach (var book in books)
             {
@@ -1131,59 +904,16 @@ new("9fc6b407-7b59-4f69-8403-4fcdbf1bc841"),
                 }
             }
 
-
+                var imageFile = filesHelper.GetFormFileFromPath(imageFilePath, "image/jpeg");
             modelBuilder.Entity<Book>().HasData(books);
-
-
-            //modelBuilder.Entity("BookSubCategory").HasData(
-            //    // Місто зі скла – фантастика
-            //    new { BookId = books[0].Id, SubCategoryId = subCategories[0].Id }, // Космічна фантастика
-            //    new { BookId = books[0].Id, SubCategoryId = subCategories[1].Id }, // Фентезі
-
-            //    // Тіні минулого – детектив
-            //    new { BookId = books[1].Id, SubCategoryId = subCategories[3].Id }, // Кримінальний детектив
-            //    new { BookId = books[1].Id, SubCategoryId = subCategories[4].Id }, // Трилер
-
-            //    // Емоційний інтелект – психологія
-            //    new { BookId = books[2].Id, SubCategoryId = subCategories[12].Id }, // Емоційний інтелект
-
-            //    // У пошуках світла – історія
-            //    new { BookId = books[3].Id, SubCategoryId = subCategories[9].Id }, // Стародавній світ
-
-            //    // Поза межами розуму – психологія
-            //    new { BookId = books[4].Id, SubCategoryId = subCategories[13].Id }, // Саморозвиток
-
-            //    // Код надії – фантастика
-            //    new { BookId = books[5].Id, SubCategoryId = subCategories[2].Id }, // Альтернативна історія
-
-            //    // Таємниця лісу – детектив
-            //    new { BookId = books[6].Id, SubCategoryId = subCategories[5].Id }, // Поліцейський детектив
-
-            //    // Історії з майбутнього – фантастика
-            //    new { BookId = books[7].Id, SubCategoryId = subCategories[0].Id }, // Космічна фантастика
-
-            //    // Психологія впливу – психологія
-            //    new { BookId = books[8].Id, SubCategoryId = subCategories[14].Id }, // Психологія стосунків
-
-            //    // Книга мандрівника – історія
-            //    new { BookId = books[9].Id, SubCategoryId = subCategories[10].Id }, // Середньовіччя
-
-            //    // Фізика для допитливих – наукова література
-            //    new { BookId = books[10].Id, SubCategoryId = subCategories[6].Id }, // Фізика
-
-            //    // Біологія життя – наукова література
-            //    new { BookId = books[11].Id, SubCategoryId = subCategories[7].Id }, // Біологія
-
-            //    // Магія свідомості – психологія
-            //    new { BookId = books[12].Id, SubCategoryId = subCategories[12].Id }, // Емоційний інтелект
-
-            //    // Кохання у віртуальному світі – детектив
-            //    new { BookId = books[13].Id, SubCategoryId = subCategories[4].Id }, // Трилер
-
-            //    // Всесвіт всередині нас – наукова література
-            //    new { BookId = books[14].Id, SubCategoryId = subCategories[8].Id } // Астрономія
-            //);
+                book.PdfFileUrl = pdfUrl;
+                new { BookId = books[9].Id, SubCategoryId = subCategories[10].Id }, // Середньовіччя
+           
             var bookSubCategoryData = new List<object>();
+                new { BookId = books[11].Id, SubCategoryId = subCategories[7].Id }, // Біологія
+
+                // Магія свідомості – психологія
+                new { BookId = books[12].Id, SubCategoryId = subCategories[12].Id }, // Емоційний інтелект
 
             for (int i = 0; i < books.Count; i++)
             {
@@ -1192,10 +922,6 @@ new("9fc6b407-7b59-4f69-8403-4fcdbf1bc841"),
 
                 if (relevantSubCats.Count == 0)
                     continue;
-                int subCatCount = random.Next(1, Math.Min(3, relevantSubCats.Count) + 1); // максимум 3 підкатегорії
-
-                var chosenSubCats = relevantSubCats.OrderBy(x => random.Next()).Take(subCatCount).ToList();
-
                 foreach (var subCat in chosenSubCats)
                 {
                     bookSubCategoryData.Add(new
@@ -1206,10 +932,24 @@ new("9fc6b407-7b59-4f69-8403-4fcdbf1bc841"),
                 }
             }
 
-            // Далі передаємо bookSubCategoryData в modelBuilder.Entity("BookSubCategory").HasData(...)
             modelBuilder.Entity("BookSubCategory").HasData(bookSubCategoryData.ToArray());
+                    Date = DateTime.UtcNow,
+                    IsPurchased = true,
+                    BookId = books[0].Id,
+                    UserId = new Guid("69be6ab0-0ad0-4ac9-bcce-096ebfa9bb4c")
 
-
+            var feedbacks = new List<Feedback>();
+            var userIds = new[]
+            {
+                new Guid("eb65e5c5-a3bd-4da7-9c43-e722c49c0151"),
+                new Guid("0497d9e4-ec6b-4277-a268-18f61104e140"),
+                new Guid("56a1c91f-8b00-43fa-adac-19b67559c48d"),
+                new Guid("47f7e164-97d2-4f0c-ae58-173b38554658"),
+                new Guid("da4f5a5b-f2c3-4608-bd34-bf0b6431e75c"),
+                new Guid("1d848cea-362d-40d9-8821-4bc984e5e25a"),
+                new Guid("d605c572-6210-4840-918c-5348fe63815a"),
+                new Guid("34c5f3c9-9b9a-490c-91c2-1a88a22226bc"),
+                new Guid("f3c715ba-7478-43de-a35a-08cef0d55c27"),
             var feedbacks = new List<Feedback>();
             var userIds = new[]
             {
@@ -1225,7 +965,7 @@ new("9fc6b407-7b59-4f69-8403-4fcdbf1bc841"),
                 new Guid("b86c042d-a6f0-4cb8-90b4-31060f0af325"),
                 new Guid("85ddedba-fb4a-4ba9-aa1c-ad96585269a5")
             };
-
+                    IsPurchased = true,
             for (int i = 0; i < 250; i++)
             {
                 feedbacks.Add(new Feedback
@@ -1236,46 +976,13 @@ new("9fc6b407-7b59-4f69-8403-4fcdbf1bc841"),
                     Date = DateTime.Now.AddDays(-random.Next(0, 180)),
                     IsPurchased = random.Next(0, 2) == 1,
                     BookId = bookIds[random.Next(bookIds.Count)],
-                    Comment = publisherDescriptions[random.Next(publisherDescriptions.Length)]
+                    Comment = reviews[random.Next(reviews.Length)]
                 });
             }
-            //{
-            //    new Feedback
-            //    {
-            //        Id = Guid.NewGuid(),
-            //        Comment = "Чудова книга! Захоплюючий сюжет.",
-            //        Rating = 5,
-            //        Date = DateTime.UtcNow,
-            //        IsPurchased = true,
-            //        BookId = books[0].Id,
-            //        UserId = new Guid("69be6ab0-0ad0-4ac9-bcce-096ebfa9bb4c")
+                    UserId = new Guid("69be6ab0-0ad0-4ac9-bcce-096ebfa9bb4c")
 
-
-            //    },
-            //    new Feedback
-            //    {
-            //        Id = Guid.NewGuid(),
-            //        Comment = "Цікава книга, але кінець трохи розчарував.",
-            //        Rating = 4,
-            //        Date = DateTime.UtcNow,
-            //        IsPurchased = true,
-            //        BookId = books[1].Id,
-            //        UserId = new Guid("69be6ab0-0ad0-4ac9-bcce-096ebfa9bb4c")
-
-
-            //    },
-            //    new Feedback
-            //    {
-            //        Id = Guid.NewGuid(),
-            //        Comment = "Дуже корисна книга для саморозвитку.",
-            //        Rating = 5,
-            //        Date = DateTime.UtcNow,
-            //        IsPurchased = true,
-            //        BookId = books[2].Id,
-            //        UserId = new Guid("69be6ab0-0ad0-4ac9-bcce-096ebfa9bb4c")
-
-            //    }
-            //};
+                }
+            };
             modelBuilder.Entity<Feedback>().HasData(feedbacks);
         }
 

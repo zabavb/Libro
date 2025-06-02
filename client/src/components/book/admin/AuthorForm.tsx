@@ -11,9 +11,9 @@ import { dateToString } from '@/api/adapters/commonAdapters';
 import noImageUrl from '@/assets/noImage.svg'
 interface AuthorFormProps {
   existingAuthor?: Author;
-  onAddAuthor: (author: AuthorFormData) => Promise<void>;
+  onAddAuthor: (author: FormData) => Promise<void>;
   onEditAuthor: (
-    updatedAuthor: AuthorFormData,
+    updatedAuthor: FormData,
   ) => Promise<void>;
   loading: boolean;
   onIsEdit: (isEdit: boolean) => void;
@@ -40,11 +40,13 @@ const AuthorForm: React.FC<AuthorFormProps> = ({
       dateOfBirth: dateToString(new Date(new Date().getFullYear() - 18)),
       biography: '',
       citizenship: '',
+      image: undefined,
     },
   });
 
   const navigate = useNavigate();
   const [localEdit, setLocalEdit] = useState<boolean>(isEdit);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
 
   useEffect(() => {
     if (existingAuthor === undefined)
@@ -69,8 +71,30 @@ const AuthorForm: React.FC<AuthorFormProps> = ({
   }, [existingAuthor, setValue]);
 
   const onSubmit = (data: AuthorFormData) => {
-    if (existingAuthor) onEditAuthor(data);
-    else onAddAuthor(data);
+    const formData = new FormData();
+    formData.append("Name", data.name);
+    formData.append("DateOfBirth", data?.dateOfBirth ? data.dateOfBirth : '',);
+    formData.append("Biography", data.biography ?? '')
+    formData.append("Citizenship", data.citizenship ?? '')
+    if (data.image instanceof File) {
+      formData.append("Image", data.image);
+    }
+
+    if(existingAuthor){
+      formData.append("ImageUrl", existingAuthor.imageUrl ?? '');
+    }
+
+    if (existingAuthor) onEditAuthor(formData);
+    else onAddAuthor(formData);
+  };
+
+  const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      const imageUrl = URL.createObjectURL(file);
+      setImagePreview(imageUrl);
+      setValue('image', file);
+    }
   };
 
   return (
@@ -93,16 +117,23 @@ const AuthorForm: React.FC<AuthorFormProps> = ({
 
         </div>
         <div className="profile-icon">
-          <div className="icon-container-pfp">
-            <img src={loggedUser?.imageUrl ? loggedUser.imageUrl : icons.bUser} className="panel-icon" />
-          </div>
+
+            <img src={loggedUser?.imageUrl ? loggedUser.imageUrl : icons.bUser} className={`w-[43px] ${loggedUser?.imageUrl ? "bg-transparent" : "bg-[#FF642E]"} rounded-full`} />
+
           <p className="profile-name">{loggedUser?.firstName ?? "Unknown User"} {loggedUser?.lastName}</p>
         </div>
       </header>
       <main className='flex px-[55px] py-4 gap-4'>
-        <div className='flex flex-col]'>
-          <img className='w-[260px] h-[390px]' 
-          src={`${existingAuthor ? `https://picsum.photos/seed/${existingAuthor?.authorId}/260/390` : noImageUrl}`} />
+        <div className='flex flex-col'>
+                            <label
+                        htmlFor='imageUpload'
+                        className='flex items-center justify-center cursor-pointer
+           overflow-hidden bg-contain bg-no-repeat bg-center w-[260px] h-[390px]'
+                        style={{ backgroundImage: imagePreview ? `url(${imagePreview})` : existingAuthor?.imageUrl ? `url(${existingAuthor.imageUrl})` : "none", }}
+                    >
+                        {!existingAuthor?.imageUrl && (!imagePreview && <img className='w-[260px] h-[390px]' src={noImageUrl} />)}
+                    </label>
+                    <p>{errors.image?.message}</p>
         </div>
         <div className='flex flex-col gap-[33px] w-full'>
           <form onSubmit={handleSubmit(onSubmit)} className='flex flex-col gap-4 w-full'>
@@ -110,8 +141,8 @@ const AuthorForm: React.FC<AuthorFormProps> = ({
               <label className='text-sm'>Name</label>
               <input {...register('name')}
                 className='input-field'
-                placeholder='Name' 
-                disabled={!localEdit}/>
+                placeholder='Name'
+                disabled={!localEdit} />
               <p>{errors.name?.message}</p>
             </div>
             <div className='flex gap-2'>
@@ -149,6 +180,13 @@ const AuthorForm: React.FC<AuthorFormProps> = ({
             <button type='submit' disabled={loading} className='form-edit-btn fixed bottom-6 right-14'>
               {existingAuthor ? 'Save changes' : 'Add Author'}
             </button>
+            <input
+              id='imageUpload'
+              type='file'
+              accept='image/*'
+              style={{ display: 'none' }}
+              onChange={handleImageChange}
+            />
           </form>
         </div>
       </main>

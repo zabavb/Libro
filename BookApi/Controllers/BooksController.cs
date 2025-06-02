@@ -5,6 +5,9 @@ using Microsoft.AspNetCore.Mvc;
 using Library.DTOs.Book;
 using System.Linq.Expressions;
 using Microsoft.AspNetCore.Authorization;
+using BookAPI.Services;
+using Library.DTOs.UserRelated.User;
+using Library.DTOs.Order;
 
 
 namespace BookAPI.Controllers
@@ -113,13 +116,13 @@ namespace BookAPI.Controllers
             }
         }
 
-            /// <summary>
-            /// Retrieves Book names for user's details page by ID.
-            /// </summary>
-            /// <param name="ids">The unique identifiers of books which titles to retrieve.</param>
-            /// <returns>Books' titles which IDs matches with provided ones in parameters.</returns>
-            /// <response code="200">Retrieval successful, return the book titles.</response>
-            /// <response code="500">An unexpected error occured.</response>
+        /// <summary>
+        /// Retrieves Book names for user's details page by ID.
+        /// </summary>
+        /// <param name="ids">The unique identifiers of books which titles to retrieve.</param>
+        /// <returns>Books' titles which IDs matches with provided ones in parameters.</returns>
+        /// <response code="200">Retrieval successful, return the book titles.</response>
+        /// <response code="500">An unexpected error occured.</response>
         [Authorize(Roles = "ADMIN, MODERATOR")]
         [HttpGet("for-user/details")]
         public async Task<ActionResult<ICollection<string>>> GetAllForUserDetailsAsync(
@@ -137,8 +140,24 @@ namespace BookAPI.Controllers
         /// <response code="201">Book successfully created.</response>
         /// <response code="400">Invalid input data.</response>
 
+        [HttpGet("for-order/details/{id}")]
+        public async Task<ActionResult<BookOrderDetails>> GetAllForOrderDetailsAsync(Guid id)
+        {
+            if (id == Guid.Empty)
+                return NotFound($"Book ID [{id}] was not provided.");
+            try
+            {
+                var snippet = await _bookService.GetAllForOrderDetailsAsync(id);
+                return Ok(snippet);
+            }
+            catch(Exception ex)
+            {
+                return StatusCode(500, $"An error occurred: {ex.Message}");
+            }
+        }
+
         [HttpPost]
-        [Consumes("multipart/form-data")] 
+        [Consumes("multipart/form-data")]
         public async Task<ActionResult<BookDto>> Create([FromForm] BookRequest request)
         {
             if (request == null)
@@ -149,9 +168,8 @@ namespace BookAPI.Controllers
 
             try
             {
-                 await _bookService.CreateAsync(request);
+                await _bookService.CreateAsync(request);
                 return CreatedAtAction(nameof(GetById), new { id = request.BookId }, request);
-
             }
             catch (Exception ex)
             {
@@ -161,13 +179,57 @@ namespace BookAPI.Controllers
         }
 
 
+        /// <summary>
+        /// Updates an existing book.
+        /// </summary>
+        /// <param name="id">Book ID.</param>
+        /// <param name="request">Updated book data.</param>
+        /// <returns>The updated book.</returns>
+        /// <response code="200">Book successfully updated.</response>
+        /// <response code="400">Invalid input data.</response>
+        /// <response code="404">Book not found.</response>
         [HttpPut("{id}")]
         [Consumes("multipart/form-data")]
         public async Task<ActionResult> Update(Guid id, [FromForm] UpdateBookRequest request)
         {
+            var bookDto = new BookRequest()
+            {
+                BookId = request.BookId,
+                Title = request.Title,
+                AuthorId = request.AuthorId,
+                PublisherId = request.PublisherId,
+                CategoryId = request.CategoryId,
+                DiscountId = request.DiscountId,
+                SubcategoryIds = request.SubcategoryIds,
+                Price = request.Price,
+                Language = request.Language,
+                Year = request.Year,
+                Description = request.Description,
+                Cover = request.Cover,
+                Quantity = request.Quantity,
+                Image = request.Image,
+                Audio = request.Audio,
+                PDF = request.PDF
+            };
+            var discount = request.Discount;
+            if (bookDto == null)
+            {
+                _logger.LogWarning("Invalid book data provided for update.");
+                return BadRequest("Invalid data.");
+            }
             try
             {
-                await _bookService.UpdateWithDiscountAsync(id, request, _discountService);
+                /*TO BE UPDATED ON FRONTEND*/
+                /*await _bookService.UpdateWithDiscountAsync(id, request, _discountService);
+                return Ok();*/
+                bookDto.DiscountId = discount.DiscountId;
+                await _bookService.UpdateAsync(id, bookDto);
+                if (discount != null)
+                {
+                    discount.BookId = bookDto.BookId;
+                    await _discountService.UpdateAsync(discount);
+                }
+
                 return Ok();
             }
             catch (Exception ex)
@@ -207,6 +269,6 @@ namespace BookAPI.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, new { message = ex.Message });
             }
         }
-        
+
     }
 }

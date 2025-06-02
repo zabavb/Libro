@@ -60,7 +60,7 @@ const AuthPanelContainer: React.FC<AuthPanelContainerProps> = ({ setIsAuthOpen, 
         (data: NotificationData) => {
             dispatch(addNotification(data));
             if (isRegistration) navigate('/login')
-            else navigate('/');
+            else navigate('/profile');
         },
         [dispatch, navigate, isRegistration],
     );

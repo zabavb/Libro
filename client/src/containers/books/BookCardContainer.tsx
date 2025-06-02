@@ -13,7 +13,7 @@ interface BookCardContainerProps {
 	book: Book
 }
 
-const BookCardContainer: React.FC<BookCardContainerProps> = ({ book }) => {
+const BookCardContainer: React.FC<BookCardContainerProps> = ({ book  }) => {
 	const { addItem } = useCart();
 	const bookView = BookToBookView(book)
 	const navigate = useNavigate()

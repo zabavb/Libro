@@ -56,7 +56,7 @@ namespace BookAPI.Controllers
             {
                 var authors = await _authorService.GetAllAsync(pageNumber, pageSize, searchTerm, filter, sort);
 
-                if (authors == null || authors.Items == null || authors.Items.Count == 0)
+                if (authors == null || authors.Items == null)
                 {
                     _logger.LogInformation("No authors found.");
                     return NotFound("No authors found.");
@@ -107,7 +107,8 @@ namespace BookAPI.Controllers
         /// <response code="201">Returns the newly created author.</response>
         /// <response code="400">If the provided data is invalid.</response>
         [HttpPost]
-        public async Task<ActionResult<AuthorDto>> CreateAuthor([FromBody] AuthorDto authorDto)
+        [Consumes("multipart/form-data")]
+        public async Task<ActionResult<AuthorDto>> CreateAuthor([FromForm] AuthorRequest authorDto)
         {
             if (authorDto == null)
             {
@@ -117,9 +118,7 @@ namespace BookAPI.Controllers
 
             try
             {
-                /*var created = */
                 await _authorService.CreateAsync(authorDto);
-                // return CreatedAtAction(nameof(GetById), new { id = created.AuthorId }, created);
                 return CreatedAtAction(nameof(GetById), new { id = authorDto.AuthorId }, authorDto);
             }
             catch (Exception ex)
@@ -139,7 +138,8 @@ namespace BookAPI.Controllers
         /// <response code="400">If the provided data is invalid.</response>
         /// <response code="404">If the author is not found.</response>
         [HttpPut("{id}")]
-        public async Task<ActionResult<AuthorDto>> Update(Guid id, [FromBody] AuthorDto authorDto)
+        [Consumes("multipart/form-data")]
+        public async Task<ActionResult<AuthorDto>> Update(Guid id, [FromForm] AuthorRequest authorDto)
         {
             if (authorDto == null)
             {
@@ -149,15 +149,8 @@ namespace BookAPI.Controllers
 
             try
             {
-                /*var updated = */
-                await _authorService.UpdateAsync(authorDto);
-
-                /*if (updated == null)
-                {
-                    return NotFound($"Author with id {id} not found.");
-                }*/
-
-                return Ok( /*updated*/);
+                await _authorService.UpdateAsync(id, authorDto);
+                return Ok();
             }
             catch (Exception ex)
             {
@@ -178,14 +171,7 @@ namespace BookAPI.Controllers
         {
             try
             {
-                /*var isDeleted = */
                 await _authorService.DeleteAsync(id);
-
-                /*if (!isDeleted)
-                {
-                    return NotFound($"Author with id {id} not found.");
-                }*/
-
                 return NoContent();
             }
             catch (Exception ex)

@@ -21,17 +21,17 @@ const OrderAdminFormBookList: React.FC<OrderAdminFormBookListProps> = ({ books, 
                     </tr>
                 </thead>
                 <tbody>
-                    {books.map((book) => (
-                        <tr key={book.bookId}>
-                            <td style={{ cursor: "default" }}>{book.bookId}</td>
-                            <td style={{ cursor: "default" }}>{book.quantity}</td>
-                            <td style={{ cursor: "default" }}>TBD</td>
-                            <td className="text-center">
-                                <p className="list-buttons rounded-t-lg" onClick={() => onBookAdd(book.bookId)}>+</p>
-                                <p className="list-buttons rounded-b-lg" onClick={() => onBookDelete(book.bookId)}>-</p>
-                            </td>
-                        </tr>
-                    ))}
+                {Object.entries(books)?.map(([book,count]) => (
+                    <tr key={book}>
+                        <td style={{cursor:"default"}}>{book}</td>
+                        <td style={{cursor:"default"}}>{count}</td>
+                        <td style={{cursor:"default"}}>TBD</td>
+                        <td className="text-center">
+                            <p className="list-buttons rounded-t-lg" onClick={() => onBookAdd(book)}>+</p>
+                            <p className="list-buttons rounded-b-lg" onClick={() => onBookDelete(book)}>-</p>
+                        </td>
+                    </tr>
+                ))}
                 </tbody>
             </table>
         </div>

@@ -7,6 +7,7 @@ using Library.DTOs.UserRelated.User;
 using System.Text;
 using System.Text.Json;
 using Library.DTOs.Book;
+using OrderAPI;
 
 namespace APIComposer.GraphQL.Services
 {
@@ -25,7 +26,18 @@ namespace APIComposer.GraphQL.Services
             }
         }
 
-        public async Task<OrderForUserCard> GetOrderAsync(Guid id)
+        public async Task<Order> GetOrderAsync(Guid id)
+        {
+            SetAuthHeader();
+            var response = await _http.GetAsync($"orders/{id}");
+
+            if (!response.IsSuccessStatusCode)
+                await ErrorHandler.HandleErrorResponseAsync(response);
+
+            return (await response.Content.ReadFromJsonAsync<Order>())!;
+        }
+
+        public async Task<OrderForUserCard> GetOrderForUserAsync(Guid id)
         {
             try
             {
@@ -101,7 +113,7 @@ namespace APIComposer.GraphQL.Services
             int pageNumber = 1,
             int pageSize = 10,
             string? searchTerm = null,
-            Filter? filter = null,
+            OrderFilter? filter = null,
             OrderAPI.OrderSort? sort = null)
         {
             try
@@ -114,7 +126,7 @@ namespace APIComposer.GraphQL.Services
                     sort
                 );
 
-                var response = await _http.GetAsync(query.ToString());
+                var response = await _http.GetAsync($"orders?{query}");
 
                 if (!response.IsSuccessStatusCode)
                 {
@@ -123,6 +135,40 @@ namespace APIComposer.GraphQL.Services
                 }
 
                 return (await response.Content.ReadFromJsonAsync<PaginatedResult<Order>>())!;
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
+        public async Task<PaginatedResult<OrderWithUserName>?> GetAllOrdersWithUserNameAsync(
+           int pageNumber,
+           int pageSize,
+           string? searchTerm,
+           OrderFilter? filter,
+           OrderSort? sort)
+        {
+            try
+            {
+                SetAuthHeader();
+
+                var query = QueryBuilder.BuildQuery(
+                    new { pageNumber, pageSize, searchTerm },
+                    filter,
+                    sort
+                );
+
+                var response = await _http.GetAsync($"orders?{query}");
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    await ErrorHandler.HandleErrorResponseAsync(response);
+                    return null;
+                }
+                var test = await response.Content.ReadFromJsonAsync<PaginatedResult<OrderWithUserName>>();
+                Console.WriteLine(test);
+                return test!;
             }
             catch (Exception ex)
             {

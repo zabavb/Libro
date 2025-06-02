@@ -42,9 +42,8 @@ const PublisherList: React.FC<PublisherListProps> = ({
                     </p>
                 </button>
                 <div className="profile-icon">
-                    <div className="icon-container-pfp">
-                        <img src={user?.imageUrl ? user.imageUrl : icons.bUser} className="panel-icon" />
-                    </div>
+                    <img src={user?.imageUrl ? user.imageUrl : icons.bUser} className={`w-[43px] ${user?.imageUrl ? "bg-transparent" : "bg-[#FF642E]"} rounded-full`} />
+
                     <p className="profile-name">{user?.firstName ?? "Unknown User"} {user?.lastName}</p>
                 </div>
 
@@ -56,18 +55,18 @@ const PublisherList: React.FC<PublisherListProps> = ({
                             All publishers
                         </p>
                         <div className="flex flex-col gap-2.5">
-                        {loading ? (
+                            {loading ? (
                                 <div style={{ textAlign: "center", height: `${pagination.pageSize * 65}px` }}>
                                     Loading...
                                 </div>
-                        )
-                            : (
-                                <>
-                                    {publishers.map((publisher) => (
-                                        <PublisherAdminCardContainer publisher={publisher} key={publisher.publisherId} />
-                                    ))}
-                                </>
-                            )}
+                            )
+                                : (
+                                    <>
+                                        {publishers.map((publisher) => (
+                                            <PublisherAdminCardContainer publisher={publisher} key={publisher.publisherId} />
+                                        ))}
+                                    </>
+                                )}
                         </div>
                     </div>
                 ) : (

@@ -43,11 +43,17 @@ const CartPanel: React.FC = () => {
 
     return (
         <div>
-            <img src={cartIcon}
-                className='cursor-pointer'
-                onClick={() => setIsOpen(true)}
-            />
+            <div className="relative cursor-pointer" onClick={() => setIsOpen(true)}>
+                <img 
+                    src={cartIcon}
+                />
+                {cart.length > 0 && (                
+                <div className="cart-counter-container">
+                    {cart.length}
+                </div>)
+                }
 
+            </div>
             <div
                 className={`dim ${isOpen && 'visible'}`}
                 aria-hidden={!isOpen}
@@ -88,7 +94,7 @@ const CartPanel: React.FC = () => {
                     <div className="cart-footer">
                         <div className="flex justify-between font-semibold text-2xl">
                             <p>Total</p>
-                            <p>{total} UAH</p>
+                            <p>{total.toFixed(2)} UAH</p>
                         </div>
                         <div>
                             <button className="checkout-btn" onClick={() => navigate("/checkout")}>To Checkout</button>

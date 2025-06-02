@@ -25,11 +25,11 @@ const BookDetailsContainer: React.FC<BookDetailsContainerProps> = ({ bookId }) =
 
     useEffect(() => {
         if (!bookId) return;
-
+        console.log("hello3");
         (async () => {
+            console.log("hello2")
             const response = await fetchBookByIdService(bookId);
             setServiceResponse(response);
-            console.log(response)
             if (response.error)
                 dispatch(addNotification({ message: response.error, type: 'error' }));
         })();

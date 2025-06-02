@@ -1,4 +1,5 @@
 using AutoMapper;
+using Library.DTOs.Order;
 using Library.DTOs.UserRelated.User;
 
 namespace APIComposer.GraphQL
@@ -30,6 +31,13 @@ namespace APIComposer.GraphQL
                 .ForPath(dest => dest.Orders, opt => opt.MapFrom(src => src.orders))
                 .ForPath(dest => dest.Feedbacks, opt => opt.MapFrom(src => src.feedbacks))
                 .ForPath(dest => dest.Subscriptions, opt => opt.MapFrom(src => src.user.Subscriptions));
+
+            CreateMap<(Order order, BookOrderDetails bookDetails), OrderDetails>()
+                .ForMember(dest => dest.OrderId, opt => opt.MapFrom(src => src.order.Id))
+                .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.order.Status))
+                .ForMember(dest => dest.Created, opt => opt.MapFrom(src => src.order.OrderDate))
+                .ForMember(dest => dest.Price, opt => opt.MapFrom(src => src.order.Price + src.order.DeliveryPrice))
+                .ForMember(dest => dest.OrderBooks, opt => opt.MapFrom(src => src.bookDetails));
         }
     }
 }

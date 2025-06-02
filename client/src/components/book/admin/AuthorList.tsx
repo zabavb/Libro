@@ -49,9 +49,8 @@ const AuthorList: React.FC<AuthorListProps> = ({
                     </p>
                 </button>
         <div className="profile-icon">
-          <div className="icon-container-pfp">
-            <img src={user?.imageUrl ? user.imageUrl : icons.bUser} className="panel-icon" />
-          </div>
+            <img src={user?.imageUrl ? user.imageUrl : icons.bUser} className={`w-[43px] ${user?.imageUrl ? "bg-transparent" : "bg-[#FF642E]"} rounded-full`} />
+
           <p className="profile-name">{user?.firstName ?? "Unknown User"} {user?.lastName}</p>
         </div>
 
@@ -61,7 +60,7 @@ const AuthorList: React.FC<AuthorListProps> = ({
                     <div className="flex flex-col w-full">
                         <div className="flex flex-row-reverse">
                             <p className="counter">
-                                ({pagination.totalCount}) authors
+                                Found authors ({pagination.totalCount})
                             </p>
                         </div>
                         <div className="table-wrapper">

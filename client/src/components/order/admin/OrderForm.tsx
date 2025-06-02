@@ -9,9 +9,8 @@ import OrderFormBookSearch from "./OrderFormBookSearch";
 import { useNavigate } from "react-router-dom";
 import "@/assets/styles/components/order/order-form.css"
 import "@/assets/styles/base/status-display.css"
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 import OrderAdminFormBookList from "./OrderAdminFormBookList";
+import {icons} from '@/lib/icons'
 interface OrderFormProps {
     existingOrder?: Order;
     onEditOrder: (existingOrder: Order) => Promise<void>;
@@ -49,15 +48,20 @@ const OrderForm: React.FC<OrderFormProps> = ({ existingOrder, onEditOrder }) => 
     const statusValue = watch("status");
 
     useEffect(() => {
-        if (existingOrder) {
-            setBookObjs(existingOrder.books)
+        if (existingOrder && Array.isArray(existingOrder.books)) {
+            const record: Record<string, number> = {};
+            for (const book of existingOrder.books) {
+                record[book.key] = book.value;
+            }
+            setBookObjs(record);
         }
     }, [existingOrder])
 
     useEffect(() => {
+
         if (existingOrder) {
             setValue("userId", existingOrder.userId)
-            setValue("books", existingOrder.books);
+            setValue("books", bookObjs);
             setValue("region", existingOrder.region)
             setValue("city", existingOrder.city)
             setValue("address", existingOrder.address)
@@ -70,9 +74,10 @@ const OrderForm: React.FC<OrderFormProps> = ({ existingOrder, onEditOrder }) => 
         }
     }, [existingOrder, setValue, navigate])
 
+
+
     const onSubmit = (data: OrderFormData) => {
         const id = existingOrder?.id ?? "";
-
         const order: Order = {
             id: id,
             userId: data.userId,
@@ -87,15 +92,15 @@ const OrderForm: React.FC<OrderFormProps> = ({ existingOrder, onEditOrder }) => 
             deliveryTypeId: data.deliveryTypeId,
             status: statusEnumToNumber(data.status)
         }
-
         if (existingOrder) {
             onEditOrder(order)
             console.log("Order edited")
         }
-        else {
-            console.log("Order Does not exist")
-        }
     }
+
+    useEffect(() => {
+    console.log("Validation errors:", errors);
+    }, [errors]);
 
     const handleBookAdd = (bookId: string) => {
         setBookObjs((prev) => ({
@@ -124,18 +129,19 @@ const OrderForm: React.FC<OrderFormProps> = ({ existingOrder, onEditOrder }) => 
 
     return (
         <div>
-            <header className="header-container">
-                <div className="flex h-10 gap-2.5">
-                    <button className="cancel-button" onClick={() => navigate('/admin/orders')}><FontAwesomeIcon icon={faArrowLeft} /></button>
-                    <button className="update-button" type="submit">Update</button>
-                </div>
-
-                <div className="profile-icon">
-                    <div style={{ borderRadius: "50%", backgroundColor: "grey", height: "43px", width: "43px" }}></div>
-                    <p className="profile-name">Name Surname</p>
-                </div>
-            </header>
             <form onSubmit={handleSubmit(onSubmit)}>
+
+                <header className="header-container">
+                    <div className="flex h-10 gap-2.5">
+                        <button className="cancel-button" type="button" onClick={() => navigate('/admin/orders')}><img src={icons.oArrowLeft}/></button>
+                        <button className="update-button" type="submit">Update</button>
+                    </div>
+
+                    <div className="profile-icon">
+                        <div style={{ borderRadius: "50%", backgroundColor: "grey", height: "43px", width: "43px" }}></div>
+                        <p className="profile-name">Name Surname</p>
+                    </div>
+                </header>
                 <main className="main-container">
                     {/* Left form */}
                     <div className="main-form-container">
@@ -220,7 +226,7 @@ const OrderForm: React.FC<OrderFormProps> = ({ existingOrder, onEditOrder }) => 
                             <OrderFormBookSearch
                                 onBookAdd={handleBookAdd}
                             />
-                            <div className="overflow-auto" style={{maxHeight:"900px"}}>
+                            <div className="overflow-auto" style={{ maxHeight: "900px" }}>
                                 <OrderAdminFormBookList
                                     books={bookObjs}
                                     onBookDelete={handleBookDelete}

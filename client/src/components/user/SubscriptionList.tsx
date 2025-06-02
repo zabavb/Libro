@@ -13,6 +13,7 @@ interface SubscriptionListProps {
   onNavigate: (path: string) => void;
   onSearchTermChange: (searchTerm: string) => void;
   searchTerm: string;
+  onDeleted: (subscriptionId: string) => void;
 }
 
 const SubscriptionList: React.FC<SubscriptionListProps> = ({
@@ -23,6 +24,7 @@ const SubscriptionList: React.FC<SubscriptionListProps> = ({
   searchTerm,
   onSearchTermChange,
   onNavigate,
+  onDeleted,
 }) => {
   const Card = ({
     index,
@@ -32,7 +34,11 @@ const SubscriptionList: React.FC<SubscriptionListProps> = ({
     style: React.CSSProperties;
   }) => (
     <div style={style}>
-      <SubscriptionCardContainer subscription={subscriptions[index]} />
+      <SubscriptionCardContainer
+        key={subscriptions[index].id}
+        subscription={subscriptions[index]}
+        onDeleted={() => onDeleted(subscriptions[index].id)}
+      />
     </div>
   );
 

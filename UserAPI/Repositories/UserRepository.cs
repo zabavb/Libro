@@ -19,6 +19,12 @@ namespace UserAPI.Repositories
         private readonly TimeSpan _cacheExpiration = TimeSpan.FromMinutes(GlobalDefaults.cacheExpirationTime);
         private readonly ILogger<IUserRepository> _logger = logger;
 
+        private readonly JsonSerializerOptions _options = new JsonSerializerOptions
+        {
+            ReferenceHandler = ReferenceHandler.Preserve,
+            WriteIndented = false
+        };
+
         public async Task<PaginatedResult<User>> GetAllAsync(
             int pageNumber,
             int pageSize,
@@ -138,17 +144,16 @@ namespace UserAPI.Repositories
 
         public async Task<User?> GetByIdAsync(Guid id)
         {
+            string cacheKey = $"{CacheKeyPrefix}{id}";
+            string fieldKey = id.ToString();
             try
             {
-                string cacheKey = $"{CacheKeyPrefix}{id}";
-                string fieldKey = id.ToString();
-
                 var cachedUser = await _redisDatabase.HashGetAsync(cacheKey, fieldKey);
 
                 if (!cachedUser.IsNullOrEmpty)
                 {
                     _logger.LogInformation("Fetched from CACHE.");
-                    return JsonSerializer.Deserialize<User>(cachedUser!);
+                    return JsonSerializer.Deserialize<User>(cachedUser!, _options);
                 }
 
                 var user = await _context.Users
@@ -165,7 +170,7 @@ namespace UserAPI.Repositories
                 await _redisDatabase.HashSetAsync(
                     cacheKey,
                     fieldKey,
-                    JsonSerializer.Serialize(user)
+                    JsonSerializer.Serialize(user, _options)
                 );
                 _logger.LogInformation("Set to CACHE.");
 

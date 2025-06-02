@@ -10,16 +10,20 @@ using System.Linq.Expressions;
 using Library.DTOs.Book;
 using Book = BookAPI.Models.Book;
 using Library.Sorts;
+using BookAPI.Repositories;
+using SubCategory = BookAPI.Models.SubCategory;
+using Library.DTOs.Order;
 
 namespace BookAPI.Services
 {
     public class BookService(
-        IBookRepository bookRepository, IDiscountRepository discountRepository,
+        IBookRepository bookRepository, IDiscountRepository discountRepository, ISubCategoryRepository subcategoryRepository,
         IMapper mapper,
         ILogger<BookService> logger,
         S3StorageService storageService) : IBookService
     {
         private readonly IBookRepository _bookRepository = bookRepository;
+        private readonly ISubCategoryRepository _subcategoryRepository = subcategoryRepository;
         private readonly IMapper _mapper = mapper;
         private readonly ILogger<BookService> _logger = logger;
         private readonly S3StorageService _storageService = storageService;
@@ -74,6 +78,7 @@ namespace BookAPI.Services
                 return null;
             }
         }
+
         public async Task<DiscountDTO?> GetDiscountByBookIdAsync(Guid bookId)
         {
             if (bookId == Guid.Empty)
@@ -113,6 +118,15 @@ namespace BookAPI.Services
 
             try
             {
+                var subcategories = new List<SubCategory>();
+                foreach (var subId in request.SubcategoryIds)
+                {
+                    var subcategory = await _subcategoryRepository.GetByIdAsync(subId);
+                    if (subcategory != null)
+                        subcategories.Add(subcategory);
+                }
+
+                book.Subcategories = subcategories;
                 await _bookRepository.CreateAsync(book);
                 _logger.LogInformation($"Successfully created book with id {book.Id}");
             }
@@ -160,6 +174,20 @@ namespace BookAPI.Services
                 }
 
                 _mapper.Map(request, existingBook);
+
+                var subcategories = new List<SubCategory>();
+
+                foreach (var subId in request.SubcategoryIds)
+                {
+                    var subcategory = await _subcategoryRepository.GetByIdAsync(subId);
+                    if (subcategory != null)
+                    {
+                        subcategories.Add(subcategory);
+                    }
+                }
+
+                existingBook.Subcategories = subcategories;
+
                 await _bookRepository.UpdateAsync(existingBook);
                 _logger.LogInformation($"Successfully updated book with id {id}");
             }
@@ -201,7 +229,22 @@ namespace BookAPI.Services
 
         public async Task UpdateWithDiscountAsync(Guid id, UpdateBookRequest request, IDiscountService discountService)
         {
-            var bookDto = request.Book;
+            var bookDto = new BookDto()
+            {
+                BookId = request.BookId,
+                Title = request.Title,
+                AuthorId = request.AuthorId,
+                PublisherId = request.PublisherId,
+                CategoryId = request.CategoryId,
+                DiscountId = request.DiscountId,
+                Price = request.Price,
+                Language = request.Language,
+                Year = request.Year,
+                Description = request.Description,
+                Cover = request.Cover,
+                Quantity = request.Quantity,
+                Image = request.Image,
+            }; ;
             var discount = request.Discount;
 
             if (bookDto == null)
@@ -248,6 +291,19 @@ namespace BookAPI.Services
             await _bookRepository.UpdateAsync(existingBook);
             _logger.LogInformation($"Successfully updated book with id {id} and processed discount.");
         }
+
+        public async Task<BookOrderDetails?> GetAllForOrderDetailsAsync(Guid bookId)
+        {
+            try
+            {
+                return await _bookRepository.GetAllForOrderDetailsAsync(bookId);
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
 
     }
 }

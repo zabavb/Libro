@@ -4,6 +4,7 @@ using Library.DTOs.Book;
 
 namespace APIComposer.GraphQL.Queries
 {
+    [ExtendObjectType(OperationTypeNames.Query)]
     public class BookQuery
     {
         

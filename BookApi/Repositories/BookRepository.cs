@@ -10,14 +10,17 @@ using Library.Common;
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using BookOrderDetails = Library.DTOs.Order.BookOrderDetails;
+using Amazon.Runtime.Internal;
 
 namespace BookAPI.Repositories
 {
     public class BookRepository(
         BookDbContext context,
-        ICacheService cacheService, ILogger<BookRepository> logger) : IBookRepository
+        ICacheService cacheService, ISubCategoryRepository subCategoryRepository, ILogger<BookRepository> logger) : IBookRepository
     {
         private readonly BookDbContext _context = context;
+        private readonly ISubCategoryRepository _subCategoryRepository = subCategoryRepository;
         private readonly ILogger<IBookRepository> _logger = logger;
         private readonly string _cacheKeyPrefix = "Book_";
         private readonly TimeSpan _cacheExpiration = TimeSpan.FromMinutes(GlobalConstants.DefaultCacheExpirationTime);
@@ -30,11 +33,11 @@ namespace BookAPI.Repositories
         };
 
         public async Task<PaginatedResult<Book>> GetAllAsync(
-     int pageNumber,
-     int pageSize,
-     string? searchTerm,
-     BookFilter? filter,
-     BookSort? sort)
+             int pageNumber,
+             int pageSize,
+             string? searchTerm,
+             BookFilter? filter,
+             BookSort? sort)
         {
             var filterJson = filter != null ? JsonSerializer.Serialize(filter, _jsonOptions) : "";
             var sortJson = sort != null ? JsonSerializer.Serialize(sort, _jsonOptions) : "";
@@ -161,6 +164,18 @@ namespace BookAPI.Repositories
         {
             ArgumentNullException.ThrowIfNull(entity);
             entity.Id = Guid.NewGuid();
+            if (entity.Subcategories != null)
+            {
+                var newSubcategories = await _context.Subcategories
+                    .Where(sc => entity.Subcategories.Select(s => s.Id).Contains(sc.Id))
+                    .ToListAsync();
+
+                entity.Subcategories.Clear();
+                foreach (var sub in newSubcategories)
+                {
+                    entity.Subcategories.Add(sub);
+                }
+            }
             _context.Books.Add(entity);
             await _context.SaveChangesAsync();
 
@@ -180,11 +195,22 @@ namespace BookAPI.Repositories
 
         public async Task UpdateAsync(Book entity)
         {
-            var a = _context.Books.ToList();
-            var b = entity.Id;
-            var existingBook = await _context.Books.FirstOrDefaultAsync(b => b.Id == entity.Id)
+            var existingBook = await _context.Books
+                .Include(b => b.Subcategories).FirstOrDefaultAsync(b => b.Id == entity.Id)
                                ?? throw new KeyNotFoundException("Book not found");
 
+            if (entity.Subcategories != null)
+            {
+                var newSubcategories = await _context.Subcategories
+                    .Where(sc => entity.Subcategories.Select(s => s.Id).Contains(sc.Id))
+                    .ToListAsync();
+
+                existingBook.Subcategories.Clear();
+                foreach (var sub in newSubcategories)
+                {
+                    existingBook.Subcategories.Add(sub);
+                }
+            }
             _context.Entry(existingBook).CurrentValues.SetValues(entity);
             await _context.SaveChangesAsync();
 
@@ -225,6 +251,46 @@ namespace BookAPI.Repositories
             _logger.LogInformation("Book deleted from DB and cache.");
         }
 
+        public async Task<BookOrderDetails> GetAllForOrderDetailsAsync(Guid bookId)
+        {
+/*            string cacheKey = $"{_cacheKeyPrefix}{bookId}_details";
+            var cachedDetails = await _cacheService.GetAsync<BookOrderDetails>(cacheKey);
+            if (cachedDetails != null)
+            {
+                _logger.LogInformation("Fetched from CACHE.");
+                return cachedDetails;
+            }*/
+            try
+            {
+                var book = await _context.Books
+                        .AsNoTracking()
+                        .Where(b => b.Id == bookId)
+                        .Include(b => b.Author)
+                        .Select(b => new BookOrderDetails()
+                        {
+                            BookId = bookId,
+                            AuthorName = b.Author.Name,
+                            //CoverType = b.Cover,
+                            Price = b.Price,
+                            Title = b.Title,
+                            ImageUrl = b.ImageUrl
+                        }).FirstOrDefaultAsync();
+                _logger.LogInformation("Fetched from DB.");
+/*
+                if (book != null)
+                {
+                    await _cacheService.SetAsync(cacheKey, book, _cacheExpiration);
+                }*/
+
+                return book;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+                return null;
+            }
+
+        }
 
     }
 }

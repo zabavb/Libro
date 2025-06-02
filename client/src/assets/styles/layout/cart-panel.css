@@ -30,3 +30,8 @@
     @apply text-[#1A1D23] bg-[#FF642E] py-3.5 px-20 w-full;
     border-radius: 44px;
 }
+
+.cart-counter-container{
+    @apply absolute -right-2 -bottom-1 h-5 w-5 bg-[#FF642E] rounded-full text-white text-center font-semibold;
+    font-size: 12px;
+}

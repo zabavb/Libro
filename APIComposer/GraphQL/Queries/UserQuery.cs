@@ -7,6 +7,7 @@ using UserAPI.Models.Sorts;
 
 namespace APIComposer.GraphQL.Queries
 {
+    [ExtendObjectType(OperationTypeNames.Query)]
     public class UserQuery
     {
         [GraphQLName("allUsers")]
@@ -25,7 +26,7 @@ namespace APIComposer.GraphQL.Queries
 
             foreach (var user in users.Items)
             {
-                var order = await orderClient.GetOrderAsync(user.Id);
+                var order = await orderClient.GetOrderForUserAsync(user.Id);
                 var userCard = mapper.Map<UserCard>((user, order));
                 userCards.Add(userCard);
             }

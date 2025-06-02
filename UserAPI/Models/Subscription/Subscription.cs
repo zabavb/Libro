@@ -12,9 +12,9 @@
 
         public ICollection<UserSubscription>? UserSubscriptions { get; set; }
 
-        public Subscription(string title, int expirationDays, float price, string subdescription, string? description)
+        public Subscription(Guid id, string title, int expirationDays, float price, string subdescription, string? description)
         {
-            SubscriptionId = Guid.NewGuid();
+            SubscriptionId = id;
             Title = title;
             ExpirationDays = expirationDays;
             Price = price;

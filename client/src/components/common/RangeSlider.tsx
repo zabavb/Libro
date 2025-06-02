@@ -40,6 +40,7 @@ const RangeSlider: React.FC<RangeSliderProps> = ({
     >
       <div className="flex justify-between">
         <p className="price-limit">{min}</p>
+        <p className="price-limit">{value}</p>
         <p className="price-limit">{max}</p>
       </div>
       <div className="relative w-full h-6">

@@ -48,7 +48,7 @@ export type { GraphQLResponse } from './subTypes/GraphQLResponse';
 export type { PaginatedResponse } from './subTypes/PaginatedResponse';
 export { Role } from './subTypes/user/Role';
 export { RoleView } from './subTypes/user/RoleView';
-export { Status } from './subTypes/Status';
+export { Status } from './subTypes/order/Status';
 export { EmailDomen } from './subTypes/user/EmailDomen';
 export { EmailViewDomen } from './subTypes/user/EmailViewDomen';
 export { Bool } from './subTypes/Bool';

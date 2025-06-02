@@ -47,7 +47,7 @@ import CategoriesListPage from './pages/admin/bookRelated/categories/CategoriesL
 import CategoryFormPage from './pages/admin/bookRelated/categories/CategoryFormPage';
 import SubCategoryFormPage from './pages/admin/bookRelated/categories/SubCategoryFormPage';
 import { CartProvider } from './state/context/CartContext';
-
+import BookFormPage from './pages/admin/bookRelated/books/BookFormPage';
 const AppRoutes = () => (
   <AuthProvider>
     <CartProvider>
@@ -106,6 +106,8 @@ const AppRoutes = () => (
               />
               {/*BOOKS*/}
               <Route path='/admin/booksRelated/books' element={<BookListPage />} />
+              <Route path='/admin/booksRelated/book/add' element={<BookFormPage />} />
+              <Route path='/admin/booksRelated/book/:bookId' element={<BookFormPage />} />
               {/* AUTHOR */}
               <Route path='/admin/booksRelated/authors' element={<AuthorsListPage />} />
               <Route path='/admin/booksRelated/author/add' element={<AuthorFormPage />} />
