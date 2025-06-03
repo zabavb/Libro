@@ -5,6 +5,7 @@ import { dateToString } from './commonAdapters';
 import { AuthorFormData, CategoryFormData, PublisherFormData, SubCategoryFormData } from '@/utils';
 import { Publisher } from '@/types/types/book/Publisher';
 import { BookFormData } from '@/utils/bookValidationSchema';
+import { BookCard, BookDetails } from '@/types/types/book/BookDetails';
 
 export const languageNumberToEnum = (languageNumber: number): Language => {
   const languageMap: { [key: number]: Language } = {
@@ -76,6 +77,19 @@ export const BookToBookView = (response: Book): BookView => {
     endDate: response.endDate,
     //subcategoryIds: response.subcategoryIds,
     imageUrl: response.imageUrl,
+  };
+};
+
+
+export const BookDetailsToBookCard = (response: BookDetails): BookCard => {
+  return {
+    bookId: response.bookId,
+    title: response.title,
+    price: response.price,
+    imageUrl: response.imageUrl,
+    authorId: response.authorId,
+    authorName: response.authorName,
+    isAvailable: response.quantity > 0,
   };
 };
 

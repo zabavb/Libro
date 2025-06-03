@@ -16,7 +16,7 @@ namespace BookAPI.Services.Interfaces
             BookFilter? filter,
             BookSort? sort
         );
-        Task<BookDto> GetByIdAsync(Guid bookId);
+        Task<BookDetails> GetByIdAsync(Guid bookId);
         Task<ICollection<string>?> GetAllForUserDetailsAsync(ICollection<Guid> ids);
         Task /*<BookDto>*/ CreateAsync(BookRequest bookDto);
         Task /*<BookDto>*/ UpdateAsync(Guid id, BookRequest bookDto);

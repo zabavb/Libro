@@ -19,6 +19,8 @@ namespace BookAPI.Repositories.Interfaces
             BookSort? sort
         );
 
+        Task<BookDetails?> GetDetailsAsync(Guid bookId);
+
         Task<ICollection<string>> GetAllForUserDetailsAsync(ICollection<Guid> ids);
         Task<BookOrderDetails> GetAllForOrderDetailsAsync(Guid bookId);
     }

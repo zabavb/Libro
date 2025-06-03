@@ -1,8 +1,7 @@
 import axios from "axios"
 import { BOOKS_PAGINATED, BOOKS, BOOK_BY_ID } from "../index"
 import { PaginatedResponse } from "../../types"
-import { Book } from "../../types/objects/Book"
-import { BookCard } from "@/types/types/book/BookDetails";
+import { BookCard, BookDetails } from "@/types/types/book/BookDetails";
 
 interface BookQueryParams {
     author?: string;
@@ -37,8 +36,8 @@ export const getAllBooks = async (
 /**
  * Fetch a single book by its ID.
  */
-export const getBookById = async (id: string): Promise<Book> => {
-    const response = await axios.get<Book>(BOOK_BY_ID(id));
+export const getBookById = async (id: string): Promise<BookDetails> => {
+    const response = await axios.get<BookDetails>(BOOK_BY_ID(id));
     return response.data;
 };
 

@@ -1,8 +1,8 @@
 import React from 'react';
-import '@/assets/styles/base/range-slider.css'
+import { Feedback } from '@/types';
 
 interface FeedbackCardProps {
-    feedbackId: string;
+    feedback: Feedback;
 }
 
 

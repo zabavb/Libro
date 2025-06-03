@@ -12,12 +12,13 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using BookOrderDetails = Library.DTOs.Order.BookOrderDetails;
 using Amazon.Runtime.Internal;
+using AutoMapper;
 
 namespace BookAPI.Repositories
 {
     public class BookRepository(
         BookDbContext context,
-        ICacheService cacheService, ISubCategoryRepository subCategoryRepository, ILogger<BookRepository> logger) : IBookRepository
+        ICacheService cacheService, ISubCategoryRepository subCategoryRepository, ILogger<BookRepository> logger, IMapper mapper) : IBookRepository
     {
         private readonly BookDbContext _context = context;
         private readonly ISubCategoryRepository _subCategoryRepository = subCategoryRepository;
@@ -25,6 +26,7 @@ namespace BookAPI.Repositories
         private readonly string _cacheKeyPrefix = "Book_";
         private readonly TimeSpan _cacheExpiration = TimeSpan.FromMinutes(GlobalConstants.DefaultCacheExpirationTime);
         private readonly ICacheService _cacheService = cacheService;
+        private readonly IMapper _mapper = mapper;
 
         private readonly JsonSerializerOptions _jsonOptions = new JsonSerializerOptions
         {
@@ -98,7 +100,7 @@ namespace BookAPI.Repositories
                 {
                     BookId = book.Id,
                     Title = book.Title,
-                    AuthorId = book.Author.Id,
+                    AuthorId = book.AuthorId,
                     AuthorName = book.Author.Name,
                     ImageUrl = book.ImageUrl,
                     CategoryName = book.Category.Name,
@@ -156,6 +158,98 @@ namespace BookAPI.Repositories
 
             return book;
         }
+
+        public async Task<BookDetails?> GetDetailsAsync(Guid id)
+        {
+            if (id == Guid.Empty)
+                throw new ArgumentException("Id cannot be empty.", nameof(id));
+
+            string cacheKey = $"{_cacheKeyPrefix}{id}";
+            var cachedBook = await _cacheService.GetAsync<BookDetails>(cacheKey, _jsonOptions);
+
+            if (cachedBook != null)
+            {
+                _logger.LogInformation("Fetched from CACHE.");
+                return cachedBook;
+            }
+
+            _logger.LogInformation("Fetched from DB.");
+            var book = await _context.Books
+                .Include(b => b.Author)
+                .Include(b => b.Category)
+                .Include(b => b.Publisher)
+                .Include(b => b.Feedbacks)
+                .Include(b => b.Subcategories)
+                .FirstOrDefaultAsync(b => b.Id == id);
+
+            int rating = 0;
+            List<FeedbackDto> latestFeedbacks = new List<FeedbackDto>();
+            foreach (Feedback feedback in book.Feedbacks)
+            {
+                rating += feedback.Rating;
+                if (latestFeedbacks.Count < 2)
+                {
+                    latestFeedbacks.Add(new FeedbackDto()
+                    {
+                        FeedbackId = feedback.Id,
+                        UserId = feedback.UserId,
+                        BookId = feedback.BookId,
+                        Date = feedback.Date,
+                        Comment = feedback.Comment,
+                        IsPurchased = feedback.IsPurchased,
+                        Rating = feedback.Rating
+                    });
+                }
+            }
+
+            List<string> tags = new List<string>();
+
+            foreach (SubCategory subCategory in book.Subcategories)
+            {
+                tags.Add(subCategory.Name);
+            }
+
+            var bookDetails = new BookDetails()
+            {
+                BookId = book.Id,
+                hasDigital = !string.IsNullOrEmpty(book.PdfFileUrl),
+                Price = book.Price,
+                Cover = book.Cover,
+                Language = book.Language,
+                ImageUrl = book.ImageUrl,
+                Description = book.Description,
+                Quantity = book.Quantity,
+                Title = book.Title,
+                Year = book.Year,
+
+                PublisherName = book.Publisher.Name,
+
+                Subcategories = tags,
+
+                CategoryName = book.Category.Name,
+
+                AuthorId = book.AuthorId,
+                AuthorName = book.Author.Name,
+                AuthorDescription = book.Author.Biography ?? "",
+                AuthorImageUrl = book.Author.ImageUrl,
+                LatestFeedback = latestFeedbacks,
+
+                BookFeedbacks = new BookFeedbacks()
+                {
+                    AvgRating = rating / (book.Feedbacks.Count() > 0 ? book.Feedbacks.Count() : 1),
+                    FeedbackAmount = book.Feedbacks.Count()
+                }
+            };
+
+            if (bookDetails != null)
+            {
+                _logger.LogInformation("Set to CACHE.");
+                await _cacheService.SetAsync(cacheKey, bookDetails, _cacheExpiration, _jsonOptions);
+            }
+
+            return bookDetails;
+        }
+
 
         public async Task<ICollection<string>> GetAllForUserDetailsAsync(ICollection<Guid> ids)
         {

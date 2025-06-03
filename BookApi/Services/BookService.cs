@@ -53,10 +53,10 @@ namespace BookAPI.Services
             };
         }
 
-        public async Task<BookDto> GetByIdAsync(Guid id)
+        public async Task<BookDetails> GetByIdAsync(Guid id)
         {
-            var book = await _bookRepository.GetByIdAsync(id);
-
+            var book = await _bookRepository.GetDetailsAsync(id);
+            
             if (book == null)
             {
                 _logger.LogWarning($"No book with id {id}");
@@ -64,7 +64,7 @@ namespace BookAPI.Services
             }
 
             _logger.LogInformation($"Successfully found book with id {id}");
-            return _mapper.Map<BookDto>(book);
+            return book;
         }
 
         public async Task<ICollection<string>?> GetAllForUserDetailsAsync(ICollection<Guid> ids)
