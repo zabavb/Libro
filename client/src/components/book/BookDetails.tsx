@@ -58,7 +58,7 @@ const BookDetails: React.FC<BookDetailsProps> = ({ onAddItem, book, loading }) =
                             {Array.from({ length: MAX_STARS }).map((_, index) => (
                             <img
                                 key={index}
-                                src={index < (book.bookFeedbacks.avgRating ?? 0) ? icons.oStarFilled : icons.oStarFilled}
+                                src={index < (book.bookFeedbacks.avgRating ?? 0) ? icons.oStarFilled : icons.oStarEmpty}
                                 alt={index < (book.bookFeedbacks.avgRating ?? 0) ? "Filled star" : "Empty star"}
                             />
                             ))}       
