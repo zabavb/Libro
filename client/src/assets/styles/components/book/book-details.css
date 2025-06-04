@@ -42,7 +42,7 @@
 }
 
 .buy-container{
-    @apply flex flex-col w-[320px] h-72 rounded-[30px] bg-[#1A1D23] py-10 px-[30px] text-white gap-[31px];
+    @apply flex flex-col w-[320px] h-72 rounded-[30px] bg-[#1A1D23] py-10 px-[30px] text-white gap-[31px] ml-auto;
 }
 
 .buy-header{
