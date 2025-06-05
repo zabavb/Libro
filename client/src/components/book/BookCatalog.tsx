@@ -1,15 +1,16 @@
-import { Book, BookSort } from "@/types";
+import { BookSort } from "@/types";
 import { BookFilter } from "@/types/filters/BookFilter";
 import Pagination from "../common/Pagination";
 import BookCardContainer from "@/containers/books/BookCardContainer";
 import "@/assets/styles/components/book/catalog.css"
 import CatalogSort from "./CatalogSort";
 import CatalogFilter from "./CatalogFilter";
+import { BookCard } from "@/types/types/book/BookDetails";
 
 
 
 interface BookCatalogProps {
-    books?: Book[]
+    books?: BookCard[]
     loading: boolean
     pagination: { pageNumber: number; pageSize: number; totalCount: number }
     onPageChange: (pageNumber: number) => void

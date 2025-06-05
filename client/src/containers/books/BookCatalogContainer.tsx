@@ -2,8 +2,9 @@ import BookCatalog from "@/components/book/BookCatalog";
 import { fetchBooksService } from "@/services/bookService";
 import { AppDispatch } from "@/state/redux"
 import { addNotification } from "@/state/redux/slices/notificationSlice";
-import { Book, BookSort } from "@/types";
+import { BookSort } from "@/types";
 import { BookFilter } from "@/types/filters/BookFilter";
+import { BookCard } from "@/types/types/book/BookDetails";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useDispatch } from "react-redux"
 import { useNavigate } from "react-router-dom"
@@ -17,7 +18,7 @@ type BookCatalogContainerProps = {
 const BookCatalogContainer = ({ isAudioOnly = false }: BookCatalogContainerProps) => {
     const dispatch = useDispatch<AppDispatch>();
     const navigate = useNavigate();
-    const [books, setBooks] = useState<Book[]>([]);
+    const [books, setBooks] = useState<BookCard[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [searchTerm, setSearchTerm] = useState<string>('');
     const [filters, setFilters] = useState<BookFilter>({});

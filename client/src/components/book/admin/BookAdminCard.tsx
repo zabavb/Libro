@@ -1,7 +1,8 @@
-import { Book } from "../../../types";
+import { BookCard } from "@/types/types/book/BookDetails";
 import { icons } from '@/lib/icons'
+import noImage from '@/assets/noImage.svg'
 interface BookAdminCardProps {
-    book: Book
+    book: BookCard
     onDelete: (e: React.MouseEvent) => void
     onNavigate: () => void 
 }
@@ -12,19 +13,19 @@ const BookAdminCard: React.FC<BookAdminCardProps> = ({book, onDelete,onNavigate}
         <>
             <tr>
                 <td className="flex justify-center">
-                    <img className="w-[50px] h-[70px]" src={book.imageUrl ? book.imageUrl :`https://picsum.photos/seed/${book.bookId}/50/70`} />
+                    <img className="w-[50px] h-[70px]" src={book.imageUrl ? book.imageUrl : noImage} />
                 </td>
                 <td>
                     {book.title}
                 </td>
                 <td>
-                    AUTHOR TBI
+                    {book.authorName}
                 </td>
                 <td>
                     {bookUid}
                 </td>
                 <td>
-                    GENRE TBI
+                    {book.categoryName}
                 </td>
                 <td>
                     {book.price}

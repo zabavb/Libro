@@ -1,13 +1,13 @@
-import { BookView } from "../types";
+import { BookCard } from "@/types/types/book/BookDetails";
 
 const STORAGE_KEY = "likedBooks";
 
-export function getLikedBooks(): BookView[] {
+export function getLikedBooks(): BookCard[] {
     const data = localStorage.getItem(STORAGE_KEY);
     return data ? JSON.parse(data) : [];
 }
 
-export function likeBook(book: BookView): void {
+export function likeBook(book: BookCard): void {
     const liked = getLikedBooks();
     if (!liked.find(b => b.bookId === book.bookId)) {
         liked.push(book);

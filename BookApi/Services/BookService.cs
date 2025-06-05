@@ -28,7 +28,7 @@ namespace BookAPI.Services
         private readonly ILogger<BookService> _logger = logger;
         private readonly S3StorageService _storageService = storageService;
 
-        public async Task<PaginatedResult<BookDto>> GetAllAsync(
+        public async Task<PaginatedResult<BookCard>> GetAllAsync(
             int pageNumber,
             int pageSize,
             string searchTerm,
@@ -44,19 +44,19 @@ namespace BookAPI.Services
             }
 
             _logger.LogInformation("Successfully found books");
-            return new PaginatedResult<BookDto>
+            return new PaginatedResult<BookCard>
             {
-                Items = _mapper.Map<ICollection<BookDto>>(books.Items),
+                Items = _mapper.Map<ICollection<BookCard>>(books.Items),
                 TotalCount = books.TotalCount,
                 PageNumber = books.PageNumber,
                 PageSize = books.PageSize
             };
         }
 
-        public async Task<BookDto> GetByIdAsync(Guid id)
+        public async Task<BookDetails> GetByIdAsync(Guid id)
         {
-            var book = await _bookRepository.GetByIdAsync(id);
-
+            var book = await _bookRepository.GetDetailsAsync(id);
+            
             if (book == null)
             {
                 _logger.LogWarning($"No book with id {id}");
@@ -64,7 +64,7 @@ namespace BookAPI.Services
             }
 
             _logger.LogInformation($"Successfully found book with id {id}");
-            return _mapper.Map<BookDto>(book);
+            return book;
         }
 
         public async Task<ICollection<string>?> GetAllForUserDetailsAsync(ICollection<Guid> ids)

@@ -8,6 +8,7 @@ import {
 } from "../api/repositories/bookRepository"
 import { coverEnumToNumber, languageEnumToNumber } from "@/api/adapters/bookAdapter";
 import { BookFilter } from "@/types/filters/BookFilter";
+import { BookCard, BookDetails } from "@/types/types/book/BookDetails";
 
 
 export const fetchBooksService = async (
@@ -16,8 +17,8 @@ export const fetchBooksService = async (
     searchTerm?: string,
     filters?: BookFilter,
     sort?: BookSort
-): Promise<ServiceResponse<PaginatedResponse<Book>>> => {
-    const response: ServiceResponse<PaginatedResponse<Book>> = {
+): Promise<ServiceResponse<PaginatedResponse<BookCard>>> => {
+    const response: ServiceResponse<PaginatedResponse<BookCard>> = {
         data: null,
         loading: true,
         error: null,
@@ -59,8 +60,8 @@ export const fetchBooksService = async (
  */
 export const fetchBookByIdService = async (
     id: string
-): Promise<ServiceResponse<Book>> => {
-    const response: ServiceResponse<Book> = {
+): Promise<ServiceResponse<BookDetails>> => {
+    const response: ServiceResponse<BookDetails> = {
         data: null,
         loading: true,
         error:null,

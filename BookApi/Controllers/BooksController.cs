@@ -75,7 +75,7 @@ namespace BookAPI.Controllers
         /// <response code="200">Returns the book.</response>
         /// <response code="404">Book not found.</response>
         [HttpGet("{id}")]
-        public async Task<ActionResult<BookDto>> GetById(Guid id)
+        public async Task<ActionResult<BookDetails>> GetById(Guid id)
         {
             try
             {

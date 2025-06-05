@@ -3,7 +3,8 @@ import { fetchBookByIdService } from "@/services/bookService"
 import { useCart } from "@/state/context/CartContext"
 import { AppDispatch } from "@/state/redux"
 import { addNotification } from "@/state/redux/slices/notificationSlice"
-import { Book, ServiceResponse } from "@/types"
+import { ServiceResponse } from "@/types"
+import { BookDetails as BookDetailsType } from "@/types/types/book/BookDetails"
 import { CartItem } from "@/types/types/cart/CartItem"
 import { useEffect, useState } from "react"
 import { useDispatch } from "react-redux"
@@ -16,7 +17,7 @@ const BookDetailsContainer: React.FC<BookDetailsContainerProps> = ({ bookId }) =
     const dispatch = useDispatch<AppDispatch>()
     const { addItem } = useCart();
     const [serviceResponse, setServiceResponse] = useState<
-        ServiceResponse<Book>
+        ServiceResponse<BookDetailsType>
     >({
         data: null,
         loading: true,
@@ -25,9 +26,7 @@ const BookDetailsContainer: React.FC<BookDetailsContainerProps> = ({ bookId }) =
 
     useEffect(() => {
         if (!bookId) return;
-        console.log("hello3");
         (async () => {
-            console.log("hello2")
             const response = await fetchBookByIdService(bookId);
             setServiceResponse(response);
             if (response.error)
@@ -57,7 +56,7 @@ const BookDetailsContainer: React.FC<BookDetailsContainerProps> = ({ bookId }) =
     return (
         <BookDetails
             onAddItem={handleAddItem}
-            book={serviceResponse.data as Book}
+            book={serviceResponse.data as BookDetailsType}
             loading={serviceResponse.loading}
         />
     )

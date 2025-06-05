@@ -36,6 +36,7 @@ import oCross from '@/assets/icons/oCross.svg'
 import bMenu from '@/assets/icons/bMenu.svg'
 import pointer from '@/assets/icons/pointer.svg'
 import pointerLight from '@/assets/icons/pointerLight.svg'
+import bStar from '@/assets/icons/bStar.svg'
 
 export const icons = {
     wUser,
@@ -75,5 +76,6 @@ export const icons = {
     oCross,
     bMenu,
     pointer,
-    pointerLight
+    pointerLight,
+    bStar
 }

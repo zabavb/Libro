@@ -1,25 +1,24 @@
-import { Book } from '@/types'
 import { CartItem } from '@/types/types/cart/CartItem'
 import '@/assets/styles/components/book/book-details.css'
-import starIcon from '@/assets/icons/ratingStar.svg'
 import truckIcon from '@/assets/icons/truckIcon.svg'
 import CartIcon from '@/assets/icons/cartIcon.svg'
 import FeedbackCard from './FeedbackCard'
 import { useEffect, useState } from 'react'
 import { isBookLiked, likeBook, unlikeBook } from '@/services/likedBooksStorage'
 import noImageUrl from '@/assets/noImage.svg'
-import { BookToBookView } from '@/api/adapters/bookAdapter'
+import { BookDetailsToBookCard } from '@/api/adapters/bookAdapter'
 import {icons} from '@/lib/icons'
+import { BookDetails as BookDetailsType } from '@/types/types/book/BookDetails'
 interface BookDetailsProps {
     onAddItem: (item: CartItem) => void
-    book: Book
+    book: BookDetailsType
     loading: boolean
 }
 
 const BookDetails: React.FC<BookDetailsProps> = ({ onAddItem, book, loading }) => {
     
     const [liked, setLiked] = useState(false);
-
+    const MAX_STARS = 5;
     useEffect(() => {
         if(book)
             setLiked(isBookLiked(book.bookId));
@@ -30,7 +29,7 @@ const BookDetails: React.FC<BookDetailsProps> = ({ onAddItem, book, loading }) =
         if (liked) {
             unlikeBook(book.bookId);
         } else {
-            likeBook(BookToBookView(book));
+            likeBook(BookDetailsToBookCard(book));
         }
         setLiked(!liked);
     };
@@ -54,14 +53,16 @@ const BookDetails: React.FC<BookDetailsProps> = ({ onAddItem, book, loading }) =
                 <div className="flex flex-col gap-[41px]">
                     <div>
                         <h1 className="text-4xl">{book.title}</h1>
-                        <p className="sub-text">Author Name</p>
+                        <p className="sub-text">{book.authorName}</p>
                         <div className="flex">
-                             <img src={starIcon}/>
-                             <img src={starIcon}/>
-                             <img src={starIcon}/>
-                             <img src={starIcon}/>
-                             <img src={starIcon}/>         
-                             <p className="text-[#FF642E]">X Feedbacks</p>
+                            {Array.from({ length: MAX_STARS }).map((_, index) => (
+                            <img
+                                key={index}
+                                src={index < (book.bookFeedbacks.avgRating ?? 0) ? icons.oStarFilled : icons.oStarEmpty}
+                                alt={index < (book.bookFeedbacks.avgRating ?? 0) ? "Filled star" : "Empty star"}
+                            />
+                            ))}       
+                             <p className="text-[#FF642E]">{book.bookFeedbacks.feedbackAmount} Feedbacks</p>
                         </div>
                     </div>
                     <div className="row">
@@ -71,15 +72,20 @@ const BookDetails: React.FC<BookDetailsProps> = ({ onAddItem, book, loading }) =
                                 <p>Physical</p>
                                 <p className="font-semibold">{book.price.toFixed(2)} UAH</p>
                             </div>
-                            <div className="booktype-btn">
-                                <p>Digital</p>
-                                <p className="font-semibold">{book.price.toFixed(2)} UAH</p>
-                            </div>
+                            {
+                                book.hasDigital &&(
+                                    <div className="booktype-btn">
+                                        <p>Digital</p>
+                                        <p className="font-semibold">{book.price.toFixed(2)} UAH</p>
+                                    </div>
+                                )
+                            }
+
                         </div>
                     </div>
                     <div className="row">
                         <h1 className="row-title">Publisher</h1>
-                        <p className="option grayed">{book.publisherId}</p>
+                        <p className="option grayed">{book.publisherName}</p>
                     </div>
                     <div className="row">
                         <h1 className="row-title">Release Year</h1>
@@ -88,7 +94,7 @@ const BookDetails: React.FC<BookDetailsProps> = ({ onAddItem, book, loading }) =
                     <div  className="row">
                         <h1 className="row-title">Category</h1>
                         <div>
-                            <p className="option">CATEGORY_TMP</p>
+                            <p className="option">{book.categoryName}</p>
                         </div>
                     </div>
                     <div className="row">
@@ -103,7 +109,7 @@ const BookDetails: React.FC<BookDetailsProps> = ({ onAddItem, book, loading }) =
                         </div>
                         <div className="information-row">
                             <p>Author</p>
-                            <p>{book.authorId}</p>
+                            <p>{book.authorName}</p>
                         </div>
                         <div className="information-row">
                             <p>Type</p>
@@ -113,11 +119,9 @@ const BookDetails: React.FC<BookDetailsProps> = ({ onAddItem, book, loading }) =
                     <div className="row">
                         <h1 className="row-title">About author</h1>
                         <div className="flex gap-5">
-                            <img className="w-[160px] h-[240px]" src={`https://picsum.photos/seed/${book.bookId}/160/240`}/>
+                            <img className="w-[160px] h-[240px]" src={book.authorImageUrl} alt='Author Image'/>
                             <div className="flex flex-col gap-5">
-                            <p className="max-w-[500px] h-[200px] overflow-hidden text-sm">Lorem ipsum dolor, sit amet consectetur adipisicing elit. Repellat hic, culpa magni sunt debitis optio suscipit placeat at illo dolorem blanditiis quasi! Facilis accusamus totam quasi nam! Dolore, deleniti dolorem.
-                            Vitae, voluptate voluptatem. Accusantium, est illo beatae vel aliquam illum eos, maxime voluptate hic quam consectetur et dignissimos autem nam ut totam fugit ratione distinctio esse aperiam nisi cupiditate libero.
-                            Dignissimos eius repudiandae quisquam. Cum officiis, non nam iure sapiente nobis id hic quos. Similique voluptatem quos ducimus voluptatibus, quae sequi praesentium natus velit? Omnis rem eum dignissimos recusandae repellat.</p>
+                            <p className="max-w-[500px] h-[200px] overflow-hidden text-sm">{book.authorDescription}</p>
                             <p className="sub-text cursor-pointer">More about the author</p>
                             </div>
                         </div>
@@ -125,8 +129,9 @@ const BookDetails: React.FC<BookDetailsProps> = ({ onAddItem, book, loading }) =
                     <div className="row">
                         <h1 className="row-title">Reviews</h1>
                         <div className="flex gap-5">
-                            <FeedbackCard feedbackId="FeedbackId1"/>
-                            <FeedbackCard feedbackId="FeedbackId2"/>
+                            {book.latestFeedback.map((feedback) => (
+                                <FeedbackCard feedback={feedback}/>
+                            ))}
                         </div>
                         <p className="sub-text cursor-pointer">Show all reviews</p>
                         <button className="feedback-btn">Leave a review</button>

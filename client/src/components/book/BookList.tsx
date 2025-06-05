@@ -3,13 +3,14 @@ import "@/assets/styles/base/table-styles.css"
 import "@/assets/styles/components/list-styles.css"
 import {icons} from "@/lib/icons"
 import { getUserFromStorage } from "@/utils/storage";
-import { Book, BookSort, User } from "@/types";
+import { BookSort, User } from "@/types";
 import { BookFilter } from "@/types/filters/BookFilter";
 import Search from "../common/Search";
 import BookAdminCardContainer from "@/containers/books/BookAdminCardContainer";
 import Pagination from "../common/Pagination";
+import { BookCard } from "@/types/types/book/BookDetails";
 interface BookListProps {
-    books?: Book[];
+    books?: BookCard[];
     loading: boolean;
     pagination: { pageNumber: number; pageSize: number; totalCount: number };
     onPageChange: (pageNumber: number) => void;

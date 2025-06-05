@@ -1,21 +1,19 @@
 import React from "react"
 import { useNavigate } from "react-router-dom"
-import { Book } from "../../types/objects/Book"
-import { BookToBookView } from "../../api/adapters/bookAdapter"
 import BookCard from "../../components/book/BookCard"
 import { useCart } from "@/state/context/CartContext"
 import { CartItem } from "@/types/types/cart/CartItem"
 import { AppDispatch } from "@/state/redux"
 import { useDispatch } from "react-redux"
 import { addNotification } from "@/state/redux/slices/notificationSlice"
+import { BookCard as BookCardType } from "@/types/types/book/BookDetails"
 
 interface BookCardContainerProps {
-	book: Book
+	book: BookCardType
 }
 
 const BookCardContainer: React.FC<BookCardContainerProps> = ({ book  }) => {
 	const { addItem } = useCart();
-	const bookView = BookToBookView(book)
 	const navigate = useNavigate()
 	const dispatch = useDispatch<AppDispatch>()
 
@@ -44,7 +42,7 @@ const BookCardContainer: React.FC<BookCardContainerProps> = ({ book  }) => {
 
 	return (
 		<BookCard
-			book={bookView}
+			book={book}
 			onNavigate={handleNavigate}
 			onAddItem={handleAddItem}
 		/>

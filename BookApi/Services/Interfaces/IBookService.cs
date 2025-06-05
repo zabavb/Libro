@@ -9,14 +9,14 @@ namespace BookAPI.Services.Interfaces
 {
     public interface IBookService
     {
-        public Task<PaginatedResult<BookDto>> GetAllAsync(
+        public Task<PaginatedResult<BookCard>> GetAllAsync(
             int pageNumber,
             int pageSize,
             string searchTerm,
             BookFilter? filter,
             BookSort? sort
         );
-        Task<BookDto> GetByIdAsync(Guid bookId);
+        Task<BookDetails> GetByIdAsync(Guid bookId);
         Task<ICollection<string>?> GetAllForUserDetailsAsync(ICollection<Guid> ids);
         Task /*<BookDto>*/ CreateAsync(BookRequest bookDto);
         Task /*<BookDto>*/ UpdateAsync(Guid id, BookRequest bookDto);
