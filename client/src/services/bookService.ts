@@ -59,7 +59,7 @@ export const fetchBooksService = async (
  * Fetch a book by its ID.
  */
 export const fetchBookByIdService = async (
-    id: string
+    bookId: string
 ): Promise<ServiceResponse<BookDetails>> => {
     const response: ServiceResponse<BookDetails> = {
         data: null,
@@ -68,12 +68,62 @@ export const fetchBookByIdService = async (
     };
 
     try{
-        response.data = await getBookById(id);
+        const body = {
+            query: `
+            query GetBookDetails(
+            $bookId: UUID!
+            ) {
+                getBookDetails(bookId: $bookId){
+                    bookId
+                    title
+                    price
+                    language
+                    year
+                    description
+                    cover
+                    quantity
+                    imageUrl
+                    hasDigital
+                    authorId
+                    authorName
+                    authorDescription
+                    authorImageUrl
+                    publisherName
+                    categoryName
+                    subcategories
+                    latestFeedback{
+                        feedbackId
+                        comment
+                        rating
+                        date
+                        userDisplayData{
+                            userName
+                            userImageUrl
+                            }
+                    }   
+                    bookFeedbacks {
+                        avgRating
+                        feedbackAmount
+                    }
+                }
+            }
+            `,
+            variables: {
+                bookId,
+            },
+        };
+
+        const graphQLResponse = await getBookById(body);
+        if (graphQLResponse.errors)
+            throw new Error(
+                `${graphQLResponse.errors[0].message} Status code: ${graphQLResponse.errors[0].extensions?.status}`,
+            );
+        response.data = graphQLResponse.data?.getBookDetails  as BookDetails;
     } catch (error){
-        console.error('Failed to fetch book with ID', {id, error});
-        response.error = 
-            'An error occurred while fetching the book. Please try again later.';
-    } finally{
+         console.error(`Failed to fetch book ID [${bookId}]`, error);
+        response.error =
+            'An error occurred while fetching book. Please try again later.';
+    } finally {
         response.loading = false;
     }
     return response;

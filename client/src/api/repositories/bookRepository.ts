@@ -1,7 +1,8 @@
 import axios from "axios"
-import { BOOKS_PAGINATED, BOOKS, BOOK_BY_ID } from "../index"
-import { PaginatedResponse } from "../../types"
+import { BOOKS_PAGINATED, BOOKS, BOOK_BY_ID, GRAPHQL } from "../index"
+import { GraphQLResponse, PaginatedResponse } from "../../types"
 import { BookCard, BookDetails } from "@/types/types/book/BookDetails";
+import { getAuthHeaders } from "./common";
 
 interface BookQueryParams {
     author?: string;
@@ -36,10 +37,28 @@ export const getAllBooks = async (
 /**
  * Fetch a single book by its ID.
  */
-export const getBookById = async (id: string): Promise<BookDetails> => {
-    const response = await axios.get<BookDetails>(BOOK_BY_ID(id));
+export const getBookById = async (body: {
+    query: string;
+    variables: {
+        bookId: string,
+    };
+}): Promise<GraphQLResponse<{getBookDetails : BookDetails}>> => {
+    const response = await axios.post<GraphQLResponse<{getBookDetails : BookDetails}>>(GRAPHQL, body, {
+        headers: getAuthHeaders("application/json")
+    })
     return response.data;
 };
+// export const getOrderById = async (body: {
+//     query: string;
+//     variables: {
+//         id: string;
+//     };
+// }): Promise<GraphQLResponse<{ order: Order }>> => {
+//     const response = await axios.post<GraphQLResponse<{ order: Order }>>(GRAPHQL, body, {
+//         headers: getAuthHeaders("application/json"),
+//     });
+//     return response.data;
+// };
 
 /**
  * Create a new book.

@@ -119,7 +119,7 @@ const BookDetails: React.FC<BookDetailsProps> = ({ onAddItem, book, loading }) =
                     <div className="row">
                         <h1 className="row-title">About author</h1>
                         <div className="flex gap-5">
-                            <img className="w-[160px] h-[240px]" src={book.authorImageUrl} alt='Author Image'/>
+                            <img className="w-[160px] h-[240px]" src={book.authorImageUrl ?? noImageUrl}/>
                             <div className="flex flex-col gap-5">
                             <p className="max-w-[500px] h-[200px] overflow-hidden text-sm">{book.authorDescription}</p>
                             <p className="sub-text cursor-pointer">More about the author</p>
