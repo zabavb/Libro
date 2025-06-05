@@ -1,4 +1,5 @@
 ﻿using Library.Common;
+using Library.DTOs.Book;
 using Library.Interfaces;
 using UserAPI.Models;
 
@@ -15,5 +16,7 @@ namespace UserAPI.Repositories.Interfaces
         );
 
         Task<User?> GetByEmailAsync(string email);
+
+        Task<UserDisplayData> GetUserDisplayDataAsync(Guid id);
     }
 }

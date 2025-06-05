@@ -1,4 +1,5 @@
 ﻿using Library.Common;
+using Library.DTOs.Book;
 using Library.DTOs.UserRelated.User;
 
 namespace UserAPI.Services.Interfaces
@@ -17,5 +18,7 @@ namespace UserAPI.Services.Interfaces
         Task CreateAsync(Dto dto);
         Task UpdateAsync(Dto dto);
         Task DeleteAsync(Guid id);
+
+        Task<UserDisplayData> GetUserDisplayDataAsync(Guid id);
     }
 }
