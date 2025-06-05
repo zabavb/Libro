@@ -187,5 +187,14 @@ namespace BookAPI.Repositories
 
             _logger.LogInformation("Feedback updated in DB and cached.");
         }
+
+        public async Task<ICollection<Feedback>> GetNumberOfFeedbacks(int amount)
+        {
+            var feedbacks = await _context.Feedbacks
+                .OrderByDescending(f => f.Date)
+                .Take(amount)
+                .ToListAsync();
+            return feedbacks;
+        }
     }
 }

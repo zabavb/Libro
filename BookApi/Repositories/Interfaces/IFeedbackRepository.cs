@@ -17,5 +17,7 @@ namespace BookAPI.Repositories.Interfaces
         );
 
         Task<ICollection<FeedbackForUserDetails>> GetAllForUserDetailsAsync(Guid userId);
+
+        Task<ICollection<Feedback>> GetNumberOfFeedbacks(int amount);
     }
 }

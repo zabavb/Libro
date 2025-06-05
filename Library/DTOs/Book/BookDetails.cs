@@ -19,7 +19,7 @@
         public string PublisherName { get; set; } = string.Empty;
         public string CategoryName { get; set; } = string.Empty;
         public List<string> Subcategories { get; set; } = new List<string>();
-        public List<Feedback> LatestFeedback { get; set; } = new List<Feedback>();
+        public List<FeedbackCard> LatestFeedback { get; set; } = new List<FeedbackCard>();
         public BookFeedbacks BookFeedbacks { get; set; }
     }
 

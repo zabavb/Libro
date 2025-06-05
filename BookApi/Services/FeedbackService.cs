@@ -150,5 +150,18 @@ namespace BookAPI.Services
                 // return false;
             }
         }
+
+        public async Task<ICollection<FeedbackDto>> GetNumberOfFeedbacks(int amount)
+        {
+            try
+            {
+                var feedbacks = await _feedbackRepository.GetNumberOfFeedbacks(amount);
+                return _mapper.Map<List<FeedbackDto>>(feedbacks);
+            }
+            catch
+            {
+                return null;
+            }
+        }
     }
 }

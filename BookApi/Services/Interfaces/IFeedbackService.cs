@@ -22,5 +22,6 @@ namespace BookAPI.Services.Interfaces
 
         // Task<FeedbackDto> UpdateFeedbackAsync(Guid id, FeedbackDto FeedbackDto);     // Should be removed
         Task /*<bool>*/ DeleteAsync(Guid id);
+        Task<ICollection<FeedbackDto>> GetNumberOfFeedbacks(int amount);
     }
 }

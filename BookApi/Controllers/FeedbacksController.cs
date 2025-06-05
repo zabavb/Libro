@@ -7,6 +7,8 @@ using Library.DTOs.UserRelated.User;
 using Microsoft.AspNetCore.Authorization;
 using BookAPI.Services;
 using Library.DTOs.Order;
+using BookAPI.Models;
+using Library.DTOs.Book;
 
 namespace BookAPI.Controllers
 {
@@ -216,6 +218,20 @@ namespace BookAPI.Controllers
             }
         }
 
+        [HttpGet("for-book/{amount}")]
+        public async Task<ActionResult<ICollection<FeedbackDto>>> GetNumberOfFeedbacks(int amount)
+        {
+            try
+            {
+                var feedbacks = await _feedbackService.GetNumberOfFeedbacks(amount);
+                return Ok(feedbacks);
+
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"An error occured: {ex.Message}");
+            }
+        }
 /*        [HttpGet("for-book/rating/{id}")]
         public async Task<ActionResult<BookFeedbacks>> GetAllForOrderDetailsAsync(Guid id)
         {
