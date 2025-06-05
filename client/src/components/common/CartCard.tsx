@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { CartItem } from "@/types/types/cart/CartItem";
-import { Book, ServiceResponse } from "@/types";
+import { ServiceResponse } from "@/types";
 import { fetchBookByIdService } from "@/services/bookService";
 import { addNotification } from "@/state/redux/slices/notificationSlice";
 import { AppDispatch } from "@/state/redux";
 import { useDispatch } from "react-redux";
 import "@/assets/styles/components/common/cart-card.css"
-
+import { BookDetails } from "@/types/types/book/BookDetails";
+import noImageUrl from '@/assets/noImage.svg'
 interface CartCardProps {
     item: CartItem
     onAdd: (item: CartItem) => void;
@@ -16,9 +17,9 @@ interface CartCardProps {
 
 const CartCard: React.FC<CartCardProps> = ({ item, onAdd, onRemove, onItemClear }) => {
     const dispatch = useDispatch<AppDispatch>()
-    const [book, setBook] = useState<Book | null>();
+    const [book, setBook] = useState<BookDetails | null>();
     const [serviceResponse, setServiceResponse] = useState<
-        ServiceResponse<Book>
+        ServiceResponse<BookDetails>
     >({
         data: null,
         loading: true,
@@ -44,14 +45,18 @@ const CartCard: React.FC<CartCardProps> = ({ item, onAdd, onRemove, onItemClear 
              onClick={() => onItemClear(item.bookId)}>
                 Delete
             </p>
-            <img src={`https://picsum.photos/seed/${item.bookId}/80/120`} />
+            <img  className="w-[75px] h-[120px]" src={book?.imageUrl ?? noImageUrl} />
             <div className="flex flex-col gap-4">
                 <div>
                     <p className="text-[#1A1D23]">{book?.title}</p>
-                    <p className="text-[#929089]">AUTHOR_TMP</p>
+                    <p className="text-[#929089]">{book?.authorName}</p>
                 </div>
                 <div>
-                    <p>{book?.price} UAH</p>
+                    <div className="flex gap-2">
+                        <p>{book?.price.toFixed(2)} UAH</p>
+                        <p>●</p>
+                        <p className="text-[#929089]">{book?.cover}</p>
+                    </div>
                     <p className="text-[#FF642E]">{(book?.quantity ?? 0 > 0) ? "Available" : "Not available"}</p>
                 </div>
                 <div className="flex gap-2.5 items-center">
