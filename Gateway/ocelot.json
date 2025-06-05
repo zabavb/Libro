@@ -76,6 +76,18 @@
       "UpstreamPathTemplate": "/gateway/users/{id}",
       "UpstreamHttpMethod": [ "GET", "PUT", "DELETE" ]
     },
+    {
+      "DownstreamPathTemplate": "/api/users/get-display-data/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7007
+        }
+      ],
+      "UpstreamPathTemplate": "/gateway/users/get-display-data/{id}",
+      "UpstreamHttpMethod": [ "GET" ]
+    },
     //======================= Subscription entity =======================
     {
       "DownstreamPathTemplate": "/api/subscriptions",
@@ -287,6 +299,19 @@
       "UpstreamPathTemplate": "/gateway/feedbacks/for-user/details/{id}",
       "UpstreamHttpMethod": [ "GET" ]
     },
+    {
+      "DownstreamPathTemplate": "/api/feedbacks/for-book/{amount}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7084
+        }
+      ],
+      "UpstreamPathTemplate": "/gateway/feedbacks/for-book/{amount}",
+      "UpstreamHttpMethod": [ "GET" ]
+    },
+
     //======================= Publisher entity =======================
     {
       "DownstreamPathTemplate": "/api/publishers",
