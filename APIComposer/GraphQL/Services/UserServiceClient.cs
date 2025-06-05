@@ -2,6 +2,7 @@ using System.Net.Http.Headers;
 using System.Text.Json;
 using APIComposer.GraphQL.Services.Interfaces;
 using Library.Common;
+using Library.DTOs.Book;
 using Library.DTOs.UserRelated.Subscription;
 using Library.DTOs.UserRelated.User;
 using UserAPI.Models.Filters;
@@ -66,6 +67,17 @@ namespace APIComposer.GraphQL.Services
 
 
             return (await response.Content.ReadFromJsonAsync<SubscriptionDto>())!;
+        }
+
+        public async Task<UserDisplayData?> GetUserDisplayData(Guid id)
+        {
+            SetAuthHeader();
+            var response = await _http.GetAsync($"users/get-display-data/{id}");
+
+            if (!response.IsSuccessStatusCode)
+                await ErrorHandler.HandleErrorResponseAsync(response);
+
+            return (await response.Content.ReadFromJsonAsync<UserDisplayData>())!;
         }
     }
 }
