@@ -9,7 +9,7 @@ namespace BookAPI.Repositories.Interfaces
 {
     public interface IFeedbackRepository : IManageable<Feedback>
     {
-        Task<PaginatedResult<Feedback>> GetAllAsync(
+        Task<PaginatedResult<FeedbackAdminCard>> GetAllAsync(
             int pageNumber,
             int pageSize,
             FeedbackFilter? filter,
@@ -18,6 +18,6 @@ namespace BookAPI.Repositories.Interfaces
 
         Task<ICollection<FeedbackForUserDetails>> GetAllForUserDetailsAsync(Guid userId);
 
-        Task<ICollection<Feedback>> GetNumberOfFeedbacks(int amount);
+        Task<ICollection<Feedback>> GetNumberOfFeedbacks(int amount, Guid bookId);
     }
 }

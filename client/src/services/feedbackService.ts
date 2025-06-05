@@ -1,5 +1,6 @@
 import { addFeedback, getAllFeedbacks, getFeedbackById } from "@/api/repositories/feedbackRepository";
 import { Feedback, FeedbackFilter, FeedbackSort, PaginatedResponse, ServiceResponse } from "@/types";
+import { FeedbackAdminCard } from "@/types/types/book/FeedbackCard";
 
 export const fetchFeedbacksService = async (
     pageNumber: number = 1,
@@ -7,8 +8,8 @@ export const fetchFeedbacksService = async (
     searchTerm?: string,
     filters?: FeedbackFilter,
     sort?: FeedbackSort
-): Promise<ServiceResponse<PaginatedResponse<Feedback>>> => {
-    const response: ServiceResponse<PaginatedResponse<Feedback>> = {
+): Promise<ServiceResponse<PaginatedResponse<FeedbackAdminCard>>> => {
+    const response: ServiceResponse<PaginatedResponse<FeedbackAdminCard>> = {
         data: null,
         loading: true,
         error: null,

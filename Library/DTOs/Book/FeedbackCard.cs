@@ -29,7 +29,7 @@ namespace Library.DTOs.Book
         public int Rating { get; set; }
         public DateTime Date { get; set; }
 
-        public string UserName { get; set; }
+        public string? UserName { get; set; }
 
         public string Title { get; set; }
         public string? BookImageUrl { get; set;}

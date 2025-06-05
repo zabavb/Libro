@@ -98,14 +98,14 @@ namespace APIComposer.GraphQL.Services
 
         }
 
-        public async Task<ICollection<Feedback>> GetNumberOfFeedbacks(int amount)
+        public async Task<ICollection<Feedback>> GetNumberOfFeedbacks(int amount, Guid bookId)
         {
             try
             {
                 SetAuthHeader();
                 var response =
                     await _http.GetFromJsonAsync<ICollection<Feedback>>(
-                        $"feedbacks/for-book/{amount}");
+                        $"feedbacks/for-book/{amount}?bookId={bookId}");
                 return response ?? new List<Feedback>();
             }
             catch (Exception)

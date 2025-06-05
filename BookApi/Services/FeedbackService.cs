@@ -25,7 +25,7 @@ namespace BookAPI.Services
             _bookService = bookService;
         }
 
-        public async Task<PaginatedResult<FeedbackDto>> GetAllAsync(
+        public async Task<PaginatedResult<FeedbackAdminCard>> GetAllAsync(
             int pageNumber,
             int pageSize,
             FeedbackFilter? filter,
@@ -40,9 +40,9 @@ namespace BookAPI.Services
             if (feedbacks == null || feedbacks.Items == null)
             {
                 _logger.LogWarning("No feedback found");
-                return new PaginatedResult<FeedbackDto>
+                return new PaginatedResult<FeedbackAdminCard>
                 {
-                    Items = new List<FeedbackDto>(),
+                    Items = new List<FeedbackAdminCard>(),
                     TotalCount = 0,
                     PageNumber = pageNumber,
                     PageSize = pageSize
@@ -50,9 +50,9 @@ namespace BookAPI.Services
             }
 
             _logger.LogInformation("Successfully found feedback");
-            return new PaginatedResult<FeedbackDto>
+            return new PaginatedResult<FeedbackAdminCard>
             {
-                Items = _mapper.Map<ICollection<FeedbackDto>>(feedbacks.Items),
+                Items = feedbacks.Items,
                 TotalCount = feedbacks.TotalCount,
                 PageNumber = feedbacks.PageNumber,
                 PageSize = feedbacks.PageSize
@@ -151,11 +151,11 @@ namespace BookAPI.Services
             }
         }
 
-        public async Task<ICollection<FeedbackDto>> GetNumberOfFeedbacks(int amount)
+        public async Task<ICollection<FeedbackDto>> GetNumberOfFeedbacks(int amount, Guid bookId)
         {
             try
             {
-                var feedbacks = await _feedbackRepository.GetNumberOfFeedbacks(amount);
+                var feedbacks = await _feedbackRepository.GetNumberOfFeedbacks(amount, bookId);
                 return _mapper.Map<List<FeedbackDto>>(feedbacks);
             }
             catch

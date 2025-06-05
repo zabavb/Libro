@@ -38,7 +38,7 @@ namespace APIComposer.GraphQL.Queries
         {
             BookDetails book = await bookClient.GetBookAsync(bookId);
             List<FeedbackCard> cards = new List<FeedbackCard>();
-            ICollection<Feedback> feedbacks = await bookClient.GetNumberOfFeedbacks(2);
+            ICollection<Feedback> feedbacks = await bookClient.GetNumberOfFeedbacks(2, book.BookId);
             foreach (var feedback in feedbacks)
             {
                 var reviewer = await userClient.GetUserDisplayData(feedback.UserId);

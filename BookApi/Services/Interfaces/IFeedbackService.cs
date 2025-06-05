@@ -8,7 +8,7 @@ namespace BookAPI.Services.Interfaces
     public interface IFeedbackService
     {
         // Simplified function naming 
-        Task<PaginatedResult<FeedbackDto>> GetAllAsync(
+        Task<PaginatedResult<FeedbackAdminCard>> GetAllAsync(
             int pageNumber,
             int pageSize,
             FeedbackFilter? filter,
@@ -22,6 +22,6 @@ namespace BookAPI.Services.Interfaces
 
         // Task<FeedbackDto> UpdateFeedbackAsync(Guid id, FeedbackDto FeedbackDto);     // Should be removed
         Task /*<bool>*/ DeleteAsync(Guid id);
-        Task<ICollection<FeedbackDto>> GetNumberOfFeedbacks(int amount);
+        Task<ICollection<FeedbackDto>> GetNumberOfFeedbacks(int amount, Guid bookId);
     }
 }

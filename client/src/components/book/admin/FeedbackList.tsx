@@ -7,8 +7,9 @@ import "@/assets/styles/components/list-styles.css"
 import { icons } from "@/lib/icons"
 import { getUserFromStorage } from "@/utils/storage";
 import FeedbackAdminCard from "./FeedbackAdminCard";
+import { FeedbackAdminCard as FeedbackAdminCardType} from "@/types/types/book/FeedbackCard";
 interface FeedbackListProps {
-    feedbacks?: Feedback[];
+    feedbacks?: FeedbackAdminCardType[];
     loading: boolean;
     pagination: { pageNumber: number; pageSize: number; totalCount: number };
     onPageChange: (pageNumber: number) => void;
