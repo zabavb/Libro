@@ -14,7 +14,6 @@ type BookCatalogContainerProps = {
     isAudioOnly?: boolean; 
   };
   
-
 const BookCatalogContainer = ({ isAudioOnly = false }: BookCatalogContainerProps) => {
     const dispatch = useDispatch<AppDispatch>();
     const navigate = useNavigate();

@@ -1,21 +1,23 @@
 import React from "react"
 import "@/assets/styles/components/order/order-book-list.css"
+import { OrderedBook } from "@/types/types/order/OrderedBook";
+
 interface OrderAdminFormBookListProps {
-    books: Record<string,number>
-    onBookDelete: (bookId: string) => void
-    onBookAdd: (bookId: string) => void
+    books: OrderedBook[];
+    onBookDelete: (bookId: string) => void;
+    onBookAdd: (bookId: string) => void;
 }
 
-const OrderAdminFormBookList: React.FC<OrderAdminFormBookListProps> = ({books, onBookDelete,onBookAdd}) => {
-    return(
-        <div> 
+const OrderAdminFormBookList: React.FC<OrderAdminFormBookListProps> = ({ books, onBookDelete, onBookAdd }) => {
+    return (
+        <div>
             <table>
                 <thead>
                     <tr>
-                        <th style={{width:"70%"}}>Title</th>
-                        <th style={{width:"5%"}}>X</th>
+                        <th style={{ width: "70%" }}>Title</th>
+                        <th style={{ width: "5%" }}>X</th>
                         <th className="w-1/5">Price</th>
-                        <th style={{width:"5%"}}></th>
+                        <th style={{ width: "5%" }}></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -33,7 +35,7 @@ const OrderAdminFormBookList: React.FC<OrderAdminFormBookListProps> = ({books, o
                 </tbody>
             </table>
         </div>
-    )
-}
+    );
+};
 
 export default OrderAdminFormBookList

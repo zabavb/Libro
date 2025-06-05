@@ -23,6 +23,11 @@ namespace BookAPI.Data
             Database.EnsureCreated();
         }
 
+        public BookDbContext(DbContextOptions<BookDbContext> options)
+    : base(options)
+        {
+        }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.ApplyConfigurationsFromAssembly(typeof(BookDbContext).Assembly);

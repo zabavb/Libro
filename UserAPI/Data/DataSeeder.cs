@@ -218,6 +218,7 @@ namespace UserAPI.Data
                 }
             }
 
+
             _logger.LogInformation("Created {UsersCount} users with their images.", users.Count);
 
             await _context.Users.AddRangeAsync(users);

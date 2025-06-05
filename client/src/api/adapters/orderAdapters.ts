@@ -43,7 +43,7 @@ export const statusEnumToStatusView = (status: Status): StatusView => {
 export const OrderToOrderView = (response: Order): OrderView => {
     return {
         id: response.id,
-        books: response.books,
+        orderedBooks: response.orderedBooks,
         region: response.region,
         city: response.city,
         address: response.address,

@@ -9,5 +9,6 @@ namespace APIComposer.GraphQL.Services.Interfaces
         Task<Library.DTOs.Book.Book> GetBookAsync(Guid id);
         Task<ICollection<FeedbackForUserDetails>> GetAllFeedbacksAsync(Guid userId);
         Task<BookOrderDetails> GetBookWithAuthor(Guid bookId);
+        Task<Library.DTOs.Book.Author> GetAuthorAsync(Guid id);
     }
 }

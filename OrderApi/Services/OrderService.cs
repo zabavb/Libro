@@ -46,6 +46,11 @@ namespace OrderApi.Services
             };
         }
 
+        public async Task<List<Guid>> GetUserBookIdsAsync(Guid userId)
+        {
+            return await _repository.GetPurchasedBookIdsByUserIdAsync(userId);
+        }
+
         public async Task<OrderDto?> GetByIdAsync(Guid id)
         {
             var order = await _repository.GetByIdAsync(id);

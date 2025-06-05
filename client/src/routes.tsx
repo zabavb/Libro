@@ -10,7 +10,6 @@ import { AuthProvider } from './state/context/AuthContext';
 import PrivateRoute from './privateRoute';
 
 import AdminPage from './pages/admin/AdminPage';
-// import AdminDashboard from './pages/admin/AdminDashboard';
 
 import AdminLayout from './components/layouts/AdminLayout';
 

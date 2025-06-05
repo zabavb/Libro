@@ -735,8 +735,8 @@ new("9fc6b407-7b59-4f69-8403-4fcdbf1bc841"),
                     Name = CategoryNames[i]
                 });
             }
-            modelBuilder.Entity<Category>().HasData(categories);
-
+                new Category { Id = Guid.NewGuid(), Name = "Мистецтво" },
+                new Category { Id = Guid.NewGuid(), Name = "Подорожі" },
             var subCategories = new List<SubCategory>();
 
             for (int i = 0; i < SubCategoryNames.Length; i++)
@@ -758,6 +758,10 @@ new("9fc6b407-7b59-4f69-8403-4fcdbf1bc841"),
             for (int i = 0; i < publisherNames.Length; i++)
             {
                 publishers.Add(new Publisher
+                    Name = "ІстФакт",
+                    Description = "Спеціалізується на якісній історичній літературі."
+                },
+                new Publisher
                 {
                     Id = Guid.NewGuid(),
                     Name = publisherNames[i],
@@ -806,10 +810,6 @@ new("9fc6b407-7b59-4f69-8403-4fcdbf1bc841"),
                 BookId = bookId,
                 DiscountRate = random.Next(1, 36), 
                 StartDate = DateTime.UtcNow,
-                EndDate = DateTime.UtcNow.AddMonths(1)
-            }).ToList();
-
-            modelBuilder.Entity<Discount>().HasData(discounts);
 
             var books = new List<Book>();
             for (int i = 0; i < BookTitles.Length; i++)
@@ -904,12 +904,16 @@ new("9fc6b407-7b59-4f69-8403-4fcdbf1bc841"),
                 }
             }
 
-
+                var imageFile = filesHelper.GetFormFileFromPath(imageFilePath, "image/jpeg");
             modelBuilder.Entity<Book>().HasData(books);
-
-
+                book.PdfFileUrl = pdfUrl;
+                new { BookId = books[9].Id, SubCategoryId = subCategories[10].Id }, // Середньовіччя
            
             var bookSubCategoryData = new List<object>();
+                new { BookId = books[11].Id, SubCategoryId = subCategories[7].Id }, // Біологія
+
+                // Магія свідомості – психологія
+                new { BookId = books[12].Id, SubCategoryId = subCategories[12].Id }, // Емоційний інтелект
 
             for (int i = 0; i < books.Count; i++)
             {
@@ -918,10 +922,6 @@ new("9fc6b407-7b59-4f69-8403-4fcdbf1bc841"),
 
                 if (relevantSubCats.Count == 0)
                     continue;
-                int subCatCount = random.Next(1, Math.Min(3, relevantSubCats.Count) + 1); // максимум 3 підкатегорії
-
-                var chosenSubCats = relevantSubCats.OrderBy(x => random.Next()).Take(subCatCount).ToList();
-
                 foreach (var subCat in chosenSubCats)
                 {
                     bookSubCategoryData.Add(new
@@ -933,8 +933,23 @@ new("9fc6b407-7b59-4f69-8403-4fcdbf1bc841"),
             }
 
             modelBuilder.Entity("BookSubCategory").HasData(bookSubCategoryData.ToArray());
+                    Date = DateTime.UtcNow,
+                    IsPurchased = true,
+                    BookId = books[0].Id,
+                    UserId = new Guid("69be6ab0-0ad0-4ac9-bcce-096ebfa9bb4c")
 
-
+            var feedbacks = new List<Feedback>();
+            var userIds = new[]
+            {
+                new Guid("eb65e5c5-a3bd-4da7-9c43-e722c49c0151"),
+                new Guid("0497d9e4-ec6b-4277-a268-18f61104e140"),
+                new Guid("56a1c91f-8b00-43fa-adac-19b67559c48d"),
+                new Guid("47f7e164-97d2-4f0c-ae58-173b38554658"),
+                new Guid("da4f5a5b-f2c3-4608-bd34-bf0b6431e75c"),
+                new Guid("1d848cea-362d-40d9-8821-4bc984e5e25a"),
+                new Guid("d605c572-6210-4840-918c-5348fe63815a"),
+                new Guid("34c5f3c9-9b9a-490c-91c2-1a88a22226bc"),
+                new Guid("f3c715ba-7478-43de-a35a-08cef0d55c27"),
             var feedbacks = new List<Feedback>();
             var userIds = new[]
             {
@@ -950,7 +965,7 @@ new("9fc6b407-7b59-4f69-8403-4fcdbf1bc841"),
                 new Guid("b86c042d-a6f0-4cb8-90b4-31060f0af325"),
                 new Guid("85ddedba-fb4a-4ba9-aa1c-ad96585269a5")
             };
-
+                    IsPurchased = true,
             for (int i = 0; i < 250; i++)
             {
                 feedbacks.Add(new Feedback
@@ -964,6 +979,10 @@ new("9fc6b407-7b59-4f69-8403-4fcdbf1bc841"),
                     Comment = reviews[random.Next(reviews.Length)]
                 });
             }
+                    UserId = new Guid("69be6ab0-0ad0-4ac9-bcce-096ebfa9bb4c")
+
+                }
+            };
             modelBuilder.Entity<Feedback>().HasData(feedbacks);
         }
 

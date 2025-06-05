@@ -24,6 +24,7 @@ namespace BookAPI.Models
         public Author Author { get; set; } = null!;
         public Guid? DiscountId { get; set; }
         public Discount? Discount { get; set; }
+        public BookFormat Format { get; set; }
         public List<Feedback> Feedbacks { get; set; } = new();
         public List<SubCategory> Subcategories { get; set; } = new();
 
@@ -39,7 +40,7 @@ namespace BookAPI.Models
             Description = string.Empty;
             Cover = CoverType.OTHER;
             Quantity = 0;
-            //IsAvaliable = true;
+            Format = BookFormat.PAPER;
             Feedbacks = new List<Feedback>();
             Subcategories = new List<SubCategory>();
             ImageUrl = string.Empty;
