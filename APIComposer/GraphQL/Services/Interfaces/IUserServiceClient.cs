@@ -1,4 +1,5 @@
 using Library.Common;
+using Library.DTOs.Book;
 using Library.DTOs.UserRelated.Subscription;
 using Library.DTOs.UserRelated.User;
 using UserAPI.Models.Filters;
@@ -18,5 +19,6 @@ namespace APIComposer.GraphQL.Services.Interfaces
 
         Task<UserWithSubscriptionsDto> GetUserAsync(Guid id);
         Task<SubscriptionDto?> GetUserSubscriptionAsync(Guid userId);
+        Task<UserDisplayData?> GetUserDisplayData(Guid id);
     }
 }

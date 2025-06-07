@@ -1,7 +1,8 @@
 import { icons } from '@/lib/icons'
-import { Feedback } from "@/types";
+import { FeedbackAdminCard as FeedbackAdminCardType } from '@/types/types/book/FeedbackCard';
+import noImageUrl from "@/assets/noImage.svg"
 interface FeedbackAdminCardProps {
-    feedback: Feedback
+    feedback: FeedbackAdminCardType
 }
 
 const FeedbackAdminCard: React.FC<FeedbackAdminCardProps> = ({ feedback }) => {
@@ -19,9 +20,9 @@ const FeedbackAdminCard: React.FC<FeedbackAdminCardProps> = ({ feedback }) => {
             <div className='flex gap-6'>
                 <img 
                 className='h-[60px] w-[40px]'
-                src={`https://picsum.photos/seed/${feedback.bookId}/40/60`}/>
+                src={feedback.bookImageUrl ?? noImageUrl}/>
                 <div className='flex flex-col'>
-                    <p className=''>BOOKNAME TMP, AUTHOR_TMP - {feedbackUid}</p>
+                    <p className=''>{feedback.title} - {feedbackUid}</p>
                     <div className='flex gap-1'>
                         {[...Array(5)].map((_, i) => (
                         <img src={i + 1 <= feedback.rating ? icons.oStarFilled : icons.oStarEmpty}/>
@@ -34,7 +35,7 @@ const FeedbackAdminCard: React.FC<FeedbackAdminCardProps> = ({ feedback }) => {
             </div>
             <div className='flex gap-3.5 text-[13px]'>
                 <p>{formattedDate}</p>
-                <p>USER_TMP</p>
+                <p>{feedback.userName ?? "Unknown User"}</p>
             </div>
         </div>
     )

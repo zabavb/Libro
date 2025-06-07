@@ -7,6 +7,8 @@ using Library.DTOs.UserRelated.User;
 using Microsoft.AspNetCore.Authorization;
 using BookAPI.Services;
 using Library.DTOs.Order;
+using BookAPI.Models;
+using Library.DTOs.Book;
 
 namespace BookAPI.Controllers
 {
@@ -39,7 +41,7 @@ namespace BookAPI.Controllers
         /// <response code="404">Returns an error if no feedbacks are found.</response>
         /// <response code="500">Returns an internal server error if an exception occurs.</response>
         [HttpGet]
-        public async Task<ActionResult<PaginatedResult<FeedbackDto>>> GetAll(
+        public async Task<ActionResult<PaginatedResult<FeedbackAdminCard>>> GetAll(
             [FromQuery] int pageNumber = GlobalConstants.DefaultPageNumber,
             [FromQuery] int pageSize = GlobalConstants.DefaultPageSize,
             [FromQuery] FeedbackFilter? filter = null,
@@ -216,20 +218,19 @@ namespace BookAPI.Controllers
             }
         }
 
-/*        [HttpGet("for-book/rating/{id}")]
-        public async Task<ActionResult<BookFeedbacks>> GetAllForOrderDetailsAsync(Guid id)
+        [HttpGet("for-book/{amount}")]
+        public async Task<ActionResult<ICollection<FeedbackDto>>> GetNumberOfFeedbacks(int amount, [FromQuery] Guid bookId)
         {
-            if (id == Guid.Empty)
-                return NotFound($"Feedback ID [{id}] was not provided.");
             try
             {
-                var snippet = await _feedbackService.GetBookAvgRating(id);
-                return Ok(snippet);
+                var feedbacks = await _feedbackService.GetNumberOfFeedbacks(amount,bookId);
+                return Ok(feedbacks);
+
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"An error occurred: {ex.Message}");
+                return StatusCode(500, $"An error occured: {ex.Message}");
             }
-        }*/
+        }
     }
 }

@@ -5,10 +5,11 @@ import { Feedback, FeedbackFilter, FeedbackSort } from "@/types"
 import { addNotification } from "@/state/redux/slices/notificationSlice"
 import { fetchFeedbacksService } from "@/services"
 import FeedbackList from "@/components/book/admin/FeedbackList"
+import { FeedbackAdminCard } from "@/types/types/book/FeedbackCard"
 
 const FeedbackListContainer = () => {
 	const dispatch = useDispatch<AppDispatch>()
-    const [feedbacks, setFeedbacks] = useState<Feedback[]>([]);
+    const [feedbacks, setFeedbacks] = useState<FeedbackAdminCard[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [searchTerm, setSearchTerm] = useState<string>('');
     const [sort, setSort] = useState<FeedbackSort>({});

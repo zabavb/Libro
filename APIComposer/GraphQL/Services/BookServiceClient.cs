@@ -1,9 +1,10 @@
 using System.Net.Http.Headers;
-using System.Net.Http.Json;
+using System.Text.Json.Serialization;
+using System.Text.Json;
 using APIComposer.GraphQL.Services.Interfaces;
+using Library.DTOs.Book;
 using Library.DTOs.Order;
 using Library.DTOs.UserRelated.User;
-using UserAPI.Models;
 
 namespace APIComposer.GraphQL.Services
 {
@@ -38,13 +39,23 @@ namespace APIComposer.GraphQL.Services
             }
         }
 
-        public async Task<Library.DTOs.Book.Book> GetBookAsync(Guid id)
+        public async Task<BookDetails> GetBookAsync(Guid id)
         {
             try
             {
                 SetAuthHeader();
-                var response = await _http.GetFromJsonAsync<Library.DTOs.Book.Book>($"books/{id}");
-                return response ?? new Library.DTOs.Book.Book();
+                var response = await _http.GetAsync($"books/{id}");
+                if (response.IsSuccessStatusCode)
+                {
+                    var stream = await response.Content.ReadAsStreamAsync();
+                    var book = await JsonSerializer.DeserializeAsync<BookDetails>(stream, new JsonSerializerOptions
+                    {
+                        PropertyNameCaseInsensitive = true,
+                        Converters = { new JsonStringEnumConverter() }
+                    });
+                    return book ?? new BookDetails();
+                }
+                return null;
             }
             catch (Exception ex)
             {
@@ -85,6 +96,22 @@ namespace APIComposer.GraphQL.Services
                 return new BookOrderDetails();
             }
 
+        }
+
+        public async Task<ICollection<Feedback>> GetNumberOfFeedbacks(int amount, Guid bookId)
+        {
+            try
+            {
+                SetAuthHeader();
+                var response =
+                    await _http.GetFromJsonAsync<ICollection<Feedback>>(
+                        $"feedbacks/for-book/{amount}?bookId={bookId}");
+                return response ?? new List<Feedback>();
+            }
+            catch (Exception)
+            {
+                return new List<Feedback>();
+            }
         }
     }
 }

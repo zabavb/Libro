@@ -1,6 +1,6 @@
 import { CoverType } from "@/types/subTypes/book/CoverType";
 import { Language } from "@/types/subTypes/book/Language";
-import { Feedback } from "./Feedback";
+import { FeedbackCard } from "./FeedbackCard";
 
 export interface BookDetails{
     bookId: string;
@@ -20,7 +20,7 @@ export interface BookDetails{
     publisherName: string;
     categoryName:string;
     subcategories: string[];
-    latestFeedback: Feedback[];
+    latestFeedback: FeedbackCard[];
     bookFeedbacks: BookFeedbacks;
 }
 

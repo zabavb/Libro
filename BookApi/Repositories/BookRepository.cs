@@ -208,7 +208,7 @@ namespace BookAPI.Repositories
             {
                 tags.Add(subCategory.Name);
             }
-
+            
             var bookDetails = new BookDetails()
             {
                 BookId = book.Id,
@@ -221,7 +221,7 @@ namespace BookAPI.Repositories
                 Quantity = book.Quantity,
                 Title = book.Title,
                 Year = book.Year,
-
+                
                 PublisherName = book.Publisher.Name,
 
                 Subcategories = tags,
@@ -232,7 +232,7 @@ namespace BookAPI.Repositories
                 AuthorName = book.Author.Name,
                 AuthorDescription = book.Author.Biography ?? "",
                 AuthorImageUrl = book.Author.ImageUrl,
-                LatestFeedback = latestFeedbacks,
+                /*LatestFeedback = latestFeedbacks,*/
 
                 BookFeedbacks = new BookFeedbacks()
                 {

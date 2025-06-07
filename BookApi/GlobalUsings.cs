@@ -11,3 +11,4 @@ global using AuthorRequest = Library.DTOs.Book.AuthorRequest;
 global using BookFeedbacks = Library.DTOs.Book.BookFeedbacks;
 global using BookCard = Library.DTOs.Book.BookCard;
 global using BookDetails = Library.DTOs.Book.BookDetails;
+global using FeedbackAdminCard = Library.DTOs.Book.FeedbackAdminCard;

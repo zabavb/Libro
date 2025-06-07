@@ -1,5 +1,6 @@
 ﻿using BookAPI;
 using Library.Common;
+using Library.DTOs.Book;
 using Library.DTOs.UserRelated.User;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -131,6 +132,16 @@ namespace UserAPI.Controllers
         {
             await _service.DeleteAsync(id);
             return NoContent();
+        }
+
+        [HttpGet("get-display-data/{id}")]
+        public async Task<ActionResult<UserDisplayData>> GetUserDisplayData(Guid id)
+        {
+            if (id == Guid.Empty)
+                return NotFound($"User ID [{id}] was not provided.");
+
+            var user = await _service.GetUserDisplayDataAsync(id);
+            return Ok(user);
         }
     }
 }

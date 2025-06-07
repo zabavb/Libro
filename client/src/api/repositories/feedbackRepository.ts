@@ -1,6 +1,7 @@
 import axios from "axios"
 import { Feedback, PaginatedResponse } from "../../types"
 import { FEEDBACK_BY_ID, FEEDBACKS, FEEDBACKS_PAGINATED } from "..";
+import { FeedbackAdminCard } from "@/types/types/book/FeedbackCard";
 
 interface FeedbackQueryParams {
     rating?: number;
@@ -17,9 +18,9 @@ export const getAllFeedbacks = async (
     pageNumber: number = 1,
     pageSize: number = 10,
     params: FeedbackQueryParams = {},
-): Promise<PaginatedResponse<Feedback>> => {
+): Promise<PaginatedResponse<FeedbackAdminCard>> => {
     const url = FEEDBACKS_PAGINATED(pageNumber, pageSize)
-    const response = await axios.get<PaginatedResponse<Feedback>>(url, { params })
+    const response = await axios.get<PaginatedResponse<FeedbackAdminCard>>(url, { params })
     
     console.log(response)
     return response.data

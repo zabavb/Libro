@@ -1,5 +1,6 @@
 ﻿using Library.Common;
 using Library.Common.Middleware;
+using Library.DTOs.Book;
 using Microsoft.EntityFrameworkCore;
 using StackExchange.Redis;
 using System.Text.Json;
@@ -276,6 +277,21 @@ namespace UserAPI.Repositories
             {
                 throw new RepositoryException($"Database error while deleting user with ID [{id}].", ex);
             }
+        }
+
+        public async Task<UserDisplayData> GetUserDisplayDataAsync(Guid id)
+        {
+            var user = await _context.Users
+                   .AsNoTracking()
+                   .Where(u => u.UserId == id)
+                   .Select(u => new UserDisplayData()
+                   {
+                       UserName = $"{u.FirstName} {u.LastName}",
+                       UserImageUrl = u.ImageUrl,
+                   })
+                   .FirstOrDefaultAsync();
+
+            return user!;
         }
     }
 }

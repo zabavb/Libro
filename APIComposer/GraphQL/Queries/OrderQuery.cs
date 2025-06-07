@@ -1,14 +1,10 @@
-﻿using Amazon.S3.Model;
-using APIComposer.GraphQL.Services.Interfaces;
+﻿using APIComposer.GraphQL.Services.Interfaces;
 using AutoMapper;
-using HotChocolate.Validation;
 using Library.Common;
+using Library.DTOs.Book;
 using Library.DTOs.Order;
-using Library.DTOs.UserRelated.User;
 using OrderAPI;
-using UserAPI.Models;
-using UserAPI.Models.Filters;
-using UserAPI.Models.Sorts;
+
 
 
 namespace APIComposer.GraphQL.Queries
@@ -59,7 +55,7 @@ namespace APIComposer.GraphQL.Queries
         }
 
         // GetAllEditOrderAsync => order, book, user with subscription via user api,
-
+        
         [GraphQLName("allOrderIntAsync")]
         public async Task<PaginatedResult<OrderInput>?> GetAllEditOrderAsync(
            [Service] IOrderServiceClient orderClient,
@@ -84,7 +80,7 @@ namespace APIComposer.GraphQL.Queries
                 var bookIds = order.Books.Keys;
                 foreach (var bookId in bookIds)
                 {
-                    Library.DTOs.Book.Book book = await bookClient.GetBookAsync(bookId);
+                    BookDetails book = await bookClient.GetBookAsync(bookId);
 
                     BookForOrder bookForOrder = new BookForOrder
                     {

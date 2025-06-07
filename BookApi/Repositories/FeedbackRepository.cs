@@ -67,7 +67,7 @@ namespace BookAPI.Repositories
         }
 
 
-        public async Task<PaginatedResult<Feedback>> GetAllAsync(int pageNumber, int pageSize, FeedbackFilter? filter,
+        public async Task<PaginatedResult<FeedbackAdminCard>> GetAllAsync(int pageNumber, int pageSize, FeedbackFilter? filter,
             FeedbackSort? sort)
         {
             string cacheKey = $"{_cacheKeyPrefix}All";
@@ -80,14 +80,15 @@ namespace BookAPI.Repositories
             }
             else
             {
-                feedbacks = await _context.Feedbacks.ToListAsync();
+                feedbacks = await _context.Feedbacks.Include(f => f.Book).ThenInclude(b => b.Author).ToListAsync();
                 _logger.LogInformation("Fetched from DB.");
 
                 await _cacheService.SetAsync(cacheKey, feedbacks, _cacheExpiration);
                 _logger.LogInformation("Set to CACHE.");
             }
 
-            IQueryable<Feedback> feedbackQuery = feedbacks.AsQueryable();
+            IQueryable<Feedback> feedbackQuery = feedbacks
+                .AsQueryable();
 
             if (filter != null)
             {
@@ -100,9 +101,17 @@ namespace BookAPI.Repositories
             }
 
             var totalFeedbacks = feedbackQuery.Count();
-            var paginatedFeedbacks = feedbackQuery.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList();
+            var paginatedFeedbacks = feedbackQuery.Skip((pageNumber - 1) * pageSize).Take(pageSize).Select(f => new FeedbackAdminCard()
+            {
+                FeedbackId = f.Id,
+                Rating = f.Rating,
+                Comment = f.Comment,
+                Date = f.Date,
+                Title = $"{f.Book.Title}, {f.Book.Author.Name}",
+                BookImageUrl = f.Book.ImageUrl,
+            }).ToList();
 
-            return new PaginatedResult<Feedback>
+            return new PaginatedResult<FeedbackAdminCard>
             {
                 Items = paginatedFeedbacks,
                 TotalCount = totalFeedbacks,
@@ -186,6 +195,16 @@ namespace BookAPI.Repositories
             }
 
             _logger.LogInformation("Feedback updated in DB and cached.");
+        }
+
+        public async Task<ICollection<Feedback>> GetNumberOfFeedbacks(int amount, Guid bookId)
+        {
+            var feedbacks = await _context.Feedbacks
+                .Where(f => f.BookId == bookId)
+                .OrderByDescending(f => f.Date)
+                .Take(amount)
+                .ToListAsync();
+            return feedbacks;
         }
     }
 }

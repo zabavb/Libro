@@ -25,7 +25,8 @@ builder.Services
     .ModifyRequestOptions(opt => opt.IncludeExceptionDetails = true)
     .AddQueryType()
     .AddTypeExtension<OrderQuery>()
-    .AddTypeExtension<UserQuery>();
+    .AddTypeExtension<UserQuery>()
+    .AddTypeExtension<BookQuery>();
 
 builder.Services.AddSwaggerGen();
 

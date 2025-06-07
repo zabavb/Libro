@@ -1,4 +1,6 @@
 using AutoMapper;
+using BookAPI.Models;
+using Library.DTOs.Book;
 using Library.DTOs.Order;
 using Library.DTOs.UserRelated.User;
 
@@ -38,6 +40,13 @@ namespace APIComposer.GraphQL
                 .ForMember(dest => dest.Created, opt => opt.MapFrom(src => src.order.OrderDate))
                 .ForMember(dest => dest.Price, opt => opt.MapFrom(src => src.order.Price + src.order.DeliveryPrice))
                 .ForMember(dest => dest.OrderBooks, opt => opt.MapFrom(src => src.bookDetails));
+
+            CreateMap<(Library.DTOs.Book.Feedback feedback, UserDisplayData user), FeedbackCard>()
+                .ForMember(dest => dest.FeedbackId, opt => opt.MapFrom(src => src.feedback.FeedbackId))
+                .ForMember(dest => dest.Comment, opt => opt.MapFrom(src => src.feedback.Comment))
+                .ForMember(dest => dest.Date, opt => opt.MapFrom(src => src.feedback.Date))
+                .ForMember(dest => dest.Rating, opt => opt.MapFrom(src => src.feedback.Rating))
+                .ForMember(dest => dest.UserDisplayData, opt => opt.MapFrom(src => src.user));
         }
     }
 }

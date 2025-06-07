@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Library.Common;
+using Library.DTOs.Book;
 using Library.DTOs.UserRelated.User;
 using Library.Interfaces;
 using UserAPI.Models;
@@ -105,6 +106,15 @@ namespace UserAPI.Services
 
             string fileKey = $"{GlobalDefaults.UserImagesFolder}{id}.png";
             await _storageService.DeleteAsync(GlobalDefaults.BucketName, fileKey);
+        }
+
+        public async Task<UserDisplayData> GetUserDisplayDataAsync(Guid id)
+        {
+            var user = await _repository.GetUserDisplayDataAsync(id) ??
+                       throw new KeyNotFoundException($"User with ID [{id}] not found.");
+            _logger.LogInformation("User with ID [{id}] successfully fetched.", id);
+
+            return user;
         }
     }
 }
