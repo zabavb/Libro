@@ -27,7 +27,7 @@ namespace BookAPI.Data
         {
             modelBuilder.ApplyConfigurationsFromAssembly(typeof(BookDbContext).Assembly);
 
-            DataSeeder.Seed(modelBuilder, _storageService).Wait(); 
+            //DataSeeder.Seed(modelBuilder, _storageService).Wait(); 
         }
     }
 }
