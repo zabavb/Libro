@@ -456,7 +456,7 @@ namespace BookAPI.Data
             "Відмінний вибір для поціновувачів жанру."
         };
 
-        public static async Task Seed(ModelBuilder modelBuilder, S3StorageService storageService)
+        public static async Task Seed(BookDbContext context, S3StorageService storageService)
         {
             var filesHelper = new FilesHelper(storageService, "libro-book");
 
@@ -735,7 +735,10 @@ new("9fc6b407-7b59-4f69-8403-4fcdbf1bc841"),
                     Name = CategoryNames[i]
                 });
             }
-            modelBuilder.Entity<Category>().HasData(categories);
+            if (!context.Categories.Any())
+            {
+                context.Categories.AddRange(categories);
+            }
 
             var subCategories = new List<SubCategory>();
 
@@ -751,8 +754,10 @@ new("9fc6b407-7b59-4f69-8403-4fcdbf1bc841"),
                     });
                 }
             }
-            modelBuilder.Entity<SubCategory>().HasData(subCategories);
-
+            if (!context.Subcategories.Any())
+            {
+                context.Subcategories.AddRange(subCategories);
+            }
             var publishers = new List<Publisher>();
 
             for (int i = 0; i < publisherNames.Length; i++)
@@ -765,10 +770,12 @@ new("9fc6b407-7b59-4f69-8403-4fcdbf1bc841"),
                 });
             }
 
-            modelBuilder.Entity<Publisher>().HasData(publishers);
+            if (!context.Publishers.Any())
+            {
+                context.Publishers.AddRange(publishers);
+            }
 
 
-           
             var authors = new List<Author>();
 
             for (int i = 0; i < AuthorNames.Length; i++)
@@ -798,7 +805,11 @@ new("9fc6b407-7b59-4f69-8403-4fcdbf1bc841"),
             }
 
 
-            modelBuilder.Entity<Author>().HasData(authors);
+            if (!context.Authors.Any())
+            {
+                context.Authors.AddRange(authors);
+            }
+
             var random = new Random();
             var discounts = bookIds.Select(bookId => new Discount
             {
@@ -809,7 +820,10 @@ new("9fc6b407-7b59-4f69-8403-4fcdbf1bc841"),
                 EndDate = DateTime.UtcNow.AddMonths(1)
             }).ToList();
 
-            modelBuilder.Entity<Discount>().HasData(discounts);
+            if (!context.Discounts.Any())
+            {
+                context.Discounts.AddRange(discounts);
+            }
 
             var books = new List<Book>();
             for (int i = 0; i < BookTitles.Length; i++)
@@ -905,34 +919,55 @@ new("9fc6b407-7b59-4f69-8403-4fcdbf1bc841"),
             }
 
 
-            modelBuilder.Entity<Book>().HasData(books);
-
-
-           
-            var bookSubCategoryData = new List<object>();
-
-            for (int i = 0; i < books.Count; i++)
+            if (!context.Books.Any())
             {
-                var book = books[i];
+                context.Books.AddRange(books);
+            }
+
+
+            foreach (var book in books)
+            {
                 var relevantSubCats = subCategories.Where(sc => sc.CategoryId == book.CategoryId).ToList();
 
-                if (relevantSubCats.Count == 0)
+                if (!relevantSubCats.Any())
                     continue;
-                int subCatCount = random.Next(1, Math.Min(3, relevantSubCats.Count) + 1); // максимум 3 підкатегорії
+
+                int subCatCount = random.Next(1, Math.Min(3, relevantSubCats.Count) + 1);
 
                 var chosenSubCats = relevantSubCats.OrderBy(x => random.Next()).Take(subCatCount).ToList();
 
                 foreach (var subCat in chosenSubCats)
                 {
-                    bookSubCategoryData.Add(new
+                    if (!book.Subcategories.Any(sc => sc.Id == subCat.Id))
                     {
-                        BookId = book.Id,
-                        SubCategoryId = subCat.Id
-                    });
+                        book.Subcategories.Add(subCat);
+                    }
                 }
             }
+            //var bookSubCategoryData = new List<object>();
 
-            modelBuilder.Entity("BookSubCategory").HasData(bookSubCategoryData.ToArray());
+            //for (int i = 0; i < books.Count; i++)
+            //{
+            //    var book = books[i];
+            //    var relevantSubCats = subCategories.Where(sc => sc.CategoryId == book.CategoryId).ToList();
+
+            //    if (relevantSubCats.Count == 0)
+            //        continue;
+            //    int subCatCount = random.Next(1, Math.Min(3, relevantSubCats.Count) + 1); // максимум 3 підкатегорії
+
+            //    var chosenSubCats = relevantSubCats.OrderBy(x => random.Next()).Take(subCatCount).ToList();
+
+            //    foreach (var subCat in chosenSubCats)
+            //    {
+            //        bookSubCategoryData.Add(new
+            //        {
+            //            BookId = book.Id,
+            //            SubCategoryId = subCat.Id
+            //        });
+            //    }
+            //}
+
+            //modelBuilder.Entity("BookSubCategory").HasData(bookSubCategoryData.ToArray());
 
 
             var feedbacks = new List<Feedback>();
@@ -964,7 +999,11 @@ new("9fc6b407-7b59-4f69-8403-4fcdbf1bc841"),
                     Comment = reviews[random.Next(reviews.Length)]
                 });
             }
-            modelBuilder.Entity<Feedback>().HasData(feedbacks);
+            if (!context.Feedbacks.Any())
+            {
+                context.Feedbacks.AddRange(feedbacks);
+            }
+            await context.SaveChangesAsync();
         }
 
 
