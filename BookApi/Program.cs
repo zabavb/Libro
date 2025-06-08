@@ -149,6 +149,17 @@ builder.Services.AddCors(options =>
 
 
 var app = builder.Build();
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    var dbContext = services.GetRequiredService<BookDbContext>();
+    var s3Service = services.GetRequiredService<S3StorageService>();
+    if (!dbContext.Books.Any())  
+    {
+        await DataSeeder.Seed(dbContext, s3Service);
+    }
+}
+
 
 app.UseCors("AllowReactApp");
 
