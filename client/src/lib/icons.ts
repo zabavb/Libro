@@ -37,6 +37,7 @@ import bMenu from '@/assets/icons/bMenu.svg'
 import pointer from '@/assets/icons/pointer.svg'
 import pointerLight from '@/assets/icons/pointerLight.svg'
 import bStar from '@/assets/icons/bStar.svg'
+import cartN from '@/assets/icons/cartN.svg'
 
 export const icons = {
     wUser,
@@ -77,5 +78,6 @@ export const icons = {
     bMenu,
     pointer,
     pointerLight,
-    bStar
+    bStar,
+    cartN
 }
