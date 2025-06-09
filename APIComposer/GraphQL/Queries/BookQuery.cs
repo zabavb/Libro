@@ -1,7 +1,11 @@
 ﻿using APIComposer.GraphQL.Services.Interfaces;
 using AutoMapper;
+using BookAPI.Models.Filters;
+using BookAPI.Models.Sortings;
+using Library.Common;
 using Library.DTOs.Book;
 using Library.DTOs.UserRelated.User;
+using OrderAPI;
 using UserAPI.Models;
 
 namespace APIComposer.GraphQL.Queries
@@ -48,6 +52,31 @@ namespace APIComposer.GraphQL.Queries
             book.LatestFeedback = cards;
 
             return book;
+        }
+
+        [GraphQLName("getFeedbacksForAdmin")]
+        public async Task<PaginatedResult<FeedbackAdminCard>> GetFeedbacksForAdmin(
+            [Service] IBookServiceClient bookClient,
+            [Service] IUserServiceClient userClient,
+            [Service] IMapper mapper,
+            int pageNumber = 1,
+            int pageSize = 10,
+            string? searchTerm = null,
+            FeedbackFilter? filter = null,
+            FeedbackSort? sort = null)
+        {
+            PaginatedResult<FeedbackAdminCard>? feedbacks = await bookClient.GetFeedbacksAsync(pageNumber, pageSize, searchTerm, filter, sort);
+            if (feedbacks == null)
+                return null;
+
+            foreach (var feedback in feedbacks.Items) {
+                var reviewer = await userClient.GetUserDisplayData(feedback.UserId ?? Guid.Empty);
+                feedback.UserId = null;
+                feedback.UserName = reviewer!.UserName;
+            }
+
+
+            return feedbacks;
         }
     }
 }

@@ -1,4 +1,6 @@
+import { Bool } from "../subTypes/Bool";
+
 export interface FeedbackSort{
-    newest?: boolean;
-    rating?: boolean;
+    newest?: Bool;
+    rating?: Bool;
 }

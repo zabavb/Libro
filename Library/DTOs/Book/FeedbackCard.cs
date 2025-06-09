@@ -29,6 +29,7 @@ namespace Library.DTOs.Book
         public int Rating { get; set; }
         public DateTime Date { get; set; }
 
+        public Guid? UserId { get; set; } // Optional, used only for composer
         public string? UserName { get; set; }
 
         public string Title { get; set; }

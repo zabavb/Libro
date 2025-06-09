@@ -1,5 +1,5 @@
 import { addFeedback, getAllFeedbacks, getFeedbackById } from "@/api/repositories/feedbackRepository";
-import { Feedback, FeedbackFilter, FeedbackSort, PaginatedResponse, ServiceResponse } from "@/types";
+import { Bool, Feedback, FeedbackFilter, FeedbackSort, PaginatedResponse, ServiceResponse } from "@/types";
 import { FeedbackAdminCard } from "@/types/types/book/FeedbackCard";
 
 export const fetchFeedbacksService = async (
@@ -16,26 +16,84 @@ export const fetchFeedbacksService = async (
     };
 
     try {
-        const formattedSort = Object.fromEntries(
-            Object.entries(sort || {}).map(([Key, value]) => [Key, value ? 1 : 2])
-        )
+        const defaultFilter: FeedbackFilter = {
+            rating: null,
+            minPublicationDate: null,
+            maxPublicationDate: null,
+            isPurchasedByReviewer: null,
+            userId: null
+        };
 
-        const params = {
-            searchTerm,
-            ...filters,
-            ...formattedSort,
-        }
-        response.data = await getAllFeedbacks(pageNumber, pageSize, params)
+        const defaultSort = {
+            newest: Bool.NULL,
+            rating: Bool.NULL
+        } as FeedbackSort;
+
+        const body = {
+            query: `
+            query GetFeedbacksForAdmin(
+                $pageNumber: Int!,
+                $pageSize: Int!,
+                $searchTerm: String,
+                $filter: FeedbackFilterInput!,
+                $sort: FeedbackSortInput!)
+            {
+                    getFeedbacksForAdmin(
+                        pageNumber: $pageNumber,
+                        pageSize: $pageSize,
+                        searchTerm: $searchTerm,
+                        filter: $filter,
+                        sort: $sort
+                    ) {
+                        items {
+                            feedbackId
+                            comment
+                            rating
+                            date
+                            userId
+                            userName
+                            title
+                            bookImageUrl
+                        }
+                        pageNumber
+                        pageSize
+                        totalCount
+                        totalPages
+                    }
+            }
+            `,
+            variables: {
+                pageNumber,
+                pageSize,
+                searchTerm: searchTerm ?? null,
+                filter: {
+                    ...defaultFilter,
+                    ...filters,
+                },
+                sort: { ...defaultSort, ...sort },
+            },
+        };
+
+
+        const graphQLResponse = await getAllFeedbacks(body);
+        if (graphQLResponse.errors)
+            throw new Error(
+                `${graphQLResponse.errors[0].message} Status code: ${graphQLResponse.errors[0].extensions?.status}`,
+            );
+        console.log(graphQLResponse.data);
+        response.data = graphQLResponse.data
+            ?.getFeedbacksForAdmin as PaginatedResponse<FeedbackAdminCard>;
     }
     catch (error) {
-        console.error('Failed to fetch feedbacks', error)
+        console.error(error instanceof Error ? error.message : String(error));
         response.error =
-            'An error occured while fetching feedbacks. Please try again later';
+            'An error occurred while fetching feedbacks. Please try again later.';
     } finally {
         response.loading = false;
     }
+    console.log(response)
     return response;
-};
+}
 
 /**
  * Fetch a feedback by its ID.
@@ -46,16 +104,16 @@ export const fetchFeedbackByIdService = async (
     const response: ServiceResponse<Feedback> = {
         data: null,
         loading: true,
-        error:null,
+        error: null,
     };
 
-    try{
+    try {
         response.data = await getFeedbackById(id);
-    } catch (error){
-        console.error('Failed to fetch feedback with ID', {id, error});
-        response.error = 
+    } catch (error) {
+        console.error('Failed to fetch feedback with ID', { id, error });
+        response.error =
             'An error occurred while fetching the feedback. Please try again later.';
-    } finally{
+    } finally {
         response.loading = false;
     }
     return response;
@@ -75,11 +133,11 @@ export const addFeedbackService = async (
 
     try {
         response.data = await addFeedback(feedback);
-    }catch(error) {
+    } catch (error) {
         console.error('Failed to create feedback', error);
-        response.error = 
+        response.error =
             'An error occurred while adding feedback. Please try again later.';
-    }finally {
+    } finally {
         response.loading = false;
     }
 

@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using Library.Common;
 using BookAPI.Data.CachHelper;
 using Library.DTOs.UserRelated.User;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace BookAPI.Repositories
 {
@@ -72,23 +73,26 @@ namespace BookAPI.Repositories
         {
             string cacheKey = $"{_cacheKeyPrefix}All";
             List<Feedback>? feedbacks = await _cacheService.GetAsync<List<Feedback>>(cacheKey);
-            bool isFromCache = feedbacks != null && feedbacks.Count > 0;
 
-            if (isFromCache)
+            var cachedResult = await _cacheService.GetAsync<PaginatedResult<FeedbackAdminCard>>(cacheKey);
+            if (cachedResult != null)
             {
-                _logger.LogInformation("Fetched from CACHE.");
+                _logger.LogInformation("GetAllAsync: Fetched paginated result from CACHE.");
+                return cachedResult;
             }
-            else
+            /*else
             {
                 feedbacks = await _context.Feedbacks.Include(f => f.Book).ThenInclude(b => b.Author).ToListAsync();
                 _logger.LogInformation("Fetched from DB.");
 
                 await _cacheService.SetAsync(cacheKey, feedbacks, _cacheExpiration);
                 _logger.LogInformation("Set to CACHE.");
-            }
+            }*/
 
-            IQueryable<Feedback> feedbackQuery = feedbacks
-                .AsQueryable();
+            IQueryable<Feedback> feedbackQuery = _context.Feedbacks
+                .AsNoTracking()
+                .Include(f => f.Book)
+                .ThenInclude(b => b.Author);
 
             if (filter != null)
             {
@@ -109,6 +113,7 @@ namespace BookAPI.Repositories
                 Date = f.Date,
                 Title = $"{f.Book.Title}, {f.Book.Author.Name}",
                 BookImageUrl = f.Book.ImageUrl,
+                UserId = f.UserId
             }).ToList();
 
             return new PaginatedResult<FeedbackAdminCard>
