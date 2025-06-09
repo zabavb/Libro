@@ -270,5 +270,21 @@ namespace BookAPI.Controllers
             }
         }
 
+        [HttpGet("library")]
+        public async Task<ActionResult<ICollection<BookLibraryItem>>> GetAllDigitalBooks( [FromQuery] ICollection<Guid> ids)
+        {
+            if (ids.Count == 0)
+                return NotFound($"Book IDs were not provided.");
+            try
+            {
+                var snippet = await _bookService.GetAllDigitalBooks(ids);
+                return Ok(snippet);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"An error occurred: {ex.Message}");
+            }
+        }
+
     }
 }

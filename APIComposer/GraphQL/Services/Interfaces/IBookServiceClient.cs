@@ -20,5 +20,7 @@ namespace APIComposer.GraphQL.Services.Interfaces
           string? searchTerm = null,
           FeedbackFilter? filter = null,
           FeedbackSort? sort = null);
+
+        Task<ICollection<BookLibraryItem>> GetAllDigitalBooks(ICollection<Guid> ids);
     }
 }

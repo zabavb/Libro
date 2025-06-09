@@ -24,6 +24,7 @@ namespace BookAPI.Services.Interfaces
         Task UpdateWithDiscountAsync(Guid id, UpdateBookRequest request, IDiscountService discountService);
         Task<DiscountDTO?> GetDiscountByBookIdAsync(Guid bookId);
         Task<BookOrderDetails?> GetAllForOrderDetailsAsync(Guid bookId);
+        Task<ICollection<BookLibraryItem>> GetAllDigitalBooks(ICollection<Guid> ids);
 
     }
 }

@@ -6,6 +6,7 @@ using Library.Common;
 using Library.DTOs.Book;
 using Library.DTOs.UserRelated.User;
 using OrderAPI;
+using System.Reflection;
 using UserAPI.Models;
 
 namespace APIComposer.GraphQL.Queries
@@ -69,7 +70,8 @@ namespace APIComposer.GraphQL.Queries
             if (feedbacks == null)
                 return null;
 
-            foreach (var feedback in feedbacks.Items) {
+            foreach (var feedback in feedbacks.Items)
+            {
                 var reviewer = await userClient.GetUserDisplayData(feedback.UserId ?? Guid.Empty);
                 feedback.UserId = null;
                 feedback.UserName = reviewer!.UserName;
@@ -77,6 +79,40 @@ namespace APIComposer.GraphQL.Queries
 
 
             return feedbacks;
+        }
+
+        [GraphQLName("getUserOwnedBooks")]
+        public async Task<PaginatedResult<BookLibraryItem>> GetUserOwnedBooks(
+            [Service] IOrderServiceClient orderClient,
+            [Service] IBookServiceClient bookClient,
+            Guid userId,
+            int pageNumber = 1,
+            int pageSize = 10)
+        {
+            var userOrders = await orderClient.GetAllOrdersAsync(1, int.MaxValue, string.Empty, new OrderFilter() { UserId = userId }, null);
+
+            List<Guid> books = new List<Guid>();
+            foreach (var order in userOrders.Items)
+            {
+                foreach (KeyValuePair<Guid, int> book in order.Books)
+                {
+                    if (!books.Contains(book.Key))
+                    {
+                        books.Add(book.Key);
+                    }
+                }
+            }
+
+            ICollection<BookLibraryItem> bookLibraryItems = await bookClient.GetAllDigitalBooks(books);
+
+
+            return new PaginatedResult<BookLibraryItem>()
+            {
+                Items = bookLibraryItems.Skip(pageSize * (pageNumber - 1)).Take(pageSize).ToList(),
+                PageSize = pageSize,
+                PageNumber = pageNumber,
+                TotalCount = bookLibraryItems.Count
+            };
         }
     }
 }

@@ -43,6 +43,22 @@ namespace APIComposer.GraphQL.Services
             }
         }
 
+        public async Task<ICollection<BookLibraryItem>> GetAllDigitalBooks(ICollection<Guid> ids)
+        {
+            try
+            {
+                SetAuthHeader();
+                var queryString = "?" + string.Join("&", ids.Select(id => $"ids={id}"));
+                var response =
+                    await _http.GetFromJsonAsync<ICollection<BookLibraryItem>>($"books/library{queryString}");
+                return response ?? new List<BookLibraryItem>();
+            }
+            catch (Exception)
+            {
+                return new List<BookLibraryItem>();
+            }
+        }
+
         public async Task<BookDetails> GetBookAsync(Guid id)
         {
             try
@@ -66,6 +82,8 @@ namespace APIComposer.GraphQL.Services
                 return null;
             }
         }
+
+
 
 
         public async Task<ICollection<FeedbackForUserDetails>> GetAllFeedbacksAsync(Guid userId)

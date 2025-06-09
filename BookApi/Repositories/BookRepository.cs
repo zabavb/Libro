@@ -17,6 +17,7 @@ using Library.DTOs.Book;
 using Book = BookAPI.Models.Book;
 using Feedback = BookAPI.Models.Feedback;
 using SubCategory = BookAPI.Models.SubCategory;
+using Microsoft.IdentityModel.Tokens;
 
 namespace BookAPI.Repositories
 {
@@ -92,10 +93,11 @@ namespace BookAPI.Repositories
 
             List<BookCard> items = new List<BookCard>();
 
-            foreach (Book book in books) {
+            foreach (Book book in books)
+            {
 
                 int rating = 0;
-                foreach(Feedback feedback in book.Feedbacks)
+                foreach (Feedback feedback in book.Feedbacks)
                 {
                     rating += feedback.Rating;
                 }
@@ -112,7 +114,7 @@ namespace BookAPI.Repositories
                     Price = book.Price,
                     Rating = new BookFeedbacks()
                     {
-                        AvgRating = rating / (book.Feedbacks.Count() > 0 ? book.Feedbacks.Count() : 1 ),
+                        AvgRating = rating / (book.Feedbacks.Count() > 0 ? book.Feedbacks.Count() : 1),
                         FeedbackAmount = book.Feedbacks.Count()
                     }
                 });
@@ -188,7 +190,7 @@ namespace BookAPI.Repositories
 
             int rating = 0;
             List<FeedbackDto> latestFeedbacks = new List<FeedbackDto>();
-            if(book.Feedbacks != null)
+            if (book.Feedbacks != null)
             {
                 foreach (Feedback feedback in book.Feedbacks)
                 {
@@ -216,7 +218,7 @@ namespace BookAPI.Repositories
             {
                 tags.Add(subCategory.Name);
             }
-            
+
             var bookDetails = new BookDetails()
             {
                 BookId = book.Id,
@@ -229,7 +231,7 @@ namespace BookAPI.Repositories
                 Quantity = book.Quantity,
                 Title = book.Title,
                 Year = book.Year,
-                
+
                 PublisherName = book.Publisher.Name,
 
                 Subcategories = tags,
@@ -383,13 +385,13 @@ namespace BookAPI.Repositories
 
         public async Task<BookOrderDetails> GetAllForOrderDetailsAsync(Guid bookId)
         {
-/*            string cacheKey = $"{_cacheKeyPrefix}{bookId}_details";
-            var cachedDetails = await _cacheService.GetAsync<BookOrderDetails>(cacheKey);
-            if (cachedDetails != null)
-            {
-                _logger.LogInformation("Fetched from CACHE.");
-                return cachedDetails;
-            }*/
+            /*            string cacheKey = $"{_cacheKeyPrefix}{bookId}_details";
+                        var cachedDetails = await _cacheService.GetAsync<BookOrderDetails>(cacheKey);
+                        if (cachedDetails != null)
+                        {
+                            _logger.LogInformation("Fetched from CACHE.");
+                            return cachedDetails;
+                        }*/
             try
             {
                 var book = await _context.Books
@@ -406,11 +408,11 @@ namespace BookAPI.Repositories
                             ImageUrl = b.ImageUrl
                         }).FirstOrDefaultAsync();
                 _logger.LogInformation("Fetched from DB.");
-/*
-                if (book != null)
-                {
-                    await _cacheService.SetAsync(cacheKey, book, _cacheExpiration);
-                }*/
+                /*
+                                if (book != null)
+                                {
+                                    await _cacheService.SetAsync(cacheKey, book, _cacheExpiration);
+                                }*/
 
                 return book;
             }
@@ -420,6 +422,34 @@ namespace BookAPI.Repositories
                 return null;
             }
 
+        }
+
+        public async Task<ICollection<BookLibraryItem>> GetAllLibraryItems(ICollection<Guid> ids)
+        {
+            try
+            {
+                var books = await _context.Books
+                    .AsNoTracking()
+                    .Include(b => b.Author)
+                    .Where(b => ids.Contains(b.Id) &&
+                     (!string.IsNullOrEmpty(b.AudioFileUrl) || !string.IsNullOrEmpty(b.PdfFileUrl)))
+                    .Select(b => new BookLibraryItem()
+                    {
+                        AuthorName = b.Author.Name,
+                        ImageUrl = b.ImageUrl,
+                        Title = b.Title,
+                        AudioUrl = b.AudioFileUrl,
+                        PdfFileUrl = b.PdfFileUrl,
+                    })
+                    .ToListAsync();
+
+                return books;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+                return null;
+            }
         }
 
     }

@@ -25,5 +25,6 @@ namespace BookAPI.Repositories.Interfaces
 
         Task<ICollection<string>> GetAllForUserDetailsAsync(ICollection<Guid> ids);
         Task<BookOrderDetails> GetAllForOrderDetailsAsync(Guid bookId);
+        Task<ICollection<BookLibraryItem>> GetAllLibraryItems(ICollection<Guid> ids);
     }
 }

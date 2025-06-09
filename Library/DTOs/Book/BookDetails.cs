@@ -36,6 +36,15 @@
         public BookFeedbacks? Rating { get; set; }
     }
 
+    public class BookLibraryItem
+    {
+        public string Title { get; set; } = string.Empty;
+        public string AuthorName { get; set; } = string.Empty;
+        public string? ImageUrl { get; set; } = string.Empty;
+        public string? PdfFileUrl { get; set; }
+        public string? AudioUrl { get; set; }
+    }
+
     public class BookFeedbacks
     {
         public int? AvgRating { get; set; }
