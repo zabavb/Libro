@@ -13,6 +13,10 @@ using System.Text.Json.Serialization;
 using BookOrderDetails = Library.DTOs.Order.BookOrderDetails;
 using Amazon.Runtime.Internal;
 using AutoMapper;
+using Library.DTOs.Book;
+using Book = BookAPI.Models.Book;
+using Feedback = BookAPI.Models.Feedback;
+using SubCategory = BookAPI.Models.SubCategory;
 
 namespace BookAPI.Repositories
 {
@@ -184,22 +188,26 @@ namespace BookAPI.Repositories
 
             int rating = 0;
             List<FeedbackDto> latestFeedbacks = new List<FeedbackDto>();
-            foreach (Feedback feedback in book.Feedbacks)
+            if(book.Feedbacks != null)
             {
-                rating += feedback.Rating;
-                if (latestFeedbacks.Count < 2)
+                foreach (Feedback feedback in book.Feedbacks)
                 {
-                    latestFeedbacks.Add(new FeedbackDto()
+                    rating += feedback.Rating;
+                    if (latestFeedbacks.Count < 2)
                     {
-                        FeedbackId = feedback.Id,
-                        UserId = feedback.UserId,
-                        BookId = feedback.BookId,
-                        Date = feedback.Date,
-                        Comment = feedback.Comment,
-                        IsPurchased = feedback.IsPurchased,
-                        Rating = feedback.Rating
-                    });
+                        latestFeedbacks.Add(new FeedbackDto()
+                        {
+                            FeedbackId = feedback.Id,
+                            UserId = feedback.UserId,
+                            BookId = feedback.BookId,
+                            Date = feedback.Date,
+                            Comment = feedback.Comment,
+                            IsPurchased = feedback.IsPurchased,
+                            Rating = feedback.Rating
+                        });
+                    }
                 }
+
             }
 
             List<string> tags = new List<string>();

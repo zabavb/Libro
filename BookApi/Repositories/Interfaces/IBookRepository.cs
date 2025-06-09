@@ -3,9 +3,11 @@ using BookAPI.Models;
 using BookAPI.Models.Filters;
 using BookAPI.Models.Sortings;
 using Library.Common;
+using Library.DTOs.Book;
 using Library.DTOs.Order;
 using Library.Interfaces;
 using System.Linq.Expressions;
+using Book = BookAPI.Models.Book;
 
 namespace BookAPI.Repositories.Interfaces
 {
