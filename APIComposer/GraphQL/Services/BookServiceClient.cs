@@ -5,6 +5,10 @@ using APIComposer.GraphQL.Services.Interfaces;
 using Library.DTOs.Book;
 using Library.DTOs.Order;
 using Library.DTOs.UserRelated.User;
+using Library.Common;
+using OrderAPI;
+using BookAPI.Models.Filters;
+using BookAPI.Models.Sortings;
 
 namespace APIComposer.GraphQL.Services
 {
@@ -77,6 +81,39 @@ namespace APIComposer.GraphQL.Services
             catch (Exception)
             {
                 return new List<FeedbackForUserDetails>();
+            }
+        }
+
+        public async Task<PaginatedResult<FeedbackAdminCard>?> GetFeedbacksAsync(
+           int pageNumber = 1,
+           int pageSize = 10,
+           string? searchTerm = null,
+           FeedbackFilter? filter = null,
+           FeedbackSort? sort = null)
+        {
+            try
+            {
+                SetAuthHeader();
+
+                var query = QueryBuilder.BuildQuery(
+                    new { pageNumber, pageSize, searchTerm },
+                    filter,
+                    sort
+                );
+
+                var response = await _http.GetAsync($"feedbacks?{query}");
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    await ErrorHandler.HandleErrorResponseAsync(response);
+                    return null;
+                }
+
+                return (await response.Content.ReadFromJsonAsync<PaginatedResult<FeedbackAdminCard>>())!;
+            }
+            catch (Exception ex)
+            {
+                throw;
             }
         }
 
