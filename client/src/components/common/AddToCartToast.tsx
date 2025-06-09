@@ -58,7 +58,7 @@ const AddToCartToast: React.FC<AddToCartToastProps> = ({
             }}>
               You have {itemCount} item{itemCount === 1 ? '' : 's'} in your cart
               <br />
-              Total amount: {totalPrice} UAH
+                Total amount: {totalPrice.toFixed(2)} UAH
             </div>
           </div>
         </div>
