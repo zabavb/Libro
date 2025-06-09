@@ -6,7 +6,8 @@ import { addNotification } from "@/state/redux/slices/notificationSlice";
 import { AppDispatch } from "@/state/redux";
 import { useDispatch } from "react-redux";
 import "@/assets/styles/components/common/cart-checkout-card.css"
-
+import { BookDetails } from "@/types/types/book/BookDetails";
+import noImageUrl from "@/assets/noImage.svg"
 interface CartCheckoutCardProps {
     edit?: boolean
     item: CartItem
@@ -17,9 +18,9 @@ interface CartCheckoutCardProps {
 
 const CartCheckoutCard: React.FC<CartCheckoutCardProps> = ({ edit, item, onAdd, onRemove, onItemClear }) => {
     const dispatch = useDispatch<AppDispatch>()
-    const [book, setBook] = useState<Book | null>();
+    const [book, setBook] = useState<BookDetails | null>();
     const [serviceResponse, setServiceResponse] = useState<
-        ServiceResponse<Book>
+        ServiceResponse<BookDetails>
     >({
         data: null,
         loading: true,
@@ -41,7 +42,7 @@ const CartCheckoutCard: React.FC<CartCheckoutCardProps> = ({ edit, item, onAdd, 
     return (
         <div>
             <div className="flex gap-[14px] text-dark relative">
-                <img src={`https://picsum.photos/seed/${item.bookId}/50/75`} className="w-[50px] h-[75px]" />
+                <img src={book?.imageUrl ?? noImageUrl} className="w-[50px] h-[75px]" />
                 <div className="flex flex-col gap-4  w-full">
                     <div>
                         <div className="flex justify-between">
@@ -54,10 +55,14 @@ const CartCheckoutCard: React.FC<CartCheckoutCardProps> = ({ edit, item, onAdd, 
                                 :
                                 (<p>{item.amount} pcs.</p>)}
                         </div>
-                        <p className="text-gray">AUTHOR_TMP</p>
+                        <p className="text-[#929089]">{book?.authorName}</p>
 
-                        <p>{book?.price} UAH</p>
-                        <p className="text-accent">{(book?.quantity ?? 0 > 0) ? "Available" : "Not available"}</p>
+                        <p>{book?.price.toFixed(2)} UAH</p>
+                        <div className="flex gap-2">
+                            <p className="text-[#FF642E]">{(book?.quantity ?? 0 > 0) ? "Available" : "Not available"}</p>
+                            <p>●</p>
+                            <p className="text-[#929089]">{book?.bookId.split('-')[4]}</p>
+                        </div>
                     </div>
                 </div>
             </div>
