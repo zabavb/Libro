@@ -4,11 +4,12 @@ import {
     getBookById,
     addBook,
     updateBook,
-    deleteBook
+    deleteBook,
+    getOwnedBooks
 } from "../api/repositories/bookRepository"
 import { coverEnumToNumber, languageEnumToNumber } from "@/api/adapters/bookAdapter";
 import { BookFilter } from "@/types/filters/BookFilter";
-import { BookCard, BookDetails } from "@/types/types/book/BookDetails";
+import { BookCard, BookDetails, BookLibraryItem } from "@/types/types/book/BookDetails";
 
 
 export const fetchBooksService = async (
@@ -54,6 +55,73 @@ export const fetchBooksService = async (
 
     return response;
 };
+
+export const fetchOwnedBooksService = async (
+    userId: string,
+    pageNumber: number = 1,
+    pageSize: number = 10,
+): Promise<ServiceResponse<PaginatedResponse<BookLibraryItem>>> => {
+    const response: ServiceResponse<PaginatedResponse<BookLibraryItem>> = {
+        data: null,
+        loading: true,
+        error: null,
+    };
+
+    try {
+
+        const body = {
+            query: `
+            query GetUserOwnedBooks(
+                $pageNumber: Int!,
+                $pageSize: Int!,
+                $userId: UUID!)
+            {
+                    getUserOwnedBooks(
+                        pageNumber: $pageNumber,
+                        pageSize: $pageSize,
+                        userId: $userId
+                    ) {
+                        items {
+                            title
+                            authorName
+                            imageUrl
+                            pdfFileUrl
+                            audioUrl
+                        }
+                        pageNumber
+                        pageSize
+                        totalCount
+                        totalPages
+                    }
+            }
+            `,
+            variables: {
+                userId,
+                pageNumber,
+                pageSize
+            },
+        };
+
+
+        const graphQLResponse = await getOwnedBooks(body);
+        if (graphQLResponse.errors)
+            throw new Error(
+                `${graphQLResponse.errors[0].message} Status code: ${graphQLResponse.errors[0].extensions?.status}`,
+            );
+        console.log(graphQLResponse.data);
+        response.data = graphQLResponse.data
+            ?.getUserOwnedBooks as PaginatedResponse<BookLibraryItem>;
+    }
+    catch (error) {
+        console.error(error instanceof Error ? error.message : String(error));
+        response.error =
+            'An error occurred while fetching books. Please try again later.';
+    } finally {
+        response.loading = false;
+    }
+    console.log(response)
+    return response;
+}
 
 /**
  * Fetch a book by its ID.

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { CartItem } from "@/types/types/cart/CartItem";
-import { Book, ServiceResponse } from "@/types";
+import { ServiceResponse } from "@/types";
 import { fetchBookByIdService } from "@/services/bookService";
 import { addNotification } from "@/state/redux/slices/notificationSlice";
 import { AppDispatch } from "@/state/redux";

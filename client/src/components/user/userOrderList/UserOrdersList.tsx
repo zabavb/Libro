@@ -1,10 +1,8 @@
 import NewsletterAdvert from "@/components/common/NewsletterAdvert";
 import OrderCardContainter from "../../../containers/order/OrderCardContainer";
-import { Order, OrderFilter as OrderFilterType, OrderSort as OrderSortType } from "../../../types";
+import { OrderFilter as OrderFilterType, OrderSort as OrderSortType } from "../../../types";
 import Pagination from "../../common/Pagination";
-import Search from "../../common/Search";
 import UserOrdersListFilter from "./UserOrdersListFilter";
-import UserOrdersListSort from "./UserOrdersListSort";
 import '@/assets/styles/components/user/user-orders-list.css'
 import linkIconUrl from '@/assets/link.svg'
 import { OrderDetails } from "@/types/types/order/OrderDetails";

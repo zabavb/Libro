@@ -17,15 +17,8 @@ const OrderDetails: React.FC<OrderDetailsProps> = ({ existingOrder }) => {
     const [bookObjs, setBookObjs] = useState<Record<string, number>>({})
     const navigate = useNavigate();
 
-    /* Outsource the function into separate lib */
-    function cutFloat(num: number): number {
-        const parts = num.toString().split('.');
-        if (parts.length === 1) return num; // no decimal part
-        const decimal = parts[1].slice(0, 2);
-        return parseFloat(`${parts[0]}.${decimal}`);
-    }
     
-    const fullPrice = cutFloat((existingOrder?.price ?? 0) + (existingOrder?.deliveryPrice ?? 0));
+    const fullPrice = ((existingOrder?.price ?? 0) + (existingOrder?.deliveryPrice ?? 0)).toFixed(2);
 
     useEffect(() => {
         if (existingOrder) {
