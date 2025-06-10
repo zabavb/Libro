@@ -1,7 +1,7 @@
 import axios from "axios"
 import { BOOKS_PAGINATED, BOOKS, BOOK_BY_ID, GRAPHQL } from "../index"
 import { GraphQLResponse, PaginatedResponse } from "../../types"
-import { BookCard, BookDetails } from "@/types/types/book/BookDetails";
+import { BookCard, BookDetails, BookLibraryItem } from "@/types/types/book/BookDetails";
 import { getAuthHeaders } from "./common";
 
 interface BookQueryParams {
@@ -48,17 +48,23 @@ export const getBookById = async (body: {
     })
     return response.data;
 };
-// export const getOrderById = async (body: {
-//     query: string;
-//     variables: {
-//         id: string;
-//     };
-// }): Promise<GraphQLResponse<{ order: Order }>> => {
-//     const response = await axios.post<GraphQLResponse<{ order: Order }>>(GRAPHQL, body, {
-//         headers: getAuthHeaders("application/json"),
-//     });
-//     return response.data;
-// };
+
+
+export const getOwnedBooks = async (body: {
+    query: string;
+    variables: {
+        userId: string,
+        pageNumber: number,
+        pageSize: number
+    };
+}): Promise<GraphQLResponse<{getUserOwnedBooks: PaginatedResponse<BookLibraryItem>}>> => {
+    const response = await axios.post<GraphQLResponse<{getUserOwnedBooks : PaginatedResponse<BookLibraryItem>}>>(GRAPHQL, body, {
+        headers: getAuthHeaders("application/json")
+    })
+    return response.data;
+};
+
+
 
 /**
  * Create a new book.

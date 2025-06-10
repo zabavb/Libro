@@ -1,0 +1,15 @@
+.library-filter-panel{
+    @apply flex flex-col bg-[#F4F0E5] rounded-[30px] py-5;
+    width: 20%;
+    height: fit-content;
+}
+
+.library-main-panel{
+    @apply flex flex-col gap-5 bg-[#F4F0E5] rounded-[30px] py-5 px-10; 
+    width: 80%;
+}
+
+.library-wrapper{
+   @apply flex flex-col py-5 px-16 bg-[#1A1D23];
+   gap: 22px;
+}

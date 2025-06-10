@@ -49,6 +49,7 @@ import CategoryFormPage from './pages/admin/bookRelated/categories/CategoryFormP
 import SubCategoryFormPage from './pages/admin/bookRelated/categories/SubCategoryFormPage';
 import { CartProvider } from './state/context/CartContext';
 import BookFormPage from './pages/admin/bookRelated/books/BookFormPage';
+import LibraryPage from './pages/main/book/LibraryPage';
 const AppRoutes = () => (
   <AuthProvider>
     <CartProvider>
@@ -64,6 +65,7 @@ const AppRoutes = () => (
           <Route path='/checkout/success' element={<OrderSuccessPage />} />
           <Route path='/orders' element={<UserOrdersPage />} />
           <Route path='/liked' element={<LikedBooksPage />} />
+          <Route path='/library' element={<LibraryPage/>} />
           <Route path='/catalog' element={<BookCatalogPage />} />
           <Route path='/books/:bookId' element={<BookDetailsPage />} />
           <Route path='/orders/:orderId' element={<OrderDetailsPage />} />

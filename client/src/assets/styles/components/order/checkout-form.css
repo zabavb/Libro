@@ -28,3 +28,7 @@
 .radio-selected {
     background-color: #DEDBD1;
 }
+
+.cart-section{
+    @apply bg-[#DEDBD1] py-5 px-10 rounded-[30px];
+}

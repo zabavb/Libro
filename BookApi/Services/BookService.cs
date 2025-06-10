@@ -13,6 +13,7 @@ using Library.Sorts;
 using BookAPI.Repositories;
 using SubCategory = BookAPI.Models.SubCategory;
 using Library.DTOs.Order;
+using System.Net;
 
 namespace BookAPI.Services
 {
@@ -297,6 +298,18 @@ namespace BookAPI.Services
             try
             {
                 return await _bookRepository.GetAllForOrderDetailsAsync(bookId);
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
+        public async Task<ICollection<BookLibraryItem>> GetAllDigitalBooks(ICollection<Guid> ids)
+        {
+            try
+            {
+                return await _bookRepository.GetAllLibraryItems(ids);
             }
             catch
             {

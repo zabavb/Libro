@@ -40,3 +40,11 @@ export interface BookFeedbacks{
     avgRating?: number;
     feedbackAmount: number;
 }
+
+export interface BookLibraryItem{
+    title: string;
+    authorName: string;
+    imageUrl?: string;
+    pdfFileUrl?: string;
+    audioUrl?: string;
+}
