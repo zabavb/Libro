@@ -72,7 +72,7 @@ const AddToCartToast: React.FC<AddToCartToastProps> = ({
           onClose();
         }}
         style={{
-          marginTop: "20px",
+          marginTop: "12px",
           backgroundColor: "#FF642E",
           borderRadius: "46px",
           height: "40px",
