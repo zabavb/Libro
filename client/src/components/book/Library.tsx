@@ -41,7 +41,7 @@ const Library: React.FC<LibraryProps> = ({ items, loading, pagination, onPageCha
                         <div className="flex gap-16 flex-wrap">
                             {loading ? (<>Loading...</>) : (
                                 filteredItems.map((item) => (
-                                    <LibraryItemCard item={item} />
+                                    <LibraryItemCard item={item} isAudio={isAudio} />
                                 ))
                             )}
                         </div>
