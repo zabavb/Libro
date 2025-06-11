@@ -2,6 +2,13 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronLeft, faChevronRight } from "@fortawesome/free-solid-svg-icons";
 import { Carousel, IconButton } from "@material-tailwind/react";
 
+import img1 from "@/assets/images/1.png";
+import img2 from "@/assets/images/2.png";
+import img3 from "@/assets/images/3.png";
+import img4 from "@/assets/images/4.png";
+import img5 from "@/assets/images/5.png";
+import img6 from "@/assets/images/6.png";
+
 export function CarouselOffers() {
   return (
     <div className="w-full aspect-[16/5] rounded-xl overflow-hidden relative">
@@ -55,18 +62,33 @@ export function CarouselOffers() {
         )}
       >
         <img
-          src="https://images.unsplash.com/photo-1497436072909-60f360e1d4b1?auto=format&fit=crop&w=2560&q=80"
+          src={img1}
           alt="image 1"
           className="w-full h-full object-cover"
         />
         <img
-          src="https://images.unsplash.com/photo-1493246507139-91e8fad9978e?auto=format&fit=crop&w=2940&q=80"
+          src={img2}
           alt="image 2"
           className="w-full h-full object-cover"
         />
         <img
-          src="https://images.unsplash.com/photo-1518623489648-a173ef7824f3?auto=format&fit=crop&w=2762&q=80"
+          src={img3}
           alt="image 3"
+          className="w-full h-full object-cover"
+        />
+        <img
+          src={img4}
+          alt="image 4"
+          className="w-full h-full object-cover"
+        />
+        <img
+          src={img5}
+          alt="image 5"
+          className="w-full h-full object-cover"
+        />
+        <img
+          src={img6}
+          alt="image 6"
           className="w-full h-full object-cover"
         />
       </Carousel>
