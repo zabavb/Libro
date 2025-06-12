@@ -26,49 +26,43 @@ const SubscriptionListContainer: React.FC = () => {
   const fetchSubscriptionList = useCallback(async () => {
     (async () => {
       setLoading(true);
-      const mockData: SubscriptionCard[] = Array.from({ length: 5 }, (_, i) => ({
-        id: `${i + 1}`,
-        title: `Subscription ${i + 1}`,
-        subdescription: `This is a description for Subscription ${i + 1}`,
-        imageUrl: `https://via.placeholder.com/44?text=${i + 1}`,
-      }));
 
       try {
-        // const response = await fetchSubscriptionsService(
-        //   (paginationMemo.pageNumber = 1),
-        //   (paginationMemo.pageSize = 10),
-        //   searchTerm,
-        // );
-        setSubscriptions(mockData);
+        const response = await fetchSubscriptionsService(
+          (paginationMemo.pageNumber = 1),
+          (paginationMemo.pageSize = 10),
+          searchTerm,
+        );
+        
         setPagination({
           pageNumber: 1,
           pageSize: 10,
           totalCount: 20,
         });
        
-        // if (response.data) {
-        //   const paginatedData = response.data;
+        if (response.data) {
+          const paginatedData = response.data;
 
-        //   setSubscriptions((prev) =>
-        //     JSON.stringify(prev) === JSON.stringify(paginatedData.items)
-        //       ? prev
-        //       : paginatedData.items,
-        //   );
-        //   setPagination((prev) => {
-        //     if (
-        //       prev.pageNumber === paginatedData.pageNumber &&
-        //       prev.pageSize === paginatedData.pageSize &&
-        //       prev.totalCount === paginatedData.totalCount
-        //     ) {
-        //       return prev;
-        //     }
-        //     return {
-        //       pageNumber: paginatedData.pageNumber,
-        //       pageSize: paginatedData.pageSize,
-        //       totalCount: paginatedData.totalCount,
-        //     };
-        //   });
-        // } else if (response.error) throw Error(response.error);
+          setSubscriptions((prev) =>
+            JSON.stringify(prev) === JSON.stringify(paginatedData.items)
+              ? prev
+              : paginatedData.items,
+          );
+          setPagination((prev) => {
+            if (
+              prev.pageNumber === paginatedData.pageNumber &&
+              prev.pageSize === paginatedData.pageSize &&
+              prev.totalCount === paginatedData.totalCount
+            ) {
+              return prev;
+            }
+            return {
+              pageNumber: paginatedData.pageNumber,
+              pageSize: paginatedData.pageSize,
+              totalCount: paginatedData.totalCount,
+            };
+          });
+        } else if (response.error) throw Error(response.error);
       } catch (error) {
         dispatch(
           addNotification({

@@ -90,92 +90,88 @@ const SubscriptionForm: React.FC<SubscriptionFormProps> = ({
     fontSize: '0.875rem',
     marginTop: '-0.5rem'
   };
-  
+
   return (
     <>
-      <form 
-        onSubmit={handleSubmit(onSubmit)} 
-        style={{
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '1rem',
-          background: '#fff',
-          padding: '2rem',
-          borderRadius: '8px',
-          boxShadow: '0 0 10px rgba(0,0,0,0.05)'
-        }}
-      >
-        <label
-          htmlFor='imageUpload'
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            width: '150px',
-            height: '150px',
-            border: '3px dashed #ccc',
-            borderRadius: '100%',
-            cursor: 'pointer',
-            overflow: 'hidden',
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-            backgroundImage: imagePreview ? `url(${imagePreview})` : 'none',
-            margin: '0 auto'
-          }}
+    <div className="max-w-4xl mx-auto p-6 bg-[#f9f5ec] min-h-screen">
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-3xl font-bold text-[#dd4a4a]">Нова підписка</h1>
+        <div className="space-x-2">
+          <button className="bg-[#fbd949] text-black font-bold px-4 py-2 rounded shadow">
+            Створити нову
+          </button>
+        </div>
+      </div>
+
+      <div className="flex flex-col items-center">
+        <div className="w-32 h-32 rounded-full bg-gray-200 text-gray-500 flex items-center justify-center text-center text-sm font-medium mb-6 overflow-hidden relative cursor-pointer">
+          {imagePreview ? (
+            <img src={imagePreview} alt="Preview" className="w-full h-full object-cover rounded-full" />
+          ) : (
+            <span>Натисніть<br />щоб додати<br />зображення</span>
+          )}
+          <input
+            type="file"
+            accept="image/*"
+            onChange={handleImageChange}
+            className="absolute inset-0 opacity-0 cursor-pointer"
+          />
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
+          <div className="bg-white p-4 rounded shadow space-y-4">
+            <div>
+              <label className="block text-sm font-semibold mb-1">
+                Термін дії підписки (днів)
+              </label>
+              <input
+                {...register("expirationDays")}
+                type="number"
+                className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#dd4a4a]"
+                placeholder="Наприклад: 365"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-semibold mb-1">Ціна (грн)</label>
+              <input
+                {...register("price")}
+                type="number"
+                className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#dd4a4a]"
+                placeholder="Наприклад: 365"
+              />
+            </div>
+          </div>
+
+          <div className="bg-white p-4 rounded shadow space-y-4">
+            <div>
+              <label className="block text-sm font-semibold mb-1">Опис скорочено</label>
+              <input
+                {...register("subdescription")}
+                type="text"
+                className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#dd4a4a]"
+                placeholder="Короткий опис"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-semibold mb-1">Опис повний</label>
+              <textarea
+                {...register("description")}
+                className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#dd4a4a]"
+                placeholder="Повний опис"
+                rows={4}
+              />
+            </div>
+          </div>
+        </div>
+
+        <button
+          type="submit"
+          className="mt-6 bg-[#2563eb] text-white font-semibold px-6 py-3 rounded shadow hover:bg-blue-700 transition"
         >
-          {!imagePreview && <span style={{ color: '#888' }}>Click to Upload</span>}
-        </label>
-        <input
-          id='imageUpload'
-          type='file'
-          accept='image/*'
-          style={{ display: 'none' }}
-          onChange={handleImageChange}
-        />
-        {errors.image && <p style={{ color: 'red' }}>{errors.image.message}</p>}
-
-        <input {...register('title')} placeholder='Title' style={inputStyle} />
-        {errors.title && <p style={errorStyle}>{errors.title.message}</p>}
-
-        <input
-          type='number'
-          {...register('expirationDays')}
-          placeholder='Expiration Days'
-          style={inputStyle}
-        />
-        {errors.expirationDays && <p style={errorStyle}>{errors.expirationDays.message}</p>}
-
-        <input
-          type='number'
-          {...register('price')}
-          placeholder='Price'
-          style={inputStyle}
-        />
-        {errors.price && <p style={errorStyle}>{errors.price.message}</p>}
-
-        <input {...register('subdescription')} placeholder='Subdescription' style={inputStyle} />
-        {errors.subdescription && <p style={errorStyle}>{errors.subdescription.message}</p>}
-
-        <input {...register('description')} placeholder='Description' style={inputStyle} />
-        {errors.description && <p style={errorStyle}>{errors.description.message}</p>}
-
-        <button 
-          type='submit' 
-          disabled={loading}
-          style={{
-            padding: '0.75rem',
-            backgroundColor: '#2563eb',
-            color: '#fff',
-            border: 'none',
-            borderRadius: '6px',
-            cursor: loading ? 'not-allowed' : 'pointer',
-            fontWeight: 'bold'
-          }}
-        >
-          {existingSubscription ? 'Update Subscription' : 'Add Subscription'}
+          Зберегти підписку
         </button>
-      </form>
-
+      </div>
+    </div>
     </>
   );
 };
