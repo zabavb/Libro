@@ -71,7 +71,7 @@ const AppRoutes = () => (
             path='/subscriptions/:subscriptionId'
             element={<SubscriptionPage />}
           />
-          {/*<Route element={<PrivateRoute />}>*/}
+          <Route element={<PrivateRoute />}>
             {/* Admin */}
             <Route path='/admin' element={<AdminLayout />}>
               <Route index element={<AdminPage />} />
@@ -127,7 +127,7 @@ const AppRoutes = () => (
               {/* Other */}
               <Route path='*' element={<NotFoundPage />} />
             </Route>
-          {/*</Route>*/}
+          </Route>
           <Route path='*' element={<NotFoundPage />} />
         </Routes>
       </BrowserRouter>
