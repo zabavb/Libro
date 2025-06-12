@@ -1,0 +1,68 @@
+.subscription-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 12px;
+  margin: 10px 0;
+  background-color: #1a1d23;
+  border-radius: 10px;
+  color: white;
+  cursor: pointer;
+  transition: background 0.2s ease-in-out;
+}
+
+.subscription-card:hover {
+  background-color: #2b2f36;
+}
+
+.subscription-card img {
+  width: 44px;
+  height: 44px;
+  border-radius: 6px;
+  object-fit: cover;
+}
+
+.subscription-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.subscription-title {
+  font-weight: bold;
+  font-size: 16px;
+}
+
+.subscription-subdesc {
+  font-size: 14px;
+  color: #cfcfcf;
+}
+
+.subscription-actions {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.subscription-actions div {
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+.subscription-actions div:hover {
+  opacity: 0.8;
+}
+
+.subscription-actions .edit {
+  background-color: #ff642e;
+  color: white;
+}
+
+.subscription-actions .remove {
+  border: 1px solid #ff642e;
+  color: #ff642e;
+  background: transparent;
+}

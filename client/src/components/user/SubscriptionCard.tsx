@@ -1,3 +1,4 @@
+import '../../assets/styles/components/subscription.css'
 import { SubscriptionCard as SubscriptionCardType } from '../../types';
 
 interface SubscriptionCardProps {
@@ -15,6 +16,7 @@ const SubscriptionCard: React.FC<SubscriptionCardProps> = ({
     <>
       <hr />
       <li
+        className="subscription-card"
         onClick={(e) => {
           e.stopPropagation();
           onNavigate();
@@ -26,17 +28,21 @@ const SubscriptionCard: React.FC<SubscriptionCardProps> = ({
           src={subscription.imageUrl}
           alt={subscription.title}
         />
-        <div>{subscription.title}</div>
-        <div>{subscription.subdescription}</div>
-
-        <div>Edit</div>
-        <div
-          onClick={(e) => {
-            e.stopPropagation();
-            onDelete(e);
-          }}
-        >
-          Remove
+        <div className="subscription-info">
+          <div className="subscription-title">{subscription.title}</div>
+          <div className="subscription-subdesc">{subscription.subdescription}</div>
+        </div>
+        <div className="subscription-actions">
+          <div className="edit">Edit</div>
+          <div
+            className="remove"
+            onClick={(e) => {
+              e.stopPropagation();
+              onDelete(e);
+            }}
+          >
+            Remove
+          </div>
         </div>
       </li>
     </>

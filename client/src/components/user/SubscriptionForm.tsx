@@ -9,6 +9,8 @@ interface SubscriptionFormProps {
   onAddSubscription: (user: FormData) => Promise<void>;
   onEditSubscription: (updatedSubscription: FormData) => Promise<void>;
   loading: boolean;
+  isEditMode?: boolean;
+  isCreating?: boolean;
 }
 
 const SubscriptionForm: React.FC<SubscriptionFormProps> = ({
@@ -36,15 +38,15 @@ const SubscriptionForm: React.FC<SubscriptionFormProps> = ({
 
   useEffect(() => {
     if (existingSubscription) {
-      setValue('title', existingSubscription.title ?? undefined);
+      setValue('title', existingSubscription.title ?? '');
       setValue(
         'expirationDays',
-        existingSubscription.expirationDays ?? undefined,
+        existingSubscription.expirationDays ?? 0,
       );
-      setValue('price', existingSubscription.price ?? undefined);
-      setValue('subdescription', existingSubscription.subdescription ?? undefined);
-      setValue('description', existingSubscription.description ?? undefined);
-      setImagePreview(existingSubscription.imageUrl ?? undefined);
+      setValue('price', existingSubscription.price ?? 0);
+      setValue('subdescription', existingSubscription.subdescription ?? '');
+      setValue('description', existingSubscription.description ?? '');
+      setImagePreview(existingSubscription.imageUrl ?? null);
     }
   }, [existingSubscription, setValue]);
 
@@ -76,9 +78,33 @@ const SubscriptionForm: React.FC<SubscriptionFormProps> = ({
     else onAddSubscription(formData);
   };
 
+  const inputStyle = {
+    padding: '0.5rem',
+    fontSize: '1rem',
+    borderRadius: '4px',
+    border: '1px solid #ccc',
+  };
+
+  const errorStyle = {
+    color: 'red',
+    fontSize: '0.875rem',
+    marginTop: '-0.5rem'
+  };
+  
   return (
     <>
-      <form onSubmit={handleSubmit(onSubmit)}>
+      <form 
+        onSubmit={handleSubmit(onSubmit)} 
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '1rem',
+          background: '#fff',
+          padding: '2rem',
+          borderRadius: '8px',
+          boxShadow: '0 0 10px rgba(0,0,0,0.05)'
+        }}
+      >
         <label
           htmlFor='imageUpload'
           style={{
@@ -94,9 +120,10 @@ const SubscriptionForm: React.FC<SubscriptionFormProps> = ({
             backgroundSize: 'cover',
             backgroundPosition: 'center',
             backgroundImage: imagePreview ? `url(${imagePreview})` : 'none',
+            margin: '0 auto'
           }}
         >
-          {!imagePreview && <span>Click to Upload</span>}
+          {!imagePreview && <span style={{ color: '#888' }}>Click to Upload</span>}
         </label>
         <input
           id='imageUpload'
@@ -105,31 +132,50 @@ const SubscriptionForm: React.FC<SubscriptionFormProps> = ({
           style={{ display: 'none' }}
           onChange={handleImageChange}
         />
-        <p>{errors.image?.message}</p>
+        {errors.image && <p style={{ color: 'red' }}>{errors.image.message}</p>}
 
-        <input {...register('title')} placeholder='Title' />
-        <p>{errors.title?.message}</p>
+        <input {...register('title')} placeholder='Title' style={inputStyle} />
+        {errors.title && <p style={errorStyle}>{errors.title.message}</p>}
 
         <input
           type='number'
           {...register('expirationDays')}
-          placeholder='expirationDays'
+          placeholder='Expiration Days'
+          style={inputStyle}
         />
-        <p>{errors.expirationDays?.message}</p>
+        {errors.expirationDays && <p style={errorStyle}>{errors.expirationDays.message}</p>}
 
-        <input type='number' {...register('price')} placeholder='Price' />
-        <p>{errors.price?.message}</p>
+        <input
+          type='number'
+          {...register('price')}
+          placeholder='Price'
+          style={inputStyle}
+        />
+        {errors.price && <p style={errorStyle}>{errors.price.message}</p>}
 
-        <input {...register('subdescription')} placeholder='subdescription' />
-        <p>{errors.subdescription?.message}</p>
+        <input {...register('subdescription')} placeholder='Subdescription' style={inputStyle} />
+        {errors.subdescription && <p style={errorStyle}>{errors.subdescription.message}</p>}
 
-        <input {...register('description')} placeholder='description' />
-        <p>{errors.description?.message}</p>
+        <input {...register('description')} placeholder='Description' style={inputStyle} />
+        {errors.description && <p style={errorStyle}>{errors.description.message}</p>}
 
-        <button type='submit' disabled={loading}>
+        <button 
+          type='submit' 
+          disabled={loading}
+          style={{
+            padding: '0.75rem',
+            backgroundColor: '#2563eb',
+            color: '#fff',
+            border: 'none',
+            borderRadius: '6px',
+            cursor: loading ? 'not-allowed' : 'pointer',
+            fontWeight: 'bold'
+          }}
+        >
           {existingSubscription ? 'Update Subscription' : 'Add Subscription'}
         </button>
       </form>
+
     </>
   );
 };
