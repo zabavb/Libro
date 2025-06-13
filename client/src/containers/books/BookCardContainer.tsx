@@ -40,12 +40,12 @@ const BookCardContainer: React.FC<BookCardContainerProps> = ({ book }) => {
 
 			setTimeout(() => setShowToast(false), 5000)
 
-			dispatch(
-				addNotification({
-					message: `Item has been successfully added to the cart`,
-					type: "success"
-				})
-			)
+			// dispatch(
+			// 	addNotification({
+			// 		message: `Item has been successfully added to the cart`,
+			// 		type: "success"
+			// 	})
+			// )
 		} catch (error) {
 			dispatch(
 				addNotification({

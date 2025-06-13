@@ -6,6 +6,7 @@ import { addNotification } from "@/state/redux/slices/notificationSlice";
 import { AppDispatch } from "@/state/redux";
 import { useDispatch } from "react-redux";
 import "@/assets/styles/components/common/cart-card.css"
+import { BookDetails } from "@/types/types/book/BookDetails";
 
 interface CheckoutListingProps {
     item: CartItem
@@ -13,9 +14,9 @@ interface CheckoutListingProps {
 
 const CheckoutListing: React.FC<CheckoutListingProps> = ({ item}) => {
     const dispatch = useDispatch<AppDispatch>()
-    const [book, setBook] = useState<Book | null>();
+    const [book, setBook] = useState<BookDetails | null>();
     const [serviceResponse, setServiceResponse] = useState<
-        ServiceResponse<Book>
+        ServiceResponse<BookDetails>
     >({
         data: null,
         loading: true,
@@ -37,7 +38,7 @@ const CheckoutListing: React.FC<CheckoutListingProps> = ({ item}) => {
     return (
         <div className="flex justify-between text-gray">
             <p>{book?.title}</p>
-            <p>{item.amount} X {item.price} UAH</p>
+            <p>{item.amount} X {item.price.toFixed(2)} UAH</p>
         </div>
     )
 }

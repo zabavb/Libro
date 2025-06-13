@@ -2,19 +2,20 @@ import { fetchBookByIdService } from "@/services/bookService"
 import { AppDispatch } from "@/state/redux"
 import { addNotification } from "@/state/redux/slices/notificationSlice"
 import { Book, ServiceResponse } from "@/types"
+import { BookDetails } from "@/types/types/book/BookDetails"
 import { CartItem } from "@/types/types/cart/CartItem"
 import React, { useEffect, useState } from "react"
 import { useDispatch } from "react-redux"
-
+import noImageUrl from "@/assets/noImage.svg"
 interface CheckoutBookCardProps {
     item: CartItem
 }
 
 const CheckoutBookCard: React.FC<CheckoutBookCardProps> = ({ item }) => {
     const dispatch = useDispatch<AppDispatch>()
-    const [book, setBook] = useState<Book | null>();
+    const [book, setBook] = useState<BookDetails | null>();
     const [serviceResponse, setServiceResponse] = useState<
-        ServiceResponse<Book>
+        ServiceResponse<BookDetails>
     >({
         data: null,
         loading: true,
@@ -33,7 +34,7 @@ const CheckoutBookCard: React.FC<CheckoutBookCardProps> = ({ item }) => {
     return (
         <div className="flex gap-3.5">
             <div>
-                <img src={`https://picsum.photos/seed/${item.bookId}/70/110`} className="w-[70px] h-[110px]" />
+                <img src={book?.imageUrl ?? noImageUrl} className="w-[70px] h-[110px]" />
             </div>
             <div className="flex flex-col gap-[5px]">
                 <div className="flex justify-between font-semibold text-3xl gap-7">
@@ -41,7 +42,7 @@ const CheckoutBookCard: React.FC<CheckoutBookCardProps> = ({ item }) => {
                     <p>{item.amount} psc.</p>
                 </div>
                 <div>
-                    <p className="text-gray">AUTHOR_TMP</p>
+                    <p className="text-gray">{book?.authorName}</p>
                 </div>
                 <div>
                     <p className="text-gray">{book?.cover}</p>

@@ -65,7 +65,7 @@ const OrderCheckoutForm: React.FC<OrderCheckoutFormProps> = ({ onAdd, onItemClea
             setValue("userId", user.id);
         }
         else {
-            navigate('/login')
+            navigate('/')
         }
     }, [navigate, loading, setValue, userId])
 
@@ -238,14 +238,14 @@ const OrderCheckoutForm: React.FC<OrderCheckoutFormProps> = ({ onAdd, onItemClea
                                         edit={edit} />
                                 ))}
                             </div>
-                            <p className="text-[#FF642E] font-semibold">Total {price} UAH</p>
+                            <p className="text-[#FF642E] font-semibold">Total {price.toFixed(2)} UAH</p>
                         </div>
                         <div className="checkout-section">
                             <div className="flex flex-col gap-2.5">
                                 <div className="flex flex-col gap-[19px]">
                                     <div className="flex justify-between">
                                         <p>To be paid</p>
-                                        <p>{price} UAH</p>
+                                        <p>{price.toFixed(2)} UAH</p>
                                     </div>
                                     {cart?.map((item) => (
                                         <CheckoutListing item={item} />
