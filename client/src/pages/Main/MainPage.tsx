@@ -9,6 +9,9 @@ import React from "react";
 import BookOfTheWeek from "@/components/book/BookOfTheWeek";
 import testPhoto from "@/assets/BookImage.svg";
 import PromoContainer from "@/containers/books/PromoContainer";
+import BookOfTheWeekContainer from "@/containers/books/BookOfTheWeekContainer";
+import FeedbackListContainer from "@/containers/books/FeedbackListContainer";
+import FeedbackCardContainer from "@/containers/books/FeedbackCardContainer";
 const MainPage: React.FC = () => {
 
 
@@ -29,15 +32,9 @@ const MainPage: React.FC = () => {
 
           <BookCatalogContainer />
           <BookCatalogContainer isAudioOnly />
-          <BookOfTheWeek
-            title="I SEE YOU'RE INTERSTED IN DARKNESS"
-            author="Ilarion Pavliuk"
-            price={580}
-            coverImage={testPhoto}
-            onOrder={handleOrder}
-            onFavorite={handleFavorite}
-          />
-            <PromoContainer />
+          <BookOfTheWeekContainer />
+          <FeedbackCardContainer />
+          <PromoContainer />
 
       </main>
       <Footer />
