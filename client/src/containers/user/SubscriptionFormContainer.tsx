@@ -12,14 +12,10 @@ import SubscriptionForm from '../../components/user/SubscriptionForm';
 
 interface SubscriptionFormContainerProps {
   id?: string;
-  isEditMode?: boolean;
-  isCreating?: boolean;
 }
 
 const SubscriptionFormContainer: React.FC<SubscriptionFormContainerProps> = ({
   id,
-  isEditMode,
-  isCreating,
 }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -81,12 +77,10 @@ const SubscriptionFormContainer: React.FC<SubscriptionFormContainerProps> = ({
 
   return (
     <SubscriptionForm
-      existingSubscription={isCreating ? undefined : serviceResponse.data ?? undefined}
+      existingSubscription={serviceResponse.data ?? undefined}
       onAddSubscription={handleAddSubscription}
       onEditSubscription={handleEditSubscription}
       loading={serviceResponse.loading}
-      isEditMode={isEditMode}
-      isCreating={isCreating}
     />
   );
 };
