@@ -6,11 +6,12 @@ import "@/assets/styles/components/book/author-search.css"
 import { Category } from "@/types"
 import { fetchCategoriesService } from "@/services"
 interface BookFormCategorySearchProps {
+    existingCategory?: string;
     onSelect: (categoryId: string) => void
     isEnabled: boolean
 }
 
-const BookFormCategorySearch: React.FC<BookFormCategorySearchProps> = ({ onSelect, isEnabled }) => {
+const BookFormCategorySearch: React.FC<BookFormCategorySearchProps> = ({ existingCategory, onSelect, isEnabled }) => {
     const [searchFocus, setSearchFocus] = useState<boolean>()
     const timeoutRef = useRef<NodeJS.Timeout | null>()
     const dispatch = useDispatch<AppDispatch>();
@@ -117,7 +118,7 @@ const BookFormCategorySearch: React.FC<BookFormCategorySearchProps> = ({ onSelec
                     onFocus={() => handleFocus(true)}
                     onBlur={() => handleFocus(false)}
                     onChange={(e) => { setSearchTerm(e.target.value) }}
-                    value={searchTerm}
+                    value={existingCategory ?? searchTerm}
                     disabled={isEnabled}
                 />
             </div>

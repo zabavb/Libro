@@ -6,11 +6,12 @@ import "@/assets/styles/components/book/author-search.css"
 import { SubCategory } from "@/types"
 import { fetchSubCategoriesService } from "@/services"
 interface BookFormSubCategorySearchProps {
+    existingSubCategories?: string[];
     onSelect: (subcategoryId: string, subcategoryName: string) => void
     isEnabled: boolean
 }
 
-const BookFormSubCategorySearch: React.FC<BookFormSubCategorySearchProps> = ({ onSelect, isEnabled }) => {
+const BookFormSubCategorySearch: React.FC<BookFormSubCategorySearchProps> = ({ existingSubCategories, onSelect, isEnabled }) => {
     const [searchFocus, setSearchFocus] = useState<boolean>()
     const timeoutRef = useRef<NodeJS.Timeout | null>()
     const dispatch = useDispatch<AppDispatch>();
@@ -108,40 +109,60 @@ const BookFormSubCategorySearch: React.FC<BookFormSubCategorySearchProps> = ({ o
 
 
     return (
-        <div className="flex flex-col flex-1">
-            <div className="input-row w-full">
-                <label className='text-sm'>Subcategory</label>
-                <input
-                    className='input-field'
-                    placeholder="Subcategory"
-                    onFocus={() => handleFocus(true)}
-                    onBlur={() => handleFocus(false)}
-                    onChange={(e) => { setSearchTerm(e.target.value) }}
-                    value={searchTerm}
-                    disabled={isEnabled}
-                />
-            </div>
-            <div className="relative">
-                {searchFocus === true &&
-                    (
-                        <div className="search-menu" onFocus={() => handleFocus(true)} onBlur={() => handleFocus(false)}> 
-                            <div>
-                                {subcategories.map((subcategory) => (
-                                    <div className="book-item" onClick={() => handleBookAdd(subcategory.subCategoryId, subcategory.name)}>
-                                        <p>{subcategory.name}</p>
-                                    </div>
-                                ))}
-                            </div>
-                            <div className="search-nav-menu">
-                                <button type="button" onClick={() => onPageChange(pagination.pageNumber - 1)}>&lt;</button>
-                                <p>{pagination.pageNumber}</p>
-                                <button type="button" onClick={() => onPageChange(pagination.pageNumber + 1)}>&gt;</button>
-                            </div>
-                        </div>
-                    )}
-            </div>
+      <div className='flex flex-col flex-1'>
+        <div className='input-row w-full'>
+          <label className='text-sm'>Subcategory</label>
+          <input
+            className='input-field'
+            placeholder='Subcategory'
+            onFocus={() => handleFocus(true)}
+            onBlur={() => handleFocus(false)}
+            onChange={(e) => {
+              setSearchTerm(e.target.value);
+            }}
+            value={existingSubCategories ? existingSubCategories[0] ?? searchTerm : searchTerm}
+            disabled={isEnabled}
+          />
         </div>
-    )
+        <div className='relative'>
+          {searchFocus === true && (
+            <div
+              className='search-menu'
+              onFocus={() => handleFocus(true)}
+              onBlur={() => handleFocus(false)}
+            >
+              <div>
+                {subcategories.map((subcategory) => (
+                  <div
+                    className='book-item'
+                    onClick={() =>
+                      handleBookAdd(subcategory.subCategoryId, subcategory.name)
+                    }
+                  >
+                    <p>{subcategory.name}</p>
+                  </div>
+                ))}
+              </div>
+              <div className='search-nav-menu'>
+                <button
+                  type='button'
+                  onClick={() => onPageChange(pagination.pageNumber - 1)}
+                >
+                  &lt;
+                </button>
+                <p>{pagination.pageNumber}</p>
+                <button
+                  type='button'
+                  onClick={() => onPageChange(pagination.pageNumber + 1)}
+                >
+                  &gt;
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    );
 }
 
 export default BookFormSubCategorySearch

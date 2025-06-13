@@ -5,19 +5,20 @@ import { icons } from '@/lib/icons'
 import "@/assets/styles/components/book/book-form.css"
 import { getUserFromStorage } from '@/utils/storage';
 import { useNavigate } from 'react-router-dom';
-import { Book, User } from '@/types';
+import { User } from '@/types';
 import noImageUrl from '@/assets/noImage.svg'
 import { BookFormData, bookValidationSchema } from '@/utils/bookValidationSchema';
 import { CoverType } from '@/types/subTypes/book/CoverType';
 import { Language } from '@/types/subTypes/book/Language';
-import { coverNumberToEnum, languageNumberToEnum } from '@/api/adapters/bookAdapter';
+// import { coverNumberToEnum, languageNumberToEnum } from '@/api/adapters/bookAdapter';
 import BookFormAuthorSearch from '../BookFormAuthorSearch';
 import BookFormPublisherSearch from '../BookFormPublisherSearch';
 import BookFormCategorySearch from '../BookFormCategorySearch';
 import BookFormSubCategorySearch from '../BookFormSubcategorySearch';
 import BookSubcategoryList from '../BookSubcategoryList';
+import { BookDetails } from '@/types/types/book/BookDetails';
 interface BookFormProps {
-    existingBook?: Book;
+    existingBook?: BookDetails;
     onAddBook: (book: FormData) => Promise<void>;
     onEditBook: (
         updatedBook: FormData,
@@ -98,19 +99,20 @@ const BookForm: React.FC<BookFormProps> = ({
     };
 
     useEffect(() => {
+        console.log("Data:", existingBook);
         if (existingBook) {
             setValue('title', existingBook.title ?? undefined);
             setValue('year', new Date(existingBook.year).getFullYear().toString());
-            setValue('cover', coverNumberToEnum(existingBook.cover));
-            setValue('price', existingBook.price);
-            setValue('language', languageNumberToEnum(existingBook.language));
+            setValue('cover', /* coverNumberToEnum( */existingBook.cover/* ) */);
+            setValue('price', existingBook.price.toFixed(2) as unknown as number);
+            setValue('language', /* languageNumberToEnum( */existingBook.language/* ) */);
             setValue('quantity', existingBook.quantity);
-            setValue('authorId', existingBook.authorId);
-            setValue('categoryId', existingBook.categoryId);
-            setValue('publisherId', existingBook.publisherId);
+            setValue('authorId', existingBook.authorName);
+            setValue('categoryId', existingBook.categoryName ?? '');
+            setValue('publisherId', existingBook.publisherName ?? '');
             setValue('description', existingBook.description ?? '');
-            setValue('discountId', existingBook.discountId ?? undefined);
-            setValue('subcategoryIds', existingBook.subcategoryIds ?? []);
+            /* setValue('discountId', existingBook.dis ?? undefined); */
+            setValue('subcategoryIds', existingBook.subcategories ?? []);
         }
     }, [existingBook, setValue]);
 
@@ -121,7 +123,7 @@ const BookForm: React.FC<BookFormProps> = ({
         formData.append("AuthorId", selectedAuthor);
         formData.append("PublisherId", selectedPublisher);
         formData.append("CategoryId", selectedCategory);
-        formData.append("Price", data.price.toString());
+        formData.append('Price', data.price.toString());
         formData.append("Language", data.language);
         formData.append("Year", new Date(Number(data.year), 1, 1).toISOString());
         formData.append("Description", data.description || "");
@@ -145,11 +147,11 @@ const BookForm: React.FC<BookFormProps> = ({
         }
 
         if (existingBook){
-            formData.append("ImageUrl", existingBook.imageUrl);
+            formData.append("ImageUrl", existingBook.imageUrl || "");
         }
         
         if (selectedSubCategoriesDisplay && Object.entries(selectedSubCategoriesDisplay).length > 0) {
-            Object.entries(selectedSubCategoriesDisplay).forEach(([key, value]) => {
+            Object.entries(selectedSubCategoriesDisplay).forEach(([key]) => {
                 formData.append("SubcategoryIds", key);
             });
         }
@@ -237,6 +239,7 @@ const BookForm: React.FC<BookFormProps> = ({
                             />
                             <div className='flex flex-col flex-1'>
                                 <BookFormAuthorSearch
+                                    existingAuthor={existingBook?.authorName}
                                     onSelect={setSelectedAuthor}
                                     isEnabled={!localEdit} />
                                 <p>{errors.authorId?.message}</p>
@@ -273,6 +276,7 @@ const BookForm: React.FC<BookFormProps> = ({
                             />
                             <div className='flex flex-col flex-1'>
                                 <BookFormPublisherSearch
+                                    existingPublisher={existingBook?.publisherName}
                                     onSelect={setSelectedPublisher}
                                     isEnabled={!localEdit} />
                                 <p>{errors.publisherId?.message}</p>
@@ -326,12 +330,14 @@ const BookForm: React.FC<BookFormProps> = ({
                         <div className='flex gap-2'>
                             <div className='flex flex-col flex-1'>
                                 <BookFormCategorySearch
+                                    existingCategory={existingBook?.categoryName}
                                     onSelect={setSelectedCategory}
                                     isEnabled={!localEdit} />
                                 <p>{errors.authorId?.message}</p>
                             </div>
                             <div className='flex flex-col flex-1'>
                                 <BookFormSubCategorySearch
+                                    existingSubCategories={existingBook?.subcategories ?? []}
                                     onSelect={addSubCategory}
                                     isEnabled={!localEdit} />
                                 <p>{errors.authorId?.message}</p>

@@ -2,11 +2,12 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { addNotification } from '../../state/redux/slices/notificationSlice';
-import { Book, ServiceResponse } from '../../types';
+import { ServiceResponse } from '../../types';
 import { addBookService, fetchBookByIdService, updateBookService } from '@/services/bookService';
 // import { BookFormData } from '@/utils/bookValidationSchema';
 // import { BookFormDataToBook } from '@/api/adapters/bookAdapter';
 import BookForm from '@/components/book/admin/BookForm';
+import { BookDetails } from '@/types/types/book/BookDetails';
 
 interface BookFormContainerProps {
   id?: string;
@@ -17,7 +18,7 @@ const BookFormContainer: React.FC<BookFormContainerProps> = ({ id }) => {
   const navigate = useNavigate();
   const [isEdit, setIsEdit] = useState<boolean>(false);
   const [serviceResponse, setServiceResponse] = useState<
-    ServiceResponse<Book>
+    ServiceResponse<BookDetails>
   >({
     data: null,
     loading: !!id,
