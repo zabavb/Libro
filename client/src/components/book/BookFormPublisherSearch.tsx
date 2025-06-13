@@ -6,11 +6,12 @@ import "@/assets/styles/components/book/author-search.css"
 import { Publisher } from "@/types"
 import { fetchPublishersService } from "@/services"
 interface BookFormPublisherSearchProps {
-    onSelect: (publisherId: string) => void
-    isEnabled: boolean
+  existingPublisher?: string;
+  onSelect: (publisherId: string) => void;
+  isEnabled: boolean;
 }
 
-const BookFormPublisherSearch: React.FC<BookFormPublisherSearchProps> = ({ onSelect, isEnabled }) => {
+const BookFormPublisherSearch: React.FC<BookFormPublisherSearchProps> = ({ existingPublisher, onSelect, isEnabled }) => {
     const [searchFocus, setSearchFocus] = useState<boolean>()
     const timeoutRef = useRef<NodeJS.Timeout | null>()
     const dispatch = useDispatch<AppDispatch>();
@@ -109,40 +110,60 @@ const BookFormPublisherSearch: React.FC<BookFormPublisherSearchProps> = ({ onSel
 
 
     return (
-        <div className="flex flex-col flex-1">
-            <div className="input-row w-full">
-                <label className='text-sm'>Publisher</label>
-                <input
-                    className='input-field'
-                    placeholder="Publisher"
-                    onFocus={() => handleFocus(true)}
-                    onBlur={() => handleFocus(false)}
-                    onChange={(e) => { setSearchTerm(e.target.value) }}
-                    value={searchTerm}
-                    disabled={isEnabled}
-                />
-            </div>
-            <div className="relative">
-                {searchFocus === true &&
-                    (
-                        <div className="search-menu" onFocus={() => handleFocus(true)} onBlur={() => handleFocus(false)}> 
-                            <div>
-                                {publishers.map((publisher) => (
-                                    <div className="book-item" onClick={() => handleBookAdd(publisher.publisherId, publisher.name)}>
-                                        <p>{publisher.name}</p>
-                                    </div>
-                                ))}
-                            </div>
-                            <div className="search-nav-menu">
-                                <button type="button" onClick={() => onPageChange(pagination.pageNumber - 1)}>&lt;</button>
-                                <p>{pagination.pageNumber}</p>
-                                <button type="button" onClick={() => onPageChange(pagination.pageNumber + 1)}>&gt;</button>
-                            </div>
-                        </div>
-                    )}
-            </div>
+      <div className='flex flex-col flex-1'>
+        <div className='input-row w-full'>
+          <label className='text-sm'>Publisher</label>
+          <input
+            className='input-field'
+            placeholder='Publisher'
+            onFocus={() => handleFocus(true)}
+            onBlur={() => handleFocus(false)}
+            onChange={(e) => {
+              setSearchTerm(e.target.value);
+            }}
+            value={existingPublisher ?? searchTerm}
+            disabled={isEnabled}
+          />
         </div>
-    )
+        <div className='relative'>
+          {searchFocus === true && (
+            <div
+              className='search-menu'
+              onFocus={() => handleFocus(true)}
+              onBlur={() => handleFocus(false)}
+            >
+              <div>
+                {publishers.map((publisher) => (
+                  <div
+                    className='book-item'
+                    onClick={() =>
+                      handleBookAdd(publisher.publisherId, publisher.name)
+                    }
+                  >
+                    <p>{publisher.name}</p>
+                  </div>
+                ))}
+              </div>
+              <div className='search-nav-menu'>
+                <button
+                  type='button'
+                  onClick={() => onPageChange(pagination.pageNumber - 1)}
+                >
+                  &lt;
+                </button>
+                <p>{pagination.pageNumber}</p>
+                <button
+                  type='button'
+                  onClick={() => onPageChange(pagination.pageNumber + 1)}
+                >
+                  &gt;
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    );
 }
 
 export default BookFormPublisherSearch
