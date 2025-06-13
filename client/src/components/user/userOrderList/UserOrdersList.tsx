@@ -44,7 +44,7 @@ const UserOrdersList: React.FC<OrderListProps> = ({
                     />
                 </div>
                 <div className="user-orders-main-panel">
-                    {loading ? (<>Loading...</>) : orders.length > 0 ? (
+                    {loading ? (<div className="bg-[#F4F0E5] rounded-[30px] py-5 px-10">Loading...</div>) : orders.length > 0 ? (
                         orders.map((order) => (
                             <OrderCardContainter
                                 key={order.orderId}

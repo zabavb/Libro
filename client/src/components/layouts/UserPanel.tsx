@@ -99,7 +99,7 @@ const UserPanel: React.FC<UserPanelProps> = ({ onLoginOpen }) => {
             </div>
             <p>Library</p>
           </div>
-          <div className='panel-row'>
+          <div className='panel-row' onClick={() => navigate('/liked')}>
             <div className='icon-container'>
               <img className='panel-icon invert' src={icons.bHeart} />
             </div>

@@ -31,7 +31,6 @@ const BookDetailsContainer: React.FC<BookDetailsContainerProps> = ({ bookId }) =
             setServiceResponse(response);
             if (response.error)
                 dispatch(addNotification({ message: response.error, type: 'error' }));
-            console.log(response)
         })();
     }, [bookId,dispatch])
 
