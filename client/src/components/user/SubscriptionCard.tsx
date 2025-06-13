@@ -1,6 +1,6 @@
 import '../../assets/styles/components/subscription.css'
 import { SubscriptionCard as SubscriptionCardType } from '../../types';
-
+import { icons } from "@/lib/icons"
 interface SubscriptionCardProps {
   subscription: SubscriptionCardType;
   onNavigate: () => void;
@@ -13,39 +13,23 @@ const SubscriptionCard: React.FC<SubscriptionCardProps> = ({
   onDelete,
 }) => {
   return (
-    <>
-      <hr />
-      <li
-        className="subscription-card"
-        onClick={(e) => {
-          e.stopPropagation();
-          onNavigate();
-        }}
-      >
-        <img
-          width={44}
-          height={44}
-          src={subscription.imageUrl}
-          alt={subscription.title}
-        />
-        <div className="subscription-info">
-          <div className="subscription-title">{subscription.title}</div>
-          <div className="subscription-subdesc">{subscription.subdescription}</div>
+      <div className="flex rounded-lg p-2.5 bg-[#1A1D23] justify-between">
+
+        <div className="flex flex-1 text-white items-center gap-4">
+          <img
+            width={44}
+            height={44}
+            src={subscription.imageUrl}
+            alt={subscription.title}
+            className='border-[1px] border-[#FFFFFF] rounded-full'/>
+          <div className="font-semibold text-base">{subscription.title}</div>
+          <div className="text-base">{subscription.subdescription}</div>
         </div>
-        <div className="subscription-actions">
-          <div className="edit">Edit</div>
-          <div
-            className="remove"
-            onClick={(e) => {
-              e.stopPropagation();
-              onDelete(e);
-            }}
-          >
-            Remove
-          </div>
+        <div className='flex gap-2'>
+          <button onClick={onNavigate} className='p-2.5 bg-[#FF642E] rounded-lg'><img src={icons.wPen} /></button>
+          <button onClick={onDelete} className='p-2.5 border-[1px] border-[#FF642E] rounded-lg'><img src={icons.oTrash} /></button>
         </div>
-      </li>
-    </>
+      </div>
   );
 };
 
