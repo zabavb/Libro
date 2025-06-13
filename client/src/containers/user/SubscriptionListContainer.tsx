@@ -19,19 +19,27 @@ const SubscriptionListContainer: React.FC = () => {
     pageSize: 10,
     totalCount: 0,
   });
+  
 
   const paginationMemo = useMemo(() => ({ ...pagination }), [pagination]);
 
   const fetchSubscriptionList = useCallback(async () => {
     (async () => {
       setLoading(true);
+
       try {
         const response = await fetchSubscriptionsService(
           (paginationMemo.pageNumber = 1),
           (paginationMemo.pageSize = 10),
           searchTerm,
         );
-
+        
+        setPagination({
+          pageNumber: 1,
+          pageSize: 10,
+          totalCount: 20,
+        });
+       
         if (response.data) {
           const paginatedData = response.data;
 
@@ -66,7 +74,7 @@ const SubscriptionListContainer: React.FC = () => {
       }
       setLoading(false);
     })();
-  }, [paginationMemo, searchTerm, dispatch]);
+  }, [dispatch]);
 
   useEffect(() => {
     fetchSubscriptionList();

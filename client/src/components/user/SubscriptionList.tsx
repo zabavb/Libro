@@ -4,7 +4,7 @@ import Loading from '../common/Loading';
 import Pagination from '../common/Pagination';
 import Search from '../common/Search';
 import { FixedSizeList as List } from 'react-window';
-
+import '../../assets/styles/components/subscription-list.css'
 interface SubscriptionListProps {
   subscriptions?: SubscriptionCard[];
   loading: boolean;
@@ -43,8 +43,7 @@ const SubscriptionList: React.FC<SubscriptionListProps> = ({
   );
 
   return (
-    <div>
-      <p onClick={() => onNavigate('/admin')}>Back to Admin Dashboard</p>
+    <div className="subscription-list-wrapper">
       <p onClick={() => onNavigate('/admin/subscriptions/add')}>
         Add Subscription
       </p>
