@@ -19,7 +19,7 @@ const OrderConfirmation: React.FC<OrderConfirmationProps> = ({ order, user, onCo
     const navigate = useNavigate();
 
     useEffect(() => {
-        if (!order || !user) navigate('/')
+        if (!order || !user) navigate('/', {state:{ authOpen: true} })
     }, [])
     return (
         <div className="form-container">
@@ -33,7 +33,7 @@ const OrderConfirmation: React.FC<OrderConfirmationProps> = ({ order, user, onCo
                     </div>
                     <div className="price-container">
                         <h1 className="text-3xl">To be paid:</h1>
-                        <h1 className="text-5xl">{total} UAH</h1>
+                        <h1 className="text-5xl">{total.toFixed(2)} UAH</h1>
                     </div>
                 </div>
                 <div className="flex flex-col justify-between gap-16">

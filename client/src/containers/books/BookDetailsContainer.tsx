@@ -1,4 +1,5 @@
 import BookDetails from "@/components/book/BookDetails"
+import AddToCartToast from "@/components/common/AddToCartToast"
 import { fetchBookByIdService } from "@/services/bookService"
 import { useCart } from "@/state/context/CartContext"
 import { AppDispatch } from "@/state/redux"
@@ -15,7 +16,10 @@ interface BookDetailsContainerProps {
 
 const BookDetailsContainer: React.FC<BookDetailsContainerProps> = ({ bookId }) => {
     const dispatch = useDispatch<AppDispatch>()
-    const { addItem } = useCart();
+    const { addItem, cart } = useCart()
+    const [showToast, setShowToast] = useState(false)
+    const [itemCount, setItemCount] = useState(0)
+    const [totalPrice, setTotalPrice] = useState(0)
     const [serviceResponse, setServiceResponse] = useState<
         ServiceResponse<BookDetailsType>
     >({
@@ -32,17 +36,27 @@ const BookDetailsContainer: React.FC<BookDetailsContainerProps> = ({ bookId }) =
             if (response.error)
                 dispatch(addNotification({ message: response.error, type: 'error' }));
         })();
-    }, [bookId,dispatch])
+    }, [bookId, dispatch])
 
     const handleAddItem = (item: CartItem) => {
         try {
             addItem(item);
-            dispatch(
-                addNotification({
-                    message: `Item has been successfully added to the cart`,
-                    type: "success"
-                })
-            )
+            const count = cart.reduce((acc: number, i: CartItem) => acc + i.amount, 0) + item.amount
+            const total = cart.reduce((acc: number, i: CartItem) => acc + i.amount * i.price, 0) + item.amount * item.price
+
+
+            setItemCount(count)
+            setTotalPrice(total)
+            setShowToast(true)
+
+            setTimeout(() => setShowToast(false), 5000)
+
+            // dispatch(
+            //     addNotification({
+            //         message: `Item has been successfully added to the cart`,
+            //         type: "success"
+            //     })
+            // )
         } catch (error) {
             dispatch(
                 addNotification({
@@ -54,11 +68,20 @@ const BookDetailsContainer: React.FC<BookDetailsContainerProps> = ({ bookId }) =
     }
 
     return (
-        <BookDetails
-            onAddItem={handleAddItem}
-            book={serviceResponse.data as BookDetailsType}
-            loading={serviceResponse.loading}
-        />
+        <>
+            <BookDetails
+                onAddItem={handleAddItem}
+                book={serviceResponse.data as BookDetailsType}
+                loading={serviceResponse.loading}
+            />
+            {showToast && (
+                <AddToCartToast
+                    itemCount={itemCount}
+                    totalPrice={totalPrice}
+                    onClose={() => setShowToast(false)}
+                />
+            )}
+        </>
     )
 }
 

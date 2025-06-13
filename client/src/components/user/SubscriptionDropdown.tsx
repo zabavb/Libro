@@ -43,7 +43,7 @@ const SubscriptionDropdown: React.FC<{
 
   useEffect(() => {
     fetchSubscriptionList();
-  }, [fetchSubscriptionList]);
+  }, []);
 
   const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const selected = e.target.value === '' ? null : e.target.value;
