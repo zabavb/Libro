@@ -52,7 +52,7 @@ const ProfileContainer: React.FC = () => {
       localStorage.getItem('subscriptions') || '{}',
     ) as string[];
     const subscription365Id = import.meta.env.VITE_SUBSCRIPTION_365_ID;
-
+    console.log(subscription365Id);
     if (token && data.length > 0 && data.includes(subscription365Id))
       setIsSubscribedFor365(true);
 

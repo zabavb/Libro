@@ -39,7 +39,6 @@ export const statusEnumToStatusView = (status: Status): StatusView => {
   return roleMap[status] ?? StatusView.PENDING;
 };
 
-
 export const OrderToOrderView = (response: Order): OrderView => {
     return {
         id: response.id,

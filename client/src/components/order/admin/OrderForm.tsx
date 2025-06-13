@@ -1,5 +1,5 @@
 import { useForm } from "react-hook-form";
-import { Order, Status } from "../../../types";
+import { Order, Status, User } from "../../../types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { dateToString } from "../../../api/adapters/commonAdapters";
 import React, { useEffect, useState } from "react";
@@ -11,6 +11,7 @@ import "@/assets/styles/components/order/order-form.css"
 import "@/assets/styles/base/status-display.css"
 import OrderAdminFormBookList from "./OrderAdminFormBookList";
 import {icons} from '@/lib/icons'
+import { getUserFromStorage } from "@/utils/storage";
 interface OrderFormProps {
     existingOrder?: Order;
     onEditOrder: (existingOrder: Order) => Promise<void>;
@@ -126,7 +127,7 @@ const OrderForm: React.FC<OrderFormProps> = ({ existingOrder, onEditOrder }) => 
     }
 
     const uid = existingOrder?.id.toString().split('-')[4];
-
+    const user: User | null = getUserFromStorage();
     return (
         <div>
             <form onSubmit={handleSubmit(onSubmit)}>
@@ -137,9 +138,12 @@ const OrderForm: React.FC<OrderFormProps> = ({ existingOrder, onEditOrder }) => 
                         <button className="update-button" type="submit">Update</button>
                     </div>
 
-                    <div className="profile-icon">
-                        <div style={{ borderRadius: "50%", backgroundColor: "grey", height: "43px", width: "43px" }}></div>
-                        <p className="profile-name">Name Surname</p>
+                    <div className='profile-icon'>
+                            <img src={user?.imageUrl ? user.imageUrl : icons.bUser} className={`w-[43px] ${user?.imageUrl ? "bg-transparent" : "bg-[#FF642E]"} rounded-full`} />
+
+                            <p className='profile-name'>
+                                {user?.firstName ?? 'Unknown User'} {user?.lastName}
+                            </p>
                     </div>
                 </header>
                 <main className="main-container">

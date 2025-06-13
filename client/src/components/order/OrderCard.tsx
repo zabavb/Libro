@@ -3,6 +3,7 @@ import { OrderView } from "../../types/types/order/OrderView";
 import '@/assets/styles/components/order/order-card.css'
 import { OrderDetails } from "@/types/types/order/OrderDetails";
 import { dateToString } from "@/api/adapters/commonAdapters";
+import { statusEnumToStatusView } from "@/api/adapters/orderAdapters";
 interface OrderCardProps {
     order: OrderDetails
 }
@@ -16,7 +17,7 @@ const OrderCard: React.FC<OrderCardProps> = ({ order }) => {
             <div className="flex justify-between font-semibold">
                 <p>№{orderUid}</p>
                 <p className="text-[#9C9C97]">{dateToString(order.created)}</p>
-                <p>{order.status}</p>
+                <p>{statusEnumToStatusView(order.status)}</p>
             </div>
             <div className="flex flex-col gap-2">
                 {order.orderBooks.map((book) => (
@@ -46,7 +47,7 @@ const OrderCard: React.FC<OrderCardProps> = ({ order }) => {
                     </p>
                     <p className="text-[#9C9C97]">More details</p>
                 </div>
-                <button>Repeat order</button>
+                {/* <button>Repeat order</button> */}
             </div>
         </div>
     )

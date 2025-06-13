@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Status } from "../../../types";
 import type { OrderFilter } from "../../../types";
 import '@/assets/styles/components/user/user-orders-filter.css'
+import { statusEnumToStatusView } from "@/api/adapters/orderAdapters";
 interface OrdersListFilterProps {
     onFilterChange: (filters: OrderFilter) => void
     filters: OrderFilter
@@ -42,7 +43,7 @@ const UserOrdersListFilter: React.FC<OrdersListFilterProps> = ({ onFilterChange,
                     }
                 }}>
                 <div className={`w-1 rounded-r-[10px] ${activeStatus === status ? 'bg-[#FF642E]' : 'bg-transparent'}`}></div>
-                <p className={`${activeStatus === status ? 'text-[#FF642E]' : 'text-[#1A1D23]'}`}>{status}</p>
+                <p className={`${activeStatus === status ? 'text-[#FF642E]' : 'text-[#1A1D23]'}`}>{statusEnumToStatusView(status)}</p>
             </div>
             ))}
         </div>
